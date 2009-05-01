@@ -1,0 +1,146 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using System.Collections;
+
+namespace helpmebot6
+{
+    public class Configuration
+    {
+        DAL dbal = DAL.singleton;
+
+        public static Configuration singleton;
+        public Configuration(  )
+        {
+            configurationCache = new System.Collections.ArrayList( );
+        }
+
+
+        System.Collections.ArrayList configurationCache;
+
+        public string retrieveStringOption( string optionName )
+        {
+          
+            foreach ( ConfigurationSetting s in configurationCache )
+            {
+                if ( s.Name == optionName )
+                { // option found, deal with option
+          
+                    if ( s.isValid( ) == true )
+                    {//option cache is still valid
+                        return s.Value;
+                    }
+                    else
+                    {//option cache is not valid
+                        // fetch new item from database
+                        string optionValue1 = retrieveOptionFromDatabase( optionName );
+
+                        s.Value = optionValue1;
+                        return s.Value;
+                    }
+                }
+
+            }
+
+          
+           // option not found, add entry to cache
+                string optionValue2 = retrieveOptionFromDatabase( optionName );
+
+
+                ConfigurationSetting cachedSetting = new ConfigurationSetting( optionName, optionValue2 );
+                configurationCache.Add( cachedSetting );
+
+                return optionValue2;
+            
+        }
+        public uint retrieveUintOption( string optionName )
+        {
+            string optionValue = retrieveStringOption( optionName );
+            uint value;
+            try
+            {
+                value = uint.Parse( optionValue );
+            }
+            catch ( Exception )
+            {
+                return 0;
+            }
+            return value;
+        }
+
+        private string retrieveOptionFromDatabase( string optionName )
+        {
+            string result = "";
+            try
+            {
+                result = dbal.ExecuteScalarQuery( "SELECT c.`configuration_value` FROM configuration c WHERE c.`configuration_name` = \"" + optionName + "\" LIMIT 1;" );
+                if ( result == null )
+                {
+                    result = "";
+                }
+                return result;
+            }
+            catch ( Exception ex )
+            {
+                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+            }
+            return null;
+        }
+
+        public static void readHmbotConfigFile( string filename, 
+                ref string mySqlServerHostname, ref string mySqlUsername, 
+                ref string mySqlPassword, ref uint mySqlServerPort, 
+                ref string mySqlSchema )
+        {
+            StreamReader settingsreader = new StreamReader( filename );
+            mySqlServerHostname = settingsreader.ReadLine( );
+            mySqlServerPort = uint.Parse( settingsreader.ReadLine( ) );
+            mySqlUsername = settingsreader.ReadLine( );
+            mySqlPassword = settingsreader.ReadLine( );
+            mySqlSchema = settingsreader.ReadLine( );
+            settingsreader.Close( );
+        }
+
+        private ArrayList getMessages( string messageName )
+        {
+            MySql.Data.MySqlClient.MySqlDataReader dr =  dbal.ExecuteReaderQuery( "SELECT m.`message_text` FROM message m WHERE m.`message_name` = 'cmdSayHi1';" );
+
+            System.Collections.ArrayList al = new System.Collections.ArrayList( );
+            
+            while ( dr.Read() )
+            {
+                al.Add( dr.GetString( 0 ) );                
+            }
+            dr.Close( );
+            return al;
+        }
+
+        //returns a random message chosen from the list of possible message names
+        private string chooseRandomMessage( string messageName )
+        {
+            Random rnd = new Random( );
+            ArrayList al = getMessages( messageName );
+            return al[ rnd.Next( 0, al.Count ) ].ToString( );
+        }
+
+        private string parseMessage( string messageFormat, string[ ] args )
+        {
+            return String.Format( messageFormat, args );
+        }
+        private string parseMessage( string messageFormat, string arg )
+        {
+            return String.Format( messageFormat, arg );
+        }
+
+        public string GetMessage( string messageName, string arg )
+        {
+            return parseMessage( chooseRandomMessage( messageName ), arg );
+        }
+
+        public string GetMessage( string messageName, string[ ] args )
+        {
+            return parseMessage( chooseRandomMessage( messageName ), args );
+        }
+    }
+}
