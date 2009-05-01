@@ -79,7 +79,6 @@
     <Compile Include="Helpmebot.cs" />
     <Compile Include="IAL.cs" />
     <Compile Include="NubioApi.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="User.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>

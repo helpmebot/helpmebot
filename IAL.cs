@@ -1,14 +1,19 @@
-/*
- * IRC Access Layer for Helpmebot by Simon Walker ( User:Stwalkerster , stwalkerster@googlemail.com )
- * 
- * This work is licenced under the Creative Commons 
- * Attribution-Share Alike 2.0 UK: England & Wales License.
- * To view a copy of this licence, visit 
- * http://creativecommons.org/licenses/by-sa/2.0/uk/ or send 
- * a letter to Creative Commons, 171 Second Street, 
- * Suite 300, San Francisco, California 94105, USA.
-*/
-
+/****************************************************************************
+ *   This file is part of Helpmebot.                                        *
+ *                                                                          *
+ *   Helpmebot is free software: you can redistribute it and/or modify      *
+ *   it under the terms of the GNU General Public License as published by   *
+ *   the Free Software Foundation, either version 3 of the License, or      *
+ *   (at your option) any later version.                                    *
+ *                                                                          *
+ *   Helpmebot is distributed in the hope that it will be useful,           *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+ *   GNU General Public License for more details.                           *
+ *                                                                          *
+ *   You should have received a copy of the GNU General Public License      *
+ *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+ ****************************************************************************/
 using System;
 using System.Collections;
 using System.IO;
