@@ -8,8 +8,8 @@
     <ProjectGuid>{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>helpmebot</RootNamespace>
-    <AssemblyName>helpmebot</AssemblyName>
+    <RootNamespace>helpmebot6</RootNamespace>
+    <AssemblyName>helpmebot6</AssemblyName>
     <StartupObject>helpmebot6.Helpmebot6</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
