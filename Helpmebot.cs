@@ -93,25 +93,33 @@ namespace helpmebot6
 
         static void RecievedMessage( User source, string destination, string message )
         {
-            // Bot AI
-            string[] helloWords = { "hi", "hey", "heya", "morning", "afternoon", "evening", "hello" };
-            if ( GlobalFunctions.isInArray( message.Split( ' ' )[ 0 ].ToLower( ), helloWords ) !=-1 && message.Split( ' ' )[ 1 ].ToLower( ) == irc.IrcNickname.ToLower( ) )
-            {
-                cmd.CommandParser_CommandRecievedEvent( source, destination, "sayhi", null );
-            }
-            else
-            {
-                string[ ] splitMessage = message.Split( ' ' );
-                if ( splitMessage[ 0 ] == Trigger + irc.IrcNickname )
-                {
-                    GlobalFunctions.popFromFront( ref splitMessage );
-                }
 
-                string command = GlobalFunctions.popFromFront( ref splitMessage ).Substring(1);
-                if ( command.Substring( 0, 1 ) == Trigger )
+            try
+            {
+                // Bot AI
+                string[ ] helloWords = { "hi", "hey", "heya", "morning", "afternoon", "evening", "hello" };
+                if ( GlobalFunctions.isInArray( message.Split( ' ' )[ 0 ].ToLower( ), helloWords ) != -1 && message.Split( ' ' )[ 1 ].ToLower( ) == irc.IrcNickname.ToLower( ) )
                 {
-                    cmd.CommandParser_CommandRecievedEvent( source, destination, command, splitMessage );
+                    cmd.CommandParser_CommandRecievedEvent( source, destination, "sayhi", null );
                 }
+                else
+                {
+                    string[ ] splitMessage = message.Split( ' ' );
+                    if ( splitMessage[ 0 ] == Trigger + irc.IrcNickname )
+                    {
+                        GlobalFunctions.popFromFront( ref splitMessage );
+                    }
+
+                    string command = GlobalFunctions.popFromFront( ref splitMessage ).Substring( 1 );
+                    if ( command.Substring( 0, 1 ) == Trigger )
+                    {
+                        cmd.CommandParser_CommandRecievedEvent( source, destination, command, splitMessage );
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                GlobalFunctions.ErrorLog( ex, System.Reflection.MethodInfo.GetCurrentMethod( ) );
             }
         }
 

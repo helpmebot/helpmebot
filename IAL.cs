@@ -766,7 +766,7 @@ namespace helpmebot6
                     }
                     else
                     {
-                        PrivmsgEvent( source, destination, message );
+                        PrivmsgEvent( source, destination, message.Trim() );
                     }
                     break;
 
