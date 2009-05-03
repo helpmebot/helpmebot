@@ -29,18 +29,44 @@ namespace helpmebot6
         /// </summary>
         /// <param name="needle"></param>
         /// <param name="haystack"></param>
-        /// <returns>true if the needle is in the haystack</returns>
-        public static bool isInArray( string needle, string[ ] haystack )
+        /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
+        public static int isInArray( string needle, string[ ] haystack )
         {
+            int id = 0;
             foreach ( string straw in haystack )
             {
                 if ( needle == straw )
-                    return true;
+                    return id;
+                id++;
             }
 
-            return false;
+            return -1;
         }
 
+        /// <summary>
+        /// Searches the array haystack for the first needle who's head matches the needlehead we're looking for
+        /// </summary>
+        /// <param name="needle"></param>
+        /// <param name="haystack"></param>
+        /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
+        public static int prefixIsInArray( string needlehead, string[ ] haystack )
+        {
+            int id = 0;
+            foreach ( string straw in haystack )
+            {
+                if ( needlehead == straw.Substring( 0, needlehead.Length ) )
+                    return id;
+                id++;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Remove the first item from an array, and return the item
+        /// </summary>
+        /// <param name="list">The array in question</param>
+        /// <returns>The first item from the array</returns>
         public static string popFromFront( ref string[ ] list )
         {
             string firstItem = list[ 0 ];
@@ -48,12 +74,17 @@ namespace helpmebot6
             return firstItem;
         }
 
+        /// <summary>
+        /// Log an exception to the log and IRC
+        /// </summary>
+        /// <param name="ex">The exception thrown</param>
+        /// <param name="method">The method which threw the exception.</param>
         public static void ErrorLog( Exception ex, MethodBase method )
         {
             Console.WriteLine( "*********************************" );
             Console.WriteLine( "Error detected in method " + method.Module + "::" + method.Name );
             Console.WriteLine( ex.ToString( ) + ex.StackTrace );
-            IAL.singleton.IrcPrivmsg( Helpmebot6.debugChannel, ex.Message );
+            IAL.singleton.IrcPrivmsg( Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message );
             Console.WriteLine( "*********************************" );
             
         }

@@ -34,12 +34,30 @@ namespace helpmebot6
 
        static void Main( string[ ] args )
        {
+           bool initialiseBotWhenDone = true;
 
+           // startup arguments
+           int configFileArg = GlobalFunctions.prefixIsInArray( "--configfile", args );
+           string configFile = ".hmbot";
+           if ( configFileArg!=-1 )
+           {
+               configFile = args[ configFileArg ].Substring( args[ configFileArg ].IndexOf( '=' ) );
+           }
+
+
+           if ( initialiseBotWhenDone )
+           {
+               InitialiseBot( configFile );
+           }
+       }
+
+       private static void InitialiseBot( string configFile )
+       {
            string server, username, password, schema;
            uint port = 0;
            server = username = password = schema = "";
 
-           Configuration.readHmbotConfigFile( ".hmbot", ref server, ref username, ref password, ref port, ref schema );
+           Configuration.readHmbotConfigFile( configFile, ref server, ref username, ref password, ref port, ref schema );
 
            DAL.singleton = new DAL( server, port, username, password, schema );
            dbal = DAL.singleton;
@@ -77,7 +95,7 @@ namespace helpmebot6
         {
             // Bot AI
             string[] helloWords = { "hi", "hey", "heya", "morning", "afternoon", "evening", "hello" };
-            if ( GlobalFunctions.isInArray( message.Split( ' ' )[ 0 ].ToLower( ), helloWords ) && message.Split( ' ' )[ 1 ].ToLower( ) == irc.IrcNickname.ToLower( ) )
+            if ( GlobalFunctions.isInArray( message.Split( ' ' )[ 0 ].ToLower( ), helloWords ) !=-1 && message.Split( ' ' )[ 1 ].ToLower( ) == irc.IrcNickname.ToLower( ) )
             {
                 cmd.CommandParser_CommandRecievedEvent( source, destination, "sayhi", null );
             }
