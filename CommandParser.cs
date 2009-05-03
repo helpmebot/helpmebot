@@ -79,7 +79,7 @@ namespace helpmebot6
 
             // Check for a learned word
             string wordResponse =WordLearner.Remember(command);
-            if ( wordResponse != null )
+            if ( wordResponse != string.Empty )
             {
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
