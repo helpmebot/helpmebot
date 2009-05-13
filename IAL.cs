@@ -54,6 +54,7 @@ namespace helpmebot6
         string _version = "Helpmebot IRC Access Layer 1.0";
 
         int _messageCount = 0;
+
         #endregion
 
         #region properties

@@ -23,7 +23,9 @@ namespace helpmebot6
 {
     public class CommandParser
     {
-        public static CommandParser singleton;
+        //public static CommandParser singleton;
+
+        private bool _overrideBotSilence = false;
 
         Configuration config = Configuration.singleton;
 
@@ -35,6 +37,18 @@ namespace helpmebot6
         {
             CommandRecievedEvent += new CommandEventHandler( CommandParser_CommandRecievedEvent );
             FaqCommandRecievedEvent += new CommandEventHandler( CommandParser_FaqCommandRecievedEvent );
+        }
+
+        public bool overrideBotSilence
+        {
+            get
+            {
+                return _overrideBotSilence;
+            }
+            set
+            {
+                _overrideBotSilence = value;
+            }
         }
 
         void CommandParser_FaqCommandRecievedEvent( User source, string destination, string command, string[ ] args )
@@ -81,6 +95,7 @@ namespace helpmebot6
             string wordResponse =WordLearner.Remember(command);
             if ( wordResponse != string.Empty )
             {
+                wordResponse = string.Format( wordResponse, Configuration.singleton.retrieveStringOption( "wikiUrl" ) );
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
 

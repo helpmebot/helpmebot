@@ -25,7 +25,7 @@ namespace helpmebot6
        static IAL irc ;
        static DAL dbal;
        static Configuration config;
-       static CommandParser cmd;
+//       static CommandParser cmd;
 
        static string Trigger;
 
@@ -83,8 +83,8 @@ namespace helpmebot6
            IAL.singleton = new IAL( Nickname, Username, Realname, Password, Server, Port, Wallops, Invisible );
            irc = IAL.singleton;
 
-           CommandParser.singleton = new CommandParser( );
-           cmd = CommandParser.singleton;
+//           CommandParser.singleton = new CommandParser( );
+//           cmd = CommandParser.singleton;
 
            irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( JoinChannels );
            irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( RecievedMessage );
@@ -104,16 +104,23 @@ namespace helpmebot6
                 }
                 else
                 {
-                    string[ ] splitMessage = message.Split( ' ' );
-                    if ( splitMessage[ 0 ] == Trigger + irc.IrcNickname )
+                    if ( message.Substring( 0, 1 ) == Trigger )
                     {
-                        GlobalFunctions.popFromFront( ref splitMessage );
-                    }
+                        message = message.Substring( 1 );
 
-                    string command = GlobalFunctions.popFromFront( ref splitMessage ).Substring( 1 );
-                    if ( command.Substring( 0, 1 ) == Trigger )
+                        if ( message.Split( ' ' )[ 0 ] == irc.IrcNickname.ToLower( ) )
+                        {
+
+                        }
+                    }
+                    else
                     {
-                        cmd.CommandParser_CommandRecievedEvent( source, destination, command, splitMessage );
+                        // bot name prefixed eg:
+                        // Helpmebot: helpme
+                        // instead of:
+                        // !helpmebot helpme
+                        // or:
+                        // !helpme
                     }
                 }
             }
