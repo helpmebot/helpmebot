@@ -93,7 +93,7 @@ namespace helpmebot6
 
         static void RecievedMessage( User source, string destination, string message )
         {
-
+            CommandParser cmd = new CommandParser( );
             try
             {
                 // Bot AI

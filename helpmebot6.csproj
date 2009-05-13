@@ -70,7 +70,7 @@
   -->
   <ItemGroup>
     <Compile Include="ApiCategoryParser.cs" />
-    <Compile Include="CategoryWatcher.cs" />
+    <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConfigurationSetting.cs" />

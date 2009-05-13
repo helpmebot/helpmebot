@@ -20,7 +20,7 @@ using System.Text;
 using System.Threading;
 using System.Collections;
 
-namespace helpmebot6
+namespace helpmebot6.Monitoring
 {
     public class CategoryWatcher
     {
