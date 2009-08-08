@@ -97,6 +97,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="BotInfo.netmodule" />
     <None Include="example-config.hmbot" />
     <None Include="helpmebot.sh" />
     <None Include="helpmebot6.sql" />
