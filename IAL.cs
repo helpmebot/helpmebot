@@ -260,7 +260,7 @@ namespace helpmebot6
         void assumeTakenNickname( )
         {
             _sendNick( _myNickname + "_" );
-            this.IrcPrivmsg( "NickServ", "GHOST " + _myNickname );
+            this.IrcPrivmsg( "NickServ", "GHOST " + _myNickname + " " + _myPassword );
             _sendNick( _myNickname );
         }
 
