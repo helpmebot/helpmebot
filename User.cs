@@ -30,7 +30,7 @@ namespace helpmebot6
 
         public User()
         {
-            db = DAL.singleton;
+            db = DAL.Singleton();
         }
 
         public string Nickname

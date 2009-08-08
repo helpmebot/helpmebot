@@ -59,8 +59,8 @@ namespace helpmebot6
 
            Configuration.readHmbotConfigFile( configFile, ref server, ref username, ref password, ref port, ref schema );
 
-           DAL.singleton = new DAL( server, port, username, password, schema );
-           dbal = DAL.singleton;
+           dbal= DAL.Singleton( server, port, username, password, schema );
+
            dbal.Connect( );
 
            Configuration.singleton = new Configuration( );
@@ -133,10 +133,16 @@ namespace helpmebot6
         static void JoinChannels( )
         {
             debugChannel = config.retrieveStringOption( "channelDebug" );
-            mainChannel = config.retrieveStringOption( "channelMain" );
-
             irc.IrcJoin( debugChannel );
-            irc.IrcJoin( mainChannel );
+            
+            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery("SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1;");
+            while (dr.Read())
+            {
+                object[] channel = new object[1];
+                dr.GetValues(channel);
+                irc.IrcJoin(channel[0].ToString());
+            }
+            dr.Close();
         }
 
         

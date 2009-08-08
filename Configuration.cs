@@ -24,7 +24,7 @@ namespace helpmebot6
 {
     public class Configuration
     {
-        DAL dbal = DAL.singleton;
+        DAL dbal = DAL.Singleton();
 
         public static Configuration singleton;
         public Configuration(  )

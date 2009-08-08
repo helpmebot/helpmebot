@@ -23,14 +23,26 @@ namespace helpmebot6
 {
     public class DAL
     {
-        public static DAL singleton;
+        static DAL _singleton;
 
         string _mySqlServer, _mySqlUsername, _mySqlPassword, _mySqlSchema;
         uint _mySqlPort;
 
         MySqlConnection _connection;
 
-        public DAL( string Host, uint Port, string Username, string Password, string Schema )
+        public static DAL Singleton()
+        {
+                          
+            return _singleton;
+        }
+        public static DAL Singleton(string Host, uint Port, string Username, string Password, string Schema)
+        {
+            if (_singleton == null)
+                _singleton = new DAL(Host, Port, Username, Password, Schema);
+            return _singleton;
+        }
+
+        protected DAL( string Host, uint Port, string Username, string Password, string Schema )
         {
             _mySqlPort = Port;
             _mySqlPassword = Password;
