@@ -20,17 +20,20 @@ using System.Text;
 using System.Threading;
 using System.Collections;
 
+
 namespace helpmebot6.Monitoring
 {
     public class CategoryWatcher
     {
 
-        Uri _apiUri;
+        string _site;
         string _category;
+        string _username;
+        string _password;
 
         Thread watcherThread;
 
-        int _sleepTime;
+        int _sleepTime = 180;
 
 
         public delegate void CategoryHasItemsEventDelegate( ArrayList items );
@@ -38,7 +41,7 @@ namespace helpmebot6.Monitoring
 
         
 
-        public CategoryWatcher( string Category, Uri ApiUrl )
+        public CategoryWatcher( string Category, string Site, string Username, string Password )
         {
             _apiUri = ApiUrl;
             _category = Category;
@@ -54,12 +57,12 @@ namespace helpmebot6.Monitoring
             {
                 while ( true )
                 {
-                    ArrayList categoryResults = this.doCategoryCheck( );
-                    if ( categoryResults.Count > 0 )
+                    DotNetWikiBot.PageList categoryResults = this.doCategoryCheck( );
+                    if ( categoryResults.Count > 0)
                     {
                         CategoryHasItemsEvent( categoryResults );
                     }
-                    Thread.Sleep( this.SleepTime );
+                    Thread.Sleep( this.SleepTime * 1000);
                 }
             }
             catch ( ThreadAbortException ex )
@@ -68,9 +71,13 @@ namespace helpmebot6.Monitoring
             }
         }
 
-        private ArrayList doCategoryCheck( )
+        private DotNetWikiBot.PageList doCategoryCheck( )
         {
-            return new ArrayList();
+            DotNetWikiBot.Site mw_instance = new DotNetWikiBot.Site(_site, _username, _password);
+            DotNetWikiBot.PageList list = new DotNetWikiBot.PageList(mw_instance);
+            list.FillAllFromCategory(_category);
+
+            return list;
         }
 
 
@@ -85,6 +92,5 @@ namespace helpmebot6.Monitoring
                 _sleepTime = value;
             }
         }
-
     }
 }

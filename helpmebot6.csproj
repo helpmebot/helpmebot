@@ -69,7 +69,6 @@
   </Target>
   -->
   <ItemGroup>
-    <Compile Include="ApiCategoryParser.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
@@ -78,6 +77,7 @@
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
     <Compile Include="IAL.cs" />
+    <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="NubioApi.cs" />
     <Compile Include="User.cs" />
     <Compile Include="WordLearner.cs" />
