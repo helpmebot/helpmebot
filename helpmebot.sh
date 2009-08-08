@@ -2,28 +2,28 @@
 
 #### THIS IS THE REAL CONTROL FILE!!!
 
-COPY="hmb-ial"
+COPY="hmb6"
 
 cd /home/stwalkerster/$COPY
 
 startbot() 
 {
-	rm helpmebot/runtime/Program.$COPY.exe
-	cp helpmebot/runtime/Program.exe helpmebot/runtime/Program.$COPY.exe
-	mono helpmebot/runtime/Program.$COPY.exe &> helpmebot/runtime/log/`date +%Y-%m-%d--%H-%M` &
+	rm bin/Helpmebot.$COPY.exe
+	cp bin/Helpmebot.exe bin/Helpmebot.$COPY.exe
+	mono bin/Helpmebot.$COPY.exe &> bin/log/`date +%Y-%m-%d--%H-%M` &
 }
 
 stopbot()
 {
-	PID=`ps -N -C "grep" -o pid,command | grep "helpmebot/runtime/Program.$COPY.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
+	PID=`ps -N -C "grep" -o pid,command | grep "bin/Helpmebot.$COPY.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
 	kill $PID 2> /dev/null
 }
 
 rebuildbot() 
 {
-	rm helpmebot/runtime/Program.old.exe
-	mv helpmebot/runtime/Program.exe helpmebot/runtime/Program.old.exe
-	gmcs -out:helpmebot/runtime/Program.exe -reference:helpmebot/MySql.Data.dll -reference:/usr/lib/mono/2.0/System.Data.dll -reference:/usr/lib/mono/2.0/System.Web.dll -main:helpmebot6.Helpmebot6 helpmebot/ApiCategoryParser.cs helpmebot/CommandParser.cs helpmebot/Configuration.cs helpmebot/ConfigurationSetting.cs helpmebot/DAL.cs helpmebot/GlobalFunctions.cs helpmebot/Helpmebot.cs helpmebot/IAL.cs helpmebot/NubioApi.cs helpmebot/User.cs helpmebot/WordLearner.cs
+	rm bin/Helpmebot.old.exe
+	mv bin/Helpmebot.exe bin/Helpmebot.old.exe
+	gmcs -out:bin/Helpmebot.exe -reference:MySql.Data.dll -reference:DotNetWikiBot.dll -reference:/usr/lib/mono/2.0/System.Data.dll -reference:/usr/lib/mono/2.0/System.Web.dll -main:helpmebot6.Helpmebot6 Monitoring/WatcherController.cs Monitoring/CategoryWatcher.cs CommandParser.cs Configuration.cs ConfigurationSetting.cs DAL.cs GlobalFunctions.cs Helpmebot.cs IAL.cs NubioApi.cs User.cs WordLearner.cs
 }
 
 updatebot() 
@@ -43,7 +43,7 @@ case $1 in
 		startbot
 	;;
 	restart)
-		PID=`ps -N -C "grep" -o pid,command | grep "helpmebot/runtime/Program.$COPY.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
+		PID=`ps -N -C "grep" -o pid,command | grep "bin/Helpmebot.$COPY.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
 		if [ "$PID" = "" ]; then
 			startbot	
         fi
