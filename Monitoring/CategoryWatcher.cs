@@ -36,15 +36,17 @@ namespace helpmebot6.Monitoring
         int _sleepTime = 180;
 
 
-        public delegate void CategoryHasItemsEventDelegate( ArrayList items );
+        public delegate void CategoryHasItemsEventDelegate( DotNetWikiBot.PageList items );
         public event CategoryHasItemsEventDelegate CategoryHasItemsEvent;
 
         
 
         public CategoryWatcher( string Category, string Site, string Username, string Password )
         {
-            _apiUri = ApiUrl;
+            _site = Site;
             _category = Category;
+            _username = Username;
+            _password = Password;
 
             watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             watcherThread.Start( );
@@ -58,7 +60,7 @@ namespace helpmebot6.Monitoring
                 while ( true )
                 {
                     DotNetWikiBot.PageList categoryResults = this.doCategoryCheck( );
-                    if ( categoryResults.Count > 0)
+                    if ( categoryResults.Count() > 0)
                     {
                         CategoryHasItemsEvent( categoryResults );
                     }
