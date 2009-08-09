@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
-namespace helpmebot.Monitoring
+namespace helpmebot6.Monitoring
 {
     /// <summary>
     /// Controls instances of CategoryWatchers for the bot
@@ -25,8 +25,9 @@ namespace helpmebot.Monitoring
         }
         private static WatcherController _instance;
 
-        void AddWatcher()
+        void AddWatcher(int site ,string category)
         {
+            DAL.Singleton().ExecuteNonQuery("");
             // add to database
 
             // create watcher
@@ -41,13 +42,21 @@ namespace helpmebot.Monitoring
 
             // remove from watcher array
         }
-        void ReloadWatchers()
+      public  void ReloadWatchers()
         {
             // kill all watchers
+            GlobalFunctions.Log("Stopping all category watchers...");
+            foreach (CategoryWatcher item in watchers)
+            {
+                item.Stop();
+            }
 
             // remove from array
+            watchers.Clear();
 
             // load watchers from database
+            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery("");
+
         }
     }
 }

@@ -93,5 +93,7 @@ namespace helpmebot6
         {
             return MySql.Data.MySqlClient.MySqlHelper.EscapeString( str );
         }
+
+        public static void Log(string message) { Console.WriteLine("# " + message); }
     }
 }

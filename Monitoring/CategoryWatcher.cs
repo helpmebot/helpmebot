@@ -82,6 +82,11 @@ namespace helpmebot6.Monitoring
             return list;
         }
 
+        public void Stop()
+        {
+            GlobalFunctions.Log("Stopping Watcher Thread for " + _category + " ...");
+            watcherThread.Abort();
+        }
 
         public int SleepTime
         {
