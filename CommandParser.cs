@@ -104,7 +104,7 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    Commands.SayHi.execute( source.Nickname , destination );
+                    new Commands.SayHi( ).run( source , destination , new object[ 0 ] );
                     break;
                 case "faq":
                     command = GlobalFunctions.popFromFront(ref args);

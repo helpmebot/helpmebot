@@ -5,9 +5,15 @@ using helpmebot6;
 
 namespace helpmebot6.Commands
 {
-    class SayHi
+    class SayHi : GenericCommand
     {
-        public static void execute( string toUser , string destination )
+
+        public SayHi( )
+        {
+            accessLevel = User.userRights.Normal;
+        }
+
+       override void execute( string toUser , string destination )
         {
             IAL.singleton.IrcPrivmsg(
                 destination ,
