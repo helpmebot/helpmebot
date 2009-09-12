@@ -679,7 +679,7 @@ namespace helpmebot6
 
         void IAL_DataRecievedEvent( string data )
         {
-            Console.WriteLine( ">" + data );
+           // Console.WriteLine( ">" + data );
 
             char[ ] colonSeparator = { ':' };
 
