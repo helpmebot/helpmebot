@@ -69,6 +69,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="Commands\SayHi.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
