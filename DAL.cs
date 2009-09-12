@@ -64,7 +64,7 @@ namespace helpmebot6
             _connection.Open( );
         }
 
-        public void ExecuteNonQuery( string query )
+        private void ExecuteNonQuery( string query )
         {
             try
             {
@@ -83,7 +83,7 @@ namespace helpmebot6
             }
         }
 
-        public string ExecuteScalarQuery( string query )
+        private string ExecuteScalarQuery( string query )
         {
             object result = null;
             try
@@ -110,7 +110,7 @@ namespace helpmebot6
             return ret;
         }
 
-        public MySqlDataReader ExecuteReaderQuery( string query )
+        private MySqlDataReader ExecuteReaderQuery( string query )
         {
             try
             {
@@ -131,6 +131,125 @@ namespace helpmebot6
             return null;
         }
 
+        public enum joinTypes
+        {
+            INNER,
+            LEFT,
+            RIGHT,
+            FULLOUTER
+        }
 
+        public struct join
+        {
+            public joinTypes joinType = joinTypes.INNER;
+            public string table;
+            public string joinConditions;
+        }
+
+        public struct order
+        {
+            public string column;
+            public bool asc;
+        }
+
+        public string Select( string select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+        {
+            string query = "SELECT " + select + " FROM " + from;
+
+            foreach( join item in joinConds )
+            {
+                switch( item.joinType )
+                {
+                    case joinTypes.INNER:
+                        query += " INNER JOIN ";
+                        break;
+                    case joinTypes.LEFT:
+                        query += " LEFT OUTER JOIN ";
+                        break;
+                    case joinTypes.RIGHT:
+                        query += " RIGHT OUTER JOIN ";
+                        break;
+                    case joinTypes.FULLOUTER:
+                        query += " FULL OUTER JOIN ";
+                        break;
+                    default:
+                        break;
+                }
+
+                query += item.table;
+
+                if( item.joinConditions != "" )
+                {
+                    query += " ON " + joinConds;
+                }
+            }
+
+            if( where.Length > 0 )
+            {
+                query += " WHERE ";
+
+                for( int i = 0 ; i < where.Length ; i++ )
+                {
+                    if( i != 0 )
+                        query += ", ";
+
+                    query += where[ i ];
+                }
+            }
+
+            if( groupby.Length > 0 )
+            {
+                query += " GROUP BY ";
+
+                for( int i = 0 ; i < groupby.Length ; i++ )
+                {
+                    if( i != 0 )
+                        query += ", ";
+
+                    query += groupby[ i ];
+                }
+            }
+
+            if( orderby.Length > 0 )
+            {
+                query += " ORDER BY ";
+
+                for( int i = 0 ; i < orderby.Length ; i++ )
+                {
+                    if( i != 0 )
+                        query += ", ";
+
+                    query += orderby[ i ].column + orderby[i].asc ? " ASC" : " DESC";
+
+                }
+            }
+
+            if( having.Length > 0 )
+            {
+                query += " HAVING ";
+
+                for( int i = 0 ; i < having.Length ; i++ )
+                {
+                    if( i != 0 )
+                        query += ", ";
+
+                    query += having[ i ];
+                }
+            }
+
+            if( limit != 0 )
+                query += " LIMIT " + limit;
+
+            if( offset != 0 )
+                query += " OFFSET " + offset;
+
+            query += ";";
+
+            return ExecuteScalarQuery( query );
+        }
+        public MySqlDataReader Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+        {
+
+        }
     }
 }
