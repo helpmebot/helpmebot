@@ -68,7 +68,7 @@ namespace helpmebot6
                 }
                 else
                 {
-                    return Configuration.singleton.GetMessage( "fetchFaqTextNotFound", id.ToString( ) );
+                    return Configuration.Singleton().GetMessage( "fetchFaqTextNotFound", id.ToString( ) );
                 }
             }
             catch ( Exception ex )
@@ -112,7 +112,7 @@ namespace helpmebot6
                 }
                 else
                 {
-                    return Configuration.singleton.GetMessage( "fetchFaqTextNotFound", searchTerm );
+                    return Configuration.Singleton().GetMessage( "fetchFaqTextNotFound", searchTerm );
                 }
             }
             catch ( Exception ex )

@@ -26,8 +26,14 @@ namespace helpmebot6
     {
         DAL dbal = DAL.Singleton();
 
-        public static Configuration singleton;
-        public Configuration(  )
+        private static Configuration _singleton;
+        public static Configuration Singleton( )
+        {
+            if( _singleton == null )
+                _singleton = new Configuration( );
+            return _singleton;
+        }
+        protected Configuration(  )
         {
             configurationCache = new System.Collections.ArrayList( );
         }

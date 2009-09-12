@@ -27,7 +27,7 @@ namespace helpmebot6
 
         private bool _overrideBotSilence = false;
 
-        Configuration config = Configuration.singleton;
+        Configuration config = Configuration.Singleton();
 
         public delegate void CommandEventHandler( User source, string destination , string command, string[ ] args );
         public event CommandEventHandler CommandRecievedEvent;
@@ -95,7 +95,7 @@ namespace helpmebot6
             string wordResponse =WordLearner.Remember(command);
             if ( wordResponse != string.Empty )
             {
-                wordResponse = string.Format( wordResponse, Configuration.singleton.retrieveStringOption( "wikiUrl" ) );
+                wordResponse = string.Format( wordResponse, Configuration.Singleton().retrieveStringOption( "wikiUrl" ) );
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
 

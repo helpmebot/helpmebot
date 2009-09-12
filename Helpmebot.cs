@@ -63,8 +63,7 @@ namespace helpmebot6
 
            dbal.Connect( );
 
-           Configuration.singleton = new Configuration( );
-           config = Configuration.singleton;
+           config = Configuration.Singleton();
 
            string Nickname, Username, Realname, Password, Server;
            uint Port;

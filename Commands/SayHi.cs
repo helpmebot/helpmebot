@@ -11,7 +11,7 @@ namespace helpmebot6.Commands
         {
             IAL.singleton.IrcPrivmsg(
                 destination ,
-                Configuration.singleton.GetMessage( "cmdSayHi1" ,
+                Configuration.Singleton().GetMessage( "cmdSayHi1" ,
                     toUser
                     )
                 );
