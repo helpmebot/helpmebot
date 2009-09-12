@@ -13,12 +13,12 @@ namespace helpmebot6.Commands
             accessLevel = User.userRights.Normal;
         }
 
-       override void execute( string toUser , string destination )
+       protected override void execute( User toUser , string destination, string[] args )
         {
             IAL.singleton.IrcPrivmsg(
                 destination ,
                 Configuration.Singleton().GetMessage( "cmdSayHi1" ,
-                    toUser
+                    toUser.Nickname
                     )
                 );
 

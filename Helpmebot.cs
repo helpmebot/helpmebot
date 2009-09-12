@@ -103,14 +103,23 @@ namespace helpmebot6
                 }
                 else
                 {
-                    if ( message.Substring( 0, 1 ) == Trigger )
+                    if( message.Substring( 0 , 1 ) == Trigger )
                     {
                         message = message.Substring( 1 );
 
-                        if ( message.Split( ' ' )[ 0 ] == irc.IrcNickname.ToLower( ) )
-                        {
+                        string[] messageWords = message.Split( ' ' );
 
+                        if( messageWords[ 0 ] == irc.IrcNickname.ToLower( ) )
+                        {
+                            cmd.overrideBotSilence = true;
+                            messageWords = ( string.Join( " " , messageWords , 1 , messageWords.Length - 1 ) ).Split( ' ' );
                         }
+
+                        string command = messageWords[ 0 ];
+                        string[] commandArgs = ( string.Join( " " , messageWords , 1 , messageWords.Length - 1 ) ).Split( ' ' );
+
+
+                        cmd.CommandParser_CommandRecievedEvent( source , destination , command , commandArgs );
                     }
                     else
                     {
@@ -120,6 +129,8 @@ namespace helpmebot6
                         // !helpmebot helpme
                         // or:
                         // !helpme
+
+
                     }
                 }
             }

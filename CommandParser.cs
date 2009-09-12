@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Reflection;
 
 namespace helpmebot6
 {
@@ -85,16 +86,18 @@ namespace helpmebot6
 
         public void CommandParser_CommandRecievedEvent( User source, string destination, string command, string[ ] args )
         {
-            if ( source.AccessLevel == User.userRights.Ignored )
-            {
-                Console.WriteLine( "IGNORED MESSAGE FROM " + source.ToString( ) + " COMMAND " + command + " TO " + destination + " ARGS " + string.Join( " ", args ) );
-                return;
-            }
-
             // Check for a learned word
             string wordResponse =WordLearner.Remember(command);
             if ( wordResponse != string.Empty )
             {
+                if( source.AccessLevel < User.userRights.Normal )
+                {
+                    IAL.singleton.IrcPrivmsg( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+                    string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
+                    IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+                    return;
+                }
+
                 wordResponse = string.Format( wordResponse, Configuration.Singleton().retrieveStringOption( "wikiUrl" ) );
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
@@ -104,7 +107,7 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    new Commands.SayHi( ).run( source , destination , new object[ 0 ] );
+                    new Commands.SayHi( ).run( source , destination , new string[ 0 ] );
                     break;
                 case "faq":
                     command = GlobalFunctions.popFromFront(ref args);

@@ -9,9 +9,9 @@ namespace helpmebot6.Commands
 
       public User.userRights accessLevel = User.userRights.Normal;
 
-       public void run( User source, string destination, object[ ] args )
+       public void run( User source, string destination, string[ ] args )
        {
-           if( User.userRights < accessLevel )
+           if( source.AccessLevel < accessLevel )
            {
                IAL.singleton.IrcPrivmsg( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
                string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
@@ -23,6 +23,6 @@ namespace helpmebot6.Commands
            }
        }
 
-       abstract void execute( User source , string destination , string[ ] args );
+      protected abstract void execute( User source , string destination , string[ ] args );
     }
 }
