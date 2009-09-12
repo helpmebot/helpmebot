@@ -86,6 +86,11 @@ namespace helpmebot6
 
         public void CommandParser_CommandRecievedEvent( User source, string destination, string command, string[ ] args )
         {
+            // if on ignore list, ignore!
+            if( source.AccessLevel == User.userRights.Ignored )
+                return;
+
+
             // Check for a learned word
             string wordResponse =WordLearner.Remember(command);
             if ( wordResponse != string.Empty )
@@ -107,11 +112,14 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    new Commands.SayHi( ).run( source , destination , new string[ 0 ] );
+                    new Commands.SayHi( ).run( source , destination , args );
                     break;
                 case "faq":
                     command = GlobalFunctions.popFromFront(ref args);
                     FaqCommandRecievedEvent( source, destination, command, args );
+                    break;
+                case "messagecount":
+                    new Commands.MessageCount( ).run( source , destination , args );
                     break;
                 default:
                     break;

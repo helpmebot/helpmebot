@@ -128,7 +128,7 @@ namespace helpmebot6
 
         private ArrayList getMessages( string messageName )
         {
-            MySql.Data.MySqlClient.MySqlDataReader dr =  dbal.ExecuteReaderQuery( "SELECT m.`message_text` FROM message m WHERE m.`message_name` = 'cmdSayHi1';" );
+            MySql.Data.MySqlClient.MySqlDataReader dr =  dbal.ExecuteReaderQuery( "SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
 
             System.Collections.ArrayList al = new System.Collections.ArrayList( );
             

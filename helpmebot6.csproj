@@ -70,6 +70,7 @@
   -->
   <ItemGroup>
     <Compile Include="Commands\GenericCommand.cs" />
+    <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\SayHi.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
