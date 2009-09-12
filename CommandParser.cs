@@ -104,7 +104,7 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    this.SayHi( source.Nickname, destination );
+                    Commands.SayHi.execute( source.Nickname , destination );
                     break;
                 case "faq":
                     command = GlobalFunctions.popFromFront(ref args);
@@ -116,16 +116,6 @@ namespace helpmebot6
         }
 
 
-
-        public void SayHi( string toUser, string destination )
-        {
-            IAL.singleton.IrcPrivmsg( 
-                destination, 
-                Configuration.singleton.GetMessage("cmdSayHi1", 
-                    toUser
-                    )
-                );
-        }
 
     }
 }

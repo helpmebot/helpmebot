@@ -7,11 +7,15 @@ namespace helpmebot6.Commands
 {
     class SayHi
     {
-        static string execute()
+        public static void execute( string toUser , string destination )
         {
-            return Configuration.singleton.GetMessage( "cmdSayHi1" ,
+            IAL.singleton.IrcPrivmsg(
+                destination ,
+                Configuration.singleton.GetMessage( "cmdSayHi1" ,
                     toUser
-                    );
+                    )
+                );
+
 
         }
     }
