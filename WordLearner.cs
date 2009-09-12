@@ -29,7 +29,10 @@ namespace helpmebot6
 
         public static string Remember( string word )
         {
-            string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
+            string[] whereconds = {"keyword_name = \""+word+"\""};
+            string result = DAL.Singleton( ).Select("keyword_response","keywords",new DAL.join[0],whereconds,new string[0],new DAL.order[0],new string[0],0,0);
+
+          //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
             return result;
         }
 

@@ -90,7 +90,9 @@ namespace helpmebot6
             string result = "";
             try
             {
-                result = dbal.ExecuteScalarQuery( "SELECT c.`configuration_value` FROM configuration c WHERE c.`configuration_name` = \"" + optionName + "\" LIMIT 1;" );
+                string[] whereclause = {"configuration_name = \""+optionName+"\""};
+                result = dbal.Select( "configuration_value" , "configuration" , new DAL.join[ 0 ] , whereclause , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
+                //result = dbal.ExecuteScalarQuery( "SELECT c.`configuration_value` FROM configuration c WHERE c.`configuration_name` = \"" + optionName + "\" LIMIT 1;" );
                 if ( result == null )
                 {
                     result = "";

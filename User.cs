@@ -143,8 +143,11 @@ namespace helpmebot6
                     if ( _retrieved_accessLevel == false )
                     {
                         string qry = "SELECT u.`user_accesslevel` FROM `user` u WHERE '" + _nickname + "' LIKE u.`user_nickname` AND '" + _username + "' LIKE u.`user_username` AND '" + _hostname + "' LIKE u.`user_hostname` ORDER BY u.`user_accesslevel` LIMIT 1;";
-
-                        string accesslevel = db.ExecuteScalarQuery( qry ).ToString( );
+                        string[] whereconds = {};
+                        DAL.order[] ob = { new DAL.order() };
+                        ob[0].asc=true;
+                        ob[0].column = "user_accesslevel";
+                        string accesslevel = db.Select("user_accesslevel","user",new DAL.join[0],whereconds,new string[0],ob,new string[0],1,0).ToString( );
                         if ( accesslevel == null )
                         {
                             accesslevel = "Normal";

@@ -64,7 +64,7 @@ namespace helpmebot6
             _connection.Open( );
         }
 
-        private void ExecuteNonQuery( string query )
+        public void ExecuteNonQuery( string query )
         {
             try
             {
@@ -110,7 +110,7 @@ namespace helpmebot6
             return ret;
         }
 
-        private MySqlDataReader ExecuteReaderQuery( string query )
+        public MySqlDataReader ExecuteReaderQuery( string query )
         {
             try
             {
@@ -141,7 +141,7 @@ namespace helpmebot6
 
         public struct join
         {
-            public joinTypes joinType = joinTypes.INNER;
+            public joinTypes joinType;
             public string table;
             public string joinConditions;
         }
@@ -219,7 +219,7 @@ namespace helpmebot6
                     if( i != 0 )
                         query += ", ";
 
-                    query += orderby[ i ].column + orderby[i].asc ? " ASC" : " DESC";
+                    query += orderby[ i ].column + (orderby[i].asc ? " ASC" : " DESC");
 
                 }
             }
@@ -245,11 +245,13 @@ namespace helpmebot6
 
             query += ";";
 
-            return ExecuteScalarQuery( query );
-        }
-        public MySqlDataReader Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
-        {
+            string result = ExecuteScalarQuery( query );
 
+            return result;
         }
+        //public MySqlDataReader Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+        //{
+
+        //}
     }
 }
