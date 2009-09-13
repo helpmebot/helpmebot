@@ -626,6 +626,12 @@ namespace helpmebot6
                 case "VERSION":
                     CtcpReply( source.Nickname, "VERSION", this.ClientVersion );
                     break;
+                case "TIME":
+                    CtcpReply(source.Nickname, "TIME", DateTime.Now.ToString();
+                    break;
+                case "PING":
+                    CtcpReply( source.Nickname , "PONG" , message );
+                    break;
                 default:
                     break;
             }
