@@ -621,7 +621,7 @@ namespace helpmebot6
         void IAL_CtcpEvent( User source, string destination, string message )
         {
             Console.WriteLine( ">>>>> CTCP EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
-            switch ( message )
+            switch ( message.Split(' ')[0] )
             {
                 case "VERSION":
                     CtcpReply( source.Nickname, "VERSION", this.ClientVersion );
@@ -630,7 +630,7 @@ namespace helpmebot6
                     CtcpReply( source.Nickname , "TIME" , DateTime.Now.ToString( ) );
                     break;
                 case "PING":
-                    CtcpReply( source.Nickname , "PONG" , message );
+                    CtcpReply( source.Nickname , "PONG" , message.Split(' ')[1] );
                     break;
                 default:
                     break;
