@@ -32,12 +32,10 @@ namespace helpmebot6
 
         public delegate void CommandEventHandler( User source, string destination , string command, string[ ] args );
         public event CommandEventHandler CommandRecievedEvent;
-        public event CommandEventHandler FaqCommandRecievedEvent;
 
         public CommandParser( )
         {
             CommandRecievedEvent += new CommandEventHandler( CommandParser_CommandRecievedEvent );
-            FaqCommandRecievedEvent += new CommandEventHandler( CommandParser_FaqCommandRecievedEvent );
         }
 
         public bool overrideBotSilence
@@ -49,38 +47,6 @@ namespace helpmebot6
             set
             {
                 _overrideBotSilence = value;
-            }
-        }
-
-        void CommandParser_FaqCommandRecievedEvent( User source, string destination, string command, string[ ] args )
-        {
-            NubioApi faqRepo = new NubioApi( new Uri( config.retrieveGlobalStringOption( "faqApiUri" ) ) );
-            string result;
-            switch ( command )
-            {
-                case "search":
-                    result = faqRepo.searchFaq( string.Join( " ", args ) );
-                    if ( result != null )
-                    {
-                        IAL.singleton.IrcPrivmsg( destination, result );
-                    }
-                    break;
-                case "fetch":
-                    result = faqRepo.fetchFaqText( int.Parse( args[ 0 ] ) );
-                    if ( result != null )
-                    {
-                        IAL.singleton.IrcPrivmsg( destination, result );
-                    }
-                    break;
-                case "link":
-                    result = faqRepo.viewLink( int.Parse( args[ 0 ] ) );
-                    if ( result != null )
-                    {
-                        IAL.singleton.IrcPrivmsg( destination, result );
-                    }
-                    break;
-                default:
-                    break;
             }
         }
 
@@ -115,8 +81,7 @@ namespace helpmebot6
                     new Commands.SayHi( ).run( source , destination , args, command );
                     break;
                 case "faq":
-                    command = GlobalFunctions.popFromFront(ref args);
-                    FaqCommandRecievedEvent( source, destination, command, args );
+                    new Commands.Faq( ).run( source , destination , args , command );
                     break;
                 case "messagecount":
                     new Commands.MessageCount( ).run( source , destination , args , command );
