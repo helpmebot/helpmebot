@@ -630,7 +630,7 @@ namespace helpmebot6
                     CtcpReply( source.Nickname , "TIME" , DateTime.Now.ToString( ) );
                     break;
                 case "PING":
-                    CtcpReply( source.Nickname , "PONG" , message.Split(' ')[1] );
+                    CtcpReply( source.Nickname , "PING" , message.Split(' ')[1] );
                     break;
                 default:
                     break;
