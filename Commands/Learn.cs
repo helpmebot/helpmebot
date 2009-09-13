@@ -35,7 +35,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            if( args.Length > 2 )
+            if( args.Length >= 2 )
             {
                 WordLearner.Learn( args[ 0 ] , string.Join( " " , args , 1 , args.Length - 1 ) );
                 IAL.singleton.IrcNotice( source.Nickname , "Done." );

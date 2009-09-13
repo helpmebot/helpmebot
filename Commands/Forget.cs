@@ -35,7 +35,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            if( args.Length > 1 )
+            if( args.Length >= 1 )
             {
                 WordLearner.Forget( args[ 0 ] );
                 IAL.singleton.IrcNotice( source.Nickname , "Done." );
