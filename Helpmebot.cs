@@ -68,16 +68,16 @@ namespace helpmebot6
            string Nickname, Username, Realname, Password, Server;
            uint Port;
            bool Wallops, Invisible;
-           Nickname = config.retrieveStringOption( "ircNickname" );
-           Username = config.retrieveStringOption( "ircUsername" );
-           Realname = config.retrieveStringOption( "ircRealname" );
-           Password = config.retrieveStringOption( "ircPassword" );
-           Port = config.retrieveUintOption( "ircServerPort" );
-           Server = config.retrieveStringOption( "ircServerHost" );
+           Nickname = config.retrieveGlobalStringOption( "ircNickname" );
+           Username = config.retrieveGlobalStringOption( "ircUsername" );
+           Realname = config.retrieveGlobalStringOption( "ircRealname" );
+           Password = config.retrieveGlobalStringOption( "ircPassword" );
+           Port = config.retrieveGlobalUintOption( "ircServerPort" );
+           Server = config.retrieveGlobalStringOption( "ircServerHost" );
            Wallops = false;
            Invisible = false;
 
-           Trigger = config.retrieveStringOption( "commandTrigger" );
+           Trigger = config.retrieveGlobalStringOption( "commandTrigger" );
 
            IAL.singleton = new IAL( Nickname, Username, Realname, Password, Server, Port, Wallops, Invisible );
            irc = IAL.singleton;
@@ -86,8 +86,20 @@ namespace helpmebot6
 //           cmd = CommandParser.singleton;
 
            irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( JoinChannels );
+
+           irc.JoinEvent += new IAL.JoinEventHandler( welcomeNewbieOnJoinEvent );
+
            irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( RecievedMessage );
            irc.Connect( );
+       }
+
+       static void welcomeNewbieOnJoinEvent( User source , string channel )
+       {
+           if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie" , channel ) == "true" )
+           {
+               string[ ] cmdArgs = { source.Nickname , channel };
+               IAL.singleton.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
+           }
        }
 
         static void RecievedMessage( User source, string destination, string message )
@@ -142,7 +154,7 @@ namespace helpmebot6
 
         static void JoinChannels( )
         {
-            debugChannel = config.retrieveStringOption( "channelDebug" );
+            debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
             
             MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery("SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1;");

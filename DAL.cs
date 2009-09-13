@@ -83,7 +83,7 @@ namespace helpmebot6
             }
         }
 
-        private string ExecuteScalarQuery( string query )
+        public string ExecuteScalarQuery( string query )
         {
             object result = null;
             try

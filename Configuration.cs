@@ -41,7 +41,7 @@ namespace helpmebot6
 
         System.Collections.ArrayList configurationCache;
 
-        public string retrieveStringOption( string optionName )
+        public string retrieveGlobalStringOption( string optionName )
         {
           
             foreach ( ConfigurationSetting s in configurationCache )
@@ -76,9 +76,9 @@ namespace helpmebot6
                 return optionValue2;
             
         }
-        public uint retrieveUintOption( string optionName )
+        public uint retrieveGlobalUintOption( string optionName )
         {
-            string optionValue = retrieveStringOption( optionName );
+            string optionValue = retrieveGlobalStringOption( optionName );
             uint value;
             try
             {
@@ -89,6 +89,16 @@ namespace helpmebot6
                 return 0;
             }
             return value;
+        }
+
+        public string retrieveLocalStringOption (string optionName, string channel)
+        {
+            string qry = "SELECT `cc_value` AS 'value' FROM `channelconfig` INNER JOIN `configuration` ON `cc_config` = " +
+            "`configuration_id` INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '" + channel + "' " +
+            "AND `configuration_name` = '" + optionName + "' UNION SELECT `configuration_value` AS 'value' FROM " +
+            "`configuration` WHERE `configuration_name` = '" + optionName + "' LIMIT 1;";
+
+            string option = DAL.Singleton( ).ExecuteScalarQuery( qry );
         }
 
         private string retrieveOptionFromDatabase( string optionName )

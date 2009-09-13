@@ -54,7 +54,7 @@ namespace helpmebot6
 
         void CommandParser_FaqCommandRecievedEvent( User source, string destination, string command, string[ ] args )
         {
-            NubioApi faqRepo = new NubioApi( new Uri( config.retrieveStringOption( "faqApiUri" ) ) );
+            NubioApi faqRepo = new NubioApi( new Uri( config.retrieveGlobalStringOption( "faqApiUri" ) ) );
             string result;
             switch ( command )
             {
@@ -97,13 +97,13 @@ namespace helpmebot6
             {
                 if( source.AccessLevel < User.userRights.Normal )
                 {
-                    IAL.singleton.IrcPrivmsg( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+                    IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
                     string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
-                    IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+                    IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
                     return;
                 }
 
-                wordResponse = string.Format( wordResponse, Configuration.Singleton().retrieveStringOption( "wikiUrl" ) );
+                wordResponse = string.Format( wordResponse, Configuration.Singleton().retrieveGlobalStringOption( "wikiUrl" ) );
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
 
@@ -112,14 +112,14 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    new Commands.SayHi( ).run( source , destination , args );
+                    new Commands.SayHi( ).run( source , destination , args, command );
                     break;
                 case "faq":
                     command = GlobalFunctions.popFromFront(ref args);
                     FaqCommandRecievedEvent( source, destination, command, args );
                     break;
                 case "messagecount":
-                    new Commands.MessageCount( ).run( source , destination , args );
+                    new Commands.MessageCount( ).run( source , destination , args , command );
                     break;
                 default:
                     break;

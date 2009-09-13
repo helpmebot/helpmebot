@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-namespace helpmebot6.Commands
+﻿namespace helpmebot6.Commands
 {
    abstract class GenericCommand
     {
 
       public User.userRights accessLevel = User.userRights.Normal;
 
-       public void run( User source, string destination, string[ ] args )
+       public void run( User source, string destination, string[ ] args , string command)
        {
            if( source.AccessLevel < accessLevel )
            {
-               IAL.singleton.IrcPrivmsg( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
-               string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
-               IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+               IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+               string[ ] aDArgs = { source.ToString( ) , "helpmebot6.Commands." + command };
+               IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
            }
            else
            {
