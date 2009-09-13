@@ -58,5 +58,26 @@ namespace helpmebot6.Monitoring
             MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery("");
 
         }
+
+      public void forceUpdate( string key )
+      {
+          foreach( CategoryWatcher item in watchers )
+          {
+              if( item.ToString( ) == key )
+              {
+                  DotNetWikiBot.PageList list = item.doCategoryCheck( );
+                  if( list.Count( ) > 0 )
+                  { // items in cat
+                      
+                  }
+                  else
+                  { // nothing in cat, report anyway
+
+                  }
+
+                  break;
+              }
+          }
+      }
     }
 }

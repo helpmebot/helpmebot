@@ -8,7 +8,28 @@ namespace helpmebot6.Commands
     {
         public MessageCount( )
         {
-            accessLevel = User.userRights.Superuser;
+            string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , "command = \"messagecount\"" , null , null , null , 1 , 0 );
+            switch( al )
+            {
+                case "Superuser":
+                    accessLevel = User.userRights.Superuser;
+                    break;
+                case "Advanced":
+                    accessLevel = User.userRights.Advanced;
+                    break;
+                case "Normal":
+                    accessLevel = User.userRights.Normal;
+                    break;
+                case "Semi-ignored":
+                    accessLevel = User.userRights.Semiignored;
+                    break;
+                case "Ignored":
+                    accessLevel = User.userRights.Ignored;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException( );
+                    break;
+            }
         }
 
         protected override void execute( User source , string destination , string[ ] args )
