@@ -133,6 +133,9 @@ namespace helpmebot6
                 case "forget":
                     new Commands.Forget( ).run( source , destination , args , command );
                     break;
+                case "join":
+                    new Commands.Join( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }

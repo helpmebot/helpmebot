@@ -85,13 +85,28 @@ namespace helpmebot6
 //           CommandParser.singleton = new CommandParser( );
 //           cmd = CommandParser.singleton;
 
+           SetupEvents( );
+
+           irc.Connect( );
+       }
+
+       static void SetupEvents( )
+       {
            irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( JoinChannels );
 
            irc.JoinEvent += new IAL.JoinEventHandler( welcomeNewbieOnJoinEvent );
 
            irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( RecievedMessage );
-           irc.Connect( );
+
+           irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
        }
+
+       static void irc_InviteEvent( User source , string nickname , string channel )
+       {
+           string[ ] args = { channel };
+           new Commands.Join( ).run( source , null , args , "join" );
+       }
+
 
        static void welcomeNewbieOnJoinEvent( User source , string channel )
        {
