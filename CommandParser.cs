@@ -127,6 +127,9 @@ namespace helpmebot6
                 case "die":
                     new Commands.Die( ).run( source , destination , args , command );
                     break;
+                case "learn":
+                    new Commands.Learn( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }
