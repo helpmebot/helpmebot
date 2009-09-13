@@ -738,7 +738,7 @@ namespace helpmebot6
                     QuitEvent( source, parameters );
                     break;
                 case "JOIN":
-                    JoinEvent( source, parameters );
+                    JoinEvent( source, parameters.Substring(1) );
                     break;
                 case "PART":
                     PartEvent( source, parameters.Split( ' ' )[ 0 ], parameters.Split( colonSeparator, 2 )[ 1 ] );

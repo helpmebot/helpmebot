@@ -99,6 +99,8 @@ namespace helpmebot6
             "`configuration` WHERE `configuration_name` = '" + optionName + "' LIMIT 1;";
 
             string option = DAL.Singleton( ).ExecuteScalarQuery( qry );
+            return option;
+            
         }
 
         private string retrieveOptionFromDatabase( string optionName )
