@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using helpmebot6;
 
 namespace helpmebot6.Commands
 {
-    class SayHi : GenericCommand
+    class Die : GenericCommand
     {
-
-        public SayHi( )
+        public Die( )
         {
-            string[ ] wc = { "command = \"sayhi\""};
+            string[ ] wc = { "command = \"die\"" };
             string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc , null , null , null , 1 , 0 );
             switch( al )
             {
@@ -35,16 +33,9 @@ namespace helpmebot6.Commands
             }
         }
 
-       protected override void execute( User toUser , string destination, string[] args )
+        protected override void execute( User source , string destination , string[ ] args )
         {
-            IAL.singleton.IrcPrivmsg(
-                destination ,
-                Configuration.Singleton().GetMessage( "cmdSayHi1" ,
-                    toUser.Nickname
-                    )
-                );
-
-
-        }
+            IAL.singleton.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , source.Nickname ) );
+        } 
     }
 }

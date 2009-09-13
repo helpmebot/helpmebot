@@ -8,7 +8,8 @@ namespace helpmebot6.Commands
     {
         public MessageCount( )
         {
-            string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , "command = \"messagecount\"" , null , null , null , 1 , 0 );
+            string[ ] wc = { "command = \"messagecount\"" };
+            string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc, null , null , null , 1 , 0 );
             switch( al )
             {
                 case "Superuser":

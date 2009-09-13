@@ -121,6 +121,12 @@ namespace helpmebot6
                 case "messagecount":
                     new Commands.MessageCount( ).run( source , destination , args , command );
                     break;
+                case "set":
+                    new Commands.Set( ).run( source , destination , args , command );
+                    break;
+                case "die":
+                    new Commands.Die( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }

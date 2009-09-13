@@ -154,100 +154,121 @@ namespace helpmebot6
 
         public string Select( string select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
         {
-            string query = "SELECT " + select + " FROM " + from;
-
-            foreach( join item in joinConds )
+            try
             {
-                switch( item.joinType )
+                string query = "SELECT " + select + " FROM " + from;
+
+                if( joinConds != null )
                 {
-                    case joinTypes.INNER:
-                        query += " INNER JOIN ";
-                        break;
-                    case joinTypes.LEFT:
-                        query += " LEFT OUTER JOIN ";
-                        break;
-                    case joinTypes.RIGHT:
-                        query += " RIGHT OUTER JOIN ";
-                        break;
-                    case joinTypes.FULLOUTER:
-                        query += " FULL OUTER JOIN ";
-                        break;
-                    default:
-                        break;
+
+                    foreach( join item in joinConds )
+                    {
+                        switch( item.joinType )
+                        {
+                            case joinTypes.INNER:
+                                query += " INNER JOIN ";
+                                break;
+                            case joinTypes.LEFT:
+                                query += " LEFT OUTER JOIN ";
+                                break;
+                            case joinTypes.RIGHT:
+                                query += " RIGHT OUTER JOIN ";
+                                break;
+                            case joinTypes.FULLOUTER:
+                                query += " FULL OUTER JOIN ";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        query += item.table;
+
+                        if( item.joinConditions != "" )
+                        {
+                            query += " ON " + joinConds;
+                        }
+                    }
                 }
 
-                query += item.table;
-
-                if( item.joinConditions != "" )
+                if( where != null )
                 {
-                    query += " ON " + joinConds;
+                    if( where.Length > 0 )
+                    {
+                        query += " WHERE ";
+
+                        for( int i = 0 ; i < where.Length ; i++ )
+                        {
+                            if( i != 0 )
+                                query += ", ";
+
+                            query += where[ i ];
+                        }
+                    }
                 }
+                if( groupby != null )
+                {
+                    if( groupby.Length > 0 )
+                    {
+                        query += " GROUP BY ";
+
+                        for( int i = 0 ; i < groupby.Length ; i++ )
+                        {
+                            if( i != 0 )
+                                query += ", ";
+
+                            query += groupby[ i ];
+                        }
+                    }
+                }
+                if( orderby != null )
+                {
+                    if( orderby.Length > 0 )
+                    {
+                        query += " ORDER BY ";
+
+                        for( int i = 0 ; i < orderby.Length ; i++ )
+                        {
+                            if( i != 0 )
+                                query += ", ";
+
+                            query += orderby[ i ].column + ( orderby[ i ].asc ? " ASC" : " DESC" );
+
+                        }
+                    }
+                }
+                if( having != null )
+                {
+                    if( having.Length > 0 )
+                    {
+                        query += " HAVING ";
+
+                        for( int i = 0 ; i < having.Length ; i++ )
+                        {
+                            if( i != 0 )
+                                query += ", ";
+
+                            query += having[ i ];
+                        }
+                    }
+                }
+
+                if( limit != 0 )
+                    query += " LIMIT " + limit;
+
+                if( offset != 0 )
+                    query += " OFFSET " + offset;
+
+                query += ";";
+
+                string result = ExecuteScalarQuery( query );
+
+                return result;
             }
-
-            if( where.Length > 0 )
+            catch( Exception ex )
             {
-                query += " WHERE ";
-
-                for( int i = 0 ; i < where.Length ; i++ )
-                {
-                    if( i != 0 )
-                        query += ", ";
-
-                    query += where[ i ];
-                }
+                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                return "";
             }
-
-            if( groupby.Length > 0 )
-            {
-                query += " GROUP BY ";
-
-                for( int i = 0 ; i < groupby.Length ; i++ )
-                {
-                    if( i != 0 )
-                        query += ", ";
-
-                    query += groupby[ i ];
-                }
-            }
-
-            if( orderby.Length > 0 )
-            {
-                query += " ORDER BY ";
-
-                for( int i = 0 ; i < orderby.Length ; i++ )
-                {
-                    if( i != 0 )
-                        query += ", ";
-
-                    query += orderby[ i ].column + (orderby[i].asc ? " ASC" : " DESC");
-
-                }
-            }
-
-            if( having.Length > 0 )
-            {
-                query += " HAVING ";
-
-                for( int i = 0 ; i < having.Length ; i++ )
-                {
-                    if( i != 0 )
-                        query += ", ";
-
-                    query += having[ i ];
-                }
-            }
-
-            if( limit != 0 )
-                query += " LIMIT " + limit;
-
-            if( offset != 0 )
-                query += " OFFSET " + offset;
-
-            query += ";";
-
-            string result = ExecuteScalarQuery( query );
-
-            return result;
         }
         //public MySqlDataReader Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
         //{

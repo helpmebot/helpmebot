@@ -124,6 +124,50 @@ namespace helpmebot6
             return null;
         }
 
+        public void setGlobalOption( string optionName , string newValue )
+        {
+            dbal.ExecuteNonQuery( "UPDATE `configuration` SET `configuration_value` = '" + newValue + "' WHERE `configuration`.`configuration_name` = '" + optionName + "' LIMIT 1;" );
+        }
+        public void setLocalOption( string optionName , string channel , string newValue )
+        {
+            // convert channel to ID
+            string[] wc = {"channel_name = '" + channel + "'"};
+            string channelId = dbal.Select( "channel_id" , "channel" , null , wc , null , null , null , 1 , 0 );
+            string[ ] wc2 = {"configuration_name = '" + optionName + "'" };
+            string configId = dbal.Select( "configuration_id" , "configuration" , null , wc2 , null , null , null , 1 , 0 );
+
+            // does setting exist in local table?
+           //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
+
+            string[ ] wc3 = { "`cc_channel` = '" + channelId + "'" , "`cc_config` = '" + configId + "'" };
+            string count = dbal.Select( "COUNT(*)" , "channelconfig" , null , wc3 , null , null , null , 1 , 0 );
+
+            if( count == "1" )
+            {
+                //yes: update
+                string qry = "UPDATE `channelconfig` SET `cc_value` = '" + newValue + "' WHERE `channelconfig`.`cc_channel` =" + channelId + " AND `channelconfig`.`cc_config` =" + configId + " LIMIT 1 ;";
+                dbal.ExecuteNonQuery( qry );
+            }
+            else
+            {
+                // no: insert
+                string qry = "INSERT INTO `channelconfig` (`cc_channel`, `cc_config`, `cc_value`) VALUES ('" + channelId + "', '" + configId + "', '" + newValue + "');";
+                dbal.ExecuteNonQuery( qry );
+            }
+        }
+
+        public void setOption(  string optionName , string target , string newValue )
+        {
+            if( target == "global" )
+            {
+                setGlobalOption( optionName , newValue );
+            }
+            else
+            {
+                setLocalOption( optionName , target , newValue );
+            }
+        }
+
         public static void readHmbotConfigFile( string filename, 
                 ref string mySqlServerHostname, ref string mySqlUsername, 
                 ref string mySqlPassword, ref uint mySqlServerPort, 

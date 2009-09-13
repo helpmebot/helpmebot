@@ -69,9 +69,11 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="Commands\Die.cs" />
     <Compile Include="Commands\GenericCommand.cs" />
     <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\SayHi.cs" />
+    <Compile Include="Commands\Set.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
