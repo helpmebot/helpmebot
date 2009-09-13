@@ -30,6 +30,7 @@ namespace helpmebot6.Monitoring
         string _category;
         string _username;
         string _password;
+        string _key;
 
         Thread watcherThread;
 
@@ -41,12 +42,13 @@ namespace helpmebot6.Monitoring
 
         
 
-        public CategoryWatcher( string Category, string Site, string Username, string Password )
+        public CategoryWatcher( string Category, string Site, string Username, string Password, string Key )
         {
             _site = Site;
             _category = Category;
             _username = Username;
             _password = Password;
+            _key = Key;
 
             watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             watcherThread.Start( );
@@ -73,7 +75,7 @@ namespace helpmebot6.Monitoring
             }
         }
 
-        private DotNetWikiBot.PageList doCategoryCheck( )
+        public DotNetWikiBot.PageList doCategoryCheck( )
         {
             DotNetWikiBot.Site mw_instance = new DotNetWikiBot.Site(_site, _username, _password);
             DotNetWikiBot.PageList list = new DotNetWikiBot.PageList(mw_instance);
@@ -99,5 +101,12 @@ namespace helpmebot6.Monitoring
                 _sleepTime = value;
             }
         }
+
+        public override string ToString( )
+        {
+            return _key;
+        }
+
+        
     }
 }
