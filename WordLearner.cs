@@ -24,7 +24,7 @@ namespace helpmebot6
     {
         public static void Learn( string word, string phrase )
         {
-            DAL.Singleton().ExecuteNonQuery( "INSERT INTO `u_stwalkerster_hmb6`.`keywords` (`keyword_name`,`keyword_response`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\");" );
+            DAL.Singleton().ExecuteNonQuery( "INSERT INTO `keywords` (`keyword_name`,`keyword_response`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\");" );
         }
 
         public static string Remember( string word )
@@ -34,6 +34,11 @@ namespace helpmebot6
 
           //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
             return result;
+        }
+
+        public static void Forget( string word )
+        {
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `keywords` WHERE `keyword_name` = '" + word + "';" );
         }
 
     }

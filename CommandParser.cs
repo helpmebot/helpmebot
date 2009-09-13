@@ -130,6 +130,9 @@ namespace helpmebot6
                 case "learn":
                     new Commands.Learn( ).run( source , destination , args , command );
                     break;
+                case "forget":
+                    new Commands.Forget( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }

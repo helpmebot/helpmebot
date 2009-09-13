@@ -69,6 +69,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="Commands\Forget.cs" />
     <Compile Include="Commands\Die.cs" />
     <Compile Include="Commands\GenericCommand.cs" />
     <Compile Include="Commands\Learn.cs" />
