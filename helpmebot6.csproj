@@ -41,7 +41,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot</AssemblyName>
+    <AssemblyName>helpmebot6</AssemblyName>
     <RootNamespace>helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
@@ -54,7 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot</AssemblyName>
+    <AssemblyName>helpmebot6</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <RootNamespace>helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>

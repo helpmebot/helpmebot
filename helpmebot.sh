@@ -13,7 +13,7 @@ startbot()
 
 stopbot()
 {
-	PID=`ps -N -C "grep" -o pid,command | grep "bin/Debug/helpmebot6.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
+	PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
 	kill $PID 2> /dev/null
 }
 
@@ -39,7 +39,7 @@ case $1 in
 		startbot
 	;;
 	restart)
-		PID=`ps -N -C "grep" -o pid,command | grep "bin/Debug/helpmebot6.exe"  | awk -F" " '{ print $1 }' | tail -n 1`
+		PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
 		if [ "$PID" = "" ]; then
 			startbot	
         fi
