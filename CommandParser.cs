@@ -101,9 +101,14 @@ namespace helpmebot6
                 case "join":
                     new Commands.Join( ).run( source , destination , args , command );
                     break;
+                case "rights":
+                    new Commands.Rights( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }
+
+            
         }
 
 

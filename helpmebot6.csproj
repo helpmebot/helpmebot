@@ -76,6 +76,7 @@
     <Compile Include="Commands\Join.cs" />
     <Compile Include="Commands\Learn.cs" />
     <Compile Include="Commands\MessageCount.cs" />
+    <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\SayHi.cs" />
     <Compile Include="Commands\Set.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
