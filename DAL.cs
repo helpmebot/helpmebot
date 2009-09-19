@@ -199,7 +199,7 @@ namespace helpmebot6
                         for( int i = 0 ; i < where.Length ; i++ )
                         {
                             if( i != 0 )
-                                query += ", ";
+                                query += " AND ";
 
                             query += where[ i ];
                         }

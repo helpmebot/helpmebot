@@ -142,8 +142,7 @@ namespace helpmebot6
                 {
                     if ( _retrieved_accessLevel == false )
                     {
-                        string qry = "SELECT u.`user_accesslevel` FROM `user` u WHERE '" + _nickname + "' LIKE u.`user_nickname` AND '" + _username + "' LIKE u.`user_username` AND '" + _hostname + "' LIKE u.`user_hostname` ORDER BY u.`user_accesslevel` LIMIT 1;";
-                        string[] whereconds = {};
+                        string[] whereconds = {"'" + _nickname + "' LIKE user_nickname", "'" + _username + "' LIKE user_username","'" + _hostname + "' LIKE user_hostname" };
                         DAL.order[] ob = { new DAL.order() };
                         ob[0].asc=true;
                         ob[0].column = "user_accesslevel";
