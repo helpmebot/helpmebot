@@ -93,11 +93,11 @@
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DotNetWikiBot, Version=2.71.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="DotNetWikiBot">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\DotNetWikiBot.dll</HintPath>
+      <HintPath>DotNetWikiBot.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=5.2.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
+    <Reference Include="MySql.Data">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MySql.Data.dll</HintPath>
     </Reference>
