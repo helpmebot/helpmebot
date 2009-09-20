@@ -13,24 +13,33 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            string username = string.Join( " " , args );
-            string rights = getRights( username );
-
-
-            string message = "";
-            if( rights != "" )
+            if( args.Length > 0 )
             {
-                string[ ] messageParameters = { username , rights };
-                message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
 
+                string username = string.Join( " " , args );
+                string rights = getRights( username );
+
+
+                string message = "";
+                if( rights != "" )
+                {
+                    string[ ] messageParameters = { username , rights };
+                    message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
+
+                }
+                else
+                {
+                    message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , username );
+                }
+
+                IAL.singleton.IrcPrivmsg( destination , message );
             }
             else
             {
-                message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , username );
+                string[ ] messageParameters = { "rights" , "1" , args.Length.ToString() };
+                
+                IAL.singleton.IrcNotice( source.Nickname ,Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
-
-            IAL.singleton.IrcPrivmsg( destination , message );
-
         }
 
 
