@@ -104,6 +104,12 @@ namespace helpmebot6
                 case "rights":
                     new Commands.Rights( ).run( source , destination , args , command );
                     break;
+                case "count":
+                    new Commands.Count( ).run( source , destination , args , command );
+                    break;
+                case "registration":
+                    new Commands.Registration( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }

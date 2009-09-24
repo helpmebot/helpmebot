@@ -44,7 +44,7 @@ namespace helpmebot6.Commands
 
 
 
-        string getRights( string username )
+       public string getRights( string username )
         {
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
        
