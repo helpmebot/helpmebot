@@ -47,19 +47,14 @@ namespace helpmebot6.Commands
         string getRights( string username )
         {
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
-            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton( ).ExecuteReaderQuery( "SELECT `site_mainpage`, `site_username`, `site_password` FROM `site` WHERE `site_id` = "+baseWiki+";" );
-            dr.Read( );
-            string[] vals = new string[3];
-            dr.GetValues( vals );
-            dr.Close( );
-            GlobalFunctions.Log( "%% DNWB" );
-            DotNetWikiBot.Site mainWiki = new DotNetWikiBot.Site( vals[ 0 ] , vals[ 1 ] , vals[ 2 ] );
-            GlobalFunctions.Log( "%% DNWB END" );
+       
+            string spi = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+
 
             string returnStr = "";
             string rightsList;
             int rightsCount = 0;
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( mainWiki.site + mainWiki.indexPath + "api.php" + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username );
             do
                 creader.Read( );
             while( creader.Name != "user" );
