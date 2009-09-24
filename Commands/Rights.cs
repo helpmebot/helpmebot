@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
         {
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
        
-            string spi = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 
 
             string returnStr = "";
