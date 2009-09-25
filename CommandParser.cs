@@ -110,6 +110,9 @@ namespace helpmebot6
                 case "registration":
                     new Commands.Registration( ).run( source , destination , args , command );
                     break;
+                case "userinfo":
+                    new Commands.UserInfo( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }
