@@ -121,6 +121,7 @@
     <None Include="example-config.hmbot" />
     <None Include="helpmebot.sh" />
     <None Include="helpmebot6.sql" />
+    <None Include="SharpPlink-Win32.svnExe" />
     <None Include="svn-revision.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -156,6 +157,8 @@
     <Content Include="DotNetWikiBot.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SharpSvn-DB44-20-win32.dll" />
+    <Content Include="SharpSvn-Sasl21-23-win32.dll" />
     <Content Include="SharpSvn.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

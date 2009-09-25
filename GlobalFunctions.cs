@@ -120,7 +120,6 @@ namespace helpmebot6
                     break;
                 default:
                     throw new ArgumentOutOfRangeException( "Command not in commandlist" );
-                    break;
             }
             return accessLevel;
         }
