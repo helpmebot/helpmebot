@@ -109,7 +109,7 @@ namespace helpmebot6.Commands
             {
                 creader.Read( );
             } while( creader.Name != "rev" );
-            string mainpagename = creader.ReadContentAsString( );
+            string mainpagename = creader.ReadElementContentAsString( );
 
             mainpagename = mainpagename.Replace( " " , "_" );
            
@@ -137,7 +137,7 @@ namespace helpmebot6.Commands
             {
                 creader.Read( );
             } while( creader.Name != "rev" );
-            string mainpagename = creader.ReadContentAsString( );
+            string mainpagename = creader.ReadElementContentAsString( );
 
             mainpagename = mainpagename.Replace( " " , "_" );
 
@@ -165,7 +165,7 @@ namespace helpmebot6.Commands
             {
                 creader.Read( );
             } while( creader.Name != "rev" );
-            string mainpagename = creader.ReadContentAsString( );
+            string mainpagename = creader.ReadElementContentAsString( );
 
             mainpagename = mainpagename.Replace( " " , "_" );
 
