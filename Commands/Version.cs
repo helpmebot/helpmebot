@@ -38,9 +38,9 @@ namespace helpmebot6.Commands
 
             long rev = info.Revision;
 
-            long branch = info.Uri.PathAndQuery.Substring( info.Uri.PathAndQuery.LastIndexOf( '/' ) );
+            string branch = info.Uri.PathAndQuery.Substring( info.Uri.PathAndQuery.LastIndexOf( '/' ) );
 
-            string versionString = this.version + "-" + branch + "-r" + rev;
+            string versionString = this.version + "-" + branch + "-r" + rev.ToString();
 
             return versionString;
         }

@@ -180,7 +180,7 @@ namespace helpmebot6.Commands
 
             return mainpageurl.Replace( mainpagename , "Special:Contributions/" + userName );
         }
-        private string getBlockLogUrl( string username )
+        private string getBlockLogUrl( string userName )
         {
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
