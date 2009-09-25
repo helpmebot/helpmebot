@@ -14,10 +14,10 @@ namespace helpmebot6.Commands
     // usertalkpage         [calc]                  Done    Done
     // editcount            Commands.Count          Done    Done
     // registration date    Commands.Registration   Done    Done
-    // block log
+    // block log            [calc]                  Done    Done
     // block status
     // user groups          Commands.Rights         Done    Done
-    // editrate (edits/days) Commands.Age           Done 
+    // editrate (edits/days) Commands.Age           Done    Done
     class UserInfo : GenericCommand
     {
         public UserInfo( )
@@ -46,6 +46,7 @@ namespace helpmebot6.Commands
                 string userPageUrl = getUserPageUrl( userName );
                 string userTalkPageUrl = getUserTalkPageUrl( userName );
                 string userContributionsUrl = getUserContributionsUrl( userName );
+                string blockLogUrl = getBlockLogUrl( userName );
 
                 Age ageCommand = new Age( );
                 TimeSpan wikipedianAge = ageCommand.getWikipedianAge( userName );
@@ -61,6 +62,7 @@ namespace helpmebot6.Commands
                 irc.IrcNotice( source.Nickname , userPageUrl );
                 irc.IrcNotice( source.Nickname , userTalkPageUrl );
                 irc.IrcNotice( source.Nickname , userContributionsUrl );
+                irc.IrcNotice( source.Nickname , blockLogUrl );
 
                 string message = "";
                 if( userRights != "" )
@@ -178,6 +180,33 @@ namespace helpmebot6.Commands
 
             return mainpageurl.Replace( mainpagename , "Special:Contributions/" + userName );
         }
+        private string getBlockLogUrl( string username )
+        {
+            // look up site id
+            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
 
+            // get api
+            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+
+            // api-> get mainpage name (Mediawiki:mainpage)
+            string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiQuery );
+            do
+            {
+                creader.Read( );
+            } while( creader.Name != "rev" );
+            string mainpagename = creader.ReadElementContentAsString( );
+
+            mainpagename = mainpagename.Replace( " " , "_" );
+
+            // get mainpage url from site table
+            string mainpageurl = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+
+            // replace mainpage in mainpage url with user:<username>
+
+            userName = userName.Replace( " " , "_" );
+
+            return mainpageurl.Replace( mainpagename , "Special:Log?type=block&page=User:" + userName );
+        }
     }
 }
