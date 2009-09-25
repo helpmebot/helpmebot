@@ -108,7 +108,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="SharpSvn, Version=1.6003.1304.38397, Culture=neutral, PublicKeyToken=d729672594885a28, processorArchitecture=x86" />
+    <Reference Include="SharpSvn">
+      <HintPath>SharpSvn.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
