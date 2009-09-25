@@ -113,6 +113,9 @@ namespace helpmebot6
                 case "userinfo":
                     new Commands.UserInfo( ).run( source , destination , args , command );
                     break;
+                case "version":
+                    new Commands.Version( ).run( source , destination , args , command );
+                    break;
                 default:
                     break;
             }

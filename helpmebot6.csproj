@@ -84,6 +84,7 @@
     <Compile Include="Commands\SayHi.cs" />
     <Compile Include="Commands\Set.cs" />
     <Compile Include="Commands\UserInfo.cs" />
+    <Compile Include="Commands\Version.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="IAL.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="NubioApi.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
@@ -106,6 +108,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="SharpSvn, Version=1.6003.1304.38397, Culture=neutral, PublicKeyToken=d729672594885a28, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
@@ -149,6 +152,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DotNetWikiBot.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SharpSvn.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
