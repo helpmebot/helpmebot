@@ -98,6 +98,10 @@ namespace helpmebot6.Commands
 
         private string getUserPageUrl( string userName )
         {
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
             
@@ -126,6 +130,10 @@ namespace helpmebot6.Commands
         }
         private string getUserTalkPageUrl( string userName )
         {
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
 
@@ -154,6 +162,10 @@ namespace helpmebot6.Commands
         }
         private string getUserContributionsUrl( string userName )
         {
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
 
@@ -182,6 +194,10 @@ namespace helpmebot6.Commands
         }
         private string getBlockLogUrl( string userName )
         {
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
 

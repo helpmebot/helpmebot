@@ -46,6 +46,10 @@ namespace helpmebot6.Commands
 
        public string getRights( string username )
         {
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
        
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );

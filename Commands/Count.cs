@@ -34,7 +34,10 @@ namespace helpmebot6.Commands
 
         public int getEditCount( string username )
         {
-
+            if( username == string.Empty )
+            {
+                throw new ArgumentNullException( );
+            }
 
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
 
