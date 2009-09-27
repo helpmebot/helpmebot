@@ -98,7 +98,7 @@ namespace helpmebot6.Commands
 
         private string getUserPageUrl( string userName )
         {
-            if( username == string.Empty )
+            if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
@@ -130,7 +130,7 @@ namespace helpmebot6.Commands
         }
         private string getUserTalkPageUrl( string userName )
         {
-            if( username == string.Empty )
+            if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
@@ -162,7 +162,7 @@ namespace helpmebot6.Commands
         }
         private string getUserContributionsUrl( string userName )
         {
-            if( username == string.Empty )
+            if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
@@ -194,7 +194,7 @@ namespace helpmebot6.Commands
         }
         private string getBlockLogUrl( string userName )
         {
-            if( username == string.Empty )
+            if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
