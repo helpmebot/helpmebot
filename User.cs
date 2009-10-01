@@ -156,6 +156,9 @@ namespace helpmebot6
 
                         switch ( accesslevel )
                         {
+                            case "Developer":
+                                ret = userRights.Developer;
+                                break;
                             case "Superuser":
                                 ret = userRights.Superuser;
                                 break;
@@ -201,6 +204,7 @@ namespace helpmebot6
         
         public enum userRights
         {
+            Developer = 3,
             Superuser = 2,
             Advanced = 1,
             Normal = 0,
