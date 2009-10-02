@@ -58,10 +58,10 @@ namespace helpmebot6.Commands
 
                 //##################################################
 
-                irc.IrcPrivmsg( source.Nickname , userPageUrl );
-                irc.IrcPrivmsg( source.Nickname , userTalkPageUrl );
-                irc.IrcPrivmsg( source.Nickname , userContributionsUrl );
-                irc.IrcPrivmsg( source.Nickname , blockLogUrl );
+                irc.IrcPrivmsg( destination , userPageUrl );
+                irc.IrcPrivmsg( destination , userTalkPageUrl );
+                irc.IrcPrivmsg( destination , userContributionsUrl );
+                irc.IrcPrivmsg( destination , blockLogUrl );
 
                 string message = "";
                 if( userRights != "" )
@@ -74,18 +74,18 @@ namespace helpmebot6.Commands
                 {
                     message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userName );
                 }
-                irc.IrcPrivmsg( source.Nickname , message );
+                irc.IrcPrivmsg( destination , message );
 
                 string[ ] messageParameters2 = { editCount.ToString( ) , userName };
                 message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters2 );
-                irc.IrcPrivmsg( source.Nickname , message );
+                irc.IrcPrivmsg( destination , message );
 
                 string[ ] messageParameters3 = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
                 message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
-                irc.IrcPrivmsg( source.Nickname , message );
+                irc.IrcPrivmsg( destination , message );
                 string[ ] messageParameters4 = { userName , editRate.ToString( ) };
                 message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
-                irc.IrcPrivmsg( source.Nickname , message );
+                irc.IrcPrivmsg( destination , message );
             }
             else
             {
