@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
             {
                 string username = string.Join( " " , args );
                 TimeSpan time = getWikipedianAge( username );
-                string[ ] messageParameters = { username , time.Days , time.Hours , time.Minutes , time.Seconds };
+                string[ ] messageParameters = { username , time.Days.ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
                 string message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
                 IAL.singleton.IrcPrivmsg( destination , message );
             }
