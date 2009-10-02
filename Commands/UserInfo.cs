@@ -56,18 +56,17 @@ namespace helpmebot6.Commands
 
                 IAL irc = IAL.singleton;
 
-//##################################################
-                
+                //##################################################
 
-                irc.IrcNotice( source.Nickname , userPageUrl );
-                irc.IrcNotice( source.Nickname , userTalkPageUrl );
-                irc.IrcNotice( source.Nickname , userContributionsUrl );
-                irc.IrcNotice( source.Nickname , blockLogUrl );
+                irc.IrcPrivmsg( source.Nickname , userPageUrl );
+                irc.IrcPrivmsg( source.Nickname , userTalkPageUrl );
+                irc.IrcPrivmsg( source.Nickname , userContributionsUrl );
+                irc.IrcPrivmsg( source.Nickname , blockLogUrl );
 
                 string message = "";
                 if( userRights != "" )
                 {
-                  string[ ]  messageParameters = { userName , userRights };
+                    string[ ] messageParameters = { userName , userRights };
                     message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
 
                 }
@@ -75,18 +74,18 @@ namespace helpmebot6.Commands
                 {
                     message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userName );
                 }
-                irc.IrcNotice( source.Nickname , message );
+                irc.IrcPrivmsg( source.Nickname , message );
 
-               string[ ]  messageParameters2 = { editCount.ToString() , userName };
+                string[ ] messageParameters2 = { editCount.ToString( ) , userName };
                 message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters2 );
-                irc.IrcNotice( source.Nickname , message );
+                irc.IrcPrivmsg( source.Nickname , message );
 
-               string[] messageParameters3 = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
-                 message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
-                 irc.IrcNotice( source.Nickname , message );
-                 string[ ] messageParameters4 = { userName , editRate.ToString() };
-                 message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
-                 irc.IrcNotice( source.Nickname , message );
+                string[ ] messageParameters3 = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
+                message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
+                irc.IrcPrivmsg( source.Nickname , message );
+                string[ ] messageParameters4 = { userName , editRate.ToString( ) };
+                message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
+                irc.IrcPrivmsg( source.Nickname , message );
             }
             else
             {
