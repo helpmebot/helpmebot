@@ -23,7 +23,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[ ] messageParameters = { "learn" , "1" , args.Length.ToString( ) };
+                string[ ] messageParameters = { "learn" , "2" , args.Length.ToString( ) };
                 IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
         }
