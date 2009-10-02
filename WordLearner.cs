@@ -22,9 +22,14 @@ namespace helpmebot6
 {
     public class WordLearner
     {
-        public static void Learn( string word, string phrase )
+        public static bool Learn( string word, string phrase )
         {
+            string[] wc = {"keyword_name = \""+word+"\""};
+            if( DAL.Singleton( ).Select( "COUNT(*)" , "keywords" , null , wc , null , null , null , 1 , 0 ) != "0" )
+                return false;
+
             DAL.Singleton().ExecuteNonQuery( "INSERT INTO `keywords` (`keyword_name`,`keyword_response`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\");" );
+            return true;
         }
 
         public static string Remember( string word )
@@ -36,9 +41,14 @@ namespace helpmebot6
             return result;
         }
 
-        public static void Forget( string word )
+        public static bool Forget( string word )
         {
+            string[ ] wc = { "keyword_name = \"" + word + "\"" };
+            if( DAL.Singleton( ).Select( "COUNT(*)" , "keywords" , null , wc , null , null , null , 1 , 0 ) == "0" )
+                return false;
+
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `keywords` WHERE `keyword_name` = '" + word + "';" );
+            return true;
         }
 
     }
