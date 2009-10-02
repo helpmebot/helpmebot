@@ -116,6 +116,9 @@ namespace helpmebot6
                 case "version":
                     new Commands.Version( ).run( source , destination , args  );
                     break;
+                case "maxlag":
+                    new Commands.MaxLag( ).run( source , destination , args );
+                    break;
                 default:
                     break;
             }

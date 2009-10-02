@@ -78,6 +78,7 @@
     <Compile Include="Commands\GenericCommand.cs" />
     <Compile Include="Commands\Join.cs" />
     <Compile Include="Commands\Learn.cs" />
+    <Compile Include="Commands\MaxLag.cs" />
     <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\Registration.cs" />
     <Compile Include="Commands\Rights.cs" />
