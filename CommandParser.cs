@@ -78,43 +78,43 @@ namespace helpmebot6
             switch ( command )
             {
                 case "sayhi":
-                    new Commands.SayHi( ).run( source , destination , args, command );
+                    new Commands.SayHi( ).run( source , destination , args  );
                     break;
                 case "faq":
-                    new Commands.Faq( ).run( source , destination , args , command );
+                    new Commands.Faq( ).run( source , destination , args   );
                     break;
                 case "messagecount":
-                    new Commands.MessageCount( ).run( source , destination , args , command );
+                    new Commands.MessageCount( ).run( source , destination , args   );
                     break;
                 case "set":
-                    new Commands.Set( ).run( source , destination , args , command );
+                    new Commands.Set( ).run( source , destination , args   );
                     break;
                 case "die":
-                    new Commands.Die( ).run( source , destination , args , command );
+                    new Commands.Die( ).run( source , destination , args   );
                     break;
                 case "learn":
-                    new Commands.Learn( ).run( source , destination , args , command );
+                    new Commands.Learn( ).run( source , destination , args );
                     break;
                 case "forget":
-                    new Commands.Forget( ).run( source , destination , args , command );
+                    new Commands.Forget( ).run( source , destination , args );
                     break;
                 case "join":
-                    new Commands.Join( ).run( source , destination , args , command );
+                    new Commands.Join( ).run( source , destination , args  );
                     break;
                 case "rights":
-                    new Commands.Rights( ).run( source , destination , args , command );
+                    new Commands.Rights( ).run( source , destination , args  );
                     break;
                 case "count":
-                    new Commands.Count( ).run( source , destination , args , command );
+                    new Commands.Count( ).run( source , destination , args  );
                     break;
                 case "registration":
-                    new Commands.Registration( ).run( source , destination , args , command );
+                    new Commands.Registration( ).run( source , destination , args  );
                     break;
                 case "userinfo":
-                    new Commands.UserInfo( ).run( source , destination , args , command );
+                    new Commands.UserInfo( ).run( source , destination , args );
                     break;
                 case "version":
-                    new Commands.Version( ).run( source , destination , args , command );
+                    new Commands.Version( ).run( source , destination , args  );
                     break;
                 default:
                     break;

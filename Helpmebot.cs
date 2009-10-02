@@ -104,7 +104,7 @@ namespace helpmebot6
        static void irc_InviteEvent( User source , string nickname , string channel )
        {
            string[ ] args = { channel };
-           new Commands.Join( ).run( source , null , args , "join" );
+           new Commands.Join( ).run( source , null , args);
        }
 
 

@@ -103,6 +103,9 @@ namespace helpmebot6
             string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc , null , null , null , 1 , 0 );
             switch( al )
             {
+                case "Developer":
+                    accessLevel = User.userRights.Developer;
+                    break;
                 case "Superuser":
                     accessLevel = User.userRights.Superuser;
                     break;
