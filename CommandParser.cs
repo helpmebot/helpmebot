@@ -122,6 +122,9 @@ namespace helpmebot6
                 case "time":
                     new Commands.Time( ).run( source , destination , args );
                     break;
+                case "age":
+                    new Commands.Age( ).run( source , destination , args );
+                    break;
                 default:
                     break;
             }
