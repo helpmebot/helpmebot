@@ -69,7 +69,7 @@ namespace helpmebot6
                     return;
                 }
 
-                wordResponse = string.Format( wordResponse, Configuration.Singleton().retrieveGlobalStringOption( "wikiUrl" ) );
+                wordResponse = string.Format( wordResponse, args );
                 IAL.singleton.IrcPrivmsg( destination, wordResponse );
             }
 
