@@ -55,6 +55,9 @@ namespace helpmebot6
 
         int _messageCount = 0;
 
+
+        DateTime lastMessage = DateTime.Now;
+
         #endregion
 
         #region properties
@@ -155,6 +158,14 @@ namespace helpmebot6
             get
             {
                 return _messageCount;
+            }
+        }
+
+        public TimeSpan idleTime
+        {
+            get
+            {
+                return DateTime.Now.Subtract( lastMessage );
             }
         }
         #endregion
@@ -631,6 +642,9 @@ namespace helpmebot6
                     break;
                 case "PING":
                     CtcpReply( source.Nickname , "PING" , message.Split(' ')[1] );
+                    break;
+                case "FINGER":
+                    CtcpReply( source.Nickname , "FINGER" , this.IrcRealname + ", idle " + this.idleTime.ToString( ) );
                     break;
                 default:
                     break;
