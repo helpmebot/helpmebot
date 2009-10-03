@@ -56,8 +56,15 @@ namespace helpmebot6.Commands
             string apiRegDate = creader.GetAttribute( "registration" );
             if( apiRegDate != null )
             {
-                DateTime regDate = DateTime.Parse( apiRegDate );
-                return regDate;
+                if( apiRegDate == "" )
+                {
+                    return new DateTime( 1970 , 1 , 1 , 0 , 0 , 0 );
+                }
+                else
+                {
+                    DateTime regDate = DateTime.Parse( apiRegDate );
+                    return regDate;
+                }
             }
             else
             {
