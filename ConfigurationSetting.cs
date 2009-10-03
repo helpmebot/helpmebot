@@ -76,5 +76,9 @@ namespace helpmebot6
             }
         }
 
+        public override string ToString( )
+        {
+            return _settingName;
+        }
     }
 }

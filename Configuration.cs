@@ -69,10 +69,11 @@ namespace helpmebot6
            // option not found, add entry to cache
                 string optionValue2 = retrieveOptionFromDatabase( optionName );
 
-
-                ConfigurationSetting cachedSetting = new ConfigurationSetting( optionName, optionValue2 );
-                configurationCache.Add( cachedSetting );
-
+                if( optionValue2 != string.Empty )
+                {
+                    ConfigurationSetting cachedSetting = new ConfigurationSetting( optionName , optionValue2 );
+                    configurationCache.Add( cachedSetting );
+                }
                 return optionValue2;
             
         }
