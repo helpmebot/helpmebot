@@ -13,7 +13,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            string[ ] messageParams = { source.Nickname , DateTime.Now.ToLongDateString( ) , DateTime.Now.ToShortTimeString( ) };
+            string[ ] messageParams = { source.Nickname , DateTime.Now.DayOfWeek.ToString(),DateTime.Now.ToLongDateString( ) , DateTime.Now.ToLongTimeString( ) };
             string message = Configuration.Singleton( ).GetMessage( "cmdTime" , messageParams );
             IAL.singleton.IrcPrivmsg( destination , message );
         }
