@@ -84,6 +84,7 @@
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\SayHi.cs" />
     <Compile Include="Commands\Set.cs" />
+    <Compile Include="Commands\Time.cs" />
     <Compile Include="Commands\UserInfo.cs" />
     <Compile Include="Commands\Version.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
