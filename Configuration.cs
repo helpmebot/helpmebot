@@ -202,6 +202,11 @@ namespace helpmebot6
         {
             Random rnd = new Random( );
             ArrayList al = getMessages( messageName );
+            if( al.Count == 0 )
+            {
+                IAL.singleton.IrcPrivmsg( Helpmebot6.debugChannel , "***ERROR*** Message '" + messageName + "' not found in message table" );
+                return "";
+            }
             return al[ rnd.Next( 0, al.Count ) ].ToString( );
         }
 

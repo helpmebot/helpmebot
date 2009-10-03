@@ -17,11 +17,19 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join( " " , args );
                 DateTime registrationDate = getRegistrationDate( userName );
+                if( registrationDate == new DateTime( 0 ) )
+                {
+                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
+                    IAL.singleton.IrcPrivmsg( destination , message );
+                }
+                else
+                {
 
+                
                 string[ ] messageParameters = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
                 string message = Configuration.Singleton().GetMessage("registrationDate", messageParameters);
                 IAL.singleton.IrcPrivmsg( destination , message );
-            }
+            }}
             else
             {
                 string[ ] messageParameters = { "registration" , "1" , args.Length.ToString( ) };

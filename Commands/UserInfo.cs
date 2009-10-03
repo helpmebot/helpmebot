@@ -31,13 +31,20 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join( " " , args );
 
-                Rights rightsCommand = new Rights( );
-                string userRights = rightsCommand.getRights( userName );
-                rightsCommand = null;
 
                 Count countCommand = new Count( );
                 int editCount = countCommand.getEditCount( userName );
                 countCommand = null;
+
+                if( editCount == -1 )
+                {
+                    IAL.singleton.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
+                    return;
+                }
+
+                Rights rightsCommand = new Rights( );
+                string userRights = rightsCommand.getRights( userName );
+                rightsCommand = null;
 
                 Registration registrationCommand = new Registration( );
                 DateTime registrationDate = registrationCommand.getRegistrationDate( userName );

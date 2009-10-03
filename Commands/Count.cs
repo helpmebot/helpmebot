@@ -17,13 +17,21 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join( " " , args );
                 int editCount = getEditCount( userName );
+                if( editCount == -1 )
+                {
+                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
+                    IAL.singleton.IrcPrivmsg( destination , message );
+                }
+                else
+                {
 
-                string[ ] messageParameters = { editCount.ToString( ) , userName };
 
-                string message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters );
+                    string[ ] messageParameters = { editCount.ToString( ) , userName };
 
-                IAL.singleton.IrcPrivmsg( destination , message );
+                    string message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters );
 
+                    IAL.singleton.IrcPrivmsg( destination , message );
+                }
             }
             else
             {
@@ -56,7 +64,14 @@ namespace helpmebot6.Commands
             }
             else
             {
-                return 0;
+                if( creader.GetAttribute( "missing" ) == "" )
+                {
+                    return -1;
+                }
+                else
+                {
+                    throw new ArgumentException( );
+                }
             }
 
 
