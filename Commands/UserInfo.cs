@@ -31,68 +31,27 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join( " " , args );
 
+                UserInformation uInfo = new UserInformation( );
 
                 Count countCommand = new Count( );
-                int editCount = countCommand.getEditCount( userName );
+                uInfo.editCount= countCommand.getEditCount( userName );
                 countCommand = null;
 
-                if( editCount == -1 )
+                if( uInfo.editCount == -1 )
                 {
                     IAL.singleton.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
                     return;
                 }
 
-                Rights rightsCommand = new Rights( );
-                string userRights = rightsCommand.getRights( userName );
-                rightsCommand = null;
+                retrieveUserInformation( userName , ref uInfo );
+                
 
-                Registration registrationCommand = new Registration( );
-                DateTime registrationDate = registrationCommand.getRegistrationDate( userName );
-                registrationCommand = null;
-
-                string userPageUrl = getUserPageUrl( userName );
-                string userTalkPageUrl = getUserTalkPageUrl( userName );
-                string userContributionsUrl = getUserContributionsUrl( userName );
-                string blockLogUrl = getBlockLogUrl( userName );
-
-                Age ageCommand = new Age( );
-                TimeSpan wikipedianAge = ageCommand.getWikipedianAge( userName );
-                ageCommand = null;
-
-                double editRate = editCount / wikipedianAge.TotalDays;
 
                 IAL irc = IAL.singleton;
 
                 //##################################################
 
-                irc.IrcPrivmsg( destination , userPageUrl );
-                irc.IrcPrivmsg( destination , userTalkPageUrl );
-                irc.IrcPrivmsg( destination , userContributionsUrl );
-                irc.IrcPrivmsg( destination , blockLogUrl );
-
-                string message = "";
-                if( userRights != "" )
-                {
-                    string[ ] messageParameters = { userName , userRights };
-                    message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
-
-                }
-                else
-                {
-                    message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userName );
-                }
-                irc.IrcPrivmsg( destination , message );
-
-                string[ ] messageParameters2 = { editCount.ToString( ) , userName };
-                message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters2 );
-                irc.IrcPrivmsg( destination , message );
-
-                string[ ] messageParameters3 = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
-                message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
-                irc.IrcPrivmsg( destination , message );
-                string[ ] messageParameters4 = { userName , editRate.ToString( ) };
-                message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
-                irc.IrcPrivmsg( destination , message );
+                sendLongUserInfo( uInfo , destination);
             }
             else
             {
@@ -229,6 +188,101 @@ namespace helpmebot6.Commands
             userName = userName.Replace( " " , "_" );
 
             return mainpageurl.Replace( mainpagename , "Special:Log?type=block&page=User:" + userName );
+        }
+
+        private UserInformation retrieveUserInformation( string userName, ref UserInformation initial )
+        {
+            try
+            {
+                initial.userName = userName;
+
+                if( initial.editCount == 0 )
+                {
+                    Count countCommand = new Count( );
+                    initial.editCount = countCommand.getEditCount( userName );
+                    countCommand = null;
+                }
+
+                Rights rightsCommand = new Rights( );
+                initial.userGroups = rightsCommand.getRights( userName );
+                rightsCommand = null;
+
+                Registration registrationCommand = new Registration( );
+                initial.registrationDate = registrationCommand.getRegistrationDate( userName );
+                registrationCommand = null;
+
+                initial.userPage = getUserPageUrl( userName );
+                initial.talkPage = getUserTalkPageUrl( userName );
+                initial.userContribs = getUserContributionsUrl( userName );
+                initial.userBlockLog = getBlockLogUrl( userName );
+
+                Age ageCommand = new Age( );
+                initial.userAge= ageCommand.getWikipedianAge( userName );
+                ageCommand = null;
+
+              initial.editRate = initial.editCount / initial.userAge.TotalDays;
+
+
+                return initial;
+            }
+            catch( NullReferenceException ex )
+            {
+                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                throw new InvalidOperationException( );
+            }
+            
+        }
+
+        private void sendShortUserInfo( UserInformation userInformation, string destination )
+        {
+        }
+
+        private void sendLongUserInfo( UserInformation userInformation, string destination )
+        {
+            IAL irc = IAL.singleton;
+
+            irc.IrcPrivmsg( destination , userInformation.userPage );
+            irc.IrcPrivmsg( destination , userInformation.talkPage );
+            irc.IrcPrivmsg( destination , userInformation.userContribs );
+            irc.IrcPrivmsg( destination , userInformation.userBlockLog );
+
+            string message = "";
+            if( userInformation.userGroups!= "" )
+            {
+                string[ ] messageParameters = { userInformation.userName , userInformation.userGroups};
+                message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
+
+            }
+            else
+            {
+                message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userInformation.userName );
+            }
+            irc.IrcPrivmsg( destination , message );
+
+            string[ ] messageParameters2 = { userInformation.editCount.ToString( ) , userInformation.userName };
+            message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters2 );
+            irc.IrcPrivmsg( destination , message );
+
+            string[ ] messageParameters3 = { userInformation.userName , userInformation.registrationDate.ToString( "hh:mm:ss t" ) , userInformation.registrationDate.ToString( "d MMMM yyyy" ) };
+            message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
+            irc.IrcPrivmsg( destination , message );
+            string[ ] messageParameters4 = { userInformation.userName , userInformation.editRate.ToString( ) };
+            message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
+            irc.IrcPrivmsg( destination , message );
+        }
+
+        private struct UserInformation
+        {
+            public string userName;
+            public int editCount;
+            public string userGroups;
+            public DateTime registrationDate;
+            public double editRate;
+            public string userPage;
+            public string talkPage;
+            public string userContribs;
+            public string userBlockLog;
+            public TimeSpan userAge;
         }
     }
 }
