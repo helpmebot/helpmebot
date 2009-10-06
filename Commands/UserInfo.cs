@@ -235,6 +235,31 @@ namespace helpmebot6.Commands
 
         private void sendShortUserInfo( UserInformation userInformation, string destination )
         {
+            string regex = "^http://en.wikipedia.org/wiki/";
+            string shortUrlAlias = "http://enwp.org/";
+            System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex( regex );
+
+            userInformation.userPage = r.Replace( userInformation.userPage , shortUrlAlias );
+            userInformation.talkPage = r.Replace( userInformation.talkPage , shortUrlAlias );
+            userInformation.userBlockLog = r.Replace( userInformation.userBlockLog , shortUrlAlias );
+            userInformation.userContribs = r.Replace( userInformation.userContribs , shortUrlAlias );
+
+            string[ ] messageParameters = {
+                                userInformation.userName,
+                                userInformation.userPage, 
+                                userInformation.talkPage, 
+                                userInformation.userContribs, 
+                                userInformation.userBlockLog,
+                                userInformation.userGroups,
+                                userInformation.userAge,
+                                userInformation.registrationDate,
+                                userInformation.editRate,
+                                userInformation.editCount
+                                         };
+
+            string message = Configuration.Singleton( ).GetMessage( "cmdUserInfoShort" , messageParameters );
+
+            IAL.singleton.IrcPrivmsg( destination , message );
         }
 
         private void sendLongUserInfo( UserInformation userInformation, string destination )
