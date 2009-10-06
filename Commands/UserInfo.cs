@@ -251,10 +251,10 @@ namespace helpmebot6.Commands
                                 userInformation.userContribs, 
                                 userInformation.userBlockLog,
                                 userInformation.userGroups,
-                                userInformation.userAge,
-                                userInformation.registrationDate,
-                                userInformation.editRate,
-                                userInformation.editCount
+                                userInformation.userAge.ToString(),
+                                userInformation.registrationDate.ToString(),
+                                userInformation.editRate.ToString(),
+                                userInformation.editCount.ToString()
                                          };
 
             string message = Configuration.Singleton( ).GetMessage( "cmdUserInfoShort" , messageParameters );
