@@ -96,7 +96,7 @@ namespace helpmebot6
 
            irc.JoinEvent += new IAL.JoinEventHandler( welcomeNewbieOnJoinEvent );
 
-           irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( RecievedMessage );
+           irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( ReceivedMessage );
 
            irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
        }
@@ -117,7 +117,7 @@ namespace helpmebot6
            }
        }
 
-        static void RecievedMessage( User source, string destination, string message )
+        static void ReceivedMessage( User source, string destination, string message )
         {
             CommandParser cmd = new CommandParser( );
             try
