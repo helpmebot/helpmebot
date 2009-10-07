@@ -8,22 +8,27 @@ cd /home/stwalkerster/$COPY
 
 startbot() 
 {
-	mono bin/Debug/helpmebot6.exe &> bin/log/`date +%Y-%m-%d--%H-%M` &
+	HMBLOG="bin/log/"`date +%Y-%m-%d--%H-%M`
+	echo "Starting bot with logfile $HMBLOG"
+	mono bin/Debug/helpmebot6.exe &> $HMBLOG &
 }
 
 stopbot()
 {
+	echo "Stopping bot..."
 	PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
 	kill $PID 2> /dev/null
 }
 
 rebuildbot() 
 {
+	echo "Rebuilding bot..."
 	xbuild
 }
 
 updatebot() 
 {
+	echo "Updating sourcecode from subversion"
 	svn up
 }
 
@@ -42,7 +47,7 @@ case $1 in
 		PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
 		if [ "$PID" = "" ]; then
 			startbot	
-        fi
+	        fi
 	;;
 	recompile)
 		rebuildbot
