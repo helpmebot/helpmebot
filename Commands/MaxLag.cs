@@ -4,9 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
-    class MaxLag : GenericCommand
+    class Maxlag : GenericCommand
     {
-        public MaxLag( )
+        public Maxlag( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "maxlag" );
         }

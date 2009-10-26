@@ -18,9 +18,9 @@ namespace helpmebot6.Commands
     // block status
     // user groups          Commands.Rights         Done    Done
     // editrate (edits/days) Commands.Age           Done    Done
-    class UserInfo : GenericCommand
+    class Userinfo : GenericCommand
     {
-        public UserInfo( )
+        public Userinfo( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "userinfo" );
         }

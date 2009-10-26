@@ -50,7 +50,7 @@ namespace helpmebot6
             }
         }
 
-        public void CommandParser_CommandRecievedEvent( User source, string destination, string command, string[ ] args )
+        public void CommandParser_CommandRecievedEvent( User source , string destination , string command , string[ ] args )
         {
             // if on ignore list, ignore!
             if( source.AccessLevel == User.userRights.Ignored )
@@ -58,8 +58,8 @@ namespace helpmebot6
 
 
             // Check for a learned word
-            string wordResponse =WordLearner.Remember(command);
-            if ( wordResponse != string.Empty )
+            string wordResponse = WordLearner.Remember( command );
+            if( wordResponse != string.Empty )
             {
                 if( source.AccessLevel < User.userRights.Normal )
                 {
@@ -69,67 +69,19 @@ namespace helpmebot6
                     return;
                 }
 
-                wordResponse = string.Format( wordResponse, args );
-                IAL.singleton.IrcPrivmsg( destination, wordResponse );
+                wordResponse = string.Format( wordResponse , args );
+                IAL.singleton.IrcPrivmsg( destination , wordResponse );
             }
 
             // Not a word, check for a valid command
-
-            switch ( command )
+            // search for a class that can handle this command.
+            Type commandHandler = Type.GetType( "helpmebot6.Commands." + command.Substring( 0 , 1 ).ToUpper( ) + command.Substring( 1 ) );
+            if( commandHandler != null )
             {
-                case "sayhi":
-                    new Commands.SayHi( ).run( source , destination , args  );
-                    break;
-                case "faq":
-                    new Commands.Faq( ).run( source , destination , args   );
-                    break;
-                case "messagecount":
-                    new Commands.MessageCount( ).run( source , destination , args   );
-                    break;
-                case "set":
-                    new Commands.Set( ).run( source , destination , args   );
-                    break;
-                case "die":
-                    new Commands.Die( ).run( source , destination , args   );
-                    break;
-                case "learn":
-                    new Commands.Learn( ).run( source , destination , args );
-                    break;
-                case "forget":
-                    new Commands.Forget( ).run( source , destination , args );
-                    break;
-                case "join":
-                    new Commands.Join( ).run( source , destination , args  );
-                    break;
-                case "rights":
-                    new Commands.Rights( ).run( source , destination , args  );
-                    break;
-                case "count":
-                    new Commands.Count( ).run( source , destination , args  );
-                    break;
-                case "registration":
-                    new Commands.Registration( ).run( source , destination , args  );
-                    break;
-                case "userinfo":
-                    new Commands.UserInfo( ).run( source , destination , args );
-                    break;
-                case "version":
-                    new Commands.Version( ).run( source , destination , args  );
-                    break;
-                case "maxlag":
-                    new Commands.MaxLag( ).run( source , destination , args );
-                    break;
-                case "time":
-                    new Commands.Time( ).run( source , destination , args );
-                    break;
-                case "age":
-                    new Commands.Age( ).run( source , destination , args );
-                    break;
-                default:
-                    break;
+                ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , destination , args );
             }
 
-            
+
         }
 
 

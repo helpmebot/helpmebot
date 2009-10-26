@@ -5,10 +5,10 @@ using helpmebot6;
 
 namespace helpmebot6.Commands
 {
-    class SayHi : GenericCommand
+    class Sayhi : GenericCommand
     {
 
-        public SayHi( )
+        public Sayhi( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "sayhi" );
         }

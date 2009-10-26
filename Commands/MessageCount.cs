@@ -4,9 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
-    class MessageCount : GenericCommand
+    class Messagecount : GenericCommand
     {
-        public MessageCount( )
+        public Messagecount( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "messagecount" );
         }
