@@ -73,7 +73,7 @@ namespace helpmebot6
                 wordResponse = string.Format( wordResponse , args );
                 if( rW.action )
                 {
-                    IAL.singleton.CtcpReply( destination , "ACTION" , wordResponse );
+                    IAL.singleton.CtcpRequest( destination , "ACTION" , wordResponse );
                 }
                 else
                 {
