@@ -13,7 +13,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            IAL.singleton.IrcJoin( args[0] );
+            Helpmebot6.irc.IrcJoin( args[0] );
         } 
     }
 }

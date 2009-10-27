@@ -69,6 +69,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="AI\Intelligence.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
     <Compile Include="Commands\Count.cs" />

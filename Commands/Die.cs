@@ -13,7 +13,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            IAL.singleton.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , source.Nickname ) );
+            Helpmebot6.irc.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , source.Nickname ) );
         } 
     }
 }

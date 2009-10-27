@@ -15,7 +15,7 @@ namespace helpmebot6.Commands
         {
             string[ ] messageParams = { source.Nickname , DateTime.Now.DayOfWeek.ToString(),DateTime.Now.ToLongDateString( ) , DateTime.Now.ToLongTimeString( ) };
             string message = Configuration.Singleton( ).GetMessage( "cmdTime" , messageParams );
-            IAL.singleton.IrcPrivmsg( destination , message );
+            Helpmebot6.irc.IrcPrivmsg( destination , message );
         }
     }
 }

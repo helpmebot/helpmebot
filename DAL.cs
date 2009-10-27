@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.IO;
+using System.Collections;
 namespace helpmebot6
 {
     public class DAL
@@ -156,109 +157,8 @@ namespace helpmebot6
         {
             try
             {
-                string query = "SELECT " + select + " FROM " + from;
-
-                if( joinConds != null )
-                {
-
-                    foreach( join item in joinConds )
-                    {
-                        switch( item.joinType )
-                        {
-                            case joinTypes.INNER:
-                                query += " INNER JOIN ";
-                                break;
-                            case joinTypes.LEFT:
-                                query += " LEFT OUTER JOIN ";
-                                break;
-                            case joinTypes.RIGHT:
-                                query += " RIGHT OUTER JOIN ";
-                                break;
-                            case joinTypes.FULLOUTER:
-                                query += " FULL OUTER JOIN ";
-                                break;
-                            default:
-                                break;
-                        }
-
-                        query += item.table;
-
-                        if( item.joinConditions != "" )
-                        {
-                            query += " ON " + joinConds;
-                        }
-                    }
-                }
-
-                if( where != null )
-                {
-                    if( where.Length > 0 )
-                    {
-                        query += " WHERE ";
-
-                        for( int i = 0 ; i < where.Length ; i++ )
-                        {
-                            if( i != 0 )
-                                query += " AND ";
-
-                            query += where[ i ];
-                        }
-                    }
-                }
-                if( groupby != null )
-                {
-                    if( groupby.Length > 0 )
-                    {
-                        query += " GROUP BY ";
-
-                        for( int i = 0 ; i < groupby.Length ; i++ )
-                        {
-                            if( i != 0 )
-                                query += ", ";
-
-                            query += groupby[ i ];
-                        }
-                    }
-                }
-                if( orderby != null )
-                {
-                    if( orderby.Length > 0 )
-                    {
-                        query += " ORDER BY ";
-
-                        for( int i = 0 ; i < orderby.Length ; i++ )
-                        {
-                            if( i != 0 )
-                                query += ", ";
-
-                            query += orderby[ i ].column + ( orderby[ i ].asc ? " ASC" : " DESC" );
-
-                        }
-                    }
-                }
-                if( having != null )
-                {
-                    if( having.Length > 0 )
-                    {
-                        query += " HAVING ";
-
-                        for( int i = 0 ; i < having.Length ; i++ )
-                        {
-                            if( i != 0 )
-                                query += ", ";
-
-                            query += having[ i ];
-                        }
-                    }
-                }
-
-                if( limit != 0 )
-                    query += " LIMIT " + limit;
-
-                if( offset != 0 )
-                    query += " OFFSET " + offset;
-
-                query += ";";
+                string[ ] selectArray = { select };
+                string query = buildSelect( selectArray , from , joinConds , where , groupby , orderby , having , limit , offset );
 
                 string result = ExecuteScalarQuery( query );
 
@@ -270,9 +170,139 @@ namespace helpmebot6
                 return "";
             }
         }
-        //public MySqlDataReader Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
-        //{
 
-        //}
+        private string buildSelect( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+        {
+            string query = "SELECT " + string.Join(", ",select) + " FROM " + from;
+
+            if( joinConds != null )
+            {
+
+                foreach( join item in joinConds )
+                {
+                    switch( item.joinType )
+                    {
+                        case joinTypes.INNER:
+                            query += " INNER JOIN ";
+                            break;
+                        case joinTypes.LEFT:
+                            query += " LEFT OUTER JOIN ";
+                            break;
+                        case joinTypes.RIGHT:
+                            query += " RIGHT OUTER JOIN ";
+                            break;
+                        case joinTypes.FULLOUTER:
+                            query += " FULL OUTER JOIN ";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    query += item.table;
+
+                    if( item.joinConditions != "" )
+                    {
+                        query += " ON " + joinConds;
+                    }
+                }
+            }
+
+            if( where != null )
+            {
+                if( where.Length > 0 )
+                {
+                    query += " WHERE ";
+
+                    for( int i = 0 ; i < where.Length ; i++ )
+                    {
+                        if( i != 0 )
+                            query += " AND ";
+
+                        query += where[ i ];
+                    }
+                }
+            }
+            if( groupby != null )
+            {
+                if( groupby.Length > 0 )
+                {
+                    query += " GROUP BY ";
+
+                    for( int i = 0 ; i < groupby.Length ; i++ )
+                    {
+                        if( i != 0 )
+                            query += ", ";
+
+                        query += groupby[ i ];
+                    }
+                }
+            }
+            if( orderby != null )
+            {
+                if( orderby.Length > 0 )
+                {
+                    query += " ORDER BY ";
+
+                    for( int i = 0 ; i < orderby.Length ; i++ )
+                    {
+                        if( i != 0 )
+                            query += ", ";
+
+                        query += orderby[ i ].column + ( orderby[ i ].asc ? " ASC" : " DESC" );
+
+                    }
+                }
+            }
+            if( having != null )
+            {
+                if( having.Length > 0 )
+                {
+                    query += " HAVING ";
+
+                    for( int i = 0 ; i < having.Length ; i++ )
+                    {
+                        if( i != 0 )
+                            query += ", ";
+
+                        query += having[ i ];
+                    }
+                }
+            }
+
+            if( limit != 0 )
+                query += " LIMIT " + limit;
+
+            if( offset != 0 )
+                query += " OFFSET " + offset;
+
+            query += ";";
+            return query;
+        }
+        public ArrayList Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+        {
+            try
+            {
+                string query = buildSelect( select , from , joinConds , where , groupby , orderby , having , limit , offset );
+
+                MySqlDataReader dr = ExecuteReaderQuery( query );
+
+                ArrayList resultSet = new ArrayList( );
+
+                object[ ] row = new object[dr.FieldCount];
+                while( dr.Read( ) )
+                {
+                    dr.GetValues( row );
+                    resultSet.Add( row );
+                }
+                dr.Close( );
+                return resultSet;
+                
+            }
+            catch( Exception ex )
+            {
+                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                return null;
+            }
+        }
     }
 }

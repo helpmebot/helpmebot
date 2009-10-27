@@ -20,7 +20,7 @@ namespace helpmebot6.Commands
                 if( editCount == -1 )
                 {
                     string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
-                    IAL.singleton.IrcPrivmsg( destination , message );
+                    Helpmebot6.irc.IrcPrivmsg( destination , message );
                 }
                 else
                 {
@@ -30,13 +30,13 @@ namespace helpmebot6.Commands
 
                     string message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters );
 
-                    IAL.singleton.IrcPrivmsg( destination , message );
+                    Helpmebot6.irc.IrcPrivmsg( destination , message );
                 }
             }
             else
             {
                 string[ ] messageParameters = { "count" , "1" , args.Length.ToString( ) };
-                IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
         }
 

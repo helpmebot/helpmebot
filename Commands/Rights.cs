@@ -32,13 +32,13 @@ namespace helpmebot6.Commands
                     message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , username );
                 }
 
-                IAL.singleton.IrcPrivmsg( destination , message );
+                Helpmebot6.irc.IrcPrivmsg( destination , message );
             }
             else
             {
                 string[ ] messageParameters = { "rights" , "1" , args.Length.ToString() };
                 
-                IAL.singleton.IrcNotice( source.Nickname ,Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname ,Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
         }
 

@@ -39,7 +39,7 @@ namespace helpmebot6.Commands
 
                 if( uInfo.editCount == -1 )
                 {
-                    IAL.singleton.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
+                    Helpmebot6.irc.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
                     return;
                 }
 
@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
                 
 
 
-                IAL irc = IAL.singleton;
+                IAL irc = Helpmebot6.irc;
 
                 //##################################################
 
@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
             else
             {
                 string[ ] messageParameters = { "userinfo" , "1" , args.Length.ToString( ) };
-                IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
         }
@@ -259,12 +259,12 @@ namespace helpmebot6.Commands
 
             string message = Configuration.Singleton( ).GetMessage( "cmdUserInfoShort" , messageParameters );
 
-            IAL.singleton.IrcPrivmsg( destination , message );
+            Helpmebot6.irc.IrcPrivmsg( destination , message );
         }
 
         private void sendLongUserInfo( UserInformation userInformation, string destination )
         {
-            IAL irc = IAL.singleton;
+            IAL irc = Helpmebot6.irc;
 
             irc.IrcPrivmsg( destination , userInformation.userPage );
             irc.IrcPrivmsg( destination , userInformation.talkPage );

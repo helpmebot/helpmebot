@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
 
             string[ ] messageParameters = { source.Nickname , getMaxLag() };
             string message = Configuration.Singleton( ).GetMessage( "cmdMaxLag" , messageParameters );
-            IAL.singleton.IrcPrivmsg( destination , message );
+            Helpmebot6.irc.IrcPrivmsg( destination , message );
         }
 
         public string getMaxLag( )

@@ -15,7 +15,7 @@ namespace helpmebot6.Commands
 
        protected override void execute( User toUser , string destination, string[] args )
         {
-            IAL.singleton.IrcPrivmsg(
+            Helpmebot6.irc.IrcPrivmsg(
                 destination ,
                 Configuration.Singleton().GetMessage( "cmdSayHi1" ,
                     toUser.Nickname

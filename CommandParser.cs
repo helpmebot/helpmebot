@@ -64,20 +64,20 @@ namespace helpmebot6
             {
                 if( source.AccessLevel < User.userRights.Normal )
                 {
-                    IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
                     string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
-                    IAL.singleton.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+                    Helpmebot6.irc.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
                     return;
                 }
 
                 wordResponse = string.Format( wordResponse , args );
                 if( rW.action )
                 {
-                    IAL.singleton.CtcpRequest( destination , "ACTION" , wordResponse );
+                    Helpmebot6.irc.CtcpRequest( destination , "ACTION" , wordResponse );
                 }
                 else
                 {
-                    IAL.singleton.IrcPrivmsg( destination , wordResponse );
+                    Helpmebot6.irc.IrcPrivmsg( destination , wordResponse );
                 }
             }
 

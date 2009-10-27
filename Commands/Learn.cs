@@ -23,15 +23,15 @@ namespace helpmebot6.Commands
             if( args.Length >= 2 )
             {
                if( WordLearner.Learn( args[ 0 ] , string.Join( " " , args , 1 , args.Length - 1 ) , action))
-                   IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnDone" , "" ) );
+                   Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnDone" , "" ) );
                else
-                   IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnError" , "" ) );
+                   Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnError" , "" ) );
  
             }
             else
             {
                 string[ ] messageParameters = { "learn" , "2" , args.Length.ToString( ) };
-                IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
         }
     }

@@ -31,7 +31,6 @@ namespace helpmebot6
     public class IAL
     {
         #region internal variables
-        public static IAL singleton;
 
         string _myNickname;
         string _myUsername;
@@ -172,19 +171,25 @@ namespace helpmebot6
 
         #region constructor/destructor
 
-        public IAL( string Nickname, string Username, string Realname, string Password, string IrcServer, uint IrcPort, bool recieveWallops, bool invisible )
+        public IAL( uint ircNetwork )
         {
-            _myRealname = Realname;
-            _myNickname = Nickname;
-            _myUsername = Username;
-            _myPassword = Password;
+            DAL db = DAL.Singleton( );
 
-            _ircServer = IrcServer;
-            _ircPort = IrcPort;
+            string[] selects = {"in_host","in_port","in_nickname","in_password","in_username","in_realname"};
+            string[ ] wheres = { "in_id = " + ircNetwork };
+            ArrayList configSettings = db.Select( selects , "ircnetwork" , new DAL.join[ 0 ] , wheres , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
 
-            if ( recieveWallops )
+            _ircServer = (string)(((object[])configSettings[ 0 ])[ 0 ]);
+            _ircPort = (uint)( (object[ ])configSettings[ 0 ] )[ 1 ];
+
+            _myNickname = (string)( ( (object[ ])configSettings[ 0 ] )[ 2 ] );
+            _myPassword = (string)( ( (object[ ])configSettings[ 0 ] )[ 3 ] );
+            _myUsername = (string)( ( (object[ ])configSettings[ 0 ] )[ 4 ] );
+            _myRealname = (string)( ( (object[ ])configSettings[ 0 ] )[ 5 ] );
+
+            if( /*recieveWallops*/ false )
                 _connectionUserModes += 4;
-            if ( invisible )
+            if( /*invisible*/ true )
                 _connectionUserModes += 8;
 
             initialiseEventHandlers( );
@@ -192,11 +197,14 @@ namespace helpmebot6
 
         ~IAL( )
         {
-
+            if( this._tcpClient.Connected  )
+            {
+                this.IrcQuit( );
+            }
         }
 
         #endregion
-
+        
         #region Methods
 
         public void Connect( )

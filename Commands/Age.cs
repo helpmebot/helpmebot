@@ -19,12 +19,12 @@ namespace helpmebot6.Commands
                 TimeSpan time = getWikipedianAge( username );
                 string[ ] messageParameters = { username , time.Days.ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
                 string message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
-                IAL.singleton.IrcPrivmsg( destination , message );
+                Helpmebot6.irc.IrcPrivmsg( destination , message );
             }
             else
             {
                 string[ ] messageParameters = { "age" , "1" , args.Length.ToString( ) };
-                IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
         }

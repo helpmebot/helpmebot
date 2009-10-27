@@ -13,7 +13,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            IAL.singleton.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "messageCountReport" , IAL.singleton.MessageCount.ToString( ) ) );
+            Helpmebot6.irc.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "messageCountReport" , Helpmebot6.irc.MessageCount.ToString( ) ) );
         }
     }
 }

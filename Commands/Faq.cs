@@ -24,21 +24,21 @@ namespace helpmebot6.Commands
                     result = faqRepo.searchFaq( string.Join( " " , args ) );
                     if( result != null )
                     {
-                        IAL.singleton.IrcPrivmsg( destination , result );
+                        Helpmebot6.irc.IrcPrivmsg( destination , result );
                     }
                     break;
                 case "fetch":
                     result = faqRepo.fetchFaqText( int.Parse( args[ 0 ] ) );
                     if( result != null )
                     {
-                        IAL.singleton.IrcPrivmsg( destination , result );
+                        Helpmebot6.irc.IrcPrivmsg( destination , result );
                     }
                     break;
                 case "link":
                     result = faqRepo.viewLink( int.Parse( args[ 0 ] ) );
                     if( result != null )
                     {
-                        IAL.singleton.IrcPrivmsg( destination , result );
+                        Helpmebot6.irc.IrcPrivmsg( destination , result );
                     }
                     break;
                 default:

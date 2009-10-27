@@ -23,7 +23,7 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
-            IAL.singleton.IrcPrivmsg( destination , getVersionString( ) );
+            Helpmebot6.irc.IrcPrivmsg( destination , getVersionString( ) );
         }
 
         public string getVersionString( )

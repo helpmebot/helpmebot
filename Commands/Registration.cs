@@ -20,7 +20,7 @@ namespace helpmebot6.Commands
                 if( registrationDate == new DateTime( 0 ) )
                 {
                     string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
-                    IAL.singleton.IrcPrivmsg( destination , message );
+                    Helpmebot6.irc.IrcPrivmsg( destination , message );
                 }
                 else
                 {
@@ -28,12 +28,12 @@ namespace helpmebot6.Commands
                 
                 string[ ] messageParameters = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
                 string message = Configuration.Singleton().GetMessage("registrationDate", messageParameters);
-                IAL.singleton.IrcPrivmsg( destination , message );
+                Helpmebot6.irc.IrcPrivmsg( destination , message );
             }}
             else
             {
                 string[ ] messageParameters = { "registration" , "1" , args.Length.ToString( ) };
-                IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
         }

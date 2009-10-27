@@ -22,7 +22,7 @@ namespace helpmebot6
 {
     public class Helpmebot6
     {
-       static IAL irc ;
+       public static IAL irc ;
        static DAL dbal;
        static Configuration config;
 //       static CommandParser cmd;
@@ -34,8 +34,6 @@ namespace helpmebot6
 
        static void Main( string[ ] args )
        {
-           bool initialiseBotWhenDone = true;
-
            // startup arguments
            int configFileArg = GlobalFunctions.prefixIsInArray( "--configfile", args );
            string configFile = ".hmbot";
@@ -44,11 +42,7 @@ namespace helpmebot6
                configFile = args[ configFileArg ].Substring( args[ configFileArg ].IndexOf( '=' ) );
            }
 
-
-           if ( initialiseBotWhenDone )
-           {
-               InitialiseBot( configFile );
-           }
+           InitialiseBot( configFile );
        }
 
        private static void InitialiseBot( string configFile )
@@ -65,25 +59,13 @@ namespace helpmebot6
 
            config = Configuration.Singleton();
 
-           string Nickname, Username, Realname, Password, Server;
-           uint Port;
-           bool Wallops, Invisible;
-           Nickname = config.retrieveGlobalStringOption( "ircNickname" );
-           Username = config.retrieveGlobalStringOption( "ircUsername" );
-           Realname = config.retrieveGlobalStringOption( "ircRealname" );
-           Password = config.retrieveGlobalStringOption( "ircPassword" );
-           Port = config.retrieveGlobalUintOption( "ircServerPort" );
-           Server = config.retrieveGlobalStringOption( "ircServerHost" );
-           Wallops = false;
-           Invisible = false;
+
+           uint ircNetwork = config.retrieveGlobalUintOption( "ircNetwork" );
+
 
            Trigger = config.retrieveGlobalStringOption( "commandTrigger" );
 
-           IAL.singleton = new IAL( Nickname, Username, Realname, Password, Server, Port, Wallops, Invisible );
-           irc = IAL.singleton;
-
-//           CommandParser.singleton = new CommandParser( );
-//           cmd = CommandParser.singleton;
+           irc = new IAL( ircNetwork );
 
            SetupEvents( );
 
@@ -113,7 +95,7 @@ namespace helpmebot6
            if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie" , channel ) == "true" )
            {
                string[ ] cmdArgs = { source.Nickname , channel };
-               IAL.singleton.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
+               Helpmebot6.irc.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
            }
        }
 

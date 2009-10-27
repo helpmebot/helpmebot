@@ -84,7 +84,7 @@ namespace helpmebot6
             Console.WriteLine( "*********************************" );
             Console.WriteLine( "Error detected in method " + method.Module + "::" + method.Name );
             Console.WriteLine( ex.ToString( ) + ex.StackTrace );
-            IAL.singleton.IrcPrivmsg( Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message );
+            Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message );
             Console.WriteLine( "*********************************" );
             
         }
