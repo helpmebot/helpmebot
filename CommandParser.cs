@@ -58,7 +58,8 @@ namespace helpmebot6
 
 
             // Check for a learned word
-            string wordResponse = WordLearner.Remember( command );
+            WordLearner.RemeberedWord rW = WordLearner.Remember( command );
+            string wordResponse = rW.phrase;
             if( wordResponse != string.Empty )
             {
                 if( source.AccessLevel < User.userRights.Normal )
@@ -70,7 +71,14 @@ namespace helpmebot6
                 }
 
                 wordResponse = string.Format( wordResponse , args );
-                IAL.singleton.IrcPrivmsg( destination , wordResponse );
+                if( rW.action )
+                {
+                    IAL.singleton.CtcpReply( destination , "ACTION" , wordResponse );
+                }
+                else
+                {
+                    IAL.singleton.IrcPrivmsg( destination , wordResponse );
+                }
             }
 
             // Not a word, check for a valid command

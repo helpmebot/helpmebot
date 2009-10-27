@@ -24,21 +24,30 @@ namespace helpmebot6
     {
         public static bool Learn( string word, string phrase )
         {
+            return Learn( word , phrase , false );
+        }
+        public static bool Learn(string word, string phrase, bool action)
+        {
             string[] wc = {"keyword_name = \""+word+"\""};
             if( DAL.Singleton( ).Select( "COUNT(*)" , "keywords" , null , wc , null , null , null , 1 , 0 ) != "0" )
                 return false;
 
-            DAL.Singleton().ExecuteNonQuery( "INSERT INTO `keywords` (`keyword_name`,`keyword_response`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\");" );
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `keywords` (`keyword_name`,`keyword_response`, `keyword_action`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\", " + ( action ? 1 : 0 ) + ");" );
             return true;
         }
 
-        public static string Remember( string word )
+        public static RemeberedWord Remember( string word )
         {
             string[] whereconds = {"keyword_name = \""+word+"\""};
+            string action = DAL.Singleton( ).Select( "keyword_action" , "keywords" , new DAL.join[ 0 ] , whereconds , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 0 , 0 );
             string result = DAL.Singleton( ).Select("keyword_response","keywords",new DAL.join[0],whereconds,new string[0],new DAL.order[0],new string[0],0,0);
 
+            RemeberedWord rW = new RemeberedWord( );
+            rW.action = ( action == "1" ? true : false );
+            rW.phrase = result;
+
           //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
-            return result;
+            return rW;
         }
 
         public static bool Forget( string word )
@@ -49,6 +58,12 @@ namespace helpmebot6
 
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `keywords` WHERE `keyword_name` = '" + word + "';" );
             return true;
+        }
+
+        public struct RemeberedWord
+        {
+            public string phrase;
+            public bool action;
         }
 
     }

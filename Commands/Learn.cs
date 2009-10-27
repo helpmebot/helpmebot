@@ -13,9 +13,16 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
+            bool action = false;
+            if( args[ 0 ] == "@action" )
+            {
+                action = true;
+                GlobalFunctions.popFromFront( ref args );
+            }
+
             if( args.Length >= 2 )
             {
-               if( WordLearner.Learn( args[ 0 ] , string.Join( " " , args , 1 , args.Length - 1 ) ))
+               if( WordLearner.Learn( args[ 0 ] , string.Join( " " , args , 1 , args.Length - 1 ) , action))
                    IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnDone" , "" ) );
                else
                    IAL.singleton.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnError" , "" ) );
