@@ -99,57 +99,38 @@ namespace helpmebot6
            }
        }
 
-        static void ReceivedMessage( User source, string destination, string message )
-        {
-            CommandParser cmd = new CommandParser( );
-            try
-            {
-                // Bot AI
-                string[ ] helloWords = { "hi", "hey", "heya", "morning", "afternoon", "evening", "hello" };
-                if ( GlobalFunctions.isInArray( message.Split( ' ' )[ 0 ].ToLower( ), helloWords ) != -1 && message.Split( ' ' )[ 1 ].ToLower( ) == irc.IrcNickname.ToLower( ) )
-                {
-                    cmd.CommandParser_CommandRecievedEvent( source, destination, "sayhi", null );
-                }
-                else
-                {
-                    if( message.Substring( 0 , 1 ) == Trigger )
-                    {
-                        message = message.Substring( 1 );
+       static void ReceivedMessage( User source , string destination , string message )
+       {
+           CommandParser cmd = new CommandParser( );
+           try
+           {
+               bool overrideSilence = cmd.overrideBotSilence;
+               if( isRecognisedMessage( ref message , ref overrideSilence ) )
+               {
+                   string[ ] messageWords = message.Split( ' ' );
+                   string command = messageWords[ 0 ];
+                   string[ ] commandArgs = string.Join( " " , messageWords , 1 , messageWords.Length - 1 ).Split( ' ' );
 
-                        string[] messageWords = message.Split( ' ' );
-
-                        if( messageWords[ 0 ] == irc.IrcNickname.ToLower( ) )
-                        {
-                            cmd.overrideBotSilence = true;
-                            messageWords = ( string.Join( " " , messageWords , 1 , messageWords.Length - 1 ) ).Split( ' ' );
-                        }
-
-                        string command = messageWords[ 0 ];
-                        string[] commandArgs = ( string.Join( " " , messageWords , 1 , messageWords.Length - 1 ) ).Split( ' ' );
+                   cmd.CommandParser_CommandRecievedEvent( source , destination , command , commandArgs );
 
 
-                        cmd.CommandParser_CommandRecievedEvent( source , destination , command , commandArgs );
-                    }
-                    else
-                    {
-                        // bot name prefixed eg:
-                        // Helpmebot: helpme
-                        // instead of:
-                        // !helpmebot helpme
-                        // or:
-                        // !helpme
+               }
+               string aiResponse = AI.Intelligence.Singleton( ).Respond( message );
+               if( aiResponse != string.Empty )
+               {
+
+                   irc.IrcPrivmsg( destination , config.GetMessage( aiResponse , source.Nickname ) );
+               }
+           }
+           catch( Exception ex )
+           {
+               GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+           }
 
 
-                    }
-                }
-            }
-            catch ( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex, System.Reflection.MethodInfo.GetCurrentMethod( ) );
-            }
-        }
+       }
 
-        static void JoinChannels( )
+       static void JoinChannels( )
         {
             debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
@@ -164,6 +145,72 @@ namespace helpmebot6
             dr.Close();
         }
 
+        /// <summary>
+        /// Tests against recognised message formats
+        /// </summary>
+        /// <param name="message">the message recieved</param>
+        /// <param name="overrideSilence">ref: whether this message format overrides any imposed silence</param>
+        /// <returns>true if the message is in a recognised format</returns>
+        /// <remarks>Allowed formats:
+        /// !command
+        /// !helpmebot command
+        /// Helpmebot: command
+        /// Helpmebot command
+        /// Helpmebot, command
+        /// Helpmebot> command
+        /// </remarks>
+       static bool isRecognisedMessage( ref string message , ref bool overrideSilence )
+       {
+           string[ ] words = message.Split( ' ' );
+
+           if( words[ 0 ].StartsWith( Trigger ) )
+           {
+               /// !command
+               /// !helpmebot command
+
+               if( words[ 0 ] == ( Trigger + irc.IrcNickname ) )
+               {
+                   overrideSilence = true;
+                   message = string.Join( " " , words , 1 , words.Length - 1 );
+                   return true;
+               }
+               else
+               {
+                   message = message.Substring( 1 );
+                   overrideSilence = false;
+                   return true;
+               }
+           }
+           else
+           {
+               if( words[ 0 ] == irc.IrcNickname )/// Helpmebot command
+               {
+                   message = string.Join( " " , words , 1 , words.Length - 1 );
+                   overrideSilence = true;
+                   return true;
+               }
+               else if( words[ 0 ] == ( irc.IrcNickname + ":" ) ) /// Helpmebot: command
+               {
+                   message = string.Join( " " , words , 1 , words.Length - 1 );
+                   overrideSilence = true;
+                   return true;
+               }
+               else if( words[ 0 ] == ( irc.IrcNickname + ">" ) ) /// Helpmebot> command
+               {
+                   message = string.Join( " " , words , 1 , words.Length - 1 );
+                   overrideSilence = true;
+                   return true;
+               }
+               else if(words[ 0 ] == (irc.IrcNickname + ",")) /// Helpmebot, command
+               {
+                   message = string.Join( " " , words , 1 , words.Length - 1 );
+                   overrideSilence = true;
+                   return true;
+               }
+
+           }
+           return false;
+       }
         
 
     }

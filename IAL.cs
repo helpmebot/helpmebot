@@ -610,7 +610,7 @@ namespace helpmebot6
                     GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
                 }
             }
-            while ( _ThreadIsAlive );
+            while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
         }
         #endregion
 
