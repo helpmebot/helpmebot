@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Sets a global config option.
+    /// </summary>
     class Set : GenericCommand
     {
         public Set( )

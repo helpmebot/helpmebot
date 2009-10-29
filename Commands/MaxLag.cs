@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the maximum replication lag on the wiki
+    /// </summary>
     class Maxlag : GenericCommand
     {
         public Maxlag( )

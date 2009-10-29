@@ -5,6 +5,9 @@ using helpmebot6;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Says hi to a user
+    /// </summary>
     class Sayhi : GenericCommand
     {
 

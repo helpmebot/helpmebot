@@ -5,6 +5,9 @@ using SharpSvn;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the current version of the bot.
+    /// </summary>
     class Version : GenericCommand
     {
 

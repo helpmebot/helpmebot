@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the number of messages that have been sent by the bot to IRC
+    /// </summary>
     class Messagecount : GenericCommand
     {
         public Messagecount( )

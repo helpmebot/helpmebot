@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the block information of a wikipedian
+    /// </summary>
     class BlockInfo : GenericCommand
     {
         public BlockInfo( )

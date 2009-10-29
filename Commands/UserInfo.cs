@@ -18,6 +18,10 @@ namespace helpmebot6.Commands
     // block status
     // user groups          Commands.Rights         Done    Done
     // editrate (edits/days) Commands.Age           Done    Done
+
+    /// <summary>
+    /// Returns the user information about a specified user
+    /// </summary>
     class Userinfo : GenericCommand
     {
         public Userinfo( )
@@ -27,6 +31,20 @@ namespace helpmebot6.Commands
 
         protected override void execute( User source , string destination , string[ ] args )
         {
+            bool useLongInfo = true;
+
+            if( args.Length > 0 )
+            {
+                if( args[ 0 ] == "@long" )
+                {
+                    useLongInfo = true;
+                }
+                if( args[ 0 ] == "@short" )
+                {
+                    useLongInfo = false;
+                }
+            }
+
             if( args.Length > 0 )
             {
                 string userName = string.Join( " " , args );
@@ -51,7 +69,15 @@ namespace helpmebot6.Commands
 
                 //##################################################
 
-                sendLongUserInfo( uInfo , destination);
+
+                if( useLongInfo )
+                {
+                    sendLongUserInfo( uInfo , destination );
+                }
+                else
+                {
+                    sendShortUserInfo( uInfo , destination );
+                }
             }
             else
             {

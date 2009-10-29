@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace helpmebot6.Commands
-{
+{   
+    /// <summary>
+    /// Forgets a keyword
+    /// </summary>
     class Forget : GenericCommand
     {
         public Forget( )

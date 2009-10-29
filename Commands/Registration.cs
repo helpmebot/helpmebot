@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the registration date of a wikipedian
+    /// </summary>
     class Registration : GenericCommand
     {
         public Registration( )
@@ -72,5 +75,13 @@ namespace helpmebot6.Commands
             }
 
         }
+    }
+
+    /// <summary>
+    /// Returns the registration date of a wikipedian. Alias for Registration
+    /// </summary>
+    class Reg : Registration
+    {
+
     }
 }

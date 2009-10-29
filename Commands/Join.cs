@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Joins an IRC channel
+    /// </summary>
     class Join : GenericCommand
     {
         public Join( )

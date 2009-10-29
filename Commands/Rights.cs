@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the user rights of a wikipedian
+    /// </summary>
     class Rights : GenericCommand
     {
         public Rights( )

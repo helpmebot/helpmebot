@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the age of a wikipedian
+    /// </summary>
     class Age  : GenericCommand
     {
         public Age( )

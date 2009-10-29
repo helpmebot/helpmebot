@@ -81,11 +81,21 @@ namespace helpmebot6
                 }
             }
 
-            // Not a word, check for a valid command
-            // search for a class that can handle this command.
+
+            /* 
+             * Not a word, check for a valid command
+             * search for a class that can handle this command.
+             */
+
+            // Create a new object which holds the type of the command handler, if it exists.
+            // if the command handler doesn't exist, then this won't be set to a value
             Type commandHandler = Type.GetType( "helpmebot6.Commands." + command.Substring( 0 , 1 ).ToUpper( ) + command.Substring( 1 ) );
-            if( commandHandler != null )
+            // check the type exists
+            if( commandHandler != null ) 
             {
+                // create a new instance of the commandhandler.
+                // cast to genericcommand (which holds all the required methods to run the command)
+                // run the command.
                 ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , destination , args );
             }
 

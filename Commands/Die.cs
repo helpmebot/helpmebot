@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Kills the bot.
+    /// </summary>
     class Die : GenericCommand
     {
         public Die( )

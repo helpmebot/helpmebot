@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Learns a keyword
+    /// </summary>
     class Learn : GenericCommand
     {
         public Learn( )

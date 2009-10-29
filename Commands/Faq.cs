@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Talks to the Nubio(squared) API to retrive FAQ information
+    /// </summary>
     class Faq : GenericCommand
     {
         public Faq( )

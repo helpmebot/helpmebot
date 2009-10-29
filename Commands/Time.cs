@@ -4,6 +4,9 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the current date/time
+    /// </summary>
     class Time : GenericCommand
     {
         public Time( )
@@ -17,5 +20,13 @@ namespace helpmebot6.Commands
             string message = Configuration.Singleton( ).GetMessage( "cmdTime" , messageParams );
             Helpmebot6.irc.IrcPrivmsg( destination , message );
         }
+    }
+
+    /// <summary>
+    /// Returns the current date/time. Alias for Time.
+    /// </summary>
+    class Date : Time
+    {
+
     }
 }
