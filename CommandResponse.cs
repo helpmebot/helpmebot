@@ -26,7 +26,6 @@ namespace helpmebot6
         public CommandResponseHandler( )
         {
             responses = new ArrayList( );
-            debugIrcChannel = helpmebot6.Configuration.Singleton().retrieveGlobalStringOption("debugIrcChannel");
         }
         public CommandResponseHandler( string message )
         {

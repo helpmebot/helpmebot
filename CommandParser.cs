@@ -28,8 +28,6 @@ namespace helpmebot6
 
         private bool _overrideBotSilence = false;
 
-        Configuration config = Configuration.Singleton();
-
         public delegate void CommandEventHandler( User source, string destination , string command, string[ ] args );
         public event CommandEventHandler CommandRecievedEvent;
 
