@@ -14,8 +14,9 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "registration" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
+            CommandResponseHandler crh = new CommandResponseHandler( );
             if( args.Length > 0 )
             {
                 string userName = string.Join( " " , args );
@@ -23,22 +24,24 @@ namespace helpmebot6.Commands
                 if( registrationDate == new DateTime( 0 ) )
                 {
                     string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
-                    Helpmebot6.irc.IrcPrivmsg( destination , message );
+                    crh.respond( message );
                 }
                 else
                 {
 
-                
-                string[ ] messageParameters = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
-                string message = Configuration.Singleton().GetMessage("registrationDate", messageParameters);
-                Helpmebot6.irc.IrcPrivmsg( destination , message );
-            }}
+
+                    string[ ] messageParameters = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
+                    string message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters );
+                    crh.respond( message );
+                }
+            }
             else
             {
                 string[ ] messageParameters = { "registration" , "1" , args.Length.ToString( ) };
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
+            return crh;
         }
 
         public DateTime getRegistrationDate( string username )

@@ -24,9 +24,9 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "version" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
-            Helpmebot6.irc.IrcPrivmsg( destination , getVersionString( ) );
+            return new CommandResponseHandler( getVersionString( ) );
         }
 
         public string getVersionString( )

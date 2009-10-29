@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "blockinfo" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             throw new NotImplementedException( );
         }

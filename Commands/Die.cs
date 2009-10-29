@@ -14,9 +14,10 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "die" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             Helpmebot6.irc.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , source.Nickname ) );
+            return null;
         } 
     }
 }

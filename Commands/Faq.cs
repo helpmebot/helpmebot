@@ -14,10 +14,10 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "faq" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             string command = GlobalFunctions.popFromFront( ref args );
-
+            CommandResponseHandler crh = new CommandResponseHandler( );
 
             NubioApi faqRepo = new NubioApi( new Uri( Configuration.Singleton().retrieveGlobalStringOption( "faqApiUri" ) ) );
             string result;
@@ -27,26 +27,28 @@ namespace helpmebot6.Commands
                     result = faqRepo.searchFaq( string.Join( " " , args ) );
                     if( result != null )
                     {
-                        Helpmebot6.irc.IrcPrivmsg( destination , result );
+                        crh.respond( result );
                     }
                     break;
                 case "fetch":
                     result = faqRepo.fetchFaqText( int.Parse( args[ 0 ] ) );
                     if( result != null )
                     {
-                        Helpmebot6.irc.IrcPrivmsg( destination , result );
+                        crh.respond( result );
                     }
                     break;
                 case "link":
                     result = faqRepo.viewLink( int.Parse( args[ 0 ] ) );
                     if( result != null )
                     {
-                        Helpmebot6.irc.IrcPrivmsg( destination , result );
+                        crh.respond( result );
                     }
                     break;
                 default:
                     break;
             }
+
+            return crh;
         }
     }
 }

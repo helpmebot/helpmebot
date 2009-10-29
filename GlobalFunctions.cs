@@ -126,5 +126,30 @@ namespace helpmebot6
             }
             return accessLevel;
         }
+
+        public static void removeItemFromArray(string item, ref string[] array)
+        {
+            int count = 0;
+            foreach( string i in array )
+            {
+                if( i == item )
+                    count++;
+            }
+
+            string[ ] newArray = new string[ array.Length - count ];
+
+            int nextAddition = 0;
+
+            foreach( string  i in array )
+            {
+                if( i != item )
+                {
+                    newArray[ nextAddition ] = i;
+                    nextAddition++;
+                }
+            }
+
+            array = newArray;
+        }
     }
 }

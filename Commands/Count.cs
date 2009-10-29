@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "count" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             if( args.Length > 0 )
             {
@@ -23,7 +23,7 @@ namespace helpmebot6.Commands
                 if( editCount == -1 )
                 {
                     string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
-                    Helpmebot6.irc.IrcPrivmsg( destination , message );
+                    return new CommandResponseHandler( message );
                 }
                 else
                 {
@@ -33,7 +33,7 @@ namespace helpmebot6.Commands
 
                     string message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters );
 
-                    Helpmebot6.irc.IrcPrivmsg( destination , message );
+                    return new CommandResponseHandler( message );
                 }
             }
             else
@@ -41,6 +41,7 @@ namespace helpmebot6.Commands
                 string[ ] messageParameters = { "count" , "1" , args.Length.ToString( ) };
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
+            return null;
         }
 
         public int getEditCount( string username )

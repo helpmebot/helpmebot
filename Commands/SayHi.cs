@@ -10,22 +10,14 @@ namespace helpmebot6.Commands
     /// </summary>
     class Sayhi : GenericCommand
     {
-
         public Sayhi( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "sayhi" );
         }
 
-       protected override void execute( User toUser , string destination, string[] args )
+        protected override CommandResponseHandler execute( User toUser , string[ ] args )
         {
-            Helpmebot6.irc.IrcPrivmsg(
-                destination ,
-                Configuration.Singleton().GetMessage( "cmdSayHi1" ,
-                    toUser.Nickname
-                    )
-                );
-
-
+            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "cmdSayHi1" , toUser.Nickname ) );
         }
     }
 }

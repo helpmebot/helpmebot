@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "forget" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             if( args.Length >= 1 )
             {
@@ -28,6 +28,7 @@ namespace helpmebot6.Commands
                 string[ ] messageParameters = { "forget" , "1" , args.Length.ToString( ) };
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
+            return null;
         }
     }
 }

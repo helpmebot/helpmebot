@@ -5,7 +5,7 @@
 
       public User.userRights accessLevel = User.userRights.Normal;
 
-       public void run( User source, string destination, string[ ] args )
+      public CommandResponseHandler run( User source , string[ ] args )
        {
            string command = this.GetType( ).ToString( );
 
@@ -13,16 +13,23 @@
 
            if( source.AccessLevel < accessLevel )
            {
-               Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+               CommandResponseHandler response = new CommandResponseHandler( );
+
+
+               response.respond( Configuration.Singleton( ).GetMessage( "accessDenied" , "" ),CommandResponseDestination.PRIVATE_MESSAGE );
                string[ ] aDArgs = { source.ToString( ) ,  command };
-               Helpmebot6.irc.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+               response.respond(  Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ), CommandResponseDestination.CHANNEL_DEBUG );
+
+               return response;
            }
            else
            {
-               execute( source , destination , args );
+               return execute( source , args );
            }
        }
 
-      protected abstract void execute( User source , string destination , string[ ] args );
+      protected abstract CommandResponseHandler execute( User source , string[ ] args );
+
+   
     }
 }

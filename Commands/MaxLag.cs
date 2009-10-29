@@ -14,13 +14,13 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "maxlag" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
 
 
             string[ ] messageParameters = { source.Nickname , getMaxLag() };
             string message = Configuration.Singleton( ).GetMessage( "cmdMaxLag" , messageParameters );
-            Helpmebot6.irc.IrcPrivmsg( destination , message );
+            return new CommandResponseHandler( message );
         }
 
         public string getMaxLag( )

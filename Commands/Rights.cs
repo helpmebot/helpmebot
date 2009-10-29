@@ -14,8 +14,9 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "rights" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
+            CommandResponseHandler crh = new CommandResponseHandler( );
             if( args.Length > 0 )
             {
 
@@ -35,7 +36,7 @@ namespace helpmebot6.Commands
                     message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , username );
                 }
 
-                Helpmebot6.irc.IrcPrivmsg( destination , message );
+               crh.respond( message );
             }
             else
             {
@@ -43,6 +44,7 @@ namespace helpmebot6.Commands
                 
                 Helpmebot6.irc.IrcNotice( source.Nickname ,Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
+            return crh;
         }
 
 

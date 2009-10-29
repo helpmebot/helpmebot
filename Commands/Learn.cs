@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "learn" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             bool action = false;
             if( args[ 0 ] == "@action" )
@@ -36,6 +36,7 @@ namespace helpmebot6.Commands
                 string[ ] messageParameters = { "learn" , "2" , args.Length.ToString( ) };
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
             }
+            return null;
         }
     }
 }

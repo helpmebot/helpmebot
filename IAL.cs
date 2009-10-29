@@ -54,6 +54,7 @@ namespace helpmebot6
 
         int _messageCount = 0;
 
+        private System.Collections.Hashtable namesList = new Hashtable( );
 
         DateTime lastMessage = DateTime.Now;
 
@@ -187,7 +188,7 @@ namespace helpmebot6
             _myUsername = (string)( ( (object[ ])configSettings[ 0 ] )[ 4 ] );
             _myRealname = (string)( ( (object[ ])configSettings[ 0 ] )[ 5 ] );
 
-            if( /*recieveWallops*/ false )
+            if( /*recieveWallops*/ true )
                 _connectionUserModes += 4;
             if( /*invisible*/ true )
                 _connectionUserModes += 8;
@@ -484,6 +485,50 @@ namespace helpmebot6
         {
             _sendLine( "ISON " + nicklist );
         }
+
+        /// <summary>
+        /// Compares the channel name against the valid channel name settings returned by the IRC server on connection
+        /// </summary>
+        /// <param name="ChannelName">Channel name to check</param>
+        /// <returns>Boolean true if provided channel name is valid</returns>
+        public bool isValidChannelName( string ChannelName )
+        {
+            // TODO: make better!
+            if( ChannelName.StartsWith( "#" ) )
+                return true;
+            else
+                return false;
+        }
+
+        
+
+        /// <summary>
+        /// checks if nickname is on channel
+        /// </summary>
+        /// <param name="channel">channel to check</param>
+        /// <param name="nickname">nickname to check</param>
+        /// <returns>1 if nickname is on channel
+        /// 0 if nickname is not on channel
+        /// -1 if it cannot be checked at the moment</returns>
+        public int isOnChannel( string channel , string nickname )
+        {
+            if( namesList.ContainsKey( channel ) )
+            {
+                if( ( (ArrayList)namesList[ channel ] ).Contains( nickname ) )
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else
+            {
+                IrcNames( channel );
+                return -1;
+            }
+        }
         #endregion
 
         #region Threads
@@ -612,7 +657,8 @@ namespace helpmebot6
         public delegate void IrcEventHandler( );
         public event IrcEventHandler Err_NicknameInUseEvent;
 
-
+        public delegate void NameReplyEventHandler(string channel, string[] names);
+        public event NameReplyEventHandler NameReplyEvent;
 
         #endregion
 
@@ -633,9 +679,26 @@ namespace helpmebot6
             this.CtcpEvent += new PrivmsgEventHandler( IAL_CtcpEvent );
             this.NoticeEvent += new PrivmsgEventHandler( IAL_NoticeEvent );
             this.Err_NicknameInUseEvent += new IrcEventHandler( assumeTakenNickname );
+            this.NameReplyEvent += new NameReplyEventHandler( IAL_NameReplyEvent );
         }
 
         #region event handlers
+
+        void IAL_NameReplyEvent( string channel , string[ ] names )
+        {
+            if( namesList.ContainsKey( channel ) )
+            {
+                foreach( string name in names )
+                {
+                    ArrayList channelNamesList = (ArrayList)namesList[ channel ];
+                    string newName = name.Trim( '@' , '+' );
+                    if( !channelNamesList.Contains( newName ) )
+                        channelNamesList.Add( newName );
+                }
+
+            }
+        }
+
         void IAL_NoticeEvent( User source, string destination, string message )
         {
             Console.WriteLine( ">>>>> NOTICE EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );

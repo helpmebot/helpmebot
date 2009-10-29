@@ -14,11 +14,11 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "time" ); 
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             string[ ] messageParams = { source.Nickname , DateTime.Now.DayOfWeek.ToString(),DateTime.Now.ToLongDateString( ) , DateTime.Now.ToLongTimeString( ) };
             string message = Configuration.Singleton( ).GetMessage( "cmdTime" , messageParams );
-            Helpmebot6.irc.IrcPrivmsg( destination , message );
+            return new CommandResponseHandler( message );
         }
     }
 

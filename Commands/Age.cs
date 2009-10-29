@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "age" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             if( args.Length > 0 )
             {
@@ -22,7 +22,7 @@ namespace helpmebot6.Commands
                 TimeSpan time = getWikipedianAge( username );
                 string[ ] messageParameters = { username , time.Days.ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
                 string message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
-                Helpmebot6.irc.IrcPrivmsg( destination , message );
+                return new CommandResponseHandler( message );
             }
             else
             {
@@ -30,6 +30,7 @@ namespace helpmebot6.Commands
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
+            return null;
         }
 
         public TimeSpan getWikipedianAge( string userName )

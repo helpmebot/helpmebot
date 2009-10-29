@@ -19,17 +19,22 @@ namespace helpmebot6.Commands
     // user groups          Commands.Rights         Done    Done
     // editrate (edits/days) Commands.Age           Done    Done
 
+            
+
+
     /// <summary>
     /// Returns the user information about a specified user
     /// </summary>
     class Userinfo : GenericCommand
     {
+        CommandResponseHandler crh = new CommandResponseHandler( );
+
         public Userinfo( )
         {
             accessLevel = GlobalFunctions.commandAccessLevel( "userinfo" );
         }
 
-        protected override void execute( User source , string destination , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string[ ] args )
         {
             bool useLongInfo = true;
 
@@ -38,10 +43,12 @@ namespace helpmebot6.Commands
                 if( args[ 0 ] == "@long" )
                 {
                     useLongInfo = true;
+                    GlobalFunctions.popFromFront( ref args );
                 }
                 if( args[ 0 ] == "@short" )
                 {
                     useLongInfo = false;
+                    GlobalFunctions.popFromFront( ref args );
                 }
             }
 
@@ -57,26 +64,23 @@ namespace helpmebot6.Commands
 
                 if( uInfo.editCount == -1 )
                 {
-                    Helpmebot6.irc.IrcPrivmsg( destination , Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
-                    return;
+                    crh.respond( Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
+                    return crh;
                 }
 
                 retrieveUserInformation( userName , ref uInfo );
-                
 
-
-                IAL irc = Helpmebot6.irc;
 
                 //##################################################
 
 
                 if( useLongInfo )
                 {
-                    sendLongUserInfo( uInfo , destination );
+                    sendLongUserInfo( uInfo );
                 }
                 else
                 {
-                    sendShortUserInfo( uInfo , destination );
+                    sendShortUserInfo( uInfo );
                 }
             }
             else
@@ -85,6 +89,8 @@ namespace helpmebot6.Commands
                 Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
 
             }
+            return crh;
+            
         }
 
         private string getUserPageUrl( string userName )
@@ -259,7 +265,7 @@ namespace helpmebot6.Commands
             
         }
 
-        private void sendShortUserInfo( UserInformation userInformation, string destination )
+        private void sendShortUserInfo( UserInformation userInformation)
         {
             string regex = "^http://en.wikipedia.org/wiki/";
             string shortUrlAlias = "http://enwp.org/";
@@ -285,17 +291,17 @@ namespace helpmebot6.Commands
 
             string message = Configuration.Singleton( ).GetMessage( "cmdUserInfoShort" , messageParameters );
 
-            Helpmebot6.irc.IrcPrivmsg( destination , message );
+            crh.respond( message );
         }
 
-        private void sendLongUserInfo( UserInformation userInformation, string destination )
+        private void sendLongUserInfo( UserInformation userInformation )
         {
-            IAL irc = Helpmebot6.irc;
+         
 
-            irc.IrcPrivmsg( destination , userInformation.userPage );
-            irc.IrcPrivmsg( destination , userInformation.talkPage );
-            irc.IrcPrivmsg( destination , userInformation.userContribs );
-            irc.IrcPrivmsg( destination , userInformation.userBlockLog );
+            crh.respond( userInformation.userPage );
+            crh.respond( userInformation.talkPage );
+            crh.respond( userInformation.userContribs );
+            crh.respond( userInformation.userBlockLog );
 
             string message = "";
             if( userInformation.userGroups!= "" )
@@ -308,18 +314,18 @@ namespace helpmebot6.Commands
             {
                 message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userInformation.userName );
             }
-            irc.IrcPrivmsg( destination , message );
+            crh.respond( message );
 
             string[ ] messageParameters2 = { userInformation.editCount.ToString( ) , userInformation.userName };
             message = Configuration.Singleton( ).GetMessage( "editCount" , messageParameters2 );
-            irc.IrcPrivmsg( destination , message );
+            crh.respond( message );
 
             string[ ] messageParameters3 = { userInformation.userName , userInformation.registrationDate.ToString( "hh:mm:ss t" ) , userInformation.registrationDate.ToString( "d MMMM yyyy" ) };
             message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters3 );
-            irc.IrcPrivmsg( destination , message );
+            crh.respond( message );
             string[ ] messageParameters4 = { userInformation.userName , userInformation.editRate.ToString( ) };
             message = Configuration.Singleton( ).GetMessage( "editRate" , messageParameters4 );
-            irc.IrcPrivmsg( destination , message );
+            crh.respond( message );
         }
 
         private struct UserInformation

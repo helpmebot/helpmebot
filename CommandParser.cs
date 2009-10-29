@@ -91,12 +91,47 @@ namespace helpmebot6
             // if the command handler doesn't exist, then this won't be set to a value
             Type commandHandler = Type.GetType( "helpmebot6.Commands." + command.Substring( 0 , 1 ).ToUpper( ) + command.Substring( 1 ) );
             // check the type exists
-            if( commandHandler != null ) 
+            if( commandHandler != null )
             {
+                string directedTo = "";
+                foreach( string arg in args )
+                {
+                    if( arg.StartsWith( ">" ) )
+                    {
+                        if( Helpmebot6.irc.isOnChannel( destination , arg.Substring( 1 ) ) != 0 )
+                            directedTo = arg.Substring( 1 );
+
+                        GlobalFunctions.removeItemFromArray( arg , ref args );
+                    }
+                }
+
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
-                ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , destination , args );
+                CommandResponseHandler response = ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , args );
+                foreach( CommandResponse item in response.getResponses() )
+                {
+                    string message = item.Message;
+
+                    if( directedTo != string.Empty )
+                    {
+                        message = directedTo + ": " + message;
+                    }
+
+                    switch( item.Destination )
+                    {
+                        case CommandResponseDestination.DEFAULT:
+                            Helpmebot6.irc.IrcPrivmsg( destination , message );
+                            break;
+                        case CommandResponseDestination.CHANNEL_DEBUG:
+                            Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , message );
+                            break;
+                        case CommandResponseDestination.PRIVATE_MESSAGE:
+                            Helpmebot6.irc.IrcPrivmsg( source.Nickname , message );
+                            break;
+                    }
+
+                }
             }
 
 
