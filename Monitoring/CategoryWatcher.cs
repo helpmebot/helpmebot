@@ -37,18 +37,24 @@ namespace helpmebot6.Monitoring
         int _sleepTime = 180;
 
 
-        public delegate void CategoryHasItemsEventDelegate( DotNetWikiBot.PageList items );
-        public event CategoryHasItemsEventDelegate CategoryHasItemsEvent;
+        public delegate void CategoryHasItemsEventHook( DotNetWikiBot.PageList items, string keyword );
+        public event CategoryHasItemsEventHook CategoryHasItemsEvent;
 
-        
+        DotNetWikiBot.Site mw_instance;
 
-        public CategoryWatcher( string Category, string Site, string Username, string Password, string Key )
+        public CategoryWatcher( string Category, string Key )
         {
-            _site = Site;
+            uint baseWiki = Configuration.Singleton( ).retrieveGlobalUintOption( "baseWiki" );
+            // look up site id
+            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             _category = Category;
-            _username = Username;
-            _password = Password;
+            _username = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_username` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            _password = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_password` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             _key = Key;
+
+
+            mw_instance = new DotNetWikiBot.Site( _site , _username , _password );
 
             watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             watcherThread.Start( );
@@ -64,7 +70,7 @@ namespace helpmebot6.Monitoring
                     DotNetWikiBot.PageList categoryResults = this.doCategoryCheck( );
                     if ( categoryResults.Count() > 0)
                     {
-                        CategoryHasItemsEvent( categoryResults );
+                        CategoryHasItemsEvent( categoryResults, _key);
                     }
                     Thread.Sleep( this.SleepTime * 1000);
                 }
@@ -77,7 +83,7 @@ namespace helpmebot6.Monitoring
 
         public DotNetWikiBot.PageList doCategoryCheck( )
         {
-            DotNetWikiBot.Site mw_instance = new DotNetWikiBot.Site(_site, _username, _password);
+            
             DotNetWikiBot.PageList list = new DotNetWikiBot.PageList(mw_instance);
             list.FillAllFromCategory(_category);
 
@@ -90,6 +96,9 @@ namespace helpmebot6.Monitoring
             watcherThread.Abort();
         }
 
+        /// <summary>
+        /// The time to sleep, in seconds.
+        /// </summary>
         public int SleepTime
         {
             get

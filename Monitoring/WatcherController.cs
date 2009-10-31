@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Collections.ObjectModel;
+using DotNetWikiBot;
 namespace helpmebot6.Monitoring
 {
     /// <summary>
@@ -9,75 +11,51 @@ namespace helpmebot6.Monitoring
     /// </summary>
     class WatcherController
     {
-        ArrayList watchers;
+        Dictionary<string , CategoryWatcher> watchers;
 
-        protected WatcherController()
+        protected WatcherController( )
         {
-            
+            watchers = new Dictionary<string , CategoryWatcher>( );
+            addWatcher( "per" , "Category:Wikipedia%20protected%20edit%20requests" );
+        }
+
+        private void addWatcher(string key, string category)
+        {
+            watchers.Add( key , new CategoryWatcher( category , key ) );
+            CategoryWatcher cw;
+            if( watchers.TryGetValue( key , out cw ) )
+            {
+                cw.CategoryHasItemsEvent += new CategoryWatcher.CategoryHasItemsEventHook( CategoryHasItemsEvent );
+            }
         }
 
         // woo singleton
-        public static WatcherController Instance()
+        public static WatcherController Instance( )
         {
-            if (_instance == null)
-                _instance = new WatcherController(); 
+            if( _instance == null )
+                _instance = new WatcherController( );
             return _instance;
         }
         private static WatcherController _instance;
 
-        void AddWatcher(int site ,string category)
+        public void forceUpdate( string key )
         {
-            DAL.Singleton().ExecuteNonQuery("");
-            // add to database
-
-            // create watcher
-
-            // add to watcher array
-        }
-        void DeleteWatcher()
-        { 
-            // remove from database
-
-            // kill watcher
-
-            // remove from watcher array
-        }
-      public  void ReloadWatchers()
-        {
-            // kill all watchers
-            GlobalFunctions.Log("Stopping all category watchers...");
-            foreach (CategoryWatcher item in watchers)
+            CategoryWatcher cw;
+            if( watchers.TryGetValue( key , out cw ) )
             {
-                item.Stop();
+                CategoryHasItemsEvent( cw.doCategoryCheck( ) , key );
             }
-
-            // remove from array
-            watchers.Clear();
-
-            // load watchers from database
-            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery("");
-
         }
 
-      public void forceUpdate( string key )
-      {
-          foreach( CategoryWatcher item in watchers )
-          {
-              if( item.ToString( ) == key )
-              {
-                  DotNetWikiBot.PageList list = item.doCategoryCheck( );
-                  if( list.Count( ) > 0 )
-                  { // items in cat
-                      
-                  }
-                  else
-                  { // nothing in cat, report anyway
+        void CategoryHasItemsEvent( DotNetWikiBot.PageList items , string keyword )
+        {
+            foreach( Page item in items )
+            {
+                Helpmebot6.irc.IrcPrivmsg( "Stwalkerster" , item.ToString( ) );
+            }
+        }
 
-                  }
+        
 
-                  break;
-              }
-          }
-      }
     }
 }

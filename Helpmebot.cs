@@ -70,6 +70,9 @@ namespace helpmebot6
            SetupEvents( );
 
            irc.Connect( );
+
+           // initialise watcher controller
+           Monitoring.WatcherController.Instance( );
        }
 
        static void SetupEvents( )
