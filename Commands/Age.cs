@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
             Registration regCommand = new Registration( );
             DateTime regdate = regCommand.getRegistrationDate( userName );
             TimeSpan age = DateTime.Now.Subtract( regdate );
-            if( regdate.Equals( new DateTime( 1970 , 1 , 1 ) ) )
+            if( regdate.Equals( new DateTime( 0001 , 1 , 1 ) ) )
             {
                 age = new TimeSpan( 0 );
             }
