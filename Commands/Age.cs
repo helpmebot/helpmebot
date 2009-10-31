@@ -20,8 +20,17 @@ namespace helpmebot6.Commands
             {
                 string username = string.Join( " " , args );
                 TimeSpan time = getWikipedianAge( username );
-                string[ ] messageParameters = { username , ( time.Days / 365 ).ToString( ) , ( time.Days % 365 ).ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
-                string message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
+                string message;
+                if( time.Equals( new TimeSpan( 0 ) ) )
+                {
+                    string[ ] messageParameters = { username };
+                    message = Configuration.Singleton( ).GetMessage( "noSuchUser" , messageParameters );
+                }
+                else
+                {
+                    string[ ] messageParameters = { username , ( time.Days / 365 ).ToString( ) , ( time.Days % 365 ).ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
+                    message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
+                }
                 return new CommandResponseHandler( message );
             }
             else
@@ -38,6 +47,10 @@ namespace helpmebot6.Commands
             Registration regCommand = new Registration( );
             DateTime regdate = regCommand.getRegistrationDate( userName );
             TimeSpan age = DateTime.Now.Subtract( regdate );
+            if( regdate.Equals( new DateTime( 1970 , 1 , 1 ) ) )
+            {
+                age = new TimeSpan( 0 );
+            }
             return age;
         }
     }
