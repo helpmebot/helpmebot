@@ -20,7 +20,7 @@ namespace helpmebot6.Commands
             {
                 string username = string.Join( " " , args );
                 TimeSpan time = getWikipedianAge( username );
-                string[ ] messageParameters = { username , time.Days.ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
+                string[ ] messageParameters = { username , ( time.Days % 365 ) , ( time.Days / 365 ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
                 string message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
                 return new CommandResponseHandler( message );
             }
