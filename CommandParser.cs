@@ -54,6 +54,8 @@ namespace helpmebot6
             if( source.AccessLevel == User.userRights.Ignored )
                 return;
 
+            // check category code
+            //Monitoring.WatcherController.Instance( )
 
             // Check for a learned word
             WordLearner.RemeberedWord rW = WordLearner.Remember( command );

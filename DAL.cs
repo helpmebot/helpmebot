@@ -202,7 +202,7 @@ namespace helpmebot6
 
                     if( item.joinConditions != "" )
                     {
-                        query += " ON " + joinConds;
+                        query += " ON " + item.joinConditions;
                     }
                 }
             }
@@ -291,6 +291,7 @@ namespace helpmebot6
                 object[ ] row = new object[dr.FieldCount];
                 while( dr.Read( ) )
                 {
+                    row = new object[ dr.FieldCount ];
                     dr.GetValues( row );
                     resultSet.Add( row );
                 }

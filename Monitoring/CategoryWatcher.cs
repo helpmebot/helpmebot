@@ -37,14 +37,13 @@ namespace helpmebot6.Monitoring
         int _sleepTime = 180;
 
 
-        public delegate void CategoryHasItemsEventHook( DotNetWikiBot.PageList items, string keyword );
+        public delegate void CategoryHasItemsEventHook( DotNetWikiBot.PageList items, string keyword);
         public event CategoryHasItemsEventHook CategoryHasItemsEvent;
 
         DotNetWikiBot.Site mw_instance;
 
         public CategoryWatcher( string Category, string Key )
         {
-            uint baseWiki = Configuration.Singleton( ).retrieveGlobalUintOption( "baseWiki" );
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
             _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
@@ -67,12 +66,12 @@ namespace helpmebot6.Monitoring
             {
                 while ( true )
                 {
+                    Thread.Sleep( this.SleepTime * 1000 );
                     DotNetWikiBot.PageList categoryResults = this.doCategoryCheck( );
                     if ( categoryResults.Count() > 0)
                     {
                         CategoryHasItemsEvent( categoryResults, _key);
                     }
-                    Thread.Sleep( this.SleepTime * 1000);
                 }
             }
             catch ( ThreadAbortException ex )
