@@ -65,13 +65,15 @@ namespace helpmebot6.Monitoring
             throw new NotImplementedException( );
         }
 
-        private void forceUpdate( string key )
+        private string forceUpdate( string key )
         {
             CategoryWatcher cw;
             if( watchers.TryGetValue( key , out cw ) )
             {
-
+                return compileMessage( cw.doCategoryCheck( ) , key );
             }
+            else
+                return null;
         }
 
         private void CategoryHasItemsEvent( PageList items , string keyword )

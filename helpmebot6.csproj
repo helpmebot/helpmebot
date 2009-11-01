@@ -73,6 +73,7 @@
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
+    <Compile Include="Commands\CategoryWatcher.cs" />
     <Compile Include="Commands\Count.cs" />
     <Compile Include="Commands\Faq.cs" />
     <Compile Include="Commands\Forget.cs" />

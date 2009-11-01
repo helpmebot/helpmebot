@@ -214,19 +214,41 @@ namespace helpmebot6
         {
             return String.Format( messageFormat, args );
         }
-        private string parseMessage( string messageFormat, string arg )
+        public string GetMessage( string messageName )
         {
-            return String.Format( messageFormat, arg );
+            return chooseRandomMessage( messageName );
         }
-
-        public string GetMessage( string messageName, string arg )
-        {
-            return parseMessage( chooseRandomMessage( messageName ), arg );
-        }
-
-        public string GetMessage( string messageName, string[ ] args )
+        public string GetMessage( string messageName, params string[ ] args )
         {
             return parseMessage( chooseRandomMessage( messageName ), args );
+        }
+
+        public string GetMessage( string messageName , string defaultMessageName )
+        {
+            string msg = GetMessage( messageName );
+            if( msg == string.Empty )
+            {
+                msg = GetMessage( defaultMessageName );
+                SaveMessage( messageName , "" , msg );
+            }
+            msg = GetMessage( messageName );
+            return msg;
+        }
+        public string GetMessage( string messageName , string defaultMessageName, params string[ ] args )
+        {
+            string msg = GetMessage( messageName ,args);
+            if( msg == string.Empty )
+            {
+                msg = GetMessage( defaultMessageName );
+                SaveMessage( messageName , "" , msg );
+            }
+            msg = GetMessage( messageName, args );
+            return msg;
+        }
+
+        public void SaveMessage( string messageName , string messageDescription , string messageContent )
+        {
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `messages` VALUES ( NULL, \"" + messageName + "\", \"" + messageDescription + "\", \"" + messageContent + "\" , 1);" );
         }
     }
 }

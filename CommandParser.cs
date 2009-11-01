@@ -24,16 +24,10 @@ namespace helpmebot6
 {
     public class CommandParser
     {
-        //public static CommandParser singleton;
-
         private bool _overrideBotSilence = false;
-
-        public delegate void CommandEventHandler( User source, string destination , string command, string[ ] args );
-        public event CommandEventHandler CommandRecievedEvent;
 
         public CommandParser( )
         {
-            CommandRecievedEvent += new CommandEventHandler( CommandParser_CommandRecievedEvent );
         }
 
         public bool overrideBotSilence
@@ -48,16 +42,26 @@ namespace helpmebot6
             }
         }
 
-        public void CommandParser_CommandRecievedEvent( User source , string destination , string command , string[ ] args )
+        public void handleCommand( User source , string destination , string command , string[ ] args )
         {
             // if on ignore list, ignore!
             if( source.AccessLevel == User.userRights.Ignored )
                 return;
 
-            // check category code
-            //Monitoring.WatcherController.Instance( )
+            /*
+             * check category codes
+             */
+            if( Monitoring.WatcherController.Instance( ).isValidKeyword( command ) )
+            {
 
-            // Check for a learned word
+
+            }
+
+
+            /*
+             * Check for a learned word
+             */
+
             WordLearner.RemeberedWord rW = WordLearner.Remember( command );
             string wordResponse = rW.phrase;
             if( wordResponse != string.Empty )
@@ -140,6 +144,7 @@ namespace helpmebot6
 
         }
 
+       
 
 
     }

@@ -114,7 +114,7 @@ namespace helpmebot6
                    string command = messageWords[ 0 ];
                    string[ ] commandArgs = string.Join( " " , messageWords , 1 , messageWords.Length - 1 ).Split( ' ' );
 
-                   cmd.CommandParser_CommandRecievedEvent( source , destination , command , commandArgs );
+                   cmd.handleCommand( source , destination , command , commandArgs );
 
 
                }
