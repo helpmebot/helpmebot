@@ -248,7 +248,7 @@ namespace helpmebot6
 
         public void SaveMessage( string messageName , string messageDescription , string messageContent )
         {
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `messages` VALUES ( NULL, \"" + messageName + "\", \"" + messageDescription + "\", \"" + messageContent + "\" , 1);" );
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `message` VALUES ( NULL, \"" + messageName + "\", \"" + messageDescription + "\", \"" + messageContent + "\" , 1);" );
         }
     }
 }
