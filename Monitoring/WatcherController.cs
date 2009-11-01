@@ -152,5 +152,11 @@ namespace helpmebot6.Monitoring
                 item.Value.Stop( );
             }
         }
+
+
+        public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
+        {
+            return watchers.Keys;
+        }
     }
 }

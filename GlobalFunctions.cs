@@ -122,7 +122,9 @@ namespace helpmebot6
                     accessLevel = User.userRights.Ignored;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException( "Command not in commandlist" );
+                    accessLevel = User.userRights.Developer;
+                    ErrorLog( new ArgumentOutOfRangeException( ) , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                    break;
             }
             return accessLevel;
         }

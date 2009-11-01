@@ -76,6 +76,7 @@
     <Compile Include="Commands\CategoryWatcher.cs" />
     <Compile Include="Commands\Count.cs" />
     <Compile Include="Commands\Faq.cs" />
+    <Compile Include="Commands\Fetchall.cs" />
     <Compile Include="Commands\Forget.cs" />
     <Compile Include="Commands\Die.cs" />
     <Compile Include="Commands\GenericCommand.cs" />
