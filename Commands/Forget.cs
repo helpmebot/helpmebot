@@ -19,9 +19,9 @@ namespace helpmebot6.Commands
             if( args.Length >= 1 )
             {
                 if( WordLearner.Forget( args[ 0 ] ) )
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetDone" , "" ) );
+                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetDone"  ) );
                 else
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetError" , "" ) );
+                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetError" ) );
             }
             else
             {

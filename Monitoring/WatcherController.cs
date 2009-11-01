@@ -115,14 +115,14 @@ namespace helpmebot6.Monitoring
 
             if( items.Count( ) == 1 )
             {
-                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" , "" );
+                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" ,"keywordSingularDefault" );
             }
             else
             {
-                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "" );
+                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
             }
             string[ ] messageParams = { items.Count( ).ToString( ) , pluralString , listString };
-            string message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" , messageParams );
+            string message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" ,"keywordHasItemsDefault", messageParams );
             return message;
         }
 
