@@ -60,12 +60,12 @@ namespace helpmebot6
                         argsLength++;
                 }
 
-                string[ ] newArgs = new string[ argsLength +1 ];
+                string[ ] newArgs = new string[ argsLength + 1 ];
                 int newArrayPos = 1;
                 for( int i = 0 ; i < args.Length ; i++ )
                 {
-                    if(!string.IsNullOrEmpty(args[i]))
-                    newArgs[ newArrayPos ] = args[ i ];
+                    if( !string.IsNullOrEmpty( args[ i ] ) )
+                        newArgs[ newArrayPos ] = args[ i ];
                     newArrayPos++;
                 }
                 newArgs[ 0 ] = command;
@@ -100,36 +100,41 @@ namespace helpmebot6
             /*
              * Check for a learned word
              */
-
-            WordLearner.RemeberedWord rW = WordLearner.Remember( command );
-            string wordResponse = rW.phrase;
-            if( wordResponse != string.Empty )
             {
-                if( source.AccessLevel < User.userRights.Normal )
+                WordLearner.RemeberedWord rW = WordLearner.Remember( command );
+                CommandResponseHandler crh = new CommandResponseHandler( );
+                string wordResponse = rW.phrase;
+                string directedTo = "";
+                if( wordResponse != string.Empty )
                 {
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
-                    string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
-                    Helpmebot6.irc.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+                    if( source.AccessLevel < User.userRights.Normal )
+                    {
+                        crh.respond( Configuration.Singleton( ).GetMessage( "accessDenied" ) , CommandResponseDestination.PRIVATE_MESSAGE );
+                        string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
+                        crh.respond( Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) , CommandResponseDestination.CHANNEL_DEBUG );
+
+                    }
+                    else
+                    {
+                        wordResponse = string.Format( wordResponse , args );
+                        if( rW.action )
+                        {
+                            crh.respond( IAL.wrapCTCP( "ACTION" , wordResponse ) );
+                        }
+                        else
+                        {
+                            directedTo = FindRedirection( destination , ref args );
+                            if( directedTo != string.Empty )
+                            {
+                                wordResponse = directedTo + ": " + wordResponse;
+                            }
+                            crh.respond( wordResponse );
+                        }
+                        HandleCommandResponseHandler( source , destination , directedTo , crh );
+                    }
                     return;
                 }
-
-                wordResponse = string.Format( wordResponse , args );
-                if( rW.action )
-                {
-                    Helpmebot6.irc.CtcpRequest( destination , "ACTION" , wordResponse );
-                }
-                else
-                {
-                    string directedTo = FindRedirection( destination , ref args );
-                    if( directedTo != string.Empty )
-                    {
-                        wordResponse = directedTo + ": " + wordResponse;
-                    }
-                    Helpmebot6.irc.IrcPrivmsg( destination , wordResponse );
-                }
-                return;
             }
-
         }
 
         private string FindRedirection( string destination , ref string[ ] args )
@@ -164,7 +169,10 @@ namespace helpmebot6
                     switch( item.Destination )
                     {
                         case CommandResponseDestination.DEFAULT:
-                            Helpmebot6.irc.IrcPrivmsg( destination , message );
+                            if( this.overrideBotSilence || ! (Configuration.Singleton( ).retrieveLocalStringOption( "silence" , destination ) == "true"))
+                            {
+                                Helpmebot6.irc.IrcPrivmsg( destination , message );
+                            }
                             break;
                         case CommandResponseDestination.CHANNEL_DEBUG:
                             Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , message );

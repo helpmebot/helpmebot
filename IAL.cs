@@ -394,7 +394,7 @@ namespace helpmebot6
             IrcNotice( destination, asc.GetString( ctcp ) + command.ToUpper( ) + " " + parameters + asc.GetString( ctcp ) );
         }
 
-        public void CtcpRequest( string destination, string command )
+       /* public void CtcpRequest( string destination, string command )
         {
             CtcpRequest( destination , command , string.Empty );
         }
@@ -403,6 +403,14 @@ namespace helpmebot6
             ASCIIEncoding asc = new ASCIIEncoding( );
             byte[ ] ctcp = { Convert.ToByte( 1 ) };
             IrcPrivmsg( destination , asc.GetString( ctcp ) + command.ToUpper( ) + ( parameters == string.Empty ? "" : " " + parameters ) + asc.GetString( ctcp ) );
+        }*/
+
+        public static string wrapCTCP( string command , string parameters )
+        {
+            ASCIIEncoding asc = new ASCIIEncoding( );
+            byte[ ] ctcp = { Convert.ToByte( 1 ) };
+            return ( asc.GetString( ctcp ) + command.ToUpper( ) + ( parameters == string.Empty ? "" : " " + parameters ) + asc.GetString( ctcp ) );
+
         }
 
         public void IrcNotice( string destination, string message )
