@@ -53,15 +53,25 @@ namespace helpmebot6
              */
             if( Monitoring.WatcherController.Instance( ).isValidKeyword( command ) )
             {
-                string[ ] newArgs = new string[ args.Length + 1 ];
+                int argsLength = 0;
+                foreach( string arg in args )
+                {
+                    if( !string.IsNullOrEmpty( arg ) )
+                        argsLength++;
+                }
+
+                string[ ] newArgs = new string[ argsLength +1 ];
+                int newArrayPos = 1;
                 for( int i = 0 ; i < args.Length ; i++ )
                 {
-                    newArgs[ i + 1 ] = args[ i ];
+                    if(!string.IsNullOrEmpty(args[i]))
+                    newArgs[ newArrayPos ] = args[ i ];
+                    newArrayPos++;
                 }
                 newArgs[ 0 ] = command;
-
-                new Commands.CategoryWatcher( ).run( source , newArgs );
-
+                string directedTo = FindRedirection( destination , ref newArgs );
+                CommandResponseHandler crh = new Commands.CategoryWatcher( ).run( source , newArgs );
+                HandleCommandResponseHandler( source , destination , directedTo , crh );
                 return;
 
             }
@@ -77,48 +87,13 @@ namespace helpmebot6
             // check the type exists
             if( commandHandler != null )
             {
-                string directedTo = "";
-                foreach( string arg in args )
-                {
-                    if( arg.StartsWith( ">" ) )
-                    {
-                        if( Helpmebot6.irc.isOnChannel( destination , arg.Substring( 1 ) ) != 0 )
-                            directedTo = arg.Substring( 1 );
-
-                        GlobalFunctions.removeItemFromArray( arg , ref args );
-                    }
-                }
+                string directedTo = FindRedirection( destination , ref args );
 
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
                 CommandResponseHandler response = ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , args );
-                if( response != null )
-                {
-                    foreach( CommandResponse item in response.getResponses( ) )
-                    {
-                        string message = item.Message;
-
-                        if( directedTo != string.Empty )
-                        {
-                            message = directedTo + ": " + message;
-                        }
-
-                        switch( item.Destination )
-                        {
-                            case CommandResponseDestination.DEFAULT:
-                                Helpmebot6.irc.IrcPrivmsg( destination , message );
-                                break;
-                            case CommandResponseDestination.CHANNEL_DEBUG:
-                                Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , message );
-                                break;
-                            case CommandResponseDestination.PRIVATE_MESSAGE:
-                                Helpmebot6.irc.IrcPrivmsg( source.Nickname , message );
-                                break;
-                        }
-
-                    }
-                }
+                HandleCommandResponseHandler( source , destination , directedTo , response );
                 return;
             }
 
@@ -145,11 +120,62 @@ namespace helpmebot6
                 }
                 else
                 {
+                    string directedTo = FindRedirection( destination , ref args );
+                    if( directedTo != string.Empty )
+                    {
+                        wordResponse = directedTo + ": " + wordResponse;
+                    }
                     Helpmebot6.irc.IrcPrivmsg( destination , wordResponse );
                 }
                 return;
             }
 
+        }
+
+        private string FindRedirection( string destination , ref string[ ] args )
+        {
+            string directedTo = "";
+            foreach( string arg in args )
+            {
+                if( arg.StartsWith( ">" ) )
+                {
+                    if( Helpmebot6.irc.isOnChannel( destination , arg.Substring( 1 ) ) != 0 )
+                        directedTo = arg.Substring( 1 );
+
+                    GlobalFunctions.removeItemFromArray( arg , ref args );
+                }
+            }
+            return directedTo;
+        }
+
+        private void HandleCommandResponseHandler( User source , string destination , string directedTo , CommandResponseHandler response )
+        {
+            if( response != null )
+            {
+                foreach( CommandResponse item in response.getResponses( ) )
+                {
+                    string message = item.Message;
+
+                    if( directedTo != string.Empty )
+                    {
+                        message = directedTo + ": " + message;
+                    }
+
+                    switch( item.Destination )
+                    {
+                        case CommandResponseDestination.DEFAULT:
+                            Helpmebot6.irc.IrcPrivmsg( destination , message );
+                            break;
+                        case CommandResponseDestination.CHANNEL_DEBUG:
+                            Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , message );
+                            break;
+                        case CommandResponseDestination.PRIVATE_MESSAGE:
+                            Helpmebot6.irc.IrcPrivmsg( source.Nickname , message );
+                            break;
+                    }
+
+                }
+            }
         }
 
 
