@@ -104,25 +104,34 @@ namespace helpmebot6.Monitoring
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
             // keywordSingular
-            string listString = "";
-            foreach( Page item in items )
-            {
-                listString += "[[" + item.title + "]], ";
-            }
-            listString = listString.TrimEnd( ' ' , ',' );
 
-            string pluralString;
 
-            if( items.Count( ) == 1 )
+            string message;
+
+            if( items.Count() > 0 )
             {
-                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" ,"keywordSingularDefault" );
+                string listString = "";
+                foreach( Page item in items )
+                {
+                    listString += "[[" + item.title + "]], ";
+                }
+                listString = listString.TrimEnd( ' ' , ',' );
+                string pluralString;
+                if( items.Count( ) == 1 )
+                {
+                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" , "keywordSingularDefault" );
+                }
+                else
+                {
+                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
+                }
+                string[ ] messageParams = { items.Count( ).ToString( ) , pluralString , listString };
+                message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" , "keywordHasItemsDefault" , messageParams );
             }
             else
             {
-                pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
+                message = Configuration.Singleton( ).GetMessage( keyword + "NoItems" , "keywordNoItemsDefault" , Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" ) );
             }
-            string[ ] messageParams = { items.Count( ).ToString( ) , pluralString , listString };
-            string message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" ,"keywordHasItemsDefault", messageParams );
             return message;
         }
 
@@ -134,6 +143,14 @@ namespace helpmebot6.Monitoring
                 return cw;
             else
                 return null;
+        }
+
+        public void Stop( )
+        {
+            foreach( KeyValuePair<string,CategoryWatcher> item in watchers )
+            {
+                item.Value.Stop( );
+            }
         }
     }
 }

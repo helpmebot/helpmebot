@@ -214,7 +214,11 @@ namespace helpmebot6
            }
            return false;
        }
-        
 
+       static public void Stop( )
+       {
+           irc.IrcQuit( );
+           Monitoring.WatcherController.Instance( ).Stop( );
+       }
     }
 }

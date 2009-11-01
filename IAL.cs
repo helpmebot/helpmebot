@@ -571,6 +571,7 @@ namespace helpmebot6
             while ( _ThreadIsAlive );
 
             Console.WriteLine( "*** Reader thread died." );
+            Helpmebot6.Stop( );
         }
 
         void _ircWriterThreadMethod( )
@@ -611,6 +612,8 @@ namespace helpmebot6
                 }
             }
             while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
+
+            Console.WriteLine( "*** Writer thread died." );
         }
         #endregion
 
