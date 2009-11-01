@@ -53,41 +53,21 @@ namespace helpmebot6
              */
             if( Monitoring.WatcherController.Instance( ).isValidKeyword( command ) )
             {
+                string[ ] newArgs = new string[ args.Length + 1 ];
+                for( int i = 0 ; i < args.Length ; i++ )
+                {
+                    newArgs[ i + 1 ] = args[ i ];
+                }
+                newArgs[ 0 ] = command;
 
+                new Commands.CategoryWatcher( ).run( source , newArgs );
+
+                return;
 
             }
-
-
-            /*
-             * Check for a learned word
-             */
-
-            WordLearner.RemeberedWord rW = WordLearner.Remember( command );
-            string wordResponse = rW.phrase;
-            if( wordResponse != string.Empty )
-            {
-                if( source.AccessLevel < User.userRights.Normal )
-                {
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
-                    string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
-                    Helpmebot6.irc.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
-                    return;
-                }
-
-                wordResponse = string.Format( wordResponse , args );
-                if( rW.action )
-                {
-                    Helpmebot6.irc.CtcpRequest( destination , "ACTION" , wordResponse );
-                }
-                else
-                {
-                    Helpmebot6.irc.IrcPrivmsg( destination , wordResponse );
-                }
-            }
-
 
             /* 
-             * Not a word, check for a valid command
+             * Check for a valid command
              * search for a class that can handle this command.
              */
 
@@ -139,12 +119,40 @@ namespace helpmebot6
 
                     }
                 }
+                return;
             }
 
+            /*
+             * Check for a learned word
+             */
+
+            WordLearner.RemeberedWord rW = WordLearner.Remember( command );
+            string wordResponse = rW.phrase;
+            if( wordResponse != string.Empty )
+            {
+                if( source.AccessLevel < User.userRights.Normal )
+                {
+                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "accessDenied" , "" ) );
+                    string[ ] aDArgs = { source.ToString( ) , MethodBase.GetCurrentMethod( ).Name };
+                    Helpmebot6.irc.IrcPrivmsg( Configuration.Singleton( ).retrieveGlobalStringOption( "channelDebug" ) , Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ) );
+                    return;
+                }
+
+                wordResponse = string.Format( wordResponse , args );
+                if( rW.action )
+                {
+                    Helpmebot6.irc.CtcpRequest( destination , "ACTION" , wordResponse );
+                }
+                else
+                {
+                    Helpmebot6.irc.IrcPrivmsg( destination , wordResponse );
+                }
+                return;
+            }
 
         }
 
-       
+
 
 
     }

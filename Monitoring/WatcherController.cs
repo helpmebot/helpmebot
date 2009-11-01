@@ -65,7 +65,7 @@ namespace helpmebot6.Monitoring
             throw new NotImplementedException( );
         }
 
-        private string forceUpdate( string key )
+        public string forceUpdate( string key )
         {
             CategoryWatcher cw;
             if( watchers.TryGetValue( key , out cw ) )
@@ -126,6 +126,14 @@ namespace helpmebot6.Monitoring
             return message;
         }
 
-
+        private CategoryWatcher getWatcher( string keyword )
+        {
+            CategoryWatcher cw;
+            bool success = watchers.TryGetValue( keyword , out cw );
+            if( success )
+                return cw;
+            else
+                return null;
+        }
     }
 }
