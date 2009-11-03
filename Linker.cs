@@ -13,11 +13,8 @@ namespace helpmebot6
         protected Linker( )
         {
             lastLink = new Dictionary<string , string>( );
-            if( Helpmebot6.irc != null )
-            {
-                Helpmebot6.irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
-                Helpmebot6.irc.NoticeEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
-            }
+            Helpmebot6.irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
+            Helpmebot6.irc.NoticeEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
         }
 
         void irc_PrivmsgEvent( User source , string destination , string message )

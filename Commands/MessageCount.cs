@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "messagecount" );
         }
 
-        protected override CommandResponseHandler execute( User source , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "messageCountReport" , Helpmebot6.irc.MessageCount.ToString( ) ) );
         }

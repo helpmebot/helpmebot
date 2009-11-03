@@ -5,7 +5,7 @@
 
       public User.userRights accessLevel = User.userRights.Normal;
 
-      public CommandResponseHandler run( User source , string[ ] args )
+      public CommandResponseHandler run( User source , string channel,string[ ] args )
        {
            string command = this.GetType( ).ToString( );
 
@@ -25,13 +25,13 @@
            else
            {
                Log( "Starting command execution..." );
-               CommandResponseHandler crh =  execute( source , args );
+               CommandResponseHandler crh =  execute( source ,channel, args );
                Log( "Command execution complete." );
                return crh;
            }
        }
 
-      protected abstract CommandResponseHandler execute( User source , string[ ] args );
+      protected abstract CommandResponseHandler execute( User source, string channel , string[ ] args );
 
       protected void Log( string message )
       {

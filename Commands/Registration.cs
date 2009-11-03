@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "registration" );
         }
 
-        protected override CommandResponseHandler execute( User source , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             CommandResponseHandler crh = new CommandResponseHandler( );
             if( args.Length > 0 )

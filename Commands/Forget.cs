@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "forget" );
         }
 
-        protected override CommandResponseHandler execute( User source , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             if( args.Length >= 1 )
             {

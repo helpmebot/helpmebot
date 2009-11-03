@@ -15,7 +15,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "sayhi" );
         }
 
-        protected override CommandResponseHandler execute( User toUser , string[ ] args )
+        protected override CommandResponseHandler execute( User toUser ,string channel,  string[ ] args )
         {
             return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "cmdSayHi1" , toUser.Nickname ) );
         }

@@ -11,7 +11,7 @@ namespace helpmebot6.Commands
             accessLevel = GlobalFunctions.commandAccessLevel( "categorywatcher" );
         }
 
-        protected override CommandResponseHandler execute( User source , string[ ] args )
+        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             CommandResponseHandler crh = new CommandResponseHandler( );
 

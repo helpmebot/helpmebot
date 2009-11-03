@@ -152,5 +152,16 @@ namespace helpmebot6
 
             array = newArray;
         }
+
+        public static int RealArrayLength( string[ ] args )
+        {
+            int argsLength = 0;
+            foreach( string arg in args )
+            {
+                if( !string.IsNullOrEmpty( arg ) )
+                    argsLength++;
+            }
+            return argsLength;
+        }
     }
 }

@@ -55,12 +55,7 @@ namespace helpmebot6
              */
             if( Monitoring.WatcherController.Instance( ).isValidKeyword( command ) )
             {
-                int argsLength = 0;
-                foreach( string arg in args )
-                {
-                    if( !string.IsNullOrEmpty( arg ) )
-                        argsLength++;
-                }
+                int argsLength = GlobalFunctions.RealArrayLength( args );
 
                 string[ ] newArgs = new string[ argsLength + 1 ];
                 int newArrayPos = 1;
@@ -72,7 +67,7 @@ namespace helpmebot6
                 }
                 newArgs[ 0 ] = command;
                 string directedTo = FindRedirection( destination , ref newArgs );
-                CommandResponseHandler crh = new Commands.CategoryWatcher( ).run( source , newArgs );
+                CommandResponseHandler crh = new Commands.CategoryWatcher( ).run( source , destination, newArgs );
                 HandleCommandResponseHandler( source , destination , directedTo , crh );
                 return;
 
@@ -94,7 +89,7 @@ namespace helpmebot6
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
-                CommandResponseHandler response = ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source , args );
+                CommandResponseHandler response = ( (Commands.GenericCommand)Activator.CreateInstance( commandHandler ) ).run( source, destination , args );
                 HandleCommandResponseHandler( source , destination , directedTo , response );
                 return;
             }
@@ -138,6 +133,8 @@ namespace helpmebot6
                 }
             }
         }
+
+
 
         private string FindRedirection( string destination , ref string[ ] args )
         {
