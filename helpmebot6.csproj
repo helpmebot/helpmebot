@@ -91,6 +91,8 @@
     <Compile Include="Commands\Time.cs" />
     <Compile Include="Commands\UserInfo.cs" />
     <Compile Include="Commands\Version.cs" />
+    <Compile Include="Linker.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />

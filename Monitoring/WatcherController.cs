@@ -153,7 +153,6 @@ namespace helpmebot6.Monitoring
             }
         }
 
-
         public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
         {
             return watchers.Keys;

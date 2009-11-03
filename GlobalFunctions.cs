@@ -79,14 +79,13 @@ namespace helpmebot6
         /// </summary>
         /// <param name="ex">The exception thrown</param>
         /// <param name="method">The method which threw the exception.</param>
-        public static void ErrorLog( Exception ex, MethodBase method )
+        public static void ErrorLog( Exception ex , MethodBase method )
         {
-            Console.WriteLine( "*********************************" );
-            Console.WriteLine( "Error detected in method " + method.Module + "::" + method.Name );
-            Console.WriteLine( ex.ToString( ) + ex.StackTrace );
-            Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message );
-            Console.WriteLine( "*********************************" );
-            
+            Logger.Instance().addToLog( ex.ToString( ) + ex.StackTrace , Logger.LogTypes.ERROR);
+            if( Helpmebot6.irc != null )
+            {
+                Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , "***ERROR*** in " + method.Name + ": " + ex.Message );
+            }
         }
 
         public static string escape( string str )
@@ -94,7 +93,7 @@ namespace helpmebot6
             return MySql.Data.MySqlClient.MySqlHelper.EscapeString( str );
         }
 
-        public static void Log(string message) { Console.WriteLine("# " + message); }
+        //public static void Log(string message) { Console.WriteLine("# " + message); }
 
         public static User.userRights commandAccessLevel( string command )
         {

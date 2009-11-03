@@ -188,12 +188,19 @@ namespace helpmebot6
             MySql.Data.MySqlClient.MySqlDataReader dr =  dbal.ExecuteReaderQuery( "SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
 
             System.Collections.ArrayList al = new System.Collections.ArrayList( );
-            
-            while ( dr.Read() )
+
+            if( dr != null )
             {
-                al.Add( dr.GetString( 0 ) );                
+                while( dr.Read( ) )
+                {
+                    al.Add( dr.GetString( 0 ) );
+                }
+                dr.Close( );
             }
-            dr.Close( );
+            else
+            {
+                GlobalFunctions.ErrorLog( new System.IO.InvalidDataException( ) , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+            }
             return al;
         }
 

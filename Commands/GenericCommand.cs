@@ -9,7 +9,7 @@
        {
            string command = this.GetType( ).ToString( );
 
-           GlobalFunctions.Log( "Running command: " +command );
+            Log( "Running command: " +command );
 
            if( source.AccessLevel < accessLevel )
            {
@@ -19,17 +19,24 @@
                response.respond( Configuration.Singleton( ).GetMessage( "accessDenied" , "" ),CommandResponseDestination.PRIVATE_MESSAGE );
                string[ ] aDArgs = { source.ToString( ) ,  command };
                response.respond(  Configuration.Singleton( ).GetMessage( "accessDeniedDebug" , aDArgs ), CommandResponseDestination.CHANNEL_DEBUG );
-
+               Log( "Access denied to command." );
                return response;
            }
            else
            {
-               return execute( source , args );
+               Log( "Starting command execution..." );
+               CommandResponseHandler crh =  execute( source , args );
+               Log( "Command execution complete." );
+               return crh;
            }
        }
 
       protected abstract CommandResponseHandler execute( User source , string[ ] args );
 
+      protected void Log( string message )
+      {
+          Logger.Instance( ).addToLog( message , Logger.LogTypes.COMMAND );
+      }
    
     }
 }

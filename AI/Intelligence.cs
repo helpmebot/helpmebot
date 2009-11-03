@@ -35,37 +35,49 @@ namespace helpmebot6.AI
 
             foreach( string word in hello )
             {
-                if( tokens[0]==  word && tokens[1] == Helpmebot6.irc.IrcNickname ) 
+                if( tokens.Length > 1 )
                 {
-                    return helloResponses;
+                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    {
+                        return helloResponses;
+                    }
                 }
             }
 
             foreach( string word in morning )
             {
-                if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                if( tokens.Length > 1 )
                 {
-                    return morningResponses;
+                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    {
+                        return morningResponses;
+                    }
                 }
             }
 
             foreach( string word in afternoon )
             {
-                if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                if( tokens.Length > 1 )
                 {
-                    return afternoonResponses;
+                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    {
+                        return afternoonResponses;
+                    }
                 }
             }
 
             foreach( string word in evening )
             {
-                if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                if( tokens.Length > 1 )
                 {
-                    return eveningResponses;
+                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    {
+                        return eveningResponses;
+                    }
                 }
             }
 
-            return ""; 
+            return "";
         }
 
     }

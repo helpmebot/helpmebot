@@ -55,7 +55,10 @@ namespace helpmebot6
 
            dbal= DAL.Singleton( server, port, username, password, schema );
 
-           dbal.Connect( );
+           if( !dbal.Connect( ) )
+           { // can't connect to database, DIE
+               return;
+           }
 
            config = Configuration.Singleton();
 
@@ -69,7 +72,10 @@ namespace helpmebot6
 
            SetupEvents( );
 
-           irc.Connect( );
+           if( !irc.Connect( ) )
+           { // if can't connect to irc, die
+               return;
+           }
 
            // initialise watcher controller
            Monitoring.WatcherController.Instance( );
@@ -139,13 +145,16 @@ namespace helpmebot6
             irc.IrcJoin( debugChannel );
             
             MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery("SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1;");
-            while (dr.Read())
+            if( dr != null )
             {
-                object[] channel = new object[1];
-                dr.GetValues(channel);
-                irc.IrcJoin(channel[0].ToString());
+                while( dr.Read( ) )
+                {
+                    object[ ] channel = new object[ 1 ];
+                    dr.GetValues( channel );
+                    irc.IrcJoin( channel[ 0 ].ToString( ) );
+                }
+                dr.Close( );
             }
-            dr.Close();
         }
 
         /// <summary>
@@ -171,7 +180,7 @@ namespace helpmebot6
                /// !command
                /// !helpmebot command
 
-               if( words[ 0 ] == ( Trigger + irc.IrcNickname ) )
+               if( words[ 0 ].ToLower() == ( Trigger + irc.IrcNickname.ToLower()) )
                {
                    overrideSilence = true;
                    message = string.Join( " " , words , 1 , words.Length - 1 );
@@ -186,25 +195,25 @@ namespace helpmebot6
            }
            else
            {
-               if( words[ 0 ] == irc.IrcNickname )/// Helpmebot command
+               if( words[ 0 ].ToLower() == irc.IrcNickname.ToLower() )/// Helpmebot command
                {
                    message = string.Join( " " , words , 1 , words.Length - 1 );
                    overrideSilence = true;
                    return true;
                }
-               else if( words[ 0 ] == ( irc.IrcNickname + ":" ) ) /// Helpmebot: command
+               else if( words[ 0 ].ToLower() == ( irc.IrcNickname.ToLower() + ":" ) ) /// Helpmebot: command
                {
                    message = string.Join( " " , words , 1 , words.Length - 1 );
                    overrideSilence = true;
                    return true;
                }
-               else if( words[ 0 ] == ( irc.IrcNickname + ">" ) ) /// Helpmebot> command
+               else if( words[ 0 ].ToLower() == ( irc.IrcNickname.ToLower() + ">" ) ) /// Helpmebot> command
                {
                    message = string.Join( " " , words , 1 , words.Length - 1 );
                    overrideSilence = true;
                    return true;
                }
-               else if(words[ 0 ] == (irc.IrcNickname + ",")) /// Helpmebot, command
+               else if(words[ 0 ].ToLower() == (irc.IrcNickname.ToLower() + ",")) /// Helpmebot, command
                {
                    message = string.Join( " " , words , 1 , words.Length - 1 );
                    overrideSilence = true;

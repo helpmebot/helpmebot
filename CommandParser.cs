@@ -44,6 +44,8 @@ namespace helpmebot6
 
         public void handleCommand( User source , string destination , string command , string[ ] args )
         {
+            Logger.Instance().addToLog( "Handling recieved message..." , Logger.LogTypes.GENERAL);
+
             // if on ignore list, ignore!
             if( source.AccessLevel == User.userRights.Ignored )
                 return;
@@ -83,7 +85,7 @@ namespace helpmebot6
 
             // Create a new object which holds the type of the command handler, if it exists.
             // if the command handler doesn't exist, then this won't be set to a value
-            Type commandHandler = Type.GetType( "helpmebot6.Commands." + command.Substring( 0 , 1 ).ToUpper( ) + command.Substring( 1 ) );
+            Type commandHandler = Type.GetType( "helpmebot6.Commands." + command.Substring( 0 , 1 ).ToUpper( ) + command.Substring( 1 ).ToLower() );
             // check the type exists
             if( commandHandler != null )
             {

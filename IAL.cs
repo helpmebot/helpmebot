@@ -208,7 +208,7 @@ namespace helpmebot6
         
         #region Methods
 
-        public void Connect( )
+        public bool Connect( )
         {
             try
             {
@@ -230,10 +230,13 @@ namespace helpmebot6
                 _ircWriterThread.Start( );
 
                 ConnectionRegistrationRequiredEvent( );
+
+                return true;
             }
             catch ( SocketException ex )
             {
                 GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                return false;
             }
         }
 
@@ -712,12 +715,12 @@ namespace helpmebot6
 
         void IAL_NoticeEvent( User source, string destination, string message )
         {
-            Console.WriteLine( ">>>>> NOTICE EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
+            Log( "NOTICE EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
         }
 
         void IAL_CtcpEvent( User source, string destination, string message )
         {
-            Console.WriteLine( ">>>>> CTCP EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
+            Log("CTCP EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
             switch ( message.Split(' ')[0] )
             {
                 case "VERSION":
@@ -739,54 +742,54 @@ namespace helpmebot6
 
         void IAL_PrivmsgEvent( User source, string destination, string message )
         {
-            Console.WriteLine( ">>>>> PRIVMSG EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
+            Log("PRIVMSG EVENT FROM " + source.ToString() + " TO " + destination + " MESSAGE " + message );
         }
 
         void IAL_KickEvent( User source, string channel, string nick, string message )
         {
-            Console.WriteLine( ">>>>> KICK FROM " + channel + " BY " + source.ToString() + " AFFECTED " + nick + " REASON " + message );
+            Log("KICK FROM " + channel + " BY " + source.ToString() + " AFFECTED " + nick + " REASON " + message );
         }
 
         void IAL_InviteEvent( User source, string nickname, string channel )
         {
-            Console.WriteLine( ">>>>> INVITE FROM " + source.ToString() + " TO " + nickname + " CHANNEL " + channel );
+            Log("INVITE FROM " + source.ToString() + " TO " + nickname + " CHANNEL " + channel );
         }
 
         void IAL_ModeChangeEvent( User source, string subject, string flagchanges, string parameter )
         {
-            Console.WriteLine( ">>>>> MODE CHANGE BY " + source.ToString() + " ON " + subject + " CHANGES " + flagchanges + " PARAMETER " + parameter );
+            Log("MODE CHANGE BY " + source.ToString() + " ON " + subject + " CHANGES " + flagchanges + " PARAMETER " + parameter );
         }
 
         void IAL_TopicEvent( User source, string channel, string topic )
         {
-            Console.WriteLine( ">>>>> TOPIC CHANGED BY " + source.ToString() + " IN " + channel + " TOPIC " + topic );
+            Log("TOPIC CHANGED BY " + source.ToString() + " IN " + channel + " TOPIC " + topic );
         }
 
         void IAL_PartEvent( User source, string channel, string message )
         {
-            Console.WriteLine( ">>>>> PART BY " + source.ToString() + " FROM " + channel + " MESSAGE " + message );
+            Log("PART BY " + source.ToString() + " FROM " + channel + " MESSAGE " + message );
         }
 
         void IAL_JoinEvent( User source, string channel )
         {
-            Console.WriteLine( ">>>>> JOIN EVENT BY " + source.ToString( ) + " INTO " + channel );
+            Log("JOIN EVENT BY " + source.ToString( ) + " INTO " + channel );
         }
 
         void IAL_QuitEvent( User source, string message )
         {
-            Console.WriteLine( ">>>>> QUIT BY " + source.ToString( ) + " MESSAGE " + message );
+            Log("QUIT BY " + source.ToString( ) + " MESSAGE " + message );
         }
 
         void IAL_NicknameChangeEvent( string oldnick, string newnick )
         {
-            Console.WriteLine( ">>>>> NICK CHANGE BY " + oldnick + " TO " + newnick );
+            Log("NICK CHANGE BY " + oldnick + " TO " + newnick );
         }
         #endregion
 
         void IAL_DataRecievedEvent( string data )
         {
-           // Console.WriteLine( ">" + data );
-
+            Logger.Instance( ).addToLog( data , Logger.LogTypes.IRC );
+            
             char[ ] colonSeparator = { ':' };
 
             string messagesource, command, parameters;
@@ -919,5 +922,9 @@ namespace helpmebot6
         }
         #endregion
 
+        void Log( string message )
+        {
+            Logger.Instance( ).addToLog( message , Logger.LogTypes.IAL );
+        }
     }
 }

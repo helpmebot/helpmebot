@@ -91,7 +91,7 @@ namespace helpmebot6.Monitoring
 
         public void Stop()
         {
-            GlobalFunctions.Log("Stopping Watcher Thread for " + _category + " ...");
+            Logger.Instance( ).addToLog( "Stopping Watcher Thread for " + _category + " ..." , Logger.LogTypes.GENERAL );
             watcherThread.Abort();
         }
 

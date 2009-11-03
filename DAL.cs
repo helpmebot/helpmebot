@@ -32,8 +32,7 @@ namespace helpmebot6
         MySqlConnection _connection;
 
         public static DAL Singleton()
-        {
-                          
+        {               
             return _singleton;
         }
         public static DAL Singleton(string Host, uint Port, string Username, string Password, string Schema)
@@ -52,21 +51,32 @@ namespace helpmebot6
             _mySqlUsername = Username;
         }
 
-        public void Connect( )
+        public bool Connect( )
         {
-            MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder( );
-            csb.Database = _mySqlSchema;
-            csb.Password = _mySqlPassword;
-            csb.Server = _mySqlServer;
-            csb.UserID = _mySqlUsername;
-            csb.Port = _mySqlPort;
+            try
+            {
+                Logger.Instance( ).addToLog( "Opening database connection..." , Logger.LogTypes.DAL );
+                MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder( );
+                csb.Database = _mySqlSchema;
+                csb.Password = _mySqlPassword;
+                csb.Server = _mySqlServer;
+                csb.UserID = _mySqlUsername;
+                csb.Port = _mySqlPort;
 
-            _connection = new MySqlConnection( csb.ConnectionString);
-            _connection.Open( );
+                _connection = new MySqlConnection( csb.ConnectionString );
+                _connection.Open( );
+                return true;
+            }
+            catch( MySqlException ex )
+            {
+                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                return false;
+            }
         }
 
         public void ExecuteNonQuery( string query )
         {
+            Logger.Instance( ).addToLog( "Executing (non)query: " + query , Logger.LogTypes.DAL );
             try
             {
                 MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
@@ -82,10 +92,14 @@ namespace helpmebot6
             {
                 GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
             }
+            Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
+
         }
 
         public string ExecuteScalarQuery( string query )
         {
+            Logger.Instance( ).addToLog( "Executing (scalar)query: " + query , Logger.LogTypes.DAL );
+
             object result = null;
             try
             {
@@ -103,21 +117,30 @@ namespace helpmebot6
             }
             string ret = "";
 
-            if ( result == null )
+            if( result == null )
+            {
+                Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query , Logger.LogTypes.DAL );
                 ret = "";
+            }
             else
+            {
                 ret = result.ToString( );
-
+                Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
+            }
             return ret;
         }
 
         public MySqlDataReader ExecuteReaderQuery( string query )
         {
+            Logger.Instance( ).addToLog( "Executing (reader)query: " + query , Logger.LogTypes.DAL );
+
             try
             {
                 MySqlCommand cmd = new MySqlCommand( query );
                 cmd.Connection = _connection;
                 MySqlDataReader result = cmd.ExecuteReader( );
+                Logger.Instance( ).addToLog( "Done executing (reader)query: " + query , Logger.LogTypes.DAL );
+
                 return result;
             }
             catch ( MySqlException ex )
@@ -128,6 +151,7 @@ namespace helpmebot6
             {
                 GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
             }
+            Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
 
             return null;
         }
@@ -155,12 +179,15 @@ namespace helpmebot6
 
         public string Select( string select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
         {
+
             try
             {
                 string[ ] selectArray = { select };
                 string query = buildSelect( selectArray , from , joinConds , where , groupby , orderby , having , limit , offset );
+                Logger.Instance( ).addToLog( "Running SELECT query: " + query , Logger.LogTypes.DAL );
 
                 string result = ExecuteScalarQuery( query );
+                Logger.Instance( ).addToLog( "Done SELECT query: " + query , Logger.LogTypes.DAL );
 
                 return result;
             }
@@ -283,19 +310,24 @@ namespace helpmebot6
             try
             {
                 string query = buildSelect( select , from , joinConds , where , groupby , orderby , having , limit , offset );
+                Logger.Instance( ).addToLog( "Running SELECT query: " + query , Logger.LogTypes.DAL );
 
                 MySqlDataReader dr = ExecuteReaderQuery( query );
 
                 ArrayList resultSet = new ArrayList( );
-
-                object[ ] row = new object[dr.FieldCount];
-                while( dr.Read( ) )
+                if( dr != null )
                 {
-                    row = new object[ dr.FieldCount ];
-                    dr.GetValues( row );
-                    resultSet.Add( row );
+                    object[ ] row = new object[ dr.FieldCount ];
+                    while( dr.Read( ) )
+                    {
+                        row = new object[ dr.FieldCount ];
+                        dr.GetValues( row );
+                        resultSet.Add( row );
+                    }
+                    dr.Close( );
                 }
-                dr.Close( );
+                Logger.Instance( ).addToLog( "Done SELECT query: " + query , Logger.LogTypes.DAL );
+
                 return resultSet;
                 
             }
