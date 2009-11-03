@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="AI\Intelligence.cs" />
     <Compile Include="CommandResponse.cs" />
+    <Compile Include="Commands\Access.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
     <Compile Include="Commands\CategoryWatcher.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Commands\Link.cs" />
     <Compile Include="Commands\MaxLag.cs" />
     <Compile Include="Commands\MessageCount.cs" />
+    <Compile Include="Commands\Myaccess.cs" />
     <Compile Include="Commands\Registration.cs" />
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\SayHi.cs" />

@@ -25,7 +25,6 @@ namespace helpmebot6
        public static IAL irc ;
        static DAL dbal;
        static Configuration config;
-//       static CommandParser cmd;
 
        static string Trigger;
 
@@ -97,7 +96,6 @@ namespace helpmebot6
            string[ ] args = { channel };
            new Commands.Join( ).run( source ,channel, args);
        }
-
 
        static void welcomeNewbieOnJoinEvent( User source , string channel )
        {
