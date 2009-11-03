@@ -18,24 +18,39 @@ namespace helpmebot6.Commands
                 switch( args[0] )
                 {
                     case "add":
-                        User.userRights aL = User.userRights.Normal;
-
-                        switch( args[2].ToLower() )
+                        if( args.Length > 2 )
                         {
-                            case "developer":
-                            case "superuser":
-                            case "advanced":
-                            case "semi-ignored":
-                            case "ignored":
-                            case "normal":
-                                break;
-                            default:
-                                break;
-                        }
+                            User.userRights aL = User.userRights.Normal;
 
-                        addAccessEntry( User.newFromString( args[ 1 ] ) , aL );
+                            switch( args[ 2 ].ToLower( ) )
+                            {
+                                case "developer":
+                                    aL = User.userRights.Developer;
+                                    break;
+                                case "superuser":
+                                    aL = User.userRights.Superuser;
+                                    break;
+                                case "advanced":
+                                    aL = User.userRights.Advanced;
+                                    break;
+                                case "semi-ignored":
+                                    aL = User.userRights.Semiignored;
+                                    break;
+                                case "ignored":
+                                    aL = User.userRights.Ignored;
+                                    break;
+                                case "normal":
+                                    aL = User.userRights.Normal;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            addAccessEntry( User.newFromString( args[ 1 ] ) , aL );
+                        }
                         break;
                     case "del":
+                        delAccessEntry( int.Parse( args[ 1 ] ) );
                         break;
                 }
                 // add <source> <level>
@@ -47,7 +62,14 @@ namespace helpmebot6.Commands
 
         void addAccessEntry( User newEntry , User.userRights AccessLevel )
         {
-            
+            Logger.Instance( ).addToLog( "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( ) , Logger.LogTypes.COMMAND );
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `user` VALUES(NULL, '" + newEntry.Nickname + "', '" + newEntry.Username + "', '" + newEntry.Hostname + "', '" + AccessLevel.ToString( ) + "');" );
+        }
+
+        void delAccessEntry( int id )
+        {
+            Logger.Instance( ).addToLog( "Removing access entry #" + id.ToString( ) , Logger.LogTypes.COMMAND );
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `user` WHERE `user_id` = " + id.ToString( ) + " LIMIT 1;" );
         }
     }
 }
