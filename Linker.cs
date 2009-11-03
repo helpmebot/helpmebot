@@ -89,9 +89,28 @@ namespace helpmebot6
             string link;
             bool success = lastLink.TryGetValue( destination , out link );
             if( success )
-                return "http://enwp.org/" + link;
+                return "http://enwp.org/" + antispace(link);
             else
                 return "";
+        }
+
+        string antispace( string source )
+        {
+            int currloc = 0;
+            string result = "";
+            while( currloc < source.Length )
+            {
+                if( source.Substring( currloc , 1 ) == " " )
+                {
+                    result += "_";
+                }
+                else
+                {
+                    result += source.Substring( currloc , 1 );
+                }
+                currloc += 1;
+            }
+            return result;
         }
     }
 }
