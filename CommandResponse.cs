@@ -21,7 +21,6 @@ namespace helpmebot6
     class CommandResponseHandler
     {
         ArrayList responses;
-        string debugIrcChannel;
 
         public CommandResponseHandler( )
         {
@@ -30,13 +29,11 @@ namespace helpmebot6
         public CommandResponseHandler( string message )
         {
             responses = new ArrayList( );
-            debugIrcChannel = helpmebot6.Configuration.Singleton( ).retrieveGlobalStringOption( "debugIrcChannel" );
             respond( message );
         }
         public CommandResponseHandler( string message , CommandResponseDestination destination )
         {
             responses = new ArrayList( );
-            debugIrcChannel = helpmebot6.Configuration.Singleton( ).retrieveGlobalStringOption( "debugIrcChannel" );
             respond( message , destination );
         }
         public void respond( string message  )
