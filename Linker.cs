@@ -89,7 +89,7 @@ namespace helpmebot6
             string link;
             bool success = lastLink.TryGetValue( destination , out link );
             if( success )
-                return link;
+                return "http://enwp.org/" + link;
             else
                 return "";
         }
