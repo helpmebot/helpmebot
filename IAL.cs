@@ -313,6 +313,7 @@ namespace helpmebot6
             {
                 _sendLine( "PRIVMSG " + Destination + " :" + Message );
             }
+            Linker.Instance( ).ParseMessage( Message , Destination );
         }
 
         public void IrcQuit( string message )
