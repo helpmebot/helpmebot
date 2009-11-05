@@ -17,7 +17,10 @@ namespace helpmebot6.Monitoring
         {
             watchers = new Dictionary<string , CategoryWatcher>( );
             string[] cols = {"watcher_category", "watcher_keyword"};
-            ArrayList watchersInDb = DAL.Singleton( ).Select( cols , "watcher" , null , null , null , null , null , 100 , 0 );
+            DAL.order[ ] o = new DAL.order[ 1 ];
+            o[ 0 ].asc = true;
+            o[ 0 ].column = "watcher_priority";
+            ArrayList watchersInDb = DAL.Singleton( ).Select( cols , "watcher" , null ,null , null , o , null , 100 , 0 );
             foreach( object[] item in watchersInDb )
             {
                 watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] ) );
@@ -106,6 +109,8 @@ namespace helpmebot6.Monitoring
             // keywordSingular
 
 
+            items = removeBlacklistedItems( items );
+
             string message;
 
             if( items.Count > 0 )
@@ -156,6 +161,22 @@ namespace helpmebot6.Monitoring
         public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
         {
             return watchers.Keys;
+        }
+
+        private ArrayList removeBlacklistedItems( ArrayList pageList )
+        {
+            string[ ] cols = { "ip_title" };
+            ArrayList blacklist = DAL.Singleton( ).Select( cols , "ignoredpages" , null , null , null , null , null , 0 , 0 );
+
+            foreach( object[] item in blacklist )
+            {
+                if( pageList.Contains( (string)item[ 0 ] ) )
+                {
+                    pageList.Remove( (string)item[ 0 ] );
+                }
+            }
+
+            return pageList;
         }
     }
 }
