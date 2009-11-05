@@ -76,7 +76,7 @@ namespace helpmebot6.Monitoring
                 return null;
         }
 
-        private void CategoryHasItemsEvent( PageList items , string keyword )
+        private void CategoryHasItemsEvent( ArrayList items , string keyword )
         {
 
 
@@ -91,7 +91,7 @@ namespace helpmebot6.Monitoring
             queryJoin[ 1 ].joinType = DAL.joinTypes.INNER;
             queryJoin[ 1 ].table = "channel c";
             queryJoin[ 1 ].joinConditions = "c.`channel_id` = cw.`cw_channel`";
-            string[ ] queryWhere = { "w.`watcher_keyword` = 'per'" };
+            string[ ] queryWhere = { "w.`watcher_keyword` = '"+keyword+"'" };
             ArrayList channels = DAL.Singleton( ).Select( queryCols , "watcher w" , queryJoin , queryWhere , new string[ 0 ] , null , null , 10 , 0 );
             foreach( object[ ] item in channels )
             {
@@ -99,7 +99,7 @@ namespace helpmebot6.Monitoring
             }
         }
 
-        private string compileMessage( PageList items , string keyword )
+        private string compileMessage( ArrayList items , string keyword )
         {   // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
@@ -108,16 +108,16 @@ namespace helpmebot6.Monitoring
 
             string message;
 
-            if( items.Count() > 0 )
+            if( items.Count > 0 )
             {
                 string listString = "";
-                foreach( Page item in items )
+                foreach( string item in items )
                 {
-                    listString += "[[" + item.title + "]], ";
+                    listString += "[[" + item + "]], ";
                 }
                 listString = listString.TrimEnd( ' ' , ',' );
                 string pluralString;
-                if( items.Count( ) == 1 )
+                if( items.Count == 1 )
                 {
                     pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" , "keywordSingularDefault" );
                 }
@@ -125,7 +125,7 @@ namespace helpmebot6.Monitoring
                 {
                     pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
                 }
-                string[ ] messageParams = { items.Count( ).ToString( ) , pluralString , listString };
+                string[ ] messageParams = { items.Count.ToString( ) , pluralString , listString };
                 message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" , "keywordHasItemsDefault" , messageParams );
             }
             else

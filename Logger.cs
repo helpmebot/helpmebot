@@ -81,6 +81,10 @@ namespace helpmebot6
             switch( type )
             {
                 case LogTypes.DNWB:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write( dateString );
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine( message );
                     break;
                 case LogTypes.DAL:
                     if( logDal )

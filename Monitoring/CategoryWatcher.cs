@@ -28,8 +28,6 @@ namespace helpmebot6.Monitoring
 
         string _site;
         string _category;
-        string _username;
-        string _password;
         string _key;
 
         Thread watcherThread;
@@ -37,23 +35,17 @@ namespace helpmebot6.Monitoring
         int _sleepTime = 180;
 
 
-        public delegate void CategoryHasItemsEventHook( DotNetWikiBot.PageList items, string keyword);
+        public delegate void CategoryHasItemsEventHook( ArrayList items, string keyword);
         public event CategoryHasItemsEventHook CategoryHasItemsEvent;
-
-        DotNetWikiBot.Site mw_instance;
 
         public CategoryWatcher( string Category, string Key )
         {
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
-            _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             _category = Category;
-            _username = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_username` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
-            _password = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_password` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             _key = Key;
 
-
-            mw_instance = new DotNetWikiBot.Site( _site , _username , _password );
 
             watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             watcherThread.Start( );
@@ -62,13 +54,14 @@ namespace helpmebot6.Monitoring
 
         private void watcherThreadMethod( )
         {
+            Logger.Instance( ).addToLog( "Starting category watcher for '" + _key + "'..." , Logger.LogTypes.GENERAL );
             try
             {
                 while ( true )
                 {
                     Thread.Sleep( this.SleepTime * 1000 );
-                    DotNetWikiBot.PageList categoryResults = this.doCategoryCheck( );
-                    if ( categoryResults.Count() > 0)
+                    ArrayList categoryResults = this.doCategoryCheck( );
+                    if ( categoryResults.Count > 0)
                     {
                         CategoryHasItemsEvent( categoryResults, _key);
                     }
@@ -78,15 +71,7 @@ namespace helpmebot6.Monitoring
             {
                 GlobalFunctions.ErrorLog( ex, System.Reflection.MethodInfo.GetCurrentMethod( ) );
             }
-        }
-
-        public DotNetWikiBot.PageList doCategoryCheck( )
-        {
-            
-            DotNetWikiBot.PageList list = new DotNetWikiBot.PageList(mw_instance);
-            list.FillAllFromCategory(_category);
-
-            return list;
+            Logger.Instance( ).addToLog( "Category watcher for '" + _key + "' died." , Logger.LogTypes.ERROR );
         }
 
         public void Stop()
@@ -115,6 +100,53 @@ namespace helpmebot6.Monitoring
             return _key;
         }
 
+        public ArrayList doCategoryCheck( )
+        {
+            Logger.Instance( ).addToLog( "Getting items in category " + _key , Logger.LogTypes.GENERAL);
+            ArrayList pages = new ArrayList( );
+            try
+            {
+                //Create the XML Reader
+                System.Xml.XmlTextReader xmlreader = new System.Xml.XmlTextReader( _site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" + _category );
+
+                //Disable whitespace so that you don't have to read over whitespaces
+                xmlreader.WhitespaceHandling = System.Xml.WhitespaceHandling.None;
+
+                //read the xml declaration and advance to api tag
+                xmlreader.Read( );
+                //read the api tag
+                xmlreader.Read( );
+                //read the query tag
+                xmlreader.Read( );
+                //read the categorymembers tag
+                xmlreader.Read( );
+
+                while( true )
+                {
+                    //Go to the name tag
+                    xmlreader.Read( );
+
+                    //if not start element exit while loop
+                    if( !xmlreader.IsStartElement( ) )
+                    {
+                        break;
+                    }
+
+                    //Get the title Attribute Value
+                    string titleAttribute = xmlreader.GetAttribute( "title" );
+                    pages.Add( titleAttribute );
+                }
+
+                //close the reader
+                xmlreader.Close( );
+            }
+            catch( Exception ex )
+            {
+                Logger.Instance( ).addToLog( "Error contacting API (" + _site + ") " + ex.Message , Logger.LogTypes.DNWB );
+            }
+            return pages;
+
+        }
         
     }
 }

@@ -596,7 +596,7 @@ namespace helpmebot6
                     if ( _sendQ.Count > 0 )
                     {
                         string line = (string)_sendQ.Dequeue( );
-                        Console.WriteLine( "<" + line );
+                        Logger.Instance( ).addToLog( "< " + line , Logger.LogTypes.IAL );
                         _ircWriter.WriteLine( line );
                         _ircWriter.Flush( );
                         Thread.Sleep( this.FloodProtectionWaitTime );
