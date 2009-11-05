@@ -84,7 +84,7 @@ namespace helpmebot6
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write( dateString );
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine( message );
+                    Console.WriteLine( "A " + message );
                     break;
                 case LogTypes.DAL:
                     if( logDal )
@@ -92,7 +92,7 @@ namespace helpmebot6
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write( dateString );
                         Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine( message );
+                        Console.WriteLine( "D " + message );
                     }
                     DalLogger.WriteLine( dateString + message );
                     break;
@@ -101,26 +101,26 @@ namespace helpmebot6
                     Console.Write( dateString );
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     IalLogger.WriteLine( dateString + message );
-                    Console.WriteLine( message );
+                    Console.WriteLine( "I " + message );
                     break;
                 case LogTypes.COMMAND:
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write( dateString );
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine( message );
+                    Console.WriteLine( "C " + message );
                     break;
                 case LogTypes.GENERAL:
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write( dateString );
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine( message );
+                    Console.WriteLine( "G " + message );
                     break;
                 case LogTypes.ERROR:
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write( dateString );
                     Console.ForegroundColor = ConsoleColor.Red;
                     ErrorLogger.WriteLine( dateString + message );
-                    Console.WriteLine( message );
+                    Console.WriteLine( "E " + message );
                     break;
                 case LogTypes.IRC:
                     if( logIRC )
@@ -129,7 +129,7 @@ namespace helpmebot6
                         Console.Write( dateString );
                         Console.ForegroundColor = ConsoleColor.Black;
                         Console.BackgroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine( message );
+                        Console.WriteLine( "R " + message );
                     }
                     IRClogger.WriteLine( dateString + message );
                     
