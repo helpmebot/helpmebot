@@ -54,8 +54,11 @@ namespace helpmebot6
             int id = 0;
             foreach ( string straw in haystack )
             {
-                if ( needlehead == straw.Substring( 0, needlehead.Length ) )
-                    return id;
+                if( straw.Length >= needlehead.Length )
+                {
+                    if( needlehead == straw.Substring( 0 , needlehead.Length ) )
+                        return id;
+                }
                 id++;
             }
 

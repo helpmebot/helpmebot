@@ -41,6 +41,12 @@ namespace helpmebot6
                configFile = args[ configFileArg ].Substring( args[ configFileArg ].IndexOf( '=' ) );
            }
 
+           if( GlobalFunctions.prefixIsInArray( "--logdal" , args ) != -1 )
+               Logger.Instance( ).LogDAL = true;
+           if( GlobalFunctions.prefixIsInArray( "--logirc" , args ) != -1 )
+               Logger.Instance( ).LogIRC = true;
+
+
            InitialiseBot( configFile );
        }
 
@@ -75,9 +81,6 @@ namespace helpmebot6
            { // if can't connect to irc, die
                return;
            }
-
-           // initialise watcher controller
-           Monitoring.WatcherController.Instance( );
        }
 
        static void SetupEvents( )
