@@ -117,6 +117,7 @@ namespace helpmebot6
                bool overrideSilence = cmd.overrideBotSilence;
                if( isRecognisedMessage( ref message , ref overrideSilence ) )
                {
+                   cmd.overrideBotSilence = overrideSilence;
                    string[ ] messageWords = message.Split( ' ' );
                    string command = messageWords[ 0 ];
                    string[ ] commandArgs = string.Join( " " , messageWords , 1 , messageWords.Length - 1 ).Split( ' ' );

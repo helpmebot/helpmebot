@@ -169,6 +169,29 @@ namespace helpmebot6
             }
         }
 
+        public void deleteLocalOption( string optionName , string target )
+        {
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM channelconfig WHERE cc_config = " + getOptionId( optionName ) + " AND cc_channel = " + getChannelId( target ) + " LIMIT 1;" );
+        }
+
+        private string getOptionId( string optionName )
+        {
+            //SELECT c.`configuration_id` FROM configuration c
+            //WHERE c.`configuration_name` = "ircNetwork";
+
+            string[ ] wC = { "c.`configuration_name` = '" + optionName + "'" };
+            return DAL.Singleton( ).Select( "c.`configuration_id`" , "configuration c" , null , wC, null , null , null , 1 , 0 );
+        }
+
+        private string getChannelId( string channel )
+        {
+            //SELECT c.`channel_id` FROM channel c
+            //WHERE c.`channel_name` = "##stwalkerster";
+
+            string[ ] wC = { "c.`channel_name` = '"+channel+"'" };
+            return DAL.Singleton( ).Select( "c.`channel_id`" , "channel c" , null , wC , null , null , null , 1 , 0 );
+        }
+
         public static void readHmbotConfigFile( string filename, 
                 ref string mySqlServerHostname, ref string mySqlUsername, 
                 ref string mySqlPassword, ref uint mySqlServerPort, 
@@ -182,6 +205,8 @@ namespace helpmebot6
             mySqlSchema = settingsreader.ReadLine( );
             settingsreader.Close( );
         }
+
+        #region messaging
 
         private ArrayList getMessages( string messageName )
         {
@@ -257,5 +282,6 @@ namespace helpmebot6
         {
             DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `message` VALUES ( NULL, \"" + messageName + "\", \"" + messageDescription + "\", \"" + messageContent + "\" , 1);" );
         }
+        #endregion
     }
 }
