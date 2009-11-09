@@ -75,6 +75,9 @@
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
     <Compile Include="Commands\CategoryWatcherCommand.cs" />
+    <Compile Include="Commands\CategoryWatcherCommand\Delay.cs" />
+    <Compile Include="Commands\CategoryWatcherCommand\Disable.cs" />
+    <Compile Include="Commands\CategoryWatcherCommand\Enable.cs" />
     <Compile Include="Commands\Count.cs" />
     <Compile Include="Commands\Faq.cs" />
     <Compile Include="Commands\Fetchall.cs" />

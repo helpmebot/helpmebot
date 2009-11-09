@@ -178,5 +178,25 @@ namespace helpmebot6.Monitoring
 
             return pageList;
         }
+
+        public void setDelay( string keyword , int newDelay )
+        {
+            CategoryWatcher cw = getWatcher( keyword );
+            if( cw != null )
+            {
+                cw.SleepTime = newDelay;
+            }
+        }
+
+        public int getDelay( string keyword )
+        {
+            CategoryWatcher cw = getWatcher( keyword );
+            if( cw != null )
+            {
+                return cw.SleepTime;
+            }
+            else
+                return 0;
+        }
     }
 }

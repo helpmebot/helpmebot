@@ -21,7 +21,11 @@ namespace helpmebot6.Commands
             }
             else
             { // do something else too.
-
+                Type subCmdType = Type.GetType( "helpmebot6.Commands.CategoryWatcherCommand." + args[ 1 ].ToUpper( ) + args[ 1 ].Substring( 1 ).ToLower( ) );
+                if( subCmdType != null )
+                {
+                    return ( (GenericCommand)Activator.CreateInstance( subCmdType ) ).run( source , channel , args );
+                }
             }
             return crh;
         }

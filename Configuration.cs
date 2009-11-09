@@ -183,7 +183,7 @@ namespace helpmebot6
             return DAL.Singleton( ).Select( "c.`configuration_id`" , "configuration c" , null , wC, null , null , null , 1 , 0 );
         }
 
-        private string getChannelId( string channel )
+        public string getChannelId( string channel )
         {
             //SELECT c.`channel_id` FROM channel c
             //WHERE c.`channel_name` = "##stwalkerster";
