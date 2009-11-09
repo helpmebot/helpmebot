@@ -102,7 +102,7 @@ namespace helpmebot6
             }
             catch ( IndexOutOfRangeException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
             }
 
             User ret = new User( );
@@ -190,7 +190,7 @@ namespace helpmebot6
                 }
                 catch ( Exception ex )
                 {
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
           
                     return userRights.Normal;

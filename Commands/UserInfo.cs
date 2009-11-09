@@ -259,7 +259,7 @@ namespace helpmebot6.Commands
             }
             catch( NullReferenceException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( ex  );
                 throw new InvalidOperationException( );
             }
             

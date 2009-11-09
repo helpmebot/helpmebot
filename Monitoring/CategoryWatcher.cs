@@ -69,7 +69,7 @@ namespace helpmebot6.Monitoring
             }
             catch ( ThreadAbortException ex )
             {
-                GlobalFunctions.ErrorLog( ex, System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( ex );
             }
             Logger.Instance( ).addToLog( "Category watcher for '" + _key + "' died." , Logger.LogTypes.ERROR );
         }

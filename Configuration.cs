@@ -120,7 +120,7 @@ namespace helpmebot6
             }
             catch ( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex  );
             }
             return null;
         }
@@ -224,7 +224,7 @@ namespace helpmebot6
             }
             else
             {
-                GlobalFunctions.ErrorLog( new System.IO.InvalidDataException( ) , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( new System.IO.InvalidDataException( )  );
             }
             return al;
         }

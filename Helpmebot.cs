@@ -135,7 +135,7 @@ namespace helpmebot6
            }
            catch( Exception ex )
            {
-               GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+               GlobalFunctions.ErrorLog( ex  );
            }
 
 

@@ -69,7 +69,7 @@ namespace helpmebot6
             }
             catch( MySqlException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( ex  );
                 return false;
             }
         }
@@ -86,11 +86,11 @@ namespace helpmebot6
             }
             catch ( MySqlException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex  );
             }
             catch ( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex  );
             }
             Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
 
@@ -109,11 +109,11 @@ namespace helpmebot6
             }
             catch ( MySqlException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
             }
             catch ( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
             }
             string ret = "";
 
@@ -145,11 +145,11 @@ namespace helpmebot6
             }
             catch ( MySqlException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
             }
             catch ( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
             }
             Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
 
@@ -193,7 +193,7 @@ namespace helpmebot6
             }
             catch( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( ex  );
                 return "";
             }
         }
@@ -333,7 +333,7 @@ namespace helpmebot6
             }
             catch( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodBase.GetCurrentMethod( ) );
+                GlobalFunctions.ErrorLog( ex );
                 return null;
             }
         }

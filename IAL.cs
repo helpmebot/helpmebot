@@ -235,7 +235,7 @@ namespace helpmebot6
             }
             catch ( SocketException ex )
             {
-                GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                GlobalFunctions.ErrorLog( ex );
                 return false;
             }
         }
@@ -568,16 +568,16 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( Exception ex )
                 {
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
             }
             while ( _ThreadIsAlive );
@@ -610,17 +610,17 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                     _sendQ.Clear( );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( Exception ex )
                 {
-                    GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                    GlobalFunctions.ErrorLog( ex );
                 }
             }
             while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
@@ -836,7 +836,7 @@ namespace helpmebot6
                     }
                     catch ( NullReferenceException ex )
                     {
-                        GlobalFunctions.ErrorLog( ex , System.Reflection.MethodInfo.GetCurrentMethod());
+                        GlobalFunctions.ErrorLog( ex );
                     }
                     break;
                 case "QUIT":

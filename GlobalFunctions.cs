@@ -81,10 +81,13 @@ namespace helpmebot6
         /// Log an exception to the log and IRC
         /// </summary>
         /// <param name="ex">The exception thrown</param>
-        /// <param name="method">The method which threw the exception.</param>
-        public static void ErrorLog( Exception ex , MethodBase method )
+        public static void ErrorLog(Exception ex)
         {
             Logger.Instance().addToLog( ex.ToString( ) + ex.StackTrace , Logger.LogTypes.ERROR);
+
+            System.Diagnostics.StackTrace stack = new System.Diagnostics.StackTrace( );
+            MethodBase method = stack.GetFrame( 1 ).GetMethod( );
+
             if( Helpmebot6.irc != null )
             {
                 Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , "***ERROR*** in " + method.Name + ": " + ex.Message );
@@ -125,7 +128,7 @@ namespace helpmebot6
                     break;
                 default:
                     accessLevel = User.userRights.Developer;
-                    ErrorLog( new ArgumentOutOfRangeException( ) , System.Reflection.MethodInfo.GetCurrentMethod( ) );
+                    ErrorLog( new ArgumentOutOfRangeException( "command", command , "not found in commandlist")  );
                     break;
             }
             return accessLevel;
