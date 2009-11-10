@@ -38,14 +38,14 @@ namespace helpmebot6.Monitoring
         public delegate void CategoryHasItemsEventHook( ArrayList items, string keyword);
         public event CategoryHasItemsEventHook CategoryHasItemsEvent;
 
-        public CategoryWatcher( string Category, string Key )
+        public CategoryWatcher( string Category, string Key, int SleepTime )
         {
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
             _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             _category = Category;
             _key = Key;
-
+            _sleepTime = SleepTime;
 
             watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             watcherThread.Start( );

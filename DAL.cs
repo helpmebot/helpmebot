@@ -102,6 +102,7 @@ namespace helpmebot6
 
         public string ExecuteScalarQuery( string query )
         {
+            string ret = "";
             Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
             lock( this )
             {
@@ -122,7 +123,7 @@ namespace helpmebot6
                 {
                     GlobalFunctions.ErrorLog( ex );
                 }
-                string ret = "";
+                
 
                 if( result == null )
                 {
@@ -133,14 +134,16 @@ namespace helpmebot6
                 {
                     ret = result.ToString( );
                     Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
-                }
-                return ret;
+                } 
             }
             Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
+            return ret;
         }
 
         public MySqlDataReader ExecuteReaderQuery( string query )
         {
+            MySqlDataReader result = null;
+            
             Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
             lock( this )
             {
@@ -150,24 +153,19 @@ namespace helpmebot6
                 {
                     MySqlCommand cmd = new MySqlCommand( query );
                     cmd.Connection = _connection;
-                    MySqlDataReader result = cmd.ExecuteReader( );
+                    result = cmd.ExecuteReader( );
                     Logger.Instance( ).addToLog( "Done executing (reader)query: " + query , Logger.LogTypes.DAL );
 
                     return result;
                 }
-                catch( MySqlException ex )
-                {
-                    GlobalFunctions.ErrorLog( ex );
-                }
                 catch( Exception ex )
                 {
+                    Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
                     GlobalFunctions.ErrorLog( ex );
                 }
-                Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
-
-                return null;
             }
             Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
+            return result;
         }
 
         public enum joinTypes

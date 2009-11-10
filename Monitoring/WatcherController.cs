@@ -16,24 +16,22 @@ namespace helpmebot6.Monitoring
         protected WatcherController( )
         {
             watchers = new Dictionary<string , CategoryWatcher>( );
-            string[] cols = {"watcher_category", "watcher_keyword"};
+            string[] cols = {"watcher_category", "watcher_keyword", "watcher_sleeptime"};
             DAL.order[ ] o = new DAL.order[ 1 ];
             o[ 0 ].asc = true;
             o[ 0 ].column = "watcher_priority";
             ArrayList watchersInDb = DAL.Singleton( ).Select( cols , "watcher" , null ,null , null , o , null , 100 , 0 );
             foreach( object[] item in watchersInDb )
             {
-                watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] ) );
+                watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] , int.Parse((string)item[2])) );
             }
             foreach( KeyValuePair<string,CategoryWatcher> item in watchers )
             {
-                
                 item.Value.CategoryHasItemsEvent+=new CategoryWatcher.CategoryHasItemsEventHook(CategoryHasItemsEvent);
-                item.Value.SleepTime = 60;
             }
         }
 
-        private void addWatcher(string key, string category)
+        /*private void addWatcher(string key, string category)
         {
             watchers.Add( key , new CategoryWatcher( category , key ) );
             CategoryWatcher cw;
@@ -42,7 +40,7 @@ namespace helpmebot6.Monitoring
                 cw.SleepTime = 10;
                 cw.CategoryHasItemsEvent += new CategoryWatcher.CategoryHasItemsEventHook( CategoryHasItemsEvent );
             }
-        }
+        }*/
 
         // woo singleton
         public static WatcherController Instance( )
@@ -190,6 +188,7 @@ namespace helpmebot6.Monitoring
             CategoryWatcher cw = getWatcher( keyword );
             if( cw != null )
             {
+                DAL.Singleton( ).ExecuteNonQuery( "UPDATE watcher SET watcher_sleeptime = " + newDelay + " WHERE watcher_keyword = '" + keyword + "';" );
                 cw.SleepTime = newDelay;
             }
         }
