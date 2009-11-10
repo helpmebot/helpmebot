@@ -74,72 +74,74 @@ namespace helpmebot6
 
         public void addToLog( string message , LogTypes type )
         {
-            Console.ResetColor( );
-
-            string dateString =  "[ " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToLongTimeString() + " ] " ;
-            
-            switch( type )
+            lock( this )
             {
-                case LogTypes.DNWB:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write( dateString );
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine( "A " + message );
-                    break;
-                case LogTypes.DAL:
-                    if( logDal )
-                    {
+                Console.ResetColor( );
+
+                string dateString = "[ " + DateTime.Now.ToShortDateString( ) + " " + DateTime.Now.ToLongTimeString( ) + " ] ";
+
+                switch( type )
+                {
+                    case LogTypes.DNWB:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write( dateString );
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine( "D " + message );
-                    }
-                    DalLogger.WriteLine( dateString + message );
-                    break;
-                case LogTypes.IAL:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write( dateString );
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    IalLogger.WriteLine( dateString + message );
-                    Console.WriteLine( "I " + message );
-                    break;
-                case LogTypes.COMMAND:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write( dateString );
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine( "C " + message );
-                    break;
-                case LogTypes.GENERAL:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write( dateString );
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine( "G " + message );
-                    break;
-                case LogTypes.ERROR:
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write( dateString );
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    ErrorLogger.WriteLine( dateString + message );
-                    Console.WriteLine( "E " + message );
-                    break;
-                case LogTypes.IRC:
-                    if( logIRC )
-                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine( "A " + message );
+                        break;
+                    case LogTypes.DAL:
+                        if( logDal )
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write( dateString );
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine( "D " + message );
+                        }
+                        DalLogger.WriteLine( dateString + message );
+                        break;
+                    case LogTypes.IAL:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write( dateString );
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine( "R " + message );
-                    }
-                    IRClogger.WriteLine( dateString + message );
-                    
-                    break;
-                default:
-                    break;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        IalLogger.WriteLine( dateString + message );
+                        Console.WriteLine( "I " + message );
+                        break;
+                    case LogTypes.COMMAND:
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write( dateString );
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.WriteLine( "C " + message );
+                        break;
+                    case LogTypes.GENERAL:
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write( dateString );
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine( "G " + message );
+                        break;
+                    case LogTypes.ERROR:
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write( dateString );
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        ErrorLogger.WriteLine( dateString + message );
+                        Console.WriteLine( "E " + message );
+                        break;
+                    case LogTypes.IRC:
+                        if( logIRC )
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write( dateString );
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine( "R " + message );
+                        }
+                        IRClogger.WriteLine( dateString + message );
+
+                        break;
+                    default:
+                        break;
+                }
+                Console.ResetColor( );
             }
-            Console.ResetColor( );
         }
-        
 
 
     }

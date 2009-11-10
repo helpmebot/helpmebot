@@ -60,12 +60,18 @@ namespace helpmebot6.Monitoring
 
         public void addWatcherToChannel( string keyword , string channel )
         {
-            throw new NotImplementedException( );
+            string channelId = Configuration.Singleton( ).getChannelId( channel );
+            int watcherId = getWatcherId( keyword );
+
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO channelwatchers VALUES ( " + channelId + " , " + watcherId.ToString( ) + " );" );
         }
 
         public void removeWatcherFromChannel( string keyword , string channel )
         {
-            throw new NotImplementedException( );
+            string channelId = Configuration.Singleton( ).getChannelId( channel );
+            int watcherId = getWatcherId( keyword );
+
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM channelwatchers WHERE cw_channel = " + channelId + " AND cw_watcher = " + watcherId.ToString( ) + " ;" );
         }
 
         public string forceUpdate( string key )
@@ -198,5 +204,14 @@ namespace helpmebot6.Monitoring
             else
                 return 0;
         }
+
+        private int getWatcherId( string keyword )
+        {
+            string[ ] wC = { "w.`watcher_keyword` = '" + keyword + "'" };
+            string watcherIdString = DAL.Singleton( ).Select( "w.`watcher_id`" , "watcher w" , null , wC , null , null , null , 1 , 0 );
+
+            return int.Parse( watcherIdString );
+        }
+
     }
 }

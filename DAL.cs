@@ -76,84 +76,96 @@ namespace helpmebot6
 
         public void ExecuteNonQuery( string query )
         {
-            Logger.Instance( ).addToLog( "Executing (non)query: " + query , Logger.LogTypes.DAL );
-            try
+            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            lock( this )
             {
-                MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
-                MySqlCommand cmd = new MySqlCommand( query, _connection );//, transact);
-                cmd.ExecuteNonQuery( );
-                transact.Commit( );
+                Logger.Instance( ).addToLog( "Executing (non)query: " + query , Logger.LogTypes.DAL );
+                try
+                {
+                    MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
+                    MySqlCommand cmd = new MySqlCommand( query , _connection );//, transact);
+                    cmd.ExecuteNonQuery( );
+                    transact.Commit( );
+                }
+                catch( MySqlException ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                catch( Exception ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
             }
-            catch ( MySqlException ex )
-            {
-                GlobalFunctions.ErrorLog( ex  );
-            }
-            catch ( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex  );
-            }
-            Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
-
         }
 
         public string ExecuteScalarQuery( string query )
         {
-            Logger.Instance( ).addToLog( "Executing (scalar)query: " + query , Logger.LogTypes.DAL );
+            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            lock( this )
+            {
+                Logger.Instance( ).addToLog( "Executing (scalar)query: " + query , Logger.LogTypes.DAL );
 
-            object result = null;
-            try
-            {
-                MySqlCommand cmd = new MySqlCommand( query, _connection );
-                
-                result= cmd.ExecuteScalar( );
-            }
-            catch ( MySqlException ex )
-            {
-                GlobalFunctions.ErrorLog( ex );
-            }
-            catch ( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex );
-            }
-            string ret = "";
+                object result = null;
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand( query , _connection );
 
-            if( result == null )
-            {
-                Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query , Logger.LogTypes.DAL );
-                ret = "";
+                    result = cmd.ExecuteScalar( );
+                }
+                catch( MySqlException ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                catch( Exception ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                string ret = "";
+
+                if( result == null )
+                {
+                    Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query , Logger.LogTypes.DAL );
+                    ret = "";
+                }
+                else
+                {
+                    ret = result.ToString( );
+                    Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
+                }
+                return ret;
             }
-            else
-            {
-                ret = result.ToString( );
-                Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
-            }
-            return ret;
+
         }
 
         public MySqlDataReader ExecuteReaderQuery( string query )
         {
-            Logger.Instance( ).addToLog( "Executing (reader)query: " + query , Logger.LogTypes.DAL );
-
-            try
+            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            lock( this )
             {
-                MySqlCommand cmd = new MySqlCommand( query );
-                cmd.Connection = _connection;
-                MySqlDataReader result = cmd.ExecuteReader( );
-                Logger.Instance( ).addToLog( "Done executing (reader)query: " + query , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Executing (reader)query: " + query , Logger.LogTypes.DAL );
 
-                return result;
-            }
-            catch ( MySqlException ex )
-            {
-                GlobalFunctions.ErrorLog( ex );
-            }
-            catch ( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex );
-            }
-            Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand( query );
+                    cmd.Connection = _connection;
+                    MySqlDataReader result = cmd.ExecuteReader( );
+                    Logger.Instance( ).addToLog( "Done executing (reader)query: " + query , Logger.LogTypes.DAL );
 
-            return null;
+                    return result;
+                }
+                catch( MySqlException ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                catch( Exception ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
+                Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
+
+                return null;
+            }
         }
 
         public enum joinTypes
