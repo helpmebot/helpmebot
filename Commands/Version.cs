@@ -31,17 +31,17 @@ namespace helpmebot6.Commands
 
         public string getVersionString( )
         {
-            SvnClient svn = new SvnClient( );
+            //SvnClient svn = new SvnClient( );
 
-            SvnTarget tgt = SvnTarget.FromString( "../Helpmebot.cs" );
+            //SvnTarget tgt = SvnTarget.FromString( "../Helpmebot.cs" );
 
-            SvnInfoEventArgs info;
+            //SvnInfoEventArgs info;
 
-            svn.GetInfo( tgt , out info );
+            //svn.GetInfo( tgt , out info );
 
-            long rev = info.Revision;
+            long rev = 0; //info.Revision;
 
-            string branch = info.Uri.PathAndQuery.Substring( info.Uri.PathAndQuery.LastIndexOf( '/' ) );
+            string branch = "trunk"; //info.Uri.PathAndQuery.Substring( info.Uri.PathAndQuery.LastIndexOf( '/' ) );
 
             string versionString = this.version + "-" + branch + "-r" + rev.ToString();
 
