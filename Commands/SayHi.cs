@@ -17,7 +17,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User toUser ,string channel,  string[ ] args )
         {
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "cmdSayHi1" , toUser.Nickname ) );
+            string[ ] commandParams = { toUser.Nickname };
+            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "cmdSayHi1" , commandParams ) );
         }
     }
 }
