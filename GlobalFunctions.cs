@@ -101,7 +101,7 @@ namespace helpmebot6
 
         //public static void Log(string message) { Console.WriteLine("# " + message); }
 
-        public static User.userRights commandAccessLevel( string command )
+        public static User.userRights commandAccessLevel( )
         {
             string typename = "";
             System.Diagnostics.StackTrace foo = new System.Diagnostics.StackTrace( );

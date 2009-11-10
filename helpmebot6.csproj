@@ -90,6 +90,7 @@
     <Compile Include="Commands\MaxLag.cs" />
     <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\Myaccess.cs" />
+    <Compile Include="Commands\Part.cs" />
     <Compile Include="Commands\Registration.cs" />
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\SayHi.cs" />
@@ -108,6 +109,7 @@
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
     <Compile Include="IAL.cs" />
+    <Compile Include="Monitoring\PageWatcher\PageWatcherController.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="NubioApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -145,8 +145,8 @@ namespace helpmebot6
         {
             debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
-            
-            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery("SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1;");
+
+            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '1';" );
             if( dr != null )
             {
                 while( dr.Read( ) )
