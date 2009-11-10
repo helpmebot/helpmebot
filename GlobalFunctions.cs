@@ -103,8 +103,12 @@ namespace helpmebot6
 
         public static User.userRights commandAccessLevel( string command )
         {
+            string typename = "";
+            System.Diagnostics.StackTrace foo = new System.Diagnostics.StackTrace( );
+            typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
+
             User.userRights accessLevel;
-            string[ ] wc = { "command = \""+command+"\"" };
+            string[ ] wc = { "typename = \""+typename+"\"" };
             string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc , null , null , null , 1 , 0 );
             switch( al )
             {
@@ -128,7 +132,7 @@ namespace helpmebot6
                     break;
                 default:
                     accessLevel = User.userRights.Developer;
-                    ErrorLog( new ArgumentOutOfRangeException( "command", command , "not found in commandlist")  );
+                    ErrorLog( new ArgumentOutOfRangeException( "command", typename , "not found in commandlist")  );
                     break;
             }
             return accessLevel;

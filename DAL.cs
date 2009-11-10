@@ -97,6 +97,7 @@ namespace helpmebot6
                 }
                 Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
             }
+            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
         }
 
         public string ExecuteScalarQuery( string query )
@@ -135,7 +136,7 @@ namespace helpmebot6
                 }
                 return ret;
             }
-
+            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
         }
 
         public MySqlDataReader ExecuteReaderQuery( string query )
@@ -166,6 +167,7 @@ namespace helpmebot6
 
                 return null;
             }
+            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
         }
 
         public enum joinTypes
