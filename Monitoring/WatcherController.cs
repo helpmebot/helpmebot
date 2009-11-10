@@ -23,7 +23,7 @@ namespace helpmebot6.Monitoring
             ArrayList watchersInDb = DAL.Singleton( ).Select( cols , "watcher" , null ,null , null , o , null , 100 , 0 );
             foreach( object[] item in watchersInDb )
             {
-                watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] , int.Parse((string)item[2])) );
+                watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] , int.Parse( ( (UInt32)item[ 2 ] ).ToString( ) ) ) );
             }
             foreach( KeyValuePair<string,CategoryWatcher> item in watchers )
             {
