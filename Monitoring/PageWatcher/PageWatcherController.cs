@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace helpmebot6.Monitoring.PageWatcher
 {
@@ -10,6 +11,8 @@ namespace helpmebot6.Monitoring.PageWatcher
         private static PageWatcherController _instance;
         protected PageWatcherController( )
         {
+            watchedPageList = new ArrayList( );
+            LoadAllWatchedPages( );
             irc = new IAL( 2 );
             irc.Connect( );
         }
@@ -23,20 +26,44 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private IAL irc;
 
+        private ArrayList watchedPageList;
+
+        public struct RcPageChange
+        {
+            public string title;
+            public string flags;
+            public string diffUrl;
+            public string user;
+            public string byteDiff;
+            public string comment;
+        }
+
         private void SetupEvents( )
         {
             irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( irc_ConnectionRegistrationSucceededEvent );
             irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
         }
 
-        void irc_PrivmsgEvent( User source , string destination , string message )
+        private void LoadAllWatchedPages( )
         {
             throw new NotImplementedException( );
         }
 
-        void irc_ConnectionRegistrationSucceededEvent( )
+        private void irc_PrivmsgEvent( User source , string destination , string message )
         {
-            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '2';" );
+            if( source.ToString( ) == Configuration.Singleton( ).retrieveGlobalStringOption( "wikimediaRcBot" ) )
+            {
+                RcPageChange rcItem = rcParser( message );
+                if( watchedPageList.Contains( rcItem.title ) )
+                {
+                    PageWatcherNotificationEvent( rcItem );
+                }
+            }
+        }
+
+        private void irc_ConnectionRegistrationSucceededEvent( )
+        {
+            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '2';" );
             if( dr != null )
             {
                 while( dr.Read( ) )
@@ -48,6 +75,31 @@ namespace helpmebot6.Monitoring.PageWatcher
                 dr.Close( );
             }
         }
+
+        RcPageChange rcParser( string rcItem )
+        {
+            return new RcPageChange( );
+        }
+
+        public void watchPage( string pageName )
+        {
+            // add to database
+
+            // add to arraylist
+            throw new NotImplementedException( );
+        }
+
+        public void unwatchPage( string pageName )
+        {
+            //remove from database
+
+            // remove from arraylist
+            throw new NotImplementedException( );
+        }
+
+        public delegate void PageWatcherNotificationEventDelegate(RcPageChange rcItem);
+        public event PageWatcherNotificationEventDelegate PageWatcherNotificationEvent;
+
 
     }
 }
