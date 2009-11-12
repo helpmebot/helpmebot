@@ -36,7 +36,7 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            bool useLongInfo = true;
+            bool useLongInfo = bool.Parse( Configuration.Singleton( ).retrieveLocalStringOption( "useLongUserInfo" , channel ) );
 
             if( args.Length > 0 )
             {
