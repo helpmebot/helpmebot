@@ -34,6 +34,8 @@ namespace helpmebot6
 
        static uint ircNetwork;
 
+       public static readonly DateTime startupTime = DateTime.Now;
+        
        static void Main( string[ ] args )
        {
            // startup arguments
