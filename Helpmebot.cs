@@ -135,8 +135,11 @@ namespace helpmebot6
        {
            if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie" , channel ) == "true" )
            {
-               string[ ] cmdArgs = { source.Nickname , channel };
-               Helpmebot6.irc.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
+               if( source.AccessLevel == User.userRights.Normal )
+               {
+                   string[ ] cmdArgs = { source.Nickname , channel };
+                   Helpmebot6.irc.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
+               }
            }
        }
 
