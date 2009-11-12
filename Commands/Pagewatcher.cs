@@ -30,12 +30,36 @@ namespace helpmebot6.Commands
 
         private void addPageWatcher(string page, string channel)
         {
-            throw new NotImplementedException( );
+            string[] wc = {"w.`pw_title` = '" + page + "'"};
+
+            // look to see if watchedpage exists
+            if( DAL.Singleton( ).Select( "COUNT(*)" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 0 , 0 ) == "0" )
+            {//    no: add it
+                DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO watchedpages VALUES ( null, \"" + page + "\");" );
+            }
+            
+            // get id of watchedpage
+            string watchedPageId = DAL.Singleton( ).Select( "w.`pw_id`" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 1 , 0 );
+            
+            // get id of channel
+            string channelId = Configuration.Singleton( ).getChannelId( channel );
+            
+            // add to pagewatcherchannels
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO pagewatcherchannels VALUES ( null, " + channelId + ", " + watchedPageId + ");" );
         }
 
         private void removePageWatcher( string page , string channel )
         {
-            throw new NotImplementedException( );
+            string[ ] wc = { "w.`pw_title` = '" + page + "'" };
+
+            // get id of watchedpage
+            string watchedPageId = DAL.Singleton( ).Select( "w.`pw_id`" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 1 , 0 );
+
+            // get id of channel
+            string channelId = Configuration.Singleton( ).getChannelId( channel );
+
+            // remove from pagewatcherchannels
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM pagewatcherchannels WHERE pwc_channel = " + channelId + " AND pwc_pagewatcher = " + watchedPageId + ";" );
         }
         
     }
