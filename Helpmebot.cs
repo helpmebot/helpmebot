@@ -32,6 +32,8 @@ namespace helpmebot6
        public static string debugChannel;
        public static string mainChannel;
 
+       static uint ircNetwork;
+
        static void Main( string[ ] args )
        {
            // startup arguments
@@ -69,7 +71,7 @@ namespace helpmebot6
            config = Configuration.Singleton();
 
 
-           uint ircNetwork = config.retrieveGlobalUintOption( "ircNetwork" );
+           ircNetwork = config.retrieveGlobalUintOption( "ircNetwork" );
 
 
            Trigger = config.retrieveGlobalStringOption( "commandTrigger" );
@@ -175,7 +177,7 @@ namespace helpmebot6
             debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
 
-            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '1';" );
+            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '"+ircNetwork.ToString()+"';" );
             if( dr != null )
             {
                 while( dr.Read( ) )
@@ -259,6 +261,7 @@ namespace helpmebot6
        {
            irc.IrcQuit( );
            Monitoring.WatcherController.Instance( ).Stop( );
+           Monitoring.PageWatcher.PageWatcherController.Instance( ).Stop( );
        }
     }
 }

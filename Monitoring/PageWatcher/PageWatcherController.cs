@@ -13,7 +13,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         {
             watchedPageList = new ArrayList( );
             LoadAllWatchedPages( );
-            irc = new IAL( 2 );
+            irc = new IAL( Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" ));
             SetupEvents( );
             irc.Connect( );
         }
@@ -79,7 +79,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void irc_ConnectionRegistrationSucceededEvent( )
         {
-            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '2';" );
+            uint network = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
+            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '"+network.ToString()+"';" );
             if( dr != null )
             {
                 while( dr.Read( ) )
@@ -145,5 +146,9 @@ namespace helpmebot6.Monitoring.PageWatcher
         public delegate void PageWatcherNotificationEventDelegate(RcPageChange rcItem);
         public event PageWatcherNotificationEventDelegate PageWatcherNotificationEvent;
 
+        public void Stop( )
+        {
+            irc.IrcQuit( );
+        }
     }
 }
