@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Collections;
 
 namespace helpmebot6
 {
@@ -75,12 +76,16 @@ namespace helpmebot6
 
            irc = new IAL( ircNetwork );
 
+           Monitoring.PageWatcher.PageWatcherController.Instance( );
+
            SetupEvents( );
 
            if( !irc.Connect( ) )
            { // if can't connect to irc, die
                return;
            }
+
+           
        }
 
        static void SetupEvents( )
@@ -92,6 +97,30 @@ namespace helpmebot6
            irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( ReceivedMessage );
 
            irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
+
+           Monitoring.PageWatcher.PageWatcherController.Instance( ).PageWatcherNotificationEvent += new helpmebot6.Monitoring.PageWatcher.PageWatcherController.PageWatcherNotificationEventDelegate( Helpmebot6_PageWatcherNotificationEvent );
+       }
+
+       static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )
+       {
+           string[ ] messageParams = { rcItem.title , rcItem.user , rcItem.comment , rcItem.diffUrl , rcItem.byteDiff , rcItem.flags };
+           string message = Configuration.Singleton( ).GetMessage( "pageWatcherEventNotification" , messageParams );
+
+           string[ ] selectCols = { "c.`channel_name`" };
+           DAL.join[ ] jC = new DAL.join[ 2 ];
+           jC[ 0 ].table = "`channel` c";
+           jC[ 0 ].joinType = DAL.joinTypes.INNER;
+           jC[ 0 ].joinConditions = "pwc.`pwc_channel` = c.`channel_id`";
+           jC[ 1 ].table = "`watchedpages` wp";
+           jC[ 1 ].joinType = DAL.joinTypes.INNER;
+           jC[ 1 ].joinConditions = "wp.`pw_id` = pwc.`pwc_pagewatcher`";
+           string[ ] wc = { "wp.`pw_title` = \"" + rcItem.title + "\";" };
+           ArrayList channels = DAL.Singleton( ).Select( selectCols , "`pagewatcherchannels` pwc" , jC , wc , null , null , null , 0 , 0 );
+
+           foreach( object[] item in channels )
+           {
+               irc.IrcPrivmsg( (string)item[ 0 ] , message );
+           }
        }
 
        static void irc_InviteEvent( User source , string nickname , string channel )

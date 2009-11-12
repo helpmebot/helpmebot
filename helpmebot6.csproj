@@ -90,6 +90,7 @@
     <Compile Include="Commands\MaxLag.cs" />
     <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\Myaccess.cs" />
+    <Compile Include="Commands\Pagewatcher.cs" />
     <Compile Include="Commands\Part.cs" />
     <Compile Include="Commands\Registration.cs" />
     <Compile Include="Commands\Rights.cs" />

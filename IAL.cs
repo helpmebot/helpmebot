@@ -58,6 +58,8 @@ namespace helpmebot6
 
         DateTime lastMessage = DateTime.Now;
 
+        private uint _networkId = 0;
+
         #endregion
 
         #region properties
@@ -174,6 +176,8 @@ namespace helpmebot6
 
         public IAL( uint ircNetwork )
         {
+            _networkId = ircNetwork;
+
             DAL db = DAL.Singleton( );
 
             string[] selects = {"in_host","in_port","in_nickname","in_password","in_username","in_realname"};
@@ -926,7 +930,7 @@ namespace helpmebot6
 
         void Log( string message )
         {
-            Logger.Instance( ).addToLog( message , Logger.LogTypes.IAL );
+            Logger.Instance( ).addToLog( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
         }
     }
 }
