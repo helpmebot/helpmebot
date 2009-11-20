@@ -16,7 +16,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            Helpmebot6.irc.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , source.Nickname ) );
+            string[] messageParams = { source.Nickname };
+            Helpmebot6.irc.IrcQuit( Configuration.Singleton( ).GetMessage( "ircQuit" , messageParams ) );
             return null;
         } 
     }
