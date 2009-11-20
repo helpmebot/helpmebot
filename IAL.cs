@@ -200,6 +200,20 @@ namespace helpmebot6
             initialiseEventHandlers( );
         }
 
+        public IAL( string server, uint port, string nickname, string password, string username, string realname )
+        {
+            _networkId = 0;
+            _ircServer = server;
+            _ircPort = port;
+
+            _myNickname = nickname;
+            _myPassword = password;
+            _myUsername = username;
+            _myRealname = realname;
+
+            initialiseEventHandlers( );
+        }
+
         ~IAL( )
         {
             if( this._tcpClient.Connected  )
