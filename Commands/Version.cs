@@ -31,19 +31,23 @@ namespace helpmebot6.Commands
 
         public string getVersionString( )
         {
-            //SvnClient svn = new SvnClient( );
+            SvnClient svn = new SvnClient( );
 
-            //SvnTarget tgt = SvnTarget.FromString( "../Helpmebot.cs" );
+            SvnTarget tgt = SvnTarget.FromString( "../../Helpmebot.cs" );
 
-            //SvnInfoEventArgs info;
+            SvnInfoEventArgs info;
 
-            //svn.GetInfo( tgt , out info );
+            svn.GetInfo( tgt, out info );
 
-            long rev = 0; //info.Revision;
+            long rev = 0;
+            rev = info.Revision;
 
-            string branch = "trunk"; //info.Uri.PathAndQuery.Substring( info.Uri.PathAndQuery.LastIndexOf( '/' ) );
+            string branch = "trunk";
+            string pq = info.Uri.PathAndQuery;
+            char[ ] splitChars = { '/' };
+            branch = pq.Split( splitChars, StringSplitOptions.RemoveEmptyEntries )[ pq.Split( splitChars, StringSplitOptions.RemoveEmptyEntries ).Length - 2 ];
 
-            string versionString = this.version + "-" + branch + "-r" + rev.ToString();
+            string versionString = this.version + "-" + branch + "-r" + rev.ToString( );
 
             return versionString;
         }
