@@ -136,7 +136,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
     <None Include="helpmebot.sh" />
     <None Include="helpmebot6.sql" />
