@@ -102,6 +102,8 @@ namespace helpmebot6
 
            irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
 
+           irc.LogRequested += new IAL.LogRequestedEventHandler( Logger.Instance().addToLog );
+
            irc.Error += new IAL.ErrorEventHandler( irc_Error );
 
            irc.LinkDetected += new IAL.LinkDetectedEventHandler( irc_LinkDetected );

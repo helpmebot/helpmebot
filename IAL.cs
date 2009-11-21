@@ -618,7 +618,7 @@ namespace helpmebot6
                     if ( _sendQ.Count > 0 )
                     {
                         string line = (string)_sendQ.Dequeue( );
-                        Logger.Instance( ).addToLog( "< " + line , Logger.LogTypes.IAL );
+                        LogRequested( "< " + line , Logger.LogTypes.IAL );
                         _ircWriter.WriteLine( line );
                         _ircWriter.Flush( );
                         Thread.Sleep( this.FloodProtectionWaitTime );
@@ -697,6 +697,9 @@ namespace helpmebot6
 
         public delegate void NameReplyEventHandler(string channel, string[] names);
         public event NameReplyEventHandler NameReplyEvent;
+
+        public delegate void LogRequestedEventHandler( string message, Logger.LogTypes type );
+        public event LogRequestedEventHandler LogRequested;
 
         public delegate void ErrorEventHandler( Exception ex );
         public event ErrorEventHandler Error;
@@ -820,7 +823,7 @@ namespace helpmebot6
 
         void IAL_DataRecievedEvent( string data )
         {
-            Logger.Instance( ).addToLog( data , Logger.LogTypes.IRC );
+            LogRequested( data , Logger.LogTypes.IRC );
             
             char[ ] colonSeparator = { ':' };
 
@@ -956,7 +959,7 @@ namespace helpmebot6
 
         void Log( string message )
         {
-            Logger.Instance( ).addToLog( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
+            LogRequested( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
         }
     }
 }

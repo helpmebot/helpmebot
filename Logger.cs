@@ -5,7 +5,7 @@ using System.IO;
 
 namespace helpmebot6
 {
-    class Logger
+    public class Logger
     {
         private static Logger _instance;
         protected Logger( )
