@@ -102,7 +102,23 @@ namespace helpmebot6
 
            irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
 
+           irc.Error += new IAL.ErrorEventHandler( irc_Error );
+
+           irc.LinkDetected += new IAL.LinkDetectedEventHandler( irc_LinkDetected );
+
+           irc.StopRequested+=new IAL.StopRequestedEventHandler(Stop);
+
            Monitoring.PageWatcher.PageWatcherController.Instance( ).PageWatcherNotificationEvent += new helpmebot6.Monitoring.PageWatcher.PageWatcherController.PageWatcherNotificationEventDelegate( Helpmebot6_PageWatcherNotificationEvent );
+       }
+
+       static void irc_LinkDetected( string message, string destination )
+       {
+           Linker.Instance( ).ParseMessage( message, destination );
+       }
+
+       static void irc_Error( Exception ex )
+       {
+           GlobalFunctions.ErrorLog( ex );
        }
 
        static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )

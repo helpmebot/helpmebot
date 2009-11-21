@@ -253,7 +253,7 @@ namespace helpmebot6
             }
             catch ( SocketException ex )
             {
-                GlobalFunctions.ErrorLog( ex );
+                Error( ex );
                 return false;
             }
         }
@@ -331,7 +331,11 @@ namespace helpmebot6
             {
                 _sendLine( "PRIVMSG " + Destination + " :" + Message );
             }
-            Linker.Instance( ).ParseMessage( Message , Destination );
+            LinkDetectedEventHandler temp = LinkDetected;
+            if( temp != null )
+            {
+                temp( Message, Destination );
+            }
         }
 
         public void IrcQuit( string message )
@@ -586,22 +590,22 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                 }
                 catch ( Exception ex )
                 {
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                 }
             }
             while ( _ThreadIsAlive );
 
             Console.WriteLine( "*** Reader thread died." );
-            Helpmebot6.Stop( );
+            StopRequested( );
         }
 
         void _ircWriterThreadMethod( )
@@ -628,23 +632,23 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                     _sendQ.Clear( );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                 }
                 catch ( Exception ex )
                 {
-                    GlobalFunctions.ErrorLog( ex );
+                    Error( ex );
                 }
             }
             while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
 
             Console.WriteLine( "*** Writer thread died." );
-            Helpmebot6.Stop( );
+            StopRequested( );
         }
         #endregion
 
@@ -694,6 +698,14 @@ namespace helpmebot6
         public delegate void NameReplyEventHandler(string channel, string[] names);
         public event NameReplyEventHandler NameReplyEvent;
 
+        public delegate void ErrorEventHandler( Exception ex );
+        public event ErrorEventHandler Error;
+
+        public delegate void LinkDetectedEventHandler( string message, string destination );
+        public event LinkDetectedEventHandler LinkDetected;
+
+        public delegate void StopRequestedEventHandler( );
+        public event StopRequestedEventHandler StopRequested;
         #endregion
 
         private void initialiseEventHandlers( )
