@@ -3,7 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpmebot6", "helpmebot6.csproj", "{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelpmebotTestHarness", "HelpmebotTestHarness\HelpmebotTestHarness.csproj", "{A7E35351-1C28-4248-A96B-626B40E56014}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{624A4E44-BE2E-4BB5-896E-651513B83A7E}"
+	ProjectSection(SolutionItems) = preProject
+		helpmebot6.vsmdi = helpmebot6.vsmdi
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+	EndProjectSection
+EndProject
 Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = helpmebot6.vsmdi
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -13,6 +24,10 @@ Global
 		{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7E35351-1C28-4248-A96B-626B40E56014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7E35351-1C28-4248-A96B-626B40E56014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7E35351-1C28-4248-A96B-626B40E56014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7E35351-1C28-4248-A96B-626B40E56014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
