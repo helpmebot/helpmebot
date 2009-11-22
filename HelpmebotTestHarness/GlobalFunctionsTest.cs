@@ -131,5 +131,17 @@ namespace HelpmebotTestHarness
             actual = GlobalFunctions.isInArray( needle, haystack );
             Assert.AreEqual( expected, actual );
         }
+
+        /// <summary>
+        ///A test for commandAccessLevel
+        ///</summary>
+        [TestMethod( )]
+        public void commandAccessLevelTest1( )
+        {
+            User.userRights expected = User.userRights.Developer; // TODO: Initialize to an appropriate value
+            User.userRights actual;
+            actual = GlobalFunctions.commandAccessLevel( );
+            Assert.AreEqual( expected, actual );
+        }
     }
 }

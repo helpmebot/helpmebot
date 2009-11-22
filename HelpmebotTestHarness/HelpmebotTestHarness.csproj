@@ -53,12 +53,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessTest.cs" />
+    <Compile Include="AgeTest.cs" />
+    <Compile Include="BlockInfoTest.cs" />
+    <Compile Include="CategoryWatcherTest.cs" />
     <Compile Include="CommandResponseHandlerTest.cs" />
+    <Compile Include="CountTest.cs" />
     <Compile Include="DALTest.cs" />
+    <Compile Include="DateTest.cs" />
+    <Compile Include="DieTest.cs" />
+    <Compile Include="FaqTest.cs" />
+    <Compile Include="FetchallTest.cs" />
+    <Compile Include="ForgetTest.cs" />
     <Compile Include="GlobalFunctionsTest.cs" />
     <Compile Include="IALTest.cs" />
+    <Compile Include="JoinTest.cs" />
+    <Compile Include="LearnTest.cs" />
+    <Compile Include="LinkTest.cs" />
+    <Compile Include="MaxlagTest.cs" />
+    <Compile Include="MessagecountTest.cs" />
+    <Compile Include="MyaccessTest.cs" />
     <Compile Include="PageWatcherControllerTest.cs" />
+    <Compile Include="PagewatcherTest.cs" />
+    <Compile Include="PartTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegistrationTest.cs" />
+    <Compile Include="RegTest.cs" />
+    <Compile Include="RightsTest.cs" />
+    <Compile Include="SayhiTest.cs" />
+    <Compile Include="SetTest.cs" />
+    <Compile Include="SilenceTest.cs" />
+    <Compile Include="TimeTest.cs" />
+    <Compile Include="UptimeTest.cs" />
+    <Compile Include="UserinfoTest.cs" />
+    <Compile Include="VersionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />

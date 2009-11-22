@@ -103,37 +103,46 @@ namespace helpmebot6
 
         public static User.userRights commandAccessLevel( )
         {
-            string typename = "";
-            System.Diagnostics.StackTrace foo = new System.Diagnostics.StackTrace( );
-            typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
+            User.userRights accessLevel = User.userRights.Developer;
 
-            User.userRights accessLevel;
-            string[ ] wc = { "typename = \""+typename+"\"" };
-            string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc , null , null , null , 1 , 0 );
-            switch( al )
+            try
             {
-                case "Developer":
-                    accessLevel = User.userRights.Developer;
-                    break;
-                case "Superuser":
-                    accessLevel = User.userRights.Superuser;
-                    break;
-                case "Advanced":
-                    accessLevel = User.userRights.Advanced;
-                    break;
-                case "Normal":
-                    accessLevel = User.userRights.Normal;
-                    break;
-                case "Semi-ignored":
-                    accessLevel = User.userRights.Semiignored;
-                    break;
-                case "Ignored":
-                    accessLevel = User.userRights.Ignored;
-                    break;
-                default:
-                    accessLevel = User.userRights.Developer;
-                    ErrorLog( new ArgumentOutOfRangeException( "command", typename , "not found in commandlist")  );
-                    break;
+                string typename = "";
+                System.Diagnostics.StackTrace foo = new System.Diagnostics.StackTrace( );
+                typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
+
+                string[ ] wc = { "typename = \"" + typename + "\"" };
+                string al = DAL.Singleton( ).Select( "accesslevel", "command", null, wc, null, null, null, 1, 0 );
+                switch( al )
+                {
+                    case "Developer":
+                        accessLevel = User.userRights.Developer;
+                        break;
+                    case "Superuser":
+                        accessLevel = User.userRights.Superuser;
+                        break;
+                    case "Advanced":
+                        accessLevel = User.userRights.Advanced;
+                        break;
+                    case "Normal":
+                        accessLevel = User.userRights.Normal;
+                        break;
+                    case "Semi-ignored":
+                        accessLevel = User.userRights.Semiignored;
+                        break;
+                    case "Ignored":
+                        accessLevel = User.userRights.Ignored;
+                        break;
+                    default:
+                        accessLevel = User.userRights.Developer;
+                        ErrorLog( new ArgumentOutOfRangeException( "command", typename, "not found in commandlist" ) );
+                        break;
+                }
+            }
+            catch( NullReferenceException ex )
+            {
+                accessLevel = User.userRights.Developer;
+                ErrorLog( ex );
             }
             return accessLevel;
         }
