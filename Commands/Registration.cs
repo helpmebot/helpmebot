@@ -23,7 +23,8 @@ namespace helpmebot6.Commands
                 DateTime registrationDate = getRegistrationDate( userName );
                 if( registrationDate == new DateTime( 0 ) )
                 {
-                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
+                    string[ ] messageParams = { userName };
+                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , messageParams );
                     crh.respond( message );
                 }
                 else

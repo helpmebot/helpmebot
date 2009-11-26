@@ -22,7 +22,8 @@ namespace helpmebot6.Commands
                 int editCount = getEditCount( userName );
                 if( editCount == -1 )
                 {
-                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , userName );
+                    string[ ] messageParams = { userName };
+                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser", messageParams );
                     return new CommandResponseHandler( message );
                 }
                 else
