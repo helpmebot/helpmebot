@@ -13,6 +13,7 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            CommandResponseHandler crh=new CommandResponseHandler();
             if( args.Length > 1 )
             {
                 switch( args[0] )
@@ -46,30 +47,41 @@ namespace helpmebot6.Commands
                                     break;
                             }
 
-                            addAccessEntry( User.newFromString( args[ 1 ] ) , aL );
+                            crh = addAccessEntry( User.newFromString( args[ 1 ] ) , aL );
                         }
                         break;
                     case "del":
-                        delAccessEntry( int.Parse( args[ 1 ] ) );
+                        crh = delAccessEntry( int.Parse( args[ 1 ] ) );
                         break;
                 }
                 // add <source> <level>
 
                 // del <id>
             }
-            return new CommandResponseHandler( );
+            return crh;
         }
 
-        void addAccessEntry( User newEntry , User.userRights AccessLevel )
+        CommandResponseHandler addAccessEntry( User newEntry , User.userRights AccessLevel )
         {
+            string[ ] messageParams = { newEntry.ToString( ), AccessLevel.ToString( ) };
+            string message = Configuration.Singleton( ).GetMessage( "addAccessEntry", messageParams );
+            
+            // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             Logger.Instance( ).addToLog( "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( ) , Logger.LogTypes.COMMAND );
             DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `user` VALUES(NULL, '" + newEntry.Nickname + "', '" + newEntry.Username + "', '" + newEntry.Hostname + "', '" + AccessLevel.ToString( ) + "');" );
+
+            return new CommandResponseHandler( message );
         }
 
-        void delAccessEntry( int id )
+        CommandResponseHandler delAccessEntry( int id )
         {
+            string[ ] messageParams = { id.ToString( ) };
+            string message = Configuration.Singleton( ).GetMessage( "removeAccessEntry", messageParams );
+
             Logger.Instance( ).addToLog( "Removing access entry #" + id.ToString( ) , Logger.LogTypes.COMMAND );
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `user` WHERE `user_id` = " + id.ToString( ) + " LIMIT 1;" );
+
+            return new CommandResponseHandler( message );
         }
     }
 }
