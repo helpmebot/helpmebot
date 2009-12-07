@@ -64,7 +64,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         {
             if( source.ToString( ) == Configuration.Singleton( ).retrieveGlobalStringOption( "wikimediaRcBot" ) )
             {
-                RcPageChange rcItem = PageWatcherController.rcParser( message );
+                RcPageChange rcItem = rcParser( message );
 
                 // not a page edit
                 if( rcItem.title == string.Empty )
@@ -93,7 +93,7 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
-        static RcPageChange rcParser( string rcItem )
+        RcPageChange rcParser( string rcItem )
         {
             string colorCodeControlChar = "\x03";
             string[ ] colorCodes = { 

@@ -253,7 +253,7 @@ namespace helpmebot6
             }
             catch ( SocketException ex )
             {
-                Error( ex );
+                GlobalFunctions.ErrorLog( ex );
                 return false;
             }
         }
@@ -331,11 +331,7 @@ namespace helpmebot6
             {
                 _sendLine( "PRIVMSG " + Destination + " :" + Message );
             }
-            LinkDetectedEventHandler temp = LinkDetected;
-            if( temp != null )
-            {
-                temp( Message, Destination );
-            }
+            Linker.Instance( ).ParseMessage( Message , Destination );
         }
 
         public void IrcQuit( string message )
@@ -590,22 +586,22 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( Exception ex )
                 {
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                 }
             }
             while ( _ThreadIsAlive );
 
             Console.WriteLine( "*** Reader thread died." );
-            StopRequested( );
+            Helpmebot6.Stop( );
         }
 
         void _ircWriterThreadMethod( )
@@ -618,7 +614,7 @@ namespace helpmebot6
                     if ( _sendQ.Count > 0 )
                     {
                         string line = (string)_sendQ.Dequeue( );
-                        LogRequested( "< " + line , Logger.LogTypes.IAL );
+                        Logger.Instance( ).addToLog( "< " + line , Logger.LogTypes.IAL );
                         _ircWriter.WriteLine( line );
                         _ircWriter.Flush( );
                         Thread.Sleep( this.FloodProtectionWaitTime );
@@ -632,23 +628,23 @@ namespace helpmebot6
                 catch ( ThreadAbortException ex )
                 {
                     _ThreadIsAlive = false;
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                     _sendQ.Clear( );
                 }
                 catch ( IOException ex )
                 {
                     _ThreadIsAlive = false;
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                 }
                 catch ( Exception ex )
                 {
-                    Error( ex );
+                    GlobalFunctions.ErrorLog( ex );
                 }
             }
             while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
 
             Console.WriteLine( "*** Writer thread died." );
-            StopRequested( );
+            Helpmebot6.Stop( );
         }
         #endregion
 
@@ -698,17 +694,6 @@ namespace helpmebot6
         public delegate void NameReplyEventHandler(string channel, string[] names);
         public event NameReplyEventHandler NameReplyEvent;
 
-        public delegate void LogRequestedEventHandler( string message, Logger.LogTypes type );
-        public event LogRequestedEventHandler LogRequested;
-
-        public delegate void ErrorEventHandler( Exception ex );
-        public event ErrorEventHandler Error;
-
-        public delegate void LinkDetectedEventHandler( string message, string destination );
-        public event LinkDetectedEventHandler LinkDetected;
-
-        public delegate void StopRequestedEventHandler( );
-        public event StopRequestedEventHandler StopRequested;
         #endregion
 
         private void initialiseEventHandlers( )
@@ -823,7 +808,7 @@ namespace helpmebot6
 
         void IAL_DataRecievedEvent( string data )
         {
-            LogRequested( data , Logger.LogTypes.IRC );
+            Logger.Instance( ).addToLog( data , Logger.LogTypes.IRC );
             
             char[ ] colonSeparator = { ':' };
 
@@ -959,7 +944,7 @@ namespace helpmebot6
 
         void Log( string message )
         {
-            LogRequested( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
+            Logger.Instance( ).addToLog( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
         }
     }
 }
