@@ -117,7 +117,7 @@ namespace helpmebot6
         void sendLink(string Channel, string Link)
         {
             if (Configuration.Singleton().retrieveLocalStringOption("autoLink", Channel) == "true")
-                Helpmebot6.irc.IrcPrivmsg(Channel, "[[" + Link + "]]: http://enwp.org/" + Link);
+                Helpmebot6.irc.IrcPrivmsg(Channel, "http://enwp.org/" + Link);
         }
 
     }
