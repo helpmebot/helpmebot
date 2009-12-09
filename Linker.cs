@@ -81,6 +81,7 @@ namespace helpmebot6
                     lastLink.Remove( Channel );
                 }
                 lastLink.Add( Channel , newLink );
+                sendLink(Channel, newLink); 
             }
         }
 
