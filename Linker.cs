@@ -112,5 +112,12 @@ namespace helpmebot6
             }
             return result;
         }
+
+        void sendLink(string Channel, string Link)
+        {
+            if (Configuration.Singleton().retrieveLocalStringOption("autoLink", Channel))
+                Helpmebot6.irc.IrcPrivmsg(Channel, "[[" + Link + "]]: http://enwp.org/" + Link);
+        }
+
     }
 }
