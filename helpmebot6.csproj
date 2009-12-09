@@ -93,6 +93,7 @@
     <Compile Include="Commands\Myaccess.cs" />
     <Compile Include="Commands\Pagewatcher.cs" />
     <Compile Include="Commands\Part.cs" />
+    <Compile Include="Commands\Raw.cs" />
     <Compile Include="Commands\Registration.cs" />
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\SayHi.cs" />

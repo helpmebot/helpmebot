@@ -305,6 +305,11 @@ namespace helpmebot6
             _sendNick( _myNickname );
         }
 
+        public void SendRawLine(string line)
+        {
+            _sendLine(line);
+        }
+
         public void IrcPong( string datapacket )
         {
             _sendLine( "PONG " + datapacket );
