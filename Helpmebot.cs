@@ -165,8 +165,8 @@ namespace helpmebot6
                string aiResponse = AI.Intelligence.Singleton( ).Respond( message );
                if( aiResponse != string.Empty )
                {
-
-                   irc.IrcPrivmsg( destination , config.GetMessage( aiResponse , source.Nickname ) );
+                   string[ ] aiParameters = { source.Nickname };
+                   irc.IrcPrivmsg( destination, config.GetMessage( aiResponse, aiParameters ) );
                }
            }
            catch( Exception ex )
