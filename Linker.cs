@@ -85,12 +85,17 @@ namespace helpmebot6
             }
         }
 
-        public string GetLink( string destination )
+        public string GetLink(string destination)
+        {
+            return GetLink(destination, false);
+        }
+        public string GetLink( string destination, bool useSecureServer )
         {
             string link;
             bool success = lastLink.TryGetValue( destination , out link );
-            if( success )
-                return "http://enwp.org/" + antispace(link);
+            string wikiUrl = Configuration.Singleton().retrieveLocalStringOption((useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
+            if (success)
+                return wikiUrl + antispace(link);
             else
                 return "";
         }
@@ -117,7 +122,7 @@ namespace helpmebot6
         void sendLink(string Channel, string Link)
         {
             if (Configuration.Singleton().retrieveLocalStringOption("autoLink", Channel) == "true")
-                Helpmebot6.irc.IrcPrivmsg(Channel, "http://enwp.org/" + Link);
+                Helpmebot6.irc.IrcPrivmsg(Channel, GetLink(Link,false));
         }
 
     }
