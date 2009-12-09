@@ -64,7 +64,8 @@ namespace helpmebot6.Commands
 
                 if( uInfo.editCount == -1 )
                 {
-                    crh.respond( Configuration.Singleton( ).GetMessage( "noSuchUser" , userName ) );
+                    string[] mparams = { userName };
+                    crh.respond( Configuration.Singleton( ).GetMessage( "noSuchUser" , mparams ) );
                     return crh;
                 }
 
