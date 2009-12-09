@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using helpmebot6;
 
-namespace helpmebot6.Commands
+namespace helpmebot6.Commands.FunStuff
 {
     /// <summary>
     /// Says hi to a user
