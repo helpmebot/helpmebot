@@ -84,6 +84,7 @@
     <Compile Include="Commands\Fetchall.cs" />
     <Compile Include="Commands\Forget.cs" />
     <Compile Include="Commands\Die.cs" />
+    <Compile Include="Commands\FunStuff\Trout.cs" />
     <Compile Include="Commands\GenericCommand.cs" />
     <Compile Include="Commands\Join.cs" />
     <Compile Include="Commands\Learn.cs" />
