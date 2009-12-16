@@ -21,9 +21,20 @@ namespace helpmebot6.Commands
 
         public BlockInformation getBlockInformation( string userName )
         {
+           System.Net.IPAddress ip;
+
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
-            string apiParams = "?action=query&list=blocks&bkusers="+userName+"&format=xml";
+            string apiParams = "?action=query&list=blocks&bk";
+            if( System.Net.IPAddress.TryParse( userName, out ip ) )
+            {
+                apiParams += "ip";
+            }
+            else
+            {
+                apiParams += "users";
+            }
+            apiParams+= "="+userName+"&format=xml";
             System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiParams );
 
             while( creader.Name != "blocks" )
@@ -45,6 +56,7 @@ namespace helpmebot6.Commands
                 bi.autoblock = creader.GetAttribute( "autoblock" ) == "" ? true : false;
                 bi.nocreate = creader.GetAttribute( "nocreate" ) == "" ? true : false;
                 bi.noemail = creader.GetAttribute( "noemail" ) == "" ? true : false;
+                bi.allowusertalk = creader.GetAttribute( "allowusertalk" ) == "" ? true : false;
 
                 return bi;
             }
@@ -65,6 +77,7 @@ namespace helpmebot6.Commands
             public bool nocreate;
             public bool autoblock;
             public bool noemail;
+            public bool allowusertalk;
 
             public override string ToString( )
             {
@@ -78,6 +91,8 @@ namespace helpmebot6.Commands
                     info += "AUTOBLOCK ";
                 if( noemail )
                     info += "NOEMAIL ";
+                if( allowusertalk )
+                    info += "ALLOWUSERTALK ";
                 string[ ] messageParams = { id, target, blockedBy, expiry, start, blockReason, info };
                 string message = Configuration.Singleton( ).GetMessage( "blockInfoShort", messageParams );
 
