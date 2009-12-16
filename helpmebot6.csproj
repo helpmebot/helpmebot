@@ -117,6 +117,7 @@
     <Compile Include="IAL.cs" />
     <Compile Include="Monitoring\PageWatcher\PageWatcherController.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
+    <Compile Include="NewYear\TimeMonitor.cs" />
     <Compile Include="NubioApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="User.cs" />
