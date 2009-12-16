@@ -74,6 +74,7 @@
     <Compile Include="Commands\Access.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
+    <Compile Include="Commands\Blockuser.cs" />
     <Compile Include="Commands\CategoryWatcherCommand.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Delay.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Disable.cs" />
