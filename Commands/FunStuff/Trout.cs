@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace helpmebot6.Commands.FunStuff
+namespace helpmebot6.Commands
 {
     class Trout  :GenericCommand
     {
@@ -15,7 +15,9 @@ namespace helpmebot6.Commands.FunStuff
         {
             string name = string.Join( " ", args );
 
-            if( name.ToLower() == helpmebot6.Helpmebot6.irc.IrcNickname.ToLower() || name.ToLower() == "stwalkerster" )
+            string forbiddenTargets = { "stwalkerster", "itself", "himself", "herself", Helpmebot6.irc.IrcNickname.ToLower( ) };
+
+            if( GlobalFunctions.isInArray(name,forbiddenTargets) != -1)
             {
                 name = source.Nickname;
             }
