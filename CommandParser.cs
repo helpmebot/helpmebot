@@ -50,6 +50,11 @@ namespace helpmebot6
             if( source.AccessLevel == User.userRights.Ignored )
                 return;
 
+            // flip destination over if required
+            if( destination == Helpmebot6.irc.IrcNickname )
+                destination = source.Nickname;
+
+
             /*
              * check category codes
              */
