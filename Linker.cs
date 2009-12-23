@@ -93,9 +93,20 @@ namespace helpmebot6
         {
             string link;
             bool success = lastLink.TryGetValue( destination , out link );
-            string wikiUrl = Configuration.Singleton().retrieveLocalStringOption((useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
-            if (success)
-                return wikiUrl + antispace(link);
+            if( success )
+            {
+                string iwprefix = link.Split( ':' )[ 0 ];
+                string url = DAL.Singleton( ).ExecuteScalarQuery( "select iw_url from interwikis where iw_prefix = \"" + iwprefix + "\";" );
+                if( url == string.Empty )
+                {
+                    url = Configuration.Singleton( ).retrieveLocalStringOption( ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination );
+                    return url + antispace( link );
+                }
+                else
+                {
+                    return url.Replace( "$1", antispace( link ) );
+                }
+            }
             else
                 return "";
         }
