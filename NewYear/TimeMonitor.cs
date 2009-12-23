@@ -26,8 +26,7 @@ namespace helpmebot.NewYear
 
         private void monitorThreadMethod( )
         {
-            // SELECT tz_places FROM timezones t WHERE ADDDATE("2010-01-01 00:00:00", INTERVAL -tz_offset_hours HOUR) = NOW();
-
+            // SELECT *, ADDDATE(ADDDATE("2010-01-01 00:00:00", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE) FROM timezones t ORDER BY ADDDATE(ADDDATE("2010-01-01 00:00:00", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE) DESC;
 
         }
     }
