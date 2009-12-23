@@ -104,7 +104,7 @@ namespace helpmebot6
                 }
                 else
                 {
-                    return url.Replace( "$1", antispace( link ) );
+                    return url.Replace( "$1", antispace( string.Join( ":", link.Split( ':' ), 1, link.Split( ':' ).Length - 1 ) ) );
                 }
             }
             else
