@@ -84,6 +84,8 @@ namespace helpmebot6
 
            SetupEvents( );
 
+           NewYear.TimeMonitor.instance( );
+
            if( !irc.Connect( ) )
            { // if can't connect to irc, die
                return;
