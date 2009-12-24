@@ -41,7 +41,7 @@ namespace helpmebot6
 
         System.Collections.ArrayList configurationCache;
 
-        string this[ string globalOption ]
+        public string this[ string globalOption ]
         {
             get
             {
