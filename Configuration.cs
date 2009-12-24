@@ -41,6 +41,18 @@ namespace helpmebot6
 
         System.Collections.ArrayList configurationCache;
 
+        string this[ string globalOption ]
+        {
+            get
+            {
+                return retrieveGlobalStringOption( globalOption );
+            }
+            set
+            {
+                setGlobalOption( globalOption, value );
+            }
+        }
+
         public string retrieveGlobalStringOption( string optionName )
         {
           
