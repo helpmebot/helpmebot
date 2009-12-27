@@ -11,7 +11,7 @@ namespace helpmebot6.Commands
     {
         public Set( )
         {
-            accessLevel = GlobalFunctions.commandAccessLevel(  );
+
         }
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )

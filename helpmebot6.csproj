@@ -69,6 +69,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="AccessLog.cs" />
     <Compile Include="AI\Intelligence.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\Access.cs" />

@@ -12,7 +12,7 @@ namespace helpmebot6.Commands
     {
         public Sayhi( )
         {
-            accessLevel = GlobalFunctions.commandAccessLevel(  );
+
         }
 
         protected override CommandResponseHandler execute( User toUser ,string channel,  string[ ] args )

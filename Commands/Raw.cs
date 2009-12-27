@@ -8,7 +8,6 @@ namespace helpmebot6.Commands
     {
         public Raw()
         {
-            accessLevel = GlobalFunctions.commandAccessLevel();
         }
 
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
@@ -16,6 +15,7 @@ namespace helpmebot6.Commands
             Helpmebot6.irc.SendRawLine(string.Join(" ", args));
 
             return new CommandResponseHandler();
-        }
+        }
+
     }
 }

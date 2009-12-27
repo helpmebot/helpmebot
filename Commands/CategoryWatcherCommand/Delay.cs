@@ -8,7 +8,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
     {
         public Delay( )
         {
-            accessLevel = GlobalFunctions.commandAccessLevel( );
+
         }
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
