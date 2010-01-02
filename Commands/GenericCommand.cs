@@ -25,8 +25,6 @@ namespace helpmebot6.Commands
 
 
                 response.respond( Configuration.Singleton( ).GetMessage( "accessDenied", "" ), CommandResponseDestination.PRIVATE_MESSAGE );
-                string[ ] aDArgs = { source.ToString( ), command };
-                response.respond( Configuration.Singleton( ).GetMessage( "accessDeniedDebug", aDArgs ), CommandResponseDestination.CHANNEL_DEBUG );
                 Log( "Access denied to command." );
                 AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), false ) );
                 return response;
