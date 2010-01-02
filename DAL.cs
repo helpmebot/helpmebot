@@ -82,6 +82,8 @@ namespace helpmebot6
                 Logger.Instance( ).addToLog( "Executing (non)query: " + query , Logger.LogTypes.DAL );
                 try
                 {
+
+                    runConnectionTest( );
                     MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
                     MySqlCommand cmd = new MySqlCommand( query , _connection );//, transact);
                     cmd.ExecuteNonQuery( );
@@ -111,6 +113,8 @@ namespace helpmebot6
                 object result = null;
                 try
                 {
+                    runConnectionTest( );
+
                     MySqlCommand cmd = new MySqlCommand( query , _connection );
 
                     result = cmd.ExecuteScalar( );
@@ -151,6 +155,8 @@ namespace helpmebot6
 
                 try
                 {
+                    runConnectionTest( );
+
                     MySqlCommand cmd = new MySqlCommand( query );
                     cmd.Connection = _connection;
                     result = cmd.ExecuteReader( );
@@ -347,6 +353,35 @@ namespace helpmebot6
             {
                 GlobalFunctions.ErrorLog( ex );
                 return null;
+            }
+        }
+
+        private void runConnectionTest( )
+        {
+            // ok, first let's assume the connection is dead.
+            bool connectionOk = false;
+
+            // first time through, skip the connection attempt
+            bool firstTime = true;
+
+            int sleepTime = 1000;
+
+            while( !connectionOk )
+            {
+                if( !firstTime )
+                {
+                    Logger.Instance( ).addToLog( "Reconnecting to database....", Logger.LogTypes.ERROR );
+
+                    Connect( );
+
+                    System.Threading.Thread.Sleep( sleepTime );
+
+                    sleepTime = (int)(sleepTime * 1.5) > int.MaxValue ? sleepTime : (int)(sleepTime * 1.5);
+
+                }
+
+                connectionOk = _connection.Ping( );
+
             }
         }
     }
