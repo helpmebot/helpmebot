@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
             catch( ArgumentException )
             {
                 accessLevel = User.userRights.Developer;
+                Logger.Instance( ).addToLog( "Warning: " + command + " not found in access list.", Logger.LogTypes.ERROR );
             }
 
             // check the access level
