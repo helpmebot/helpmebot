@@ -76,16 +76,21 @@ namespace helpmebot6
 
         public void ExecuteNonQuery( string query )
         {
+            ExecuteNonQuery( new MySqlCommand( query, _connection ) );
+        }
+
+        public void ExecuteNonQuery( MySqlCommand cmd )
+        {
             Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
             lock( this )
             {
-                Logger.Instance( ).addToLog( "Executing (non)query: " + query , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
                 try
                 {
 
                     runConnectionTest( );
                     MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
-                    MySqlCommand cmd = new MySqlCommand( query , _connection );//, transact);
+                    cmd.Connection = _connection;
                     cmd.ExecuteNonQuery( );
                     transact.Commit( );
                 }
@@ -97,7 +102,7 @@ namespace helpmebot6
                 {
                     GlobalFunctions.ErrorLog( ex );
                 }
-                Logger.Instance( ).addToLog( "Done executing (non)query: " + query , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Done executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
             }
             Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
         }
