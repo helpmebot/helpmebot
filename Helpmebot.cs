@@ -137,14 +137,7 @@ namespace helpmebot6
 
        static void welcomeNewbieOnJoinEvent( User source , string channel )
        {
-           if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie" , channel ) == "true" )
-           {
-               if( source.AccessLevel == User.userRights.Normal )
-               {
-                   string[ ] cmdArgs = { source.Nickname , channel };
-                   Helpmebot6.irc.IrcPrivmsg( channel , Configuration.Singleton( ).GetMessage( "welcomeMessage" , cmdArgs ) );
-               }
-           }
+           Monitoring.NewbieWelcomer.Instance( ).execute( source, channel );
        }
 
        static void ReceivedMessage( User source , string destination , string message )

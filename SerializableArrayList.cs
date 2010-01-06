@@ -17,6 +17,10 @@ namespace helpmebot6
                 this.Add( info.GetString( i.ToString( ) ) );
             }
         }
+        public SerializableArrayList( )
+        {
+            
+        }
 
         #region ISerializable Members
 
