@@ -108,7 +108,10 @@ namespace helpmebot6.Monitoring.PageWatcher
                                    };
 
             string[ ] parts = rcItem.Split( colorCodes , StringSplitOptions.RemoveEmptyEntries );
-
+            if( parts.Length < 12 )
+            {
+                return new RcPageChange( );
+            }
             if( parts[ 1 ].Contains( "Special:" ) )
             {
                 return new RcPageChange( );
