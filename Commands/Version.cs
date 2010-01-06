@@ -19,14 +19,12 @@ namespace helpmebot6.Commands
             }
         }
 
-        public Version( )
-        {
-
-        }
-
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            return new CommandResponseHandler( getVersionString( ) );
+            if( GlobalFunctions.isInArray( "@svn", args ) != -1 )
+                return new CommandResponseHandler( getVersionString( ) );
+            else
+                return new CommandResponseHandler( version );
         }
 
         public string getVersionString( )
