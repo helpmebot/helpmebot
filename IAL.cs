@@ -60,6 +60,7 @@ namespace helpmebot6
 
         private uint _networkId = 0;
 
+        private bool _logEvents = true;
         #endregion
 
         #region properties
@@ -170,6 +171,14 @@ namespace helpmebot6
                 return DateTime.Now.Subtract( lastMessage );
             }
         }
+
+        public bool LogEvents
+        {
+            get
+            {
+                return _logEvents;
+            }
+        }
         #endregion
 
         #region constructor/destructor
@@ -180,7 +189,7 @@ namespace helpmebot6
 
             DAL db = DAL.Singleton( );
 
-            string[] selects = {"in_host","in_port","in_nickname","in_password","in_username","in_realname"};
+            string[ ] selects = { "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log" };
             string[ ] wheres = { "in_id = " + ircNetwork };
             ArrayList configSettings = db.Select( selects , "ircnetwork" , new DAL.join[ 0 ] , wheres , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
 
@@ -191,6 +200,8 @@ namespace helpmebot6
             _myPassword = (string)( ( (object[ ])configSettings[ 0 ] )[ 3 ] );
             _myUsername = (string)( ( (object[ ])configSettings[ 0 ] )[ 4 ] );
             _myRealname = (string)( ( (object[ ])configSettings[ 0 ] )[ 5 ] );
+
+            _logEvents = (bool)( ( (object[ ])configSettings[ 0 ] )[ 6 ] );
 
             if( /*recieveWallops*/ true )
                 _connectionUserModes += 4;
@@ -949,7 +960,10 @@ namespace helpmebot6
 
         void Log( string message )
         {
-            Logger.Instance( ).addToLog( "<" + _networkId + ">" + message , Logger.LogTypes.IAL );
+            if( this.LogEvents )
+            {
+                Logger.Instance( ).addToLog( "<" + _networkId + ">" + message, Logger.LogTypes.IAL );
+            }
         }
     }
 }
