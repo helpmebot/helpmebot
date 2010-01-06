@@ -126,10 +126,6 @@ namespace helpmebot6
                         else
                         {
                             directedTo = FindRedirection( destination , ref args );
-                            if( directedTo != string.Empty )
-                            {
-                                wordResponse = directedTo + ": " + wordResponse;
-                            }
                             crh.respond( wordResponse );
                         }
                         HandleCommandResponseHandler( source , destination , directedTo , crh );
