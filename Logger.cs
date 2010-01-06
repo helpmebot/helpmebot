@@ -15,6 +15,11 @@ namespace helpmebot6
             IalLogger = new StreamWriter( "ial.log" );
             ErrorLogger = new StreamWriter( "error.log" );
 
+            DalLogger.AutoFlush = true;
+            IRClogger.AutoFlush = true;
+            IalLogger.AutoFlush = true;
+            ErrorLogger.AutoFlush = true;
+
             string init = "Welcome to Helpmebot v6.";
             DalLogger.WriteLine( init );
             IRClogger.WriteLine( init );
