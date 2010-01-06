@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace helpmebot
+namespace helpmebot6
 {
     [Serializable()]
     class SerializableArrayList : ArrayList,  ISerializable
