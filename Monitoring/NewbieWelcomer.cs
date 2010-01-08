@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Text.RegularExpressions;
+ 
 namespace helpmebot6.Monitoring
 {
     class NewbieWelcomer
@@ -24,6 +26,7 @@ namespace helpmebot6.Monitoring
            }
            catch( System.Runtime.Serialization.SerializationException ex )
            {
+               GlobalFunctions.ErrorLog( ex );
                hostNames = new SerializableArrayList( );
            }
             
@@ -41,7 +44,19 @@ namespace helpmebot6.Monitoring
         {
             if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
             {
-                if( source.AccessLevel == User.userRights.Normal )
+                bool match = false;
+                foreach( object item in hostNames )
+                {
+                    string pattern = (string)item;
+                    Regex rX = new Regex( pattern );
+                    if( rX.IsMatch( source.Hostname ) )
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+
+                if( match )
                 {
                     string[ ] cmdArgs = { source.Nickname, channel };
                     Helpmebot6.irc.IrcPrivmsg( channel, Configuration.Singleton( ).GetMessage( "welcomeMessage", cmdArgs ) );
@@ -53,12 +68,30 @@ namespace helpmebot6.Monitoring
         {
             hostNames.Add( host );
 
+            saveHostnames( );
+        }
+
+        public void delHost( string host )
+        {
+            hostNames.Remove( host );
+
+            saveHostnames( );
+        }
+
+        public string[ ] getHosts( )
+        {
+            string[] list = new string[hostNames.Count];
+            hostNames.CopyTo( list );
+            return list;
+        }
+
+        private void saveHostnames( )
+        {
             BinaryFormatter bf = new BinaryFormatter( );
-            MemoryStream ms = new MemoryStream();
+            MemoryStream ms = new MemoryStream( );
             bf.Serialize( ms, hostNames );
 
-            byte[ ] buf = new byte[ ms.Length ];
-            ms.Read( buf, 0, (int)ms.Length );
+            byte[ ] buf = ms.GetBuffer( );
 
             MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand( );
             cmd.CommandText = "UPDATE binary_store SET bin_blob = @raw WHERE bin_desc = 'newbie_hostnames';";
