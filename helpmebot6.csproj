@@ -124,6 +124,8 @@
     <Compile Include="NubioApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableArrayList.cs" />
+    <Compile Include="UdpListener\UDPListener.cs" />
+    <Compile Include="UdpListener\UdpMessage.cs" />
     <Compile Include="User.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
