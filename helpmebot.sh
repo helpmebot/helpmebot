@@ -28,6 +28,9 @@ rebuildbot()
 
 updatebot() 
 {
+	mono ~/hmb-udp-sender.exe "#wikipedia-en-help :Bot going down for update."
+	mono ~/hmb-udp-sender.exe "#wikipedia-en-accounts :Bot going down for update."
+	mono ~/hmb-udp-sender.exe "##helpmebot :Bot going down for update."
 	echo "Updating sourcecode from subversion"
 	svn up
 }
