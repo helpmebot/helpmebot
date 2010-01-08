@@ -26,6 +26,7 @@ namespace helpmebot6
        public static IAL irc ;
        static DAL dbal;
        static Configuration config;
+       static UdpListener.UDPListener udp;
 
        static string Trigger;
 
@@ -93,7 +94,7 @@ namespace helpmebot6
                return;
            }
 
-           
+           udp = new helpmebot6.UdpListener.UDPListener( 4357 );
        }
 
        static void SetupEvents( )
