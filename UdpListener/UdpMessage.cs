@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 namespace helpmebot6.UdpListener
 {
+    [Serializable()]
     public class  UdpMessage : ISerializable
     {
         public string Hash
