@@ -42,6 +42,7 @@ namespace helpmebot6
 
         private bool logDal;
         private bool logIRC;
+        private bool logDallock;
 
         public bool LogDAL
         {
@@ -63,6 +64,17 @@ namespace helpmebot6
             set
             {
                 logIRC = value;
+            }
+        }
+        public bool LogDALLOCK
+        {
+            get
+            {
+                return logDallock;
+            }
+            set
+            {
+                logDallock = value;
             }
         }
 
@@ -95,7 +107,7 @@ namespace helpmebot6
                         Console.WriteLine( "A " + message );
                         break;
                     case LogTypes.DALLOCK:
-                        if( logDal )
+                        if( logDallock )
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.Write( dateString );

@@ -48,6 +48,8 @@ namespace helpmebot6
 
            if( GlobalFunctions.prefixIsInArray( "--logdal" , args ) != -1 )
                Logger.Instance( ).LogDAL = true;
+           if( GlobalFunctions.prefixIsInArray( "--logdallock", args ) != -1 )
+               Logger.Instance( ).LogDALLOCK = true;
            if( GlobalFunctions.prefixIsInArray( "--logirc" , args ) != -1 )
                Logger.Instance( ).LogIRC = true;
 
