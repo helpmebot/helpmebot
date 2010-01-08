@@ -81,7 +81,7 @@ namespace helpmebot6
 
         public void ExecuteNonQuery( MySqlCommand cmd )
         {
-            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
                 Logger.Instance( ).addToLog( "Executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
@@ -104,13 +104,13 @@ namespace helpmebot6
                 }
                 Logger.Instance( ).addToLog( "Done executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
             }
-            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
         }
 
         public string ExecuteScalarQuery( string query )
         {
             string ret = "";
-            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
                 Logger.Instance( ).addToLog( "Executing (scalar)query: " + query , Logger.LogTypes.DAL );
@@ -145,7 +145,7 @@ namespace helpmebot6
                     Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
                 } 
             }
-            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
             return ret;
         }
 
@@ -153,7 +153,7 @@ namespace helpmebot6
         {
             MySqlDataReader result = null;
             
-            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.DALLOCK );
             lock( this )
             {
                 Logger.Instance( ).addToLog( "Executing (reader)query: " + query , Logger.LogTypes.DAL );
@@ -175,7 +175,7 @@ namespace helpmebot6
                     GlobalFunctions.ErrorLog( ex );
                 }
             }
-            Logger.Instance( ).addToLog( "DAL Lock released." , Logger.LogTypes.GENERAL );
+            Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
             return result;
         }
 

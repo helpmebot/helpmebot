@@ -74,7 +74,8 @@ namespace helpmebot6
             COMMAND , // command log events, BLUE
             GENERAL , // general log events, WHITE
             ERROR, // error events, RED
-            IRC // raw IRC events, 
+            IRC, // raw IRC events, 
+            DALLOCK
         } // DATE: GREEN
 
         public void addToLog( string message , LogTypes type )
@@ -92,6 +93,16 @@ namespace helpmebot6
                         Console.Write( dateString );
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine( "A " + message );
+                        break;
+                    case LogTypes.DALLOCK:
+                        if( logDal )
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.Write( dateString );
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.WriteLine( "DL " + message );
+                        }
+                        DalLogger.WriteLine( dateString + message );
                         break;
                     case LogTypes.DAL:
                         if( logDal )
