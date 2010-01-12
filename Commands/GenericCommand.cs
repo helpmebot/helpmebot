@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
                 }
                 catch (Exception ex)
                 {
-                    Log(ex.ToString());
+                    Logger.Instance().addToLog(ex.ToString(),Logger.LogTypes.ERROR);
                     crh = new CommandResponseHandler(ex.Message);
                 }
                 Log( "Command execution complete." );

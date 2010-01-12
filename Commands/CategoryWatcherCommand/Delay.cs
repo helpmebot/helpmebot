@@ -15,7 +15,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         {
             if(args.Length>2)
             { // 2 or more args
-                Monitoring.WatcherController.Instance( ).setDelay( args[ 0 ] , int.Parse( args[ 2 ] ) );
+                return Monitoring.WatcherController.Instance( ).setDelay( args[ 0 ] , int.Parse( args[ 2 ] ) );
             }
             else if( args.Length==2){
                 int delay = Monitoring.WatcherController.Instance( ).getDelay( args[ 0 ] );
