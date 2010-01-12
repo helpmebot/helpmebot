@@ -185,6 +185,9 @@ namespace helpmebot6.Monitoring
 
         public void setDelay( string keyword , int newDelay )
         {
+            if (newDelay < 1)
+                throw new System.ArgumentOutOfRangeException("newDelay", newDelay, "The delay must not be shorter than 1 second");
+
             CategoryWatcher cw = getWatcher( keyword );
             if( cw != null )
             {
