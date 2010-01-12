@@ -275,8 +275,12 @@ namespace helpmebot6
             {
                 line = line.Replace( "\n", " " );
                 line = line.Replace( "\r", " " );
-                _sendQ.Enqueue( line.Trim() );
+                lock (_sendQ)
+                {
+                    _sendQ.Enqueue(line.Trim());
+                }
                 _messageCount++;
+                
             }
         }
 
@@ -627,9 +631,15 @@ namespace helpmebot6
             {
                 try
                 {
-                    if ( _sendQ.Count > 0 )
+                    string line = null;
+                    lock (_sendQ)
                     {
-                        string line = (string)_sendQ.Dequeue( );
+                        if (_sendQ.Count > 0)
+                            line = (string)_sendQ.Dequeue();
+                    }
+
+                    if (line != null)
+                    {
                         Logger.Instance( ).addToLog( "< " + line , Logger.LogTypes.IAL );
                         _ircWriter.WriteLine( line );
                         _ircWriter.Flush( );
