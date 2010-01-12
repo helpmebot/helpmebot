@@ -89,10 +89,10 @@ namespace helpmebot6
                 {
 
                     runConnectionTest( );
-                    MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
+                    //MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
                     cmd.Connection = _connection;
                     cmd.ExecuteNonQuery( );
-                    transact.Commit( );
+                    //transact.Commit( );
                 }
                 catch( MySqlException ex )
                 {
