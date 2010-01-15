@@ -15,13 +15,13 @@ namespace helpmebot6.Commands
         {
             if( args.Length > 1 )
             {
-                switch( args[0] )
+                switch( GlobalFunctions.popFromFront( ref args ) )
                 {
                     case "add":
-                        addPageWatcher( args[ 1 ] , channel );
+                        addPageWatcher( string.Join( " ", args ), channel );
                         break;
                     case "del":
-                        removePageWatcher( args[ 1 ] , channel );
+                        removePageWatcher( string.Join( " ", args ), channel );
                         break;
                 }
             }
