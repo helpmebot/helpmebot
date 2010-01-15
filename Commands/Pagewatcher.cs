@@ -18,17 +18,17 @@ namespace helpmebot6.Commands
                 switch( GlobalFunctions.popFromFront( ref args ) )
                 {
                     case "add":
-                        addPageWatcher( string.Join( " ", args ), channel );
+                        return addPageWatcher( string.Join( " ", args ), channel );
                         break;
                     case "del":
-                        removePageWatcher( string.Join( " ", args ), channel );
+                        return removePageWatcher( string.Join( " ", args ), channel );
                         break;
                 }
             }
             return new CommandResponseHandler( );
         }
 
-        private void addPageWatcher(string page, string channel)
+        private CommandResponseHandler addPageWatcher(string page, string channel)
         {
             string[] wc = {"w.`pw_title` = '" + page + "'"};
 
@@ -45,10 +45,12 @@ namespace helpmebot6.Commands
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             
             // add to pagewatcherchannels
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO pagewatcherchannels VALUES ( null, " + channelId + ", " + watchedPageId + ");" );
+            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO pagewatcherchannels VALUES ( " + channelId + ", " + watchedPageId + ");" );
+
+            return null;
         }
 
-        private void removePageWatcher( string page , string channel )
+        private CommandResponseHandler removePageWatcher( string page , string channel )
         {
             string[ ] wc = { "w.`pw_title` = '" + page + "'" };
 
@@ -60,6 +62,8 @@ namespace helpmebot6.Commands
 
             // remove from pagewatcherchannels
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM pagewatcherchannels WHERE pwc_channel = " + channelId + " AND pwc_pagewatcher = " + watchedPageId + ";" );
+
+            return null;
         }
         
     }
