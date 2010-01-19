@@ -16,7 +16,16 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            string[ ] messageParams = { source.Nickname , DateTime.Now.DayOfWeek.ToString(),DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString(),DateTime.Now.Day.ToString(),DateTime.Now.Hour.ToString(),DateTime.Now.Minute .ToString(), DateTime.Now.Second .ToString()};
+            string[ ] messageParams = { 
+                                          source.Nickname, 
+                                          DateTime.Now.DayOfWeek.ToString( ), 
+                                          DateTime.Now.Year.ToString( ), 
+                                          DateTime.Now.Month.ToString("00"), 
+                                          DateTime.Now.Day.ToString( "00"), 
+                                          DateTime.Now.Hour.ToString( "00"), 
+                                          DateTime.Now.Minute.ToString( "00"), 
+                                          DateTime.Now.Second.ToString("00" ) 
+                                      };
             string message = Configuration.Singleton( ).GetMessage( "cmdTime" , messageParams );
             return new CommandResponseHandler( message );
         }
