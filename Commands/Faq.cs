@@ -16,7 +16,7 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            string command = GlobalFunctions.popFromFront( ref args );
+            string command = GlobalFunctions.popFromFront( ref args ).ToLower();
             CommandResponseHandler crh = new CommandResponseHandler( );
 
             NubioApi faqRepo = new NubioApi( new Uri( Configuration.Singleton().retrieveGlobalStringOption( "faqApiUri" ) ) );

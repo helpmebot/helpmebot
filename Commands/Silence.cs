@@ -18,7 +18,7 @@ namespace helpmebot6.Commands
 
             if( args.Length > 0 )
             {
-                if( args[ 0 ] == "@global" )
+                if( args[ 0 ].ToLower() == "@global" )
                 {
                     global = true;
                     GlobalFunctions.popFromFront( ref args );
@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
             if( args.Length > 0 )
             {
                 string newValue = "global";
-                switch( args[0] )
+                switch( args[0].ToLower() )
                 {
                     case "enable":
                         newValue = "true";

@@ -15,7 +15,7 @@ namespace helpmebot6.Commands
         {
             if( args.Length > 1 )
             {
-                switch( GlobalFunctions.popFromFront( ref args ) )
+                switch( GlobalFunctions.popFromFront( ref args ).ToLower() )
                 {
                     case "add":
                         return addPageWatcher( string.Join( " ", args ), channel );

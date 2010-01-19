@@ -40,12 +40,12 @@ namespace helpmebot6.Commands
 
             if( args.Length > 0 )
             {
-                if( args[ 0 ] == "@long" )
+                if( args[ 0 ].ToLower() == "@long" )
                 {
                     useLongInfo = true;
                     GlobalFunctions.popFromFront( ref args );
                 }
-                if( args[ 0 ] == "@short" )
+                if( args[ 0 ].ToLower() == "@short" )
                 {
                     useLongInfo = false;
                     GlobalFunctions.popFromFront( ref args );

@@ -8,7 +8,7 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
-            switch( args[0] )
+            switch( args[0].ToLower() )
             {
                 case "enable":
                     if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )

@@ -16,7 +16,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh=new CommandResponseHandler();
             if( args.Length > 1 )
             {
-                switch( args[0] )
+                switch( args[0].ToLower() )
                 {
                     case "add":
                         if( args.Length > 2 )
