@@ -65,9 +65,12 @@ namespace helpmebot6.Commands
                     else
                     {
                         if( !global )
-                            Configuration.Singleton( ).setLocalOption( "silence" , channel , newValue );
+                            Configuration.Singleton( ).setLocalOption( "silence", channel, newValue );
                         else
-                            Configuration.Singleton( ).setGlobalOption( "silence" , newValue );
+                        {
+                            if(source.AccessLevel >= User.userRights.Superuser)
+                                Configuration.Singleton( ).setGlobalOption( "silence", newValue );
+                        }
                         return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) , CommandResponseDestination.PRIVATE_MESSAGE );
 
                     }
