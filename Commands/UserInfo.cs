@@ -253,8 +253,9 @@ namespace helpmebot6.Commands
                 initial.userAge= ageCommand.getWikipedianAge( userName );
                 ageCommand = null;
 
-              initial.editRate = initial.editCount / initial.userAge.TotalDays;
+                initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
+                initial.blockInformation = new Blockinfo( ).getBlockInformation( userName ).ToString( );
 
                 return initial;
             }
@@ -303,7 +304,7 @@ namespace helpmebot6.Commands
             crh.respond( userInformation.talkPage );
             crh.respond( userInformation.userContribs );
             crh.respond( userInformation.userBlockLog );
-
+            crh.respond( userInformation.blockInformation );
             string message = "";
             if( userInformation.userGroups!= "" )
             {
@@ -341,6 +342,7 @@ namespace helpmebot6.Commands
             public string userContribs;
             public string userBlockLog;
             public TimeSpan userAge;
+            public string blockInformation;
         }
     }
 }
