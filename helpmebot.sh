@@ -13,6 +13,11 @@ startbot()
 	mono bin/Debug/helpmebot6.exe &> $HMBLOG &
 }
 
+startbottosdtout()
+{
+	mono bin/Debug/helpmebot6.exe
+}
+
 stopbot()
 {
 	echo "Stopping bot..."
@@ -38,6 +43,9 @@ updatebot()
 case $1 in
 	start)
 		startbot
+	;;
+	start-stdout)
+		startbottosdtout
 	;;
 	stop)
 		stopbot
