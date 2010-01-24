@@ -13,9 +13,14 @@ namespace helpmebot6.Monitoring.PageWatcher
         {
             watchedPageList = new ArrayList( );
             LoadAllWatchedPages( );
-            irc = new IAL( Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" ));
-            SetupEvents( );
-            irc.Connect( );
+            uint wikiRCIrc = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
+            if( wikiRCIrc != 0 )
+            {
+                irc = new IAL(wikiRCIrc );
+                SetupEvents( );
+                irc.Connect( );
+            }
+            
         }
         public static PageWatcherController Instance( )
         {
