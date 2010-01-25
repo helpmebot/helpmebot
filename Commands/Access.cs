@@ -6,9 +6,11 @@ namespace helpmebot6.Commands
 {
     class Access : GenericCommand
     {
-        public Access( )
+        protected override CommandResponseHandler accessDenied( User source, string channel, string[ ] args )
         {
-
+            CommandResponseHandler crh = new Myaccess( ).run( source, channel, args );
+            crh.append( base.accessDenied( source, channel, args ) );
+            return crh;
         }
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
