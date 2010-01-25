@@ -26,35 +26,51 @@ namespace helpmebot6.Commands
                 Logger.Instance( ).addToLog( "Warning: " + command + " not found in access list.", Logger.LogTypes.ERROR );
             }
 
+            return accessTest( source, channel, args );
+        }
+
+        protected virtual CommandResponseHandler accessTest( User source, string channel, string[ ] args )
+        {
             // check the access level
             if( source.AccessLevel < accessLevel )
             {
-                CommandResponseHandler response = new CommandResponseHandler( );
-
-
-                response.respond( Configuration.Singleton( ).GetMessage( "accessDenied", "" ), CommandResponseDestination.PRIVATE_MESSAGE );
-                Log( "Access denied to command." );
-                AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), false ) );
-                return response;
+                return accessDenied( source, channel, args );
             }
             else
             {
-                AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), true ) );
-                Log( "Starting command execution..." );
-                CommandResponseHandler crh;
-                try 
-                {
-                    crh = execute(source, channel, args);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Instance().addToLog(ex.ToString(),Logger.LogTypes.ERROR);
-                    crh = new CommandResponseHandler(ex.Message);
-                }
-                Log( "Command execution complete." );
-                return crh;
+                return reallyRun( source, channel, args );
             }
         }
+
+        protected virtual CommandResponseHandler reallyRun( User source, string channel, string[ ] args )
+        {
+            AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), true ) );
+            Log( "Starting command execution..." );
+            CommandResponseHandler crh;
+            try
+            {
+                crh = execute( source, channel, args );
+            }
+            catch( Exception ex )
+            {
+                Logger.Instance( ).addToLog( ex.ToString( ), Logger.LogTypes.ERROR );
+                crh = new CommandResponseHandler( ex.Message );
+            }
+            Log( "Command execution complete." );
+            return crh;
+        }
+
+        protected virtual CommandResponseHandler accessDenied( User source, string channel, string[ ] args )
+        {
+            CommandResponseHandler response = new CommandResponseHandler( );
+
+            response.respond( Configuration.Singleton( ).GetMessage( "accessDenied", "" ), CommandResponseDestination.PRIVATE_MESSAGE );
+            Log( "Access denied to command." );
+            AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), false ) );
+            return response;
+        }
+
+        
 
         protected abstract CommandResponseHandler execute( User source, string channel, string[ ] args );
 
