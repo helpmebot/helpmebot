@@ -53,6 +53,14 @@ namespace helpmebot6
             responses.Add( cr );
         }
 
+        public void append( CommandResponseHandler moreResponses )
+        {
+            foreach( object item in moreResponses.getResponses() )
+            {
+                responses.Add( item );
+            }
+        }
+
         public ArrayList getResponses()
         {
             return responses;
