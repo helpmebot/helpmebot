@@ -8,15 +8,17 @@ using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using helpmebot6.Threading;
 namespace helpmebot6.UdpListener
 {
-    public class UDPListener
+    public class UDPListener:IThreadedSystem
     {
         public UDPListener( int port )
         {
             key = Configuration.Singleton( ).retrieveGlobalStringOption( "udpKey" );
             udpClient = new UdpClient( port );
             listenerThread = new Thread( new ThreadStart( threadMethod ) );
+            RegisterInstance( );
             listenerThread.Start( );
         }
 
@@ -51,5 +53,19 @@ namespace helpmebot6.UdpListener
                 GlobalFunctions.ErrorLog( ex );
             }
         }
+
+        #region IThreadedSystem Members
+
+        public void Stop( )
+        {
+            throw new NotImplementedException( );
+        }
+
+        public void RegisterInstance( )
+        {
+            ThreadList.instance( ).register( this );
+        }
+
+        #endregion
     }
 }

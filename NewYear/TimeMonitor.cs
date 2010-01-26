@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using MySql.Data.MySqlClient;
+using helpmebot6.Threading;
 namespace helpmebot6.NewYear
 {
-    class TimeMonitor
+    class TimeMonitor : IThreadedSystem
     {
         public static TimeMonitor instance( )
         {
@@ -46,6 +47,8 @@ namespace helpmebot6.NewYear
             }
             dr.Close( );
 
+
+            RegisterInstance( );
             monitorThread.Start( );
         }
 
@@ -80,5 +83,19 @@ namespace helpmebot6.NewYear
                 }
             }
         }
+
+        #region IThreadedSystem Members
+
+        public void Stop( )
+        {
+            throw new NotImplementedException( );
+        }
+
+        public void RegisterInstance( )
+        {
+            ThreadList.instance( ).register( this );
+        }
+
+        #endregion
     }
 }

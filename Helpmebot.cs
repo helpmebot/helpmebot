@@ -18,11 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
-
+using helpmebot6.Threading;
 namespace helpmebot6
 {
     public class Helpmebot6
     {
+        static ThreadList threads;
+
        public static IAL irc ;
        static DAL dbal;
        static Configuration config;

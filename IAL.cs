@@ -20,6 +20,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using helpmebot6.Threading;
 
 namespace helpmebot6
 {
@@ -28,7 +29,7 @@ namespace helpmebot6
     /// 
     /// Provides an interface to IRC.
     /// </summary>
-    public class IAL
+    public class IAL : IThreadedSystem
     {
         #region internal variables
 
@@ -252,10 +253,12 @@ namespace helpmebot6
 
                 ThreadStart _ircReaderThreadStart = new ThreadStart( _ircReaderThreadMethod );
                 _ircReaderThread = new Thread( _ircReaderThreadStart );
-                _ircReaderThread.Start( );
-
+                
                 ThreadStart _ircWriterThreadStart = new ThreadStart( _ircWriterThreadMethod );
                 _ircWriterThread = new Thread( _ircWriterThreadStart );
+
+                RegisterInstance( );
+                _ircReaderThread.Start( );
                 _ircWriterThread.Start( );
 
                 ConnectionRegistrationRequiredEvent( );
@@ -975,5 +978,19 @@ namespace helpmebot6
                 Logger.Instance( ).addToLog( "<" + _networkId + ">" + message, Logger.LogTypes.IAL );
             }
         }
+
+        #region IThreadedSystem Members
+
+        public void Stop( )
+        {
+            throw new NotImplementedException( );
+        }
+
+        public void RegisterInstance( )
+        {
+            ThreadList.instance( ).register( this );
+        }
+
+        #endregion
     }
 }
