@@ -55,6 +55,13 @@ namespace helpmebot6.Monitoring.PageWatcher
         {
         }
 
+        public string[ ] getWatchedPages( )
+        {
+            string[ ] wp = new string[ watchedPageList.Count ];
+            watchedPageList.CopyTo( wp );
+            return wp;
+        }
+
         private void LoadAllWatchedPages( )
         {
             string[ ] sCols = { "pw_title" };

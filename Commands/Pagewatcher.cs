@@ -19,10 +19,15 @@ namespace helpmebot6.Commands
                 {
                     case "add":
                         return addPageWatcher( string.Join( " ", args ), channel );
-                        break;
                     case "del":
                         return removePageWatcher( string.Join( " ", args ), channel );
-                        break;
+                    case "list":
+                        CommandResponseHandler crh = new CommandResponseHandler( );
+                        foreach( string item in Monitoring.PageWatcher.PageWatcherController.Instance().getWatchedPages() )
+                        {
+                            crh.respond(item);
+                        }
+                        return crh;
                 }
             }
             return new CommandResponseHandler( );
