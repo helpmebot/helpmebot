@@ -160,6 +160,10 @@ namespace helpmebot6.Monitoring
             watcherThread.Abort( );
         }
 
+        public string[ ] getThreadStatus( )
+        {
+            throw new NotImplementedException( );
+        }
         #endregion
     }
 }

@@ -991,6 +991,11 @@ namespace helpmebot6
             ThreadList.instance( ).register( this );
         }
 
+        public string[ ] getThreadStatus( )
+        {
+            throw new NotImplementedException( );
+        }
+
         #endregion
     }
 }

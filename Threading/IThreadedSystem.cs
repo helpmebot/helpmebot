@@ -15,5 +15,11 @@ namespace helpmebot6.Threading
         /// Register this instance of the threaded class with the global list
         /// </summary>
         void RegisterInstance( );
+
+        /// <summary>
+        /// Get the status of thread(s) in this instance.
+        /// </summary>
+        /// <returns></returns>
+        string[ ] getThreadStatus( );
     }
 }

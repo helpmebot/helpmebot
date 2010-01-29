@@ -66,6 +66,10 @@ namespace helpmebot6.UdpListener
             ThreadList.instance( ).register( this );
         }
 
+        public string[ ] getThreadStatus( )
+        {
+            throw new NotImplementedException( );
+        }
         #endregion
     }
 }

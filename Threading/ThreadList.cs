@@ -31,9 +31,30 @@ namespace helpmebot6.Threading
         {
             foreach( object obj in threadedObjects )
             {
-                ( (IThreadedSystem)obj ).Stop( );
+                try
+                {
+                    ( (IThreadedSystem)obj ).Stop( );
+                }
+                catch( NotImplementedException ex )
+                {
+                    GlobalFunctions.ErrorLog( ex );
+                }
             }
         }
 
+        public string[ ] getAllThreadStatus( )
+        {
+            ArrayList responses = new ArrayList( );
+            foreach( IThreadedSystem item in threadedObjects )
+            {
+                responses.Add( item.getThreadStatus( ) );
+            }
+
+            string[ ] responseArray = new string[ responses.Count ];
+
+            responses.CopyTo( responseArray );
+
+            return responseArray;
+        }
     }
 }

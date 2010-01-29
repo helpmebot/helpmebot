@@ -96,6 +96,10 @@ namespace helpmebot6.NewYear
             ThreadList.instance( ).register( this );
         }
 
+        public string[ ] getThreadStatus( )
+        {
+            throw new NotImplementedException( );
+        }
         #endregion
     }
 }
