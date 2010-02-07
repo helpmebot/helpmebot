@@ -18,15 +18,15 @@ namespace helpmebot6.Commands
         {
 
 
-            string[ ] messageParameters = { source.Nickname , getMaxLag() };
+            string[ ] messageParameters = { source.Nickname , getMaxLag( channel) };
             string message = Configuration.Singleton( ).GetMessage( "cmdMaxLag" , messageParameters );
             return new CommandResponseHandler( message );
         }
 
-        public string getMaxLag( )
+        public string getMaxLag(string channel )
         {
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
             // get api
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 

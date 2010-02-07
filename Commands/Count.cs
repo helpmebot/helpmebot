@@ -19,7 +19,7 @@ namespace helpmebot6.Commands
             if( args.Length > 0 )
             {
                 string userName = string.Join( " " , args );
-                int editCount = getEditCount( userName );
+                int editCount = getEditCount( userName, channel );
                 if( editCount == -1 )
                 {
                     string[ ] messageParams = { userName };
@@ -45,14 +45,14 @@ namespace helpmebot6.Commands
             return null;
         }
 
-        public int getEditCount( string username )
+        public int getEditCount( string username, string channel )
         {
             if( username == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
 
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 

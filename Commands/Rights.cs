@@ -21,7 +21,7 @@ namespace helpmebot6.Commands
             {
 
                 string username = string.Join( " " , args );
-                string rights = getRights( username );
+                string rights = getRights( username, channel );
 
 
                 string message = "";
@@ -50,13 +50,13 @@ namespace helpmebot6.Commands
 
 
 
-       public string getRights( string username )
+       public string getRights( string username, string channel )
         {
             if( username == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
        
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 

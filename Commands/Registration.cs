@@ -20,7 +20,7 @@ namespace helpmebot6.Commands
             if( args.Length > 0 )
             {
                 string userName = string.Join( " " , args );
-                DateTime registrationDate = getRegistrationDate( userName );
+                DateTime registrationDate = getRegistrationDate( userName, channel );
                 if( registrationDate == new DateTime( 0 ) )
                 {
                     string[ ] messageParams = { userName };
@@ -45,13 +45,13 @@ namespace helpmebot6.Commands
             return crh;
         }
 
-        public DateTime getRegistrationDate( string username )
+        public DateTime getRegistrationDate( string username, string channel )
         {
             if( username == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 

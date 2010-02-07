@@ -16,14 +16,14 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            return new CommandResponseHandler( getBlockInformation( string.Join(" ", args)  ).ToString( ) );
+            return new CommandResponseHandler( getBlockInformation( string.Join( " ", args ), channel ).ToString( ) );
         }
 
-        public BlockInformation getBlockInformation( string userName )
+        public BlockInformation getBlockInformation( string userName, string channel )
         {
            System.Net.IPAddress ip;
 
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki",channel );
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
             string apiParams = "?action=query&list=blocks&bk";
             if( System.Net.IPAddress.TryParse( userName, out ip ) )

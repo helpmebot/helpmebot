@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
                 UserInformation uInfo = new UserInformation( );
 
                 Count countCommand = new Count( );
-                uInfo.editCount= countCommand.getEditCount( userName );
+                uInfo.editCount = countCommand.getEditCount( userName, channel );
                 countCommand = null;
 
                 if( uInfo.editCount == -1 )
@@ -69,7 +69,7 @@ namespace helpmebot6.Commands
                     return crh;
                 }
 
-                retrieveUserInformation( userName , ref uInfo );
+                retrieveUserInformation( userName, ref uInfo, channel );
 
 
                 //##################################################
@@ -94,14 +94,14 @@ namespace helpmebot6.Commands
             
         }
 
-        private string getUserPageUrl( string userName )
+        private string getUserPageUrl( string userName, string channel )
         {
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
             
             // get api
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
@@ -126,14 +126,14 @@ namespace helpmebot6.Commands
 
             return mainpageurl.Replace( mainpagename , "User:" + userName );
         }
-        private string getUserTalkPageUrl( string userName )
+        private string getUserTalkPageUrl( string userName, string channel )
         {
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             // get api
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
@@ -158,14 +158,14 @@ namespace helpmebot6.Commands
 
             return mainpageurl.Replace( mainpagename , "User_talk:" + userName );
         }
-        private string getUserContributionsUrl( string userName )
+        private string getUserContributionsUrl( string userName, string channel )
         {
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             // get api
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
@@ -190,14 +190,14 @@ namespace helpmebot6.Commands
 
             return mainpageurl.Replace( mainpagename , "Special:Contributions/" + userName );
         }
-        private string getBlockLogUrl( string userName )
+        private string getBlockLogUrl( string userName ,string channel)
         {
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
             }
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki",channel );
 
             // get api
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
@@ -223,7 +223,7 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace( mainpagename , "Special:Log?type=block&page=User:" + userName );
         }
 
-        private UserInformation retrieveUserInformation( string userName, ref UserInformation initial )
+        private UserInformation retrieveUserInformation( string userName, ref UserInformation initial, string channel)
         {
             try
             {
@@ -232,30 +232,30 @@ namespace helpmebot6.Commands
                 if( initial.editCount == 0 )
                 {
                     Count countCommand = new Count( );
-                    initial.editCount = countCommand.getEditCount( userName );
+                    initial.editCount = countCommand.getEditCount( userName, channel );
                     countCommand = null;
                 }
 
                 Rights rightsCommand = new Rights( );
-                initial.userGroups = rightsCommand.getRights( userName );
+                initial.userGroups = rightsCommand.getRights( userName, channel );
                 rightsCommand = null;
 
                 Registration registrationCommand = new Registration( );
-                initial.registrationDate = registrationCommand.getRegistrationDate( userName );
+                initial.registrationDate = registrationCommand.getRegistrationDate( userName, channel );
                 registrationCommand = null;
 
-                initial.userPage = getUserPageUrl( userName );
-                initial.talkPage = getUserTalkPageUrl( userName );
-                initial.userContribs = getUserContributionsUrl( userName );
-                initial.userBlockLog = getBlockLogUrl( userName );
+                initial.userPage = getUserPageUrl( userName, channel );
+                initial.talkPage = getUserTalkPageUrl( userName, channel );
+                initial.userContribs = getUserContributionsUrl( userName, channel );
+                initial.userBlockLog = getBlockLogUrl( userName, channel );
 
                 Age ageCommand = new Age( );
-                initial.userAge= ageCommand.getWikipedianAge( userName );
+                initial.userAge = ageCommand.getWikipedianAge( userName, channel );
                 ageCommand = null;
 
                 initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
-                initial.blockInformation = new Blockinfo( ).getBlockInformation( userName ).ToString( );
+                initial.blockInformation = new Blockinfo( ).getBlockInformation( userName, channel ).ToString( );
 
                 return initial;
             }
