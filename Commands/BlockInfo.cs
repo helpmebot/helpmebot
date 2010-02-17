@@ -35,7 +35,7 @@ namespace helpmebot6.Commands
                 apiParams += "users";
             }
             apiParams+= "="+userName+"&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiParams );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( HttpRequest.get( api + apiParams) );
 
             while( creader.Name != "blocks" )
             {

@@ -37,7 +37,7 @@ namespace helpmebot6
         {
             try
             {
-                XmlTextReader xtr = new XmlTextReader( _apiUri + "?format=xml&noparse=true&action=fetch&id=" + id );
+                XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&noparse=true&action=fetch&id=" + id ));
                 xtr.WhitespaceHandling = WhitespaceHandling.None;
 
                 xtr.Read( );
@@ -82,7 +82,7 @@ namespace helpmebot6
         {
             try
             {
-                XmlTextReader xtr = new XmlTextReader( _apiUri + "?format=xml&action=search&noparse=true&query=" + searchTerm );
+                XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&action=search&noparse=true&query=" + searchTerm) );
                 xtr.WhitespaceHandling = WhitespaceHandling.None;
 
                 xtr.Read( );

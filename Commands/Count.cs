@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 
 
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers=" + username );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( HttpRequest.get( api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers=" + username) );
             do
             {
                 creader.Read( );

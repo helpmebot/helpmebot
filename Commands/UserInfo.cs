@@ -108,7 +108,7 @@ namespace helpmebot6.Commands
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiQuery );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader(  HttpRequest.get(api + apiQuery) );
             do
             {
                 creader.Read( );
@@ -140,7 +140,7 @@ namespace helpmebot6.Commands
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiQuery );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( HttpRequest.get( api + apiQuery) );
             do
             {
                 creader.Read( );
@@ -172,7 +172,7 @@ namespace helpmebot6.Commands
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiQuery );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader(  HttpRequest.get(api + apiQuery) );
             do
             {
                 creader.Read( );
@@ -204,7 +204,7 @@ namespace helpmebot6.Commands
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + apiQuery );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( HttpRequest.get( api + apiQuery) );
             do
             {
                 creader.Read( );

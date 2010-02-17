@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
             string returnStr = "";
             string rightsList;
             int rightsCount = 0;
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username );
+            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader(  HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username ));
             do
                 creader.Read( );
             while( creader.Name != "user" );

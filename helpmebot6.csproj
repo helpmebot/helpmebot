@@ -108,6 +108,7 @@
     <Compile Include="Commands\UserInfo.cs" />
     <Compile Include="Commands\Version.cs" />
     <Compile Include="Commands\Welcomer.cs" />
+    <Compile Include="HttpRequest.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />

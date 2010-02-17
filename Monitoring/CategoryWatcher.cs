@@ -105,7 +105,7 @@ namespace helpmebot6.Monitoring
             try
             {
                 //Create the XML Reader
-                System.Xml.XmlTextReader xmlreader = new System.Xml.XmlTextReader( _site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" + _category );
+                System.Xml.XmlTextReader xmlreader = new System.Xml.XmlTextReader(  HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" + _category ));
 
                 //Disable whitespace so that you don't have to read over whitespaces
                 xmlreader.WhitespaceHandling = System.Xml.WhitespaceHandling.None;

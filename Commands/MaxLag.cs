@@ -31,7 +31,7 @@ namespace helpmebot6.Commands
             string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 
 
-            System.Xml.XmlTextReader mlreader = new System.Xml.XmlTextReader( api+ "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml" );
+            System.Xml.XmlTextReader mlreader = new System.Xml.XmlTextReader( HttpRequest.get( api+ "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml" ));
             do
             {
                 mlreader.Read( );
