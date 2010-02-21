@@ -41,6 +41,8 @@ namespace helpmebot6
         string _ircServer;
         uint _ircPort;
 
+        string _nickserv;
+
         TcpClient _tcpClient;
         StreamReader _ircReader;
         StreamWriter _ircWriter;
@@ -190,7 +192,7 @@ namespace helpmebot6
 
             DAL db = DAL.Singleton( );
 
-            string[ ] selects = { "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log" };
+            string[ ] selects = { "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log", "in_nickserv" };
             string[ ] wheres = { "in_id = " + ircNetwork };
             ArrayList configSettings = db.Select( selects , "ircnetwork" , new DAL.join[ 0 ] , wheres , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
 
@@ -203,6 +205,8 @@ namespace helpmebot6
             _myRealname = (string)( ( (object[ ])configSettings[ 0 ] )[ 5 ] );
 
             _logEvents = (bool)( ( (object[ ])configSettings[ 0 ] )[ 6 ] );
+
+            _nickserv = (string)( ( (object[ ])configSettings[ 0 ] )[ 7 ] );
 
             if( /*recieveWallops*/ true )
                 _connectionUserModes += 4;
@@ -319,8 +323,12 @@ namespace helpmebot6
         void assumeTakenNickname( )
         {
             _sendNick( _myNickname + "_" );
-            this.IrcPrivmsg( "NickServ", "GHOST " + _myNickname + " " + _myPassword );
-            _sendNick( _myNickname );
+            if( _nickserv != string.Empty )
+            {
+                this.IrcPrivmsg( _nickserv, "GHOST " + _myNickname + " " + _myPassword );
+                this.IrcPrivmsg( _nickserv, "RELEASE " + _myNickname + " " + _myPassword );
+                _sendNick( _myNickname );
+            }
         }
 
         public void SendRawLine(string line)
@@ -719,6 +727,7 @@ namespace helpmebot6
 
         public delegate void IrcEventHandler( );
         public event IrcEventHandler Err_NicknameInUseEvent;
+        public event IrcEventHandler Err_UnavailResource;
 
         public delegate void NameReplyEventHandler(string channel, string[] names);
         public event NameReplyEventHandler NameReplyEvent;
@@ -742,8 +751,18 @@ namespace helpmebot6
             this.CtcpEvent += new PrivmsgEventHandler( IAL_CtcpEvent );
             this.NoticeEvent += new PrivmsgEventHandler( IAL_NoticeEvent );
             this.Err_NicknameInUseEvent += new IrcEventHandler( assumeTakenNickname );
-            this.NameReplyEvent += new NameReplyEventHandler( IAL_NameReplyEvent );
+            this.Err_UnavailResource += new IrcEventHandler( IAL_Err_UnavailResource );
         }
+
+        void IAL_Err_UnavailResource( )
+        {
+            if( this._nickserv != string.Empty )
+                assumeTakenNickname( );
+
+            else
+                throw new NotImplementedException( );
+        }
+
 
         #region event handlers
 
@@ -942,6 +961,9 @@ namespace helpmebot6
                     break;
                 case "433":
                     Err_NicknameInUseEvent( );
+                    break;
+                case "437":
+                    Err_UnavailResource( );
                     break;
                 default:
                     break;
