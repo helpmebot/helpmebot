@@ -3,9 +3,18 @@ namespace helpmebot6.Commands
 {
     abstract class GenericCommand
     {
-
+        /// <summary>
+        /// Access level of the command
+        /// </summary>
         public User.userRights accessLevel = User.userRights.Normal;
 
+        /// <summary>
+        /// Trigger an exectution of the command
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="channel"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public CommandResponseHandler run( User source, string channel, string[ ] args )
         {
             string command = this.GetType( ).ToString( );
@@ -29,6 +38,13 @@ namespace helpmebot6.Commands
             return accessTest( source, channel, args );
         }
 
+        /// <summary>
+        /// Check the access level and then decide what to do.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="channel"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         protected virtual CommandResponseHandler accessTest( User source, string channel, string[ ] args )
         {
             // check the access level
@@ -42,6 +58,13 @@ namespace helpmebot6.Commands
             }
         }
 
+        /// <summary>
+        /// Access granted to command, decide what to do
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="channel"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         protected virtual CommandResponseHandler reallyRun( User source, string channel, string[ ] args )
         {
             AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), true ) );
@@ -60,6 +83,13 @@ namespace helpmebot6.Commands
             return crh;
         }
 
+        /// <summary>
+        /// Access denied to command, decide what to do
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="channel"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         protected virtual CommandResponseHandler accessDenied( User source, string channel, string[ ] args )
         {
             CommandResponseHandler response = new CommandResponseHandler( );
@@ -70,8 +100,13 @@ namespace helpmebot6.Commands
             return response;
         }
 
-        
-
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="channel"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         protected abstract CommandResponseHandler execute( User source, string channel, string[ ] args );
 
         protected void Log( string message )
