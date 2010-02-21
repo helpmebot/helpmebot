@@ -215,8 +215,15 @@ namespace helpmebot6
 
            if( words[ 0 ].StartsWith( Trigger ) )
            {
+
+               /// !
+
+               if( message.Length == Trigger.Length )
+                   return false;
+
                /// !command
                /// !helpmebot command
+
 
                if( words[ 0 ].ToLower() == ( Trigger + irc.IrcNickname.ToLower()) )
                {
