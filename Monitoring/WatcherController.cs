@@ -223,5 +223,10 @@ namespace helpmebot6.Monitoring
             return int.Parse( watcherIdString );
         }
 
+
+        public bool isWatcherInChannel(string channel, string keyword)
+        {
+            throw new NotImplementedException( );
+        }
     }
 }
