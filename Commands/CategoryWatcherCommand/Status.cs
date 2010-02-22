@@ -8,15 +8,15 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
     {
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
-            string[ ] args = { 
+            string[ ] messageParams = { 
                     args[ 0 ], 
-                    Monitoring.WatcherController.Instance( ).isWatcherInChannel( ) 
+                    Monitoring.WatcherController.Instance( ).isWatcherInChannel(channel,args[0] ) 
                             ? Configuration.Singleton( ).GetMessage( "enabled" ) 
                             : Configuration.Singleton( ).GetMessage( "disabled" ), 
                     Monitoring.WatcherController.Instance( ).getDelay( args[ 0 ] ).ToString( ) 
                     };
 
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "keywordStatus", args ) );
+            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "keywordStatus", messageParams ) );
         }
     }
 }
