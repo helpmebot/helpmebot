@@ -59,7 +59,7 @@ namespace helpmebot6.Monitoring
                 if( match )
                 {
                     string[ ] cmdArgs = { source.Nickname, channel };
-                    Helpmebot6.irc.IrcPrivmsg( channel, Configuration.Singleton( ).GetMessage( "welcomeMessage", cmdArgs ) );
+                    Helpmebot6.irc.IrcNotice( channel, Configuration.Singleton( ).GetMessage( "welcomeMessage", cmdArgs ) );
                 }
             }
         }
