@@ -71,7 +71,6 @@ namespace helpmebot6.Monitoring
             }
             catch ( ThreadAbortException ex )
             {
-                GlobalFunctions.ErrorLog( ex );
             }
             Logger.Instance( ).addToLog( "Category watcher for '" + _key + "' died." , Logger.LogTypes.ERROR );
         }
@@ -94,6 +93,7 @@ namespace helpmebot6.Monitoring
                 watcherThread.Abort( );
                 System.Threading.Thread.Sleep( 500 );
                 watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
+                watcherThread.Start( );
             }
         }
 

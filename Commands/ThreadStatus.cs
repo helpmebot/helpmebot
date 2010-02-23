@@ -5,7 +5,7 @@ using helpmebot6.Threading;
 
 namespace helpmebot6.Commands
 {
-    class ThreadStatus : GenericCommand
+    class Threadstatus : GenericCommand
     {
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
