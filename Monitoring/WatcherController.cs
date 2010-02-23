@@ -234,8 +234,8 @@ namespace helpmebot6.Monitoring
             j[ 1 ].joinType = DAL.joinTypes.INNER;
             j[ 1 ].table = "watcher";
             string[ ] w = new string[ 2 ];
-            w[ 0 ] = "channel_name = '" + channel + "'";
-            w[ 1 ] = "watcher_keyword = '" + keyword + ";";
+            w[ 0 ] = "channel_name = \"" + channel + "\"";
+            w[ 1 ] = "watcher_keyword = \"" + keyword + "\"";
             string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatchers", j, w, null, null, null, 0, 0 );
             if( count == "0" )
                 return false;
