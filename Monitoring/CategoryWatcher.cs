@@ -90,6 +90,10 @@ namespace helpmebot6.Monitoring
             set
             {
                 _sleepTime = value;
+                Logger.Instance( ).addToLog( "Restarting watcher...", Logger.LogTypes.COMMAND );
+                watcherThread.Abort( );
+                System.Threading.Thread.Sleep( 500 );
+                watcherThread.Start( );
             }
         }
 
