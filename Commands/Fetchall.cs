@@ -15,9 +15,25 @@ namespace helpmebot6.Commands
         {
             CommandResponseHandler crh = new CommandResponseHandler();
             Dictionary<string , Monitoring.CategoryWatcher>.KeyCollection kc = Monitoring.WatcherController.Instance( ).getKeywords( );
-            foreach( string key in kc )
+            if( GlobalFunctions.isInArray( "@cats", args ) )
             {
-                crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( key ) );
+                GlobalFunctions.removeItemFromArray( "@cats", args );
+                string listSep = Configuration.Singleton( ).GetMessage( "listSeparator" );
+                string list = Configuration.Singleton( ).GetMessage( "allCategoryCodes" );
+                foreach( string item in kc )
+                {
+                    list += item;
+                    list += listSep;
+                }
+
+                crh.respond( list.TrimEnd( listSep.ToCharArray( ) ) );
+            }
+            else
+            {
+                foreach( string key in kc )
+                {
+                    crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( key ) );
+                }
             }
             return crh;
         }
