@@ -224,9 +224,23 @@ namespace helpmebot6.Monitoring
         }
 
 
-        public bool isWatcherInChannel(string channel, string keyword)
+        public bool isWatcherInChannel( string channel, string keyword )
         {
-            throw new NotImplementedException( );
+            DAL.join[ ] j = new DAL.join[ 2 ];
+            j[ 0 ].table = "channel";
+            j[ 0 ].joinType = DAL.joinTypes.INNER;
+            j[ 0 ].joinConditions = "cw_channel = channel_id";
+            j[ 1 ].joinConditions = "cw_watcher = watcher_id";
+            j[ 1 ].joinType = DAL.joinTypes.INNER;
+            j[ 1 ].table = "watcher";
+            string[ ] w = new string[ 2 ];
+            w[ 0 ] = "channel_name = '" + channel + "'";
+            w[ 1 ] = "watcher_keyword = '" + keyword + ";";
+            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatchers", j, w, null, null, null, 0, 0 );
+            if( count == "0" )
+                return false;
+            else
+                return true;
         }
     }
 }
