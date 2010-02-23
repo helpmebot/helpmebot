@@ -314,7 +314,8 @@ namespace helpmebot6.Commands
             }
             else
             {
-                message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , userInformation.userName );
+                string[ ] messageParameters = { userInformation.userName };
+                message = Configuration.Singleton( ).GetMessage( "cmdRightsNone", messageParameters );
             }
             crh.respond( message );
 
