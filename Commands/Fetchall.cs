@@ -15,9 +15,9 @@ namespace helpmebot6.Commands
         {
             CommandResponseHandler crh = new CommandResponseHandler();
             Dictionary<string , Monitoring.CategoryWatcher>.KeyCollection kc = Monitoring.WatcherController.Instance( ).getKeywords( );
-            if( GlobalFunctions.isInArray( "@cats", args ) )
+            if( GlobalFunctions.isInArray( "@cats", args ) != -1 )
             {
-                GlobalFunctions.removeItemFromArray( "@cats", args );
+                GlobalFunctions.removeItemFromArray( "@cats", ref args );
                 string listSep = Configuration.Singleton( ).GetMessage( "listSeparator" );
                 string list = Configuration.Singleton( ).GetMessage( "allCategoryCodes" );
                 foreach( string item in kc )
