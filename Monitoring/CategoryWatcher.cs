@@ -93,7 +93,7 @@ namespace helpmebot6.Monitoring
                 Logger.Instance( ).addToLog( "Restarting watcher...", Logger.LogTypes.COMMAND );
                 watcherThread.Abort( );
                 System.Threading.Thread.Sleep( 500 );
-                watcherThread.Start( );
+                watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
             }
         }
 
