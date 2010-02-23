@@ -8,21 +8,13 @@ cd /home/stwalkerster/$COPY
 
 startbot() 
 {
-	HMBLOG="bin/log/"`date +%Y-%m-%d--%H-%M`
-	echo "Starting bot with logfile $HMBLOG"
-	mono bin/Debug/helpmebot6.exe &> $HMBLOG &
-}
-
-startbottosdtout()
-{
-	mono bin/Debug/helpmebot6.exe
+	job enable hmb6
 }
 
 stopbot()
 {
 	echo "Stopping bot..."
-	PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
-	kill $PID 2> /dev/null
+	job disable hmb6
 }
 
 rebuildbot() 
@@ -44,36 +36,22 @@ case $1 in
 	start)
 		startbot
 	;;
-	start-stdout)
-		startbottosdtout
-	;;
 	stop)
 		stopbot
 	;;
-	force-restart)
+	restart)
 		stopbot
 		startbot
-	;;
-	restart)
-		PID=`ps -A -o pid,args | grep "mono bin/Debug/helpmebot6.exe" | grep -v grep | awk '{print $1}'`
-		if [ "$PID" = "" ]; then
-			startbot	
-	        fi
-	;;
-	recompile)
-		rebuildbot
 	;;
 	update)
 		updatebot
 		rebuildbot
 		stopbot
 		startbot
-	;;
-	scap)
-		updatebot
-	;;
 	*)
-		echo "Usage: helpmebot.sh {start|stop|restart|force-restart|recompile|update|scap}"
-		exit 1
+		updatebot
+		rebuildbot
+		stopbot
+		startbot
 	;;
 esac
