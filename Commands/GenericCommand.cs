@@ -6,7 +6,26 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Access level of the command
         /// </summary>
-        public User.userRights accessLevel = User.userRights.Normal;
+
+        public User.userRights accessLevel
+        {
+            get
+            {
+                string command = this.GetType( ).ToString( );
+                string[ ] wc = { "typename = \"" + command + "\"" };
+                string al = DAL.Singleton( ).Select( "accesslevel", "command", null, wc, null, null, null, 1, 0 );
+                try
+                {
+                   return (User.userRights)Enum.Parse( typeof( User.userRights ), al, true );
+                }
+                catch( ArgumentException )
+                {
+                    Logger.Instance( ).addToLog( "Warning: " + command + " not found in access list.", Logger.LogTypes.ERROR );
+                   return   User.userRights.Developer;
+
+                }
+            }
+        }
 
         /// <summary>
         /// Trigger an exectution of the command
@@ -20,20 +39,6 @@ namespace helpmebot6.Commands
             string command = this.GetType( ).ToString( );
 
             Log( "Running command: " + command );
-
-            // get the access level of this command
-
-            string[ ] wc = { "typename = \"" + command + "\"" };
-            string al = DAL.Singleton( ).Select( "accesslevel", "command", null, wc, null, null, null, 1, 0 );
-            try
-            {
-                accessLevel = (User.userRights)Enum.Parse( typeof( User.userRights ), al, true );
-            }
-            catch( ArgumentException )
-            {
-                accessLevel = User.userRights.Developer;
-                Logger.Instance( ).addToLog( "Warning: " + command + " not found in access list.", Logger.LogTypes.ERROR );
-            }
 
             return accessTest( source, channel, args );
         }
