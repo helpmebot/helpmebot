@@ -161,9 +161,5 @@ namespace helpmebot6.Monitoring.PageWatcher
         public delegate void PageWatcherNotificationEventDelegate(RcPageChange rcItem);
         public event PageWatcherNotificationEventDelegate PageWatcherNotificationEvent;
 
-        public void Stop( )
-        {
-            irc.IrcQuit( );
-        }
     }
 }

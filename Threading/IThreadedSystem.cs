@@ -21,5 +21,7 @@ namespace helpmebot6.Threading
         /// </summary>
         /// <returns></returns>
         string[ ] getThreadStatus( );
+
+        event EventHandler ThreadFatalError;
     }
 }

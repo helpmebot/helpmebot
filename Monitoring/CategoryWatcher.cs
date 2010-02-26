@@ -69,8 +69,13 @@ namespace helpmebot6.Monitoring
                     }
                 }
             }
-            catch ( ThreadAbortException ex )
+            catch ( ThreadAbortException )
             {
+                EventHandler temp = ThreadFatalError;
+                if( temp != null )
+                {
+                    temp( this, new EventArgs( ) );
+                }
             }
             Logger.Instance( ).addToLog( "Category watcher for '" + _key + "' died." , Logger.LogTypes.ERROR );
         }
@@ -169,6 +174,9 @@ namespace helpmebot6.Monitoring
             string[] statuses = {this._key + " " + watcherThread.ThreadState};
             return statuses;
         }
+
+        public event EventHandler ThreadFatalError;
+
         #endregion
     }
 }

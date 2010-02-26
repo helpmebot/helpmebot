@@ -107,7 +107,14 @@ namespace helpmebot6
 
            irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
 
+           irc.ThreadFatalError += new EventHandler( irc_ThreadFatalError );
+
            Monitoring.PageWatcher.PageWatcherController.Instance( ).PageWatcherNotificationEvent += new helpmebot6.Monitoring.PageWatcher.PageWatcherController.PageWatcherNotificationEventDelegate( Helpmebot6_PageWatcherNotificationEvent );
+       }
+
+       static void irc_ThreadFatalError( object sender, EventArgs e )
+       {
+           Stop( );
        }
 
        static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )
@@ -269,9 +276,7 @@ namespace helpmebot6
 
        static public void Stop( )
        {
-           irc.IrcQuit( );
-           Monitoring.WatcherController.Instance( ).Stop( );
-           Monitoring.PageWatcher.PageWatcherController.Instance( ).Stop( );
+           ThreadList.instance( ).stop( );
        }
     }
 }

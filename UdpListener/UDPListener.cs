@@ -48,9 +48,13 @@ namespace helpmebot6.UdpListener
                     }
                 }
             }
-            catch( ThreadAbortException ex )
+            catch( ThreadAbortException )
             {
-                GlobalFunctions.ErrorLog( ex );
+                EventHandler temp = ThreadFatalError;
+                if( temp != null )
+                {
+                    temp( this, new EventArgs( ) );
+                }
             }
         }
 
@@ -58,7 +62,7 @@ namespace helpmebot6.UdpListener
 
         public void Stop( )
         {
-            throw new NotImplementedException( );
+            listenerThread.Abort( );
         }
 
         public void RegisterInstance( )
@@ -71,6 +75,9 @@ namespace helpmebot6.UdpListener
             string[ ] statuses = { this.listenerThread.ThreadState.ToString() };
             return statuses;
         }
+
+        public event EventHandler ThreadFatalError;
+
         #endregion
     }
 }

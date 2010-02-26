@@ -154,14 +154,6 @@ namespace helpmebot6.Monitoring
                 return null;
         }
 
-        public void Stop( )
-        {
-            foreach( KeyValuePair<string,CategoryWatcher> item in watchers )
-            {
-                item.Value.Stop( );
-            }
-        }
-
         public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
         {
             return watchers.Keys;

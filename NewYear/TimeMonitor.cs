@@ -54,18 +54,27 @@ namespace helpmebot6.NewYear
 
         private void monitorThreadMethod( )
         {
-
-            while( timezoneList.Count > 0 )
+            try
             {
-                string places = "";
-                if( timezoneList.TryGetValue( DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")), out places ) )
+                while( timezoneList.Count > 0 )
                 {
-                    sendNewYearMessage( places );
-                    Thread.Sleep( 1000 );
+                    string places = "";
+                    if( timezoneList.TryGetValue( DateTime.Parse( DateTime.Now.ToString( "yyyy-MM-dd hh:mm:ss" ) ), out places ) )
+                    {
+                        sendNewYearMessage( places );
+                        Thread.Sleep( 1000 );
+                    }
+                    Thread.Sleep( 500 );
                 }
-                Thread.Sleep( 500 );
             }
-
+            catch( ThreadAbortException )
+            {
+                EventHandler temp = ThreadFatalError;
+                if( temp != null )
+                {
+                    temp( this, new EventArgs( ) );
+                }
+            }
         }
 
         private void sendNewYearMessage( string places )
@@ -88,7 +97,7 @@ namespace helpmebot6.NewYear
 
         public void Stop( )
         {
-            throw new NotImplementedException( );
+            monitorThread.Abort( );
         }
 
         public void RegisterInstance( )
@@ -101,6 +110,8 @@ namespace helpmebot6.NewYear
             string[ ] statuses = { this.targetDate + " " + this.monitorThread.ThreadState };
             return statuses;
         }
+
+        public event EventHandler ThreadFatalError;
         #endregion
     }
 }

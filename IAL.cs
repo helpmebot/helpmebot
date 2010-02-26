@@ -632,7 +632,12 @@ namespace helpmebot6
             while ( _ThreadIsAlive );
 
             Console.WriteLine( "*** Reader thread died." );
-            Helpmebot6.Stop( );
+
+            EventHandler temp = ThreadFatalError;
+            if( temp != null )
+            {
+                temp( this, new EventArgs( ) );
+            }
         }
 
         void _ircWriterThreadMethod( )
@@ -681,7 +686,12 @@ namespace helpmebot6
             while ( _ThreadIsAlive && _ircReaderThread.IsAlive);
 
             Console.WriteLine( "*** Writer thread died." );
-            Helpmebot6.Stop( );
+
+            EventHandler temp = ThreadFatalError;
+            if( temp != null )
+            {
+                temp( this, new EventArgs( ) );
+            }
         }
         #endregion
 
@@ -1005,7 +1015,10 @@ namespace helpmebot6
 
         public void Stop( )
         {
-            throw new NotImplementedException( );
+            this.IrcQuit( "Requested by controller" );
+            Thread.Sleep( 5000 );
+            _ircWriterThread.Abort( );
+            _ircReaderThread.Abort( );
         }
 
         public void RegisterInstance( )
@@ -1021,6 +1034,8 @@ namespace helpmebot6
                                 };
             return statuses;
         }
+
+        public event EventHandler ThreadFatalError;
 
         #endregion
     }
