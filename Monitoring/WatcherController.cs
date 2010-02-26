@@ -56,12 +56,21 @@ namespace helpmebot6.Monitoring
             return watchers.ContainsKey( keyword );
         }
 
-        public void addWatcherToChannel( string keyword , string channel )
+        public bool addWatcherToChannel( string keyword , string channel )
         {
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             int watcherId = getWatcherId( keyword );
 
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO channelwatchers VALUES ( " + channelId + " , " + watcherId.ToString( ) + " );" );
+            string[ ] wc = { "cw_channel = " + channelId, "cw_watcher = " + watcherId };
+            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatcher", null, wc, null, null, null, 0, 0 );
+
+            if( count == "0" )
+            {
+                DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO channelwatchers VALUES ( " + channelId + " , " + watcherId.ToString( ) + " );" );
+                return true;
+            }
+            else
+                return false;
         }
 
         public void removeWatcherFromChannel( string keyword , string channel )

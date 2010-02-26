@@ -14,7 +14,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             Monitoring.WatcherController.Instance( ).removeWatcherFromChannel( args[ 0 ] , channel );
-            return null;
+            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
         }
     }
 }
