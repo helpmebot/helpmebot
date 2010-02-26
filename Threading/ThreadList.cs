@@ -33,6 +33,7 @@ namespace helpmebot6.Threading
             {
                 try
                 {
+                    Logger.Instance( ).addToLog( "Attempting to shut down threaded system: " + obj.GetType( ), Logger.LogTypes.GENERAL );
                     ( (IThreadedSystem)obj ).Stop( );
                 }
                 catch( NotImplementedException ex )
