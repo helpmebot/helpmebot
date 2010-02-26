@@ -47,20 +47,20 @@ namespace helpmebot6.Threading
             ArrayList responses = new ArrayList( );
             foreach( IThreadedSystem item in threadedObjects )
             {
-                string status = item.GetType().ToString();
+                string status = item.GetType( ).ToString( ) + ": ";
                 try
                 {
-                    foreach( string i in item.getThreadStatus() )
+                    foreach( string i in item.getThreadStatus( ) )
                     {
-                        responses.Add( i );
+                        responses.Add( status + i );
                     }
                 }
                 catch( NotImplementedException )
                 {
-                    status += ": Not available.";
+                    status += "Not available.";
                     responses.Add( status );
                 }
-               
+
             }
 
             string[ ] responseArray = new string[ responses.Count ];

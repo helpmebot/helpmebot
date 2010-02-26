@@ -23,8 +23,6 @@ namespace helpmebot6
 {
     public class Helpmebot6
     {
-        static ThreadList threads;
-
        public static IAL irc ;
        static DAL dbal;
        static Configuration config;

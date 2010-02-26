@@ -1015,7 +1015,11 @@ namespace helpmebot6
 
         public string[ ] getThreadStatus( )
         {
-            throw new NotImplementedException( );
+            string[ ] statuses = {
+                    "(" + this._networkId + ") " + this._ircServer + " READER:" + this._ircReaderThread.ThreadState,
+                    "(" + this._networkId + ") " + this._ircServer + " WRITER:" + this._ircWriterThread.ThreadState
+                                };
+            return statuses;
         }
 
         #endregion

@@ -68,7 +68,8 @@ namespace helpmebot6.UdpListener
 
         public string[ ] getThreadStatus( )
         {
-            throw new NotImplementedException( );
+            string[ ] statuses = { this.listenerThread.ThreadState.ToString() };
+            return statuses;
         }
         #endregion
     }

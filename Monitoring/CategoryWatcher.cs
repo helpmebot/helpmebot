@@ -166,7 +166,8 @@ namespace helpmebot6.Monitoring
 
         public string[ ] getThreadStatus( )
         {
-            throw new NotImplementedException( );
+            string[] statuses = {this._key + " " + watcherThread.ThreadState};
+            return statuses;
         }
         #endregion
     }

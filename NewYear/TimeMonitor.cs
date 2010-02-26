@@ -98,7 +98,8 @@ namespace helpmebot6.NewYear
 
         public string[ ] getThreadStatus( )
         {
-            throw new NotImplementedException( );
+            string[ ] statuses = { this.targetDate + " " + this.monitorThread.ThreadState };
+            return statuses;
         }
         #endregion
     }
