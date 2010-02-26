@@ -389,5 +389,23 @@ namespace helpmebot6
 
             }
         }
+
+        public void executeProcedure( string name, params string[ ] args )
+        {
+            MySqlCommand cmd = new MySqlCommand( );
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = name;
+
+            foreach( string item in args )
+            {
+                cmd.Parameters.Add( new MySqlParameter( item, MySqlDbType.Int16 ) );
+            }
+
+            cmd.Connection = _connection;
+
+            runConnectionTest( );
+
+            cmd.ExecuteNonQuery( );
+        }
     }
 }
