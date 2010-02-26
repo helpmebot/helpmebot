@@ -34,17 +34,24 @@ namespace helpmebot6.UdpListener
                 while( true )
                 {
                     IPEndPoint ipep = new IPEndPoint( IPAddress.Any, 0 );
-                     byte[ ] datagram = udpClient.Receive( ref ipep );
-
-                    BinaryFormatter bf = new BinaryFormatter( );
-                    UdpMessage recievedMessage = (UdpMessage)bf.Deserialize( new MemoryStream( datagram ) );
-
-                    byte[ ] bm = ASCIIEncoding.ASCII.GetBytes( recievedMessage.Message + key );
-                    byte[ ] bh = MD5.Create( ).ComputeHash( bm );
-                    string hash = ASCIIEncoding.ASCII.GetString( bh );
-                    if( hash == recievedMessage.Hash )
+                    if( udpClient.Available != 0 )
                     {
-                        Helpmebot6.irc.SendRawLine( "PRIVMSG " + recievedMessage.Message );
+                        byte[ ] datagram = udpClient.Receive( ref ipep );
+
+                        BinaryFormatter bf = new BinaryFormatter( );
+                        UdpMessage recievedMessage = (UdpMessage)bf.Deserialize( new MemoryStream( datagram ) );
+
+                        byte[ ] bm = ASCIIEncoding.ASCII.GetBytes( recievedMessage.Message + key );
+                        byte[ ] bh = MD5.Create( ).ComputeHash( bm );
+                        string hash = ASCIIEncoding.ASCII.GetString( bh );
+                        if( hash == recievedMessage.Hash )
+                        {
+                            Helpmebot6.irc.SendRawLine( "PRIVMSG " + recievedMessage.Message );
+                        }
+                    }
+                    else
+                    {
+                        Thread.Sleep( 500 );
                     }
                 }
             }
