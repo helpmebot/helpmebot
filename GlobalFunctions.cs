@@ -173,5 +173,13 @@ namespace helpmebot6
             }
             return argsLength;
         }
+
+        public static void silentPrivmsg( IAL irc, string channel, string message )
+        {
+            if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "true" )
+                return;
+            else
+                irc.IrcPrivmsg( channel, message );
+        }
     }
 }
