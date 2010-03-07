@@ -22,7 +22,7 @@ namespace helpmebot6.Commands
 
             IPHostEntry iphe = Dns.GetHostEntry( ipAddr );
             
-            string[] messageargs = { ipAddr.ToString(), iphe.HostName};
+            string[] messageargs = { args[1], ipAddr.ToString(), iphe.HostName};
 
             return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "hexDecodeResult", messageargs ) );
         }
