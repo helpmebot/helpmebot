@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             string[ ] whereParams = { "channel_name = '" + args[ 0 ] + "'" };
-            string count = DAL.Singleton( ).Select( "count(*)" , "channel" , null , whereParams , null , null , null , 1 , 0 );
+            string count = DAL.Singleton( ).Select( "count(*)" , "channel" , null , whereParams , null , null , null , 3 , 0 );
             if( count == "1" )
             { // entry exists
                 DAL.Singleton( ).ExecuteNonQuery( "update channel set channel_enabled = 1 where channel_name = \"" + args[ 0 ] + "\" limit 1;" );
