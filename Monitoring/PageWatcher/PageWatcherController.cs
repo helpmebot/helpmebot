@@ -62,8 +62,9 @@ namespace helpmebot6.Monitoring.PageWatcher
             return wp;
         }
 
-        private void LoadAllWatchedPages( )
+        public void LoadAllWatchedPages( )
         {
+            watchedPageList.Clear( );
             string[ ] sCols = { "pw_title" };
             ArrayList pL = DAL.Singleton( ).Select( sCols , "watchedpages" , null , null , null , null , null , 0 , 0 );
             foreach( object[] item in pL )

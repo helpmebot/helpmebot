@@ -52,6 +52,8 @@ namespace helpmebot6.Commands
             // add to pagewatcherchannels
             DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO pagewatcherchannels VALUES ( " + channelId + ", " + watchedPageId + ");" );
 
+            Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
+
             return null;
         }
 
@@ -67,6 +69,8 @@ namespace helpmebot6.Commands
 
             // remove from pagewatcherchannels
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM pagewatcherchannels WHERE pwc_channel = " + channelId + " AND pwc_pagewatcher = " + watchedPageId + ";" );
+
+            Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
 
             return null;
         }
