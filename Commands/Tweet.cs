@@ -19,11 +19,15 @@ namespace helpmebot6.Commands
             wr.Method = "POST";
             wr.UserAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
             string status = string.Join( " ", args );
-            status = "status=" + status.Substring( 0, 140 );
+            status = (status.Length > 140 ? status.Substring( 0, 140 ) : status);
+            string postData = "status=" + status;
+
+            wr.ContentType = "application/x-www-form-urlencoded";
+            wr.ContentLength = postData.Length;
             using( Stream writeStream = wr.GetRequestStream( ) )
             {
                 UTF8Encoding encoding = new UTF8Encoding( );
-                byte[ ] bytes = encoding.GetBytes( status );
+                byte[ ] bytes = encoding.GetBytes( postData );
                 writeStream.Write( bytes, 0, bytes.Length );
             }
 
