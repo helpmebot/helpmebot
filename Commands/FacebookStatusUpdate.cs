@@ -13,7 +13,7 @@ namespace helpmebot6.Commands
             message.Subject = string.Join( " ", args );
             System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient( "localhost" );
             client.Send( message );
-            return;
+            return null;
         }
     }
 }
