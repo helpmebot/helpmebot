@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
 
             wr.ContentType = "application/x-www-form-urlencoded";
             wr.ContentLength = postData.Length;
+            System.Net.ServicePointManager.Expect100Continue = false;
             using( Stream writeStream = wr.GetRequestStream( ) )
             {
                 UTF8Encoding encoding = new UTF8Encoding( );
