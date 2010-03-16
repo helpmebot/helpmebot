@@ -107,6 +107,7 @@
     <Compile Include="Commands\Silence.cs" />
     <Compile Include="Commands\ThreadStatus.cs" />
     <Compile Include="Commands\Time.cs" />
+    <Compile Include="Commands\Tweet.cs" />
     <Compile Include="Commands\Uptime.cs" />
     <Compile Include="Commands\UserInfo.cs" />
     <Compile Include="Commands\Version.cs" />
