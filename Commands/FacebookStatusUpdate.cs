@@ -10,8 +10,12 @@ namespace helpmebot6.Commands
         {
             string fbmail = Configuration.Singleton( ).retrieveGlobalStringOption( "fbEmail" );
             System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage( "helpmebot@helpmebot.org.uk", fbmail );
-            message.Subject = string.Join( " ", args );
-            System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient( "localhost" );
+            string data = string.Join( " ", args );
+            message.Subject = data;
+            message.Body = data;
+            message.BodyEncoding = Encoding.UTF8;
+            message.Sender = "stwalkerster@willow.toolserver.org";
+            System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient( );
             client.Send( message );
             return null;
         }
