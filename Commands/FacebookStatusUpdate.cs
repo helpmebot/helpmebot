@@ -14,7 +14,7 @@ namespace helpmebot6.Commands
             message.Subject = data;
             message.Body = data;
             message.BodyEncoding = Encoding.UTF8;
-            message.Sender = "stwalkerster@willow.toolserver.org";
+            message.Sender = new System.Net.Mail.MailAddress("stwalkerster@willow.toolserver.org");
             System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient( );
             client.Send( message );
             return null;
