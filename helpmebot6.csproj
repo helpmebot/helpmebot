@@ -132,6 +132,7 @@
     <Compile Include="SerializableArrayList.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
+    <Compile Include="Twitter.cs" />
     <Compile Include="UdpListener\UDPListener.cs" />
     <Compile Include="UdpListener\UdpMessage.cs" />
     <Compile Include="User.cs" />
