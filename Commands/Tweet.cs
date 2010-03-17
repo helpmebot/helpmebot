@@ -21,7 +21,7 @@ namespace helpmebot6.Commands
             string status = string.Join( " ", args );
 
             HttpStatusCode wrsp = twit.statuses_update( status );
-            if( wrsp.StatusCode == HttpStatusCode.OK )
+            if( wrsp == HttpStatusCode.OK )
                 return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
             else
                 throw new Exception( );
