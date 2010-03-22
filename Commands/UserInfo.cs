@@ -58,7 +58,7 @@ namespace helpmebot6.Commands
 
                 UserInformation uInfo = new UserInformation( );
 
-                Count countCommand = new Count( );
+                Editcount countCommand = new Editcount( );
                 uInfo.editCount = countCommand.getEditCount( userName, channel );
                 countCommand = null;
 
@@ -231,7 +231,7 @@ namespace helpmebot6.Commands
 
                 if( initial.editCount == 0 )
                 {
-                    Count countCommand = new Count( );
+                    Editcount countCommand = new Editcount( );
                     initial.editCount = countCommand.getEditCount( userName, channel );
                     countCommand = null;
                 }

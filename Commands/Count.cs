@@ -7,9 +7,9 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Returns the edit count of a wikipedian
     /// </summary>
-    class Count : GenericCommand
+    class Editcount : GenericCommand
     {
-        public Count( )
+        public Editcount( )
         {
 
         }
