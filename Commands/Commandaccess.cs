@@ -13,6 +13,8 @@ namespace helpmebot6.Commands
             {
                 return new CommandResponseHandler( ( (GenericCommand)Activator.CreateInstance( cmd ) ).accessLevel.ToString( ) );
             }
+            else
+                return null;
         }
     }
 }
