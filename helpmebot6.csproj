@@ -82,6 +82,7 @@
     <Compile Include="Commands\CategoryWatcherCommand\Enable.cs" />
     <Compile Include="Commands\Autolink.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
+    <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\Count.cs" />
     <Compile Include="Commands\Decode.cs" />
     <Compile Include="Commands\Faq.cs" />
