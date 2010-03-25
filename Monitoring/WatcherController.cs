@@ -62,7 +62,7 @@ namespace helpmebot6.Monitoring
             int watcherId = getWatcherId( keyword );
 
             string[ ] wc = { "cw_channel = " + channelId, "cw_watcher = " + watcherId };
-            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatcher", null, wc, null, null, null, 0, 0 );
+            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatchers", null, wc, null, null, null, 0, 0 );
 
             if( count == "0" )
             {
