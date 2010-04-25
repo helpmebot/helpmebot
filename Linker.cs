@@ -31,49 +31,7 @@ namespace helpmebot6
 
         public void ParseMessage( string Message, string Channel )
         {
-            string newLink = "";
-            
-            if( ( Message.Contains( "[[" ) && Message.Contains( "]]" ) ) )
-            { 
-                // [[newLink]]
-
-                int startIndex = Message.IndexOf( "[[" );
-                int endIndex = Message.IndexOf( "]]" , startIndex );
-
-                if( endIndex != -1 )
-                {
-
-
-
-                    int nextStartIndex = Message.IndexOf( "[[" , startIndex + 2 , endIndex - startIndex );
-
-                    while( nextStartIndex != -1 )
-                    {
-                        startIndex = nextStartIndex;
-                        nextStartIndex = Message.IndexOf( "[[" , startIndex + 2 , endIndex - startIndex );
-                    }
-
-                    newLink = Message.Substring( startIndex + 2 , endIndex - startIndex - 2 );
-                }                
-            }
-            if( ( Message.Contains( "{{" ) && Message.Contains( "}}" ) ) )
-            {
-                int startIndex = Message.IndexOf( "{{" );
-                int endIndex = Message.IndexOf( "}}" , startIndex );
-                if( endIndex != -1 )
-                {
-                    int nextStartIndex = Message.IndexOf( "{{" , startIndex + 2 , endIndex - startIndex );
-
-                    while( nextStartIndex != -1 )
-                    {
-                        startIndex = nextStartIndex;
-                        nextStartIndex = Message.IndexOf( "{{" , startIndex + 2 , endIndex - startIndex );
-                    }
-
-                    newLink = "Template:" + Message.Substring( startIndex + 2 , endIndex - startIndex - 2 );
-                }
-            }
-            newLink = newLink.Trim( '[' );
+            string newLink = reallyParseMessage( Message );
             if( newLink != "" )
             {
                 if( lastLink.ContainsKey( Channel ) )
@@ -83,6 +41,54 @@ namespace helpmebot6
                 lastLink.Add( Channel , newLink );
                 sendLink(Channel, newLink); 
             }
+        }
+
+        public string reallyParseMessage( string Message )
+        {
+            string newLink = "";
+
+            if( ( Message.Contains( "[[" ) && Message.Contains( "]]" ) ) )
+            {
+                // [[newLink]]
+
+                int startIndex = Message.IndexOf( "[[" );
+                int endIndex = Message.IndexOf( "]]", startIndex );
+
+                if( endIndex != -1 )
+                {
+
+
+
+                    int nextStartIndex = Message.IndexOf( "[[", startIndex + 2, endIndex - startIndex );
+
+                    while( nextStartIndex != -1 )
+                    {
+                        startIndex = nextStartIndex;
+                        nextStartIndex = Message.IndexOf( "[[", startIndex + 2, endIndex - startIndex );
+                    }
+
+                    newLink = Message.Substring( startIndex + 2, endIndex - startIndex - 2 );
+                }
+            }
+            if( ( Message.Contains( "{{" ) && Message.Contains( "}}" ) ) )
+            {
+                int startIndex = Message.IndexOf( "{{" );
+                int endIndex = Message.IndexOf( "}}", startIndex );
+                if( endIndex != -1 )
+                {
+                    int nextStartIndex = Message.IndexOf( "{{", startIndex + 2, endIndex - startIndex );
+
+                    while( nextStartIndex != -1 )
+                    {
+                        startIndex = nextStartIndex;
+                        nextStartIndex = Message.IndexOf( "{{", startIndex + 2, endIndex - startIndex );
+                    }
+
+                    newLink = "Template:" + Message.Substring( startIndex + 2, endIndex - startIndex - 2 );
+                }
+            }
+            newLink = newLink.Trim( '[' );
+            return newLink;
         }
 
         public string GetLink(string destination)

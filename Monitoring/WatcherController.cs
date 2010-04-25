@@ -118,7 +118,7 @@ namespace helpmebot6.Monitoring
                 Helpmebot6.irc.IrcPrivmsg( (string)item[ 0 ] , message );
             }
 
-            Twitter.tweet( compileMessage( newItems, keyword ) );
+            Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<" ) );
 
         }
 
@@ -153,7 +153,17 @@ namespace helpmebot6.Monitoring
             // keywordPlural
             // keywordSingular
 
-            bool showWaitTime = ( destination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
+            string fakedestination;
+            if( destination == ">TWITTER<" )
+                fakedestination = "";
+            else
+                fakedestination = destination;
+
+            bool showWaitTime = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
+            bool shortenUrls = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "useShortUrlsInsteadOfWikilinks", destination ) == "true" ? true : false ) );
+            
+            if( destination == ">TWITTER<" )
+                shortenUrls = true;
 
             items = removeBlacklistedItems( items );
 
@@ -164,7 +174,14 @@ namespace helpmebot6.Monitoring
                 string listString = "";
                 foreach( string item in items )
                 {
-                    listString += "[[" + item + "]]";
+                    if( !shortenUrls )
+                    {
+                        listString += "[[" + item + "]]";
+                    }
+                    else
+                    {
+                        listString += IsGd.shorten( new Uri( Configuration.Singleton( ).retrieveGlobalStringOption( "wikiUrl" ) + item ) ).ToString();
+                    }
 
                     if( showWaitTime )
                     {
