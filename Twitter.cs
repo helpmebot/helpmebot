@@ -6,6 +6,16 @@ namespace helpmebot6
 {
     class Twitter
     {
+        public static void tweet(string status)
+        {
+           Twitter twit = new Twitter(
+                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterUsername" ),
+                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterPassword" )
+                );
+           twit.userAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
+           twit.statuses_update( status );
+        }
+
         public Twitter( string username, string password )
         {
             _username = username;
@@ -89,5 +99,6 @@ namespace helpmebot6
 
             return wrsp;
         }
+
     }
 }

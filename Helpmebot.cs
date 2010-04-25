@@ -66,14 +66,14 @@ namespace helpmebot6
 
            Configuration.readHmbotConfigFile( configFile, ref server, ref username, ref password, ref port, ref schema );
 
-           dbal= DAL.Singleton( server, port, username, password, schema );
+           dbal = DAL.Singleton( server, port, username, password, schema );
 
            if( !dbal.Connect( ) )
            { // can't connect to database, DIE
                return;
            }
 
-           config = Configuration.Singleton();
+           config = Configuration.Singleton( );
 
 
            ircNetwork = config.retrieveGlobalUintOption( "ircNetwork" );
@@ -95,7 +95,12 @@ namespace helpmebot6
            }
 
            udp = new helpmebot6.UdpListener.UDPListener( 4357 );
+
+           string[ ] twparms = { server, schema, irc.IrcServer };
+           Twitter.tweet( Configuration.Singleton( ).GetMessage( "tweetStartup", twparms ) );
        }
+
+
 
        static void SetupEvents( )
        {
