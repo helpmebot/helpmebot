@@ -88,7 +88,9 @@ namespace helpmebot6.NewYear
                 if( Configuration.Singleton( ).retrieveLocalStringOption( "newYearDateAlerting", channel ) == "true" )
                 {
                     string[ ] args = { places };
-                    Helpmebot6.irc.IrcPrivmsg( channel, Configuration.Singleton( ).GetMessage( "newYearMessage", args ) );
+                    string message = Configuration.Singleton( ).GetMessage( "newYearMessage", args );
+                    Helpmebot6.irc.IrcPrivmsg( channel, message  );
+                    Twitter.tweet( message );
                 }
             }
         }

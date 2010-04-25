@@ -94,6 +94,23 @@ namespace helpmebot6.Monitoring
 
         private void CategoryHasItemsEvent( ArrayList items , string keyword )
         {
+            ArrayList newItems = new ArrayList( );
+            foreach( string item in items )
+            {
+                string[] wc = {"item_name = '" + item + "'", "item_keyword = '" + keyword + "'"};
+                if( DAL.Singleton( ).Select( "COUNT(*)", "categoryitems", new DAL.join[ 0 ], wc, null, null, null, 0, 0 ) == "0" )
+                {
+                    DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO categoryitems VALUES( null, '" + item + "', null, '" + keyword + "', 1);" );
+                    newItems.Add( item );
+                }
+                else
+                {
+                    DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 1 WHERE item_name = '" + item + "' AND item_keyword = '" + keyword + "' LIMIT 1;" );
+                }
+            }
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0;" );
+            DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 0;" );
+
 
 
             string message = compileMessage( items , keyword  );
@@ -113,6 +130,9 @@ namespace helpmebot6.Monitoring
             {
                 Helpmebot6.irc.IrcPrivmsg( (string)item[ 0 ] , message );
             }
+
+            Twitter.tweet( compileMessage( newItems, keyword ) );
+
         }
 
         private string compileMessage( ArrayList items , string keyword )
