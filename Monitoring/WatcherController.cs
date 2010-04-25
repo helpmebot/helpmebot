@@ -88,7 +88,7 @@ namespace helpmebot6.Monitoring
             {
                 ArrayList items = cw.doCategoryCheck( );
                 updateDatabaseTable( items, key );
-                return compileMessage( items , key, destination );
+                return compileMessage( items , key, destination, true );
             }
             else
                 return null;
@@ -97,11 +97,6 @@ namespace helpmebot6.Monitoring
         private void CategoryHasItemsEvent( ArrayList items , string keyword )
         {
             ArrayList newItems = updateDatabaseTable( items, keyword );
-
-
-
-            string message = compileMessage( items , keyword  );
-
 
             string[ ] queryCols = { "c.`channel_name`" };
             DAL.join[ ] queryJoin = new DAL.join[ 2 ];
@@ -115,10 +110,11 @@ namespace helpmebot6.Monitoring
             ArrayList channels = DAL.Singleton( ).Select( queryCols , "watcher w" , queryJoin , queryWhere , new string[ 0 ] , null , null , 10 , 0 );
             foreach( object[ ] item in channels )
             {
+                string message = compileMessage( items, keyword, (string)item[ 0 ], false );
                 Helpmebot6.irc.IrcPrivmsg( (string)item[ 0 ] , message );
             }
 
-            Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<" ) );
+            Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<", false ) );
 
         }
 
@@ -143,11 +139,11 @@ namespace helpmebot6.Monitoring
             return newItems;
         }
 
-        private string compileMessage( ArrayList items, string keyword )
-        {
-            return compileMessage( items, keyword, "" );
-        }
-        private string compileMessage( ArrayList items, string keyword, string destination )
+        //private string compileMessage( ArrayList items, string keyword )
+        //{
+        //    return compileMessage( items, keyword, "" , false);
+        //}
+        private string compileMessage( ArrayList items, string keyword, string destination, bool forceShowAll )
         {   // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
@@ -155,19 +151,22 @@ namespace helpmebot6.Monitoring
 
             string fakedestination;
             if( destination == ">TWITTER<" )
-            {
-                if( items.Count == 0 )
-                    return "";
                 fakedestination = "";
-            }
             else
                 fakedestination = destination;
 
             bool showWaitTime = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
             bool shortenUrls = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "useShortUrlsInsteadOfWikilinks", destination ) == "true" ? true : false ) );
-            
+            bool showDelta = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "catWatcherShowDelta", destination ) == "true" ? true : false ) );
+
             if( destination == ">TWITTER<" )
+            {
                 shortenUrls = true;
+                showDelta = true;
+            }
+
+            if( forceShowAll )
+                showDelta = false;
 
             items = removeBlacklistedItems( items );
 
@@ -208,7 +207,7 @@ namespace helpmebot6.Monitoring
                     pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
                 }
                 string[ ] messageParams = { items.Count.ToString( ) , pluralString , listString };
-                message = Configuration.Singleton( ).GetMessage( keyword + "HasItems" , "keywordHasItemsDefault" , messageParams );
+                message = Configuration.Singleton( ).GetMessage( keyword + ( showDelta ? "New" : "" ) + "HasItems", "keyword" + ( showDelta ? "New" : "" ) + "HasItemsDefault", messageParams );
             }
             else
             {
