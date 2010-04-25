@@ -72,9 +72,16 @@ namespace helpmebot6
             status = ( status.Length > 140 ? status.Substring( 0, 140 ) : status );
             string postData = "status=" + status;
 
-            HttpWebResponse wrsp = postResponse( url, postData );
-
-            return wrsp.StatusCode;
+            try
+            {
+                HttpWebResponse wrsp = postResponse( url, postData );
+                return wrsp.StatusCode;
+            }
+            catch( WebException ex )
+            {
+                GlobalFunctions.ErrorLog( ex );
+            }
+            
         }
 
         private HttpWebResponse postResponse( string url, string parameters )
