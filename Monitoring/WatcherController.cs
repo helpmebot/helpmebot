@@ -86,7 +86,9 @@ namespace helpmebot6.Monitoring
             CategoryWatcher cw;
             if( watchers.TryGetValue( key , out cw ) )
             {
-                return compileMessage( cw.doCategoryCheck( ) , key );
+                ArrayList items = cw.doCategoryCheck( );
+                updateDatabaseTable( items, key );
+                return compileMessage( items , key );
             }
             else
                 return null;
@@ -94,22 +96,7 @@ namespace helpmebot6.Monitoring
 
         private void CategoryHasItemsEvent( ArrayList items , string keyword )
         {
-            ArrayList newItems = new ArrayList( );
-            foreach( string item in items )
-            {
-                string[] wc = {"item_name = '" + item + "'", "item_keyword = '" + keyword + "'"};
-                if( DAL.Singleton( ).Select( "COUNT(*)", "categoryitems", new DAL.join[ 0 ], wc, null, null, null, 0, 0 ) == "0" )
-                {
-                    DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO categoryitems VALUES( null, '" + item + "', null, '" + keyword + "', 1);" );
-                    newItems.Add( item );
-                }
-                else
-                {
-                    DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 1 WHERE item_name = '" + item + "' AND item_keyword = '" + keyword + "' LIMIT 1;" );
-                }
-            }
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0;" );
-            DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 0;" );
+            ArrayList newItems = updateDatabaseTable( items, keyword );
 
 
 
@@ -133,6 +120,27 @@ namespace helpmebot6.Monitoring
 
             Twitter.tweet( compileMessage( newItems, keyword ) );
 
+        }
+
+        private ArrayList updateDatabaseTable( ArrayList items, string keyword )
+        {
+            ArrayList newItems = new ArrayList( );
+            foreach( string item in items )
+            {
+                string[ ] wc = { "item_name = '" + item + "'", "item_keyword = '" + keyword + "'" };
+                if( DAL.Singleton( ).Select( "COUNT(*)", "categoryitems", new DAL.join[ 0 ], wc, null, null, null, 0, 0 ) == "0" )
+                {
+                    DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO categoryitems VALUES( null, '" + item + "', null, '" + keyword + "', 1);" );
+                    newItems.Add( item );
+                }
+                else
+                {
+                    DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 1 WHERE item_name = '" + item + "' AND item_keyword = '" + keyword + "' LIMIT 1;" );
+                }
+            }
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0;" );
+            DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 0;" );
+            return newItems;
         }
 
         private string compileMessage( ArrayList items , string keyword )

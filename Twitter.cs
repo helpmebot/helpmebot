@@ -82,7 +82,7 @@ namespace helpmebot6
                 GlobalFunctions.ErrorLog( ex );
             }
 
-                return HttpStatusCode.BadRequest;
+            return HttpStatusCode.BadRequest;
             
             
         }
