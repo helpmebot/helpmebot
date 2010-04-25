@@ -187,7 +187,7 @@ namespace helpmebot6.Monitoring
                     {
                         string[ ] wc = { "item_name = '" + item + "'", "item_keyword = '" + keyword + "'" };
                         TimeSpan ts = DateTime.Now - DateTime.Parse( DAL.Singleton( ).Select( "item_entrytime", "categoryitems", null, wc, null, null, null, 1, 0 ) );
-                        string[ ] messageparams = { ts.TotalHours.ToString( ), ts.Minutes.ToString( ), ts.Seconds.ToString( ) };
+                        string[ ] messageparams = { ts.Hours.ToString(), ts.Minutes.ToString( ), ts.Seconds.ToString( ) };
                         listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
                     }
 
