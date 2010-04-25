@@ -138,7 +138,7 @@ namespace helpmebot6.Monitoring
                     DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 1 WHERE item_name = '" + item + "' AND item_keyword = '" + keyword + "' LIMIT 1;" );
                 }
             }
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0;" );
+            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0 AND item_keyword = '" + keyword + "';" );
             DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 0;" );
             return newItems;
         }
