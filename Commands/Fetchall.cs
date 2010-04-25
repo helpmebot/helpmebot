@@ -32,7 +32,7 @@ namespace helpmebot6.Commands
             {
                 foreach( string key in kc )
                 {
-                    crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( key ) );
+                    crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( key , channel) );
                 }
             }
             return crh;

@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
 
             if( args.Length == 1 )
             { // just do category check
-                crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( args[ 0 ] ) );
+                crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( args[ 0 ],channel ) );
             }
             else
             { // do something else too.

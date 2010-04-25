@@ -81,14 +81,14 @@ namespace helpmebot6.Monitoring
             DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM channelwatchers WHERE cw_channel = " + channelId + " AND cw_watcher = " + watcherId.ToString( ) + " ;" );
         }
 
-        public string forceUpdate( string key )
+        public string forceUpdate( string key, string destination )
         {
             CategoryWatcher cw;
             if( watchers.TryGetValue( key , out cw ) )
             {
                 ArrayList items = cw.doCategoryCheck( );
                 updateDatabaseTable( items, key );
-                return compileMessage( items , key );
+                return compileMessage( items , key, destination );
             }
             else
                 return null;
@@ -143,12 +143,17 @@ namespace helpmebot6.Monitoring
             return newItems;
         }
 
-        private string compileMessage( ArrayList items , string keyword )
+        private string compileMessage( ArrayList items, string keyword )
+        {
+            return compileMessage( items, keyword, "" );
+        }
+        private string compileMessage( ArrayList items, string keyword, string destination )
         {   // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
             // keywordSingular
 
+            bool showWaitTime = ( destination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
 
             items = removeBlacklistedItems( items );
 
@@ -159,7 +164,17 @@ namespace helpmebot6.Monitoring
                 string listString = "";
                 foreach( string item in items )
                 {
-                    listString += "[[" + item + "]], ";
+                    listString += "[[" + item + "]]";
+
+                    if( showWaitTime )
+                    {
+                        string[ ] wc = { "item_name = '" + item + "'", "item_keyword = '" + keyword + "'" };
+                        TimeSpan ts = DateTime.Now - DateTime.Parse( DAL.Singleton( ).Select( "item_entrytime", "categoryitems", null, wc, null, null, null, 1, 0 ) );
+                        string[ ] messageparams = { ts.TotalHours.ToString( ), ts.Minutes.ToString( ), ts.Seconds.ToString( ) };
+                        listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
+                    }
+
+                    listString += ", ";
                 }
                 listString = listString.TrimEnd( ' ' , ',' );
                 string pluralString;
