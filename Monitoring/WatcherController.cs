@@ -155,7 +155,11 @@ namespace helpmebot6.Monitoring
 
             string fakedestination;
             if( destination == ">TWITTER<" )
+            {
+                if( items.Count == 0 )
+                    return "";
                 fakedestination = "";
+            }
             else
                 fakedestination = destination;
 
