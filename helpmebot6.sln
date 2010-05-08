@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "helpmebot6", "helpmebot6.csproj", "{295DFCE6-CE2A-4A15-AB43-9B9558C777F5}"
 EndProject
 Global
