@@ -142,21 +142,16 @@ namespace helpmebot6
         public void setLocalOption( string optionName, string channel, string newValue )
         {
             // convert channel to ID
-            DAL.Select q = new DAL.Select( "channel_id" );
-            q.setFrom( "channel" );
-            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
 
-            string channelId = dbal.executeScalarSelect( q );
-            q = new DAL.Select( "configuration_id" );
-            q.setFrom( "configuration" );
-            q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
 
-            string configId = dbal.executeScalarSelect( q );
+            string channelId = getChannelId( channel );
+
+            string configId = getOptionId( optionName );
 
             // does setting exist in local table?
             //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
 
-            q = new DAL.Select( "COUNT(*)" );
+            DAL.Select q = new DAL.Select( "COUNT(*)" );
             q.setFrom( "channelconfig" );
             q.addWhere( new DAL.WhereConds( "cc_channel", channelId ) );
             q.addWhere( new DAL.WhereConds( "cc_config", configId ) );
