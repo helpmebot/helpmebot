@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
             {
                 switch( GlobalFunctions.popFromFront( ref args ).ToLower() )
                 {
-                    case "addOrder":
+                    case "add":
                         return addPageWatcher( string.Join( " ", args ), channel );
                     case "del":
                         return removePageWatcher( string.Join( " ", args ), channel );
