@@ -147,7 +147,7 @@ namespace helpmebot6
             string channelId = getChannelId( channel );
 
             string configId = getOptionId( optionName );
-
+            
             // does setting exist in local table?
             //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
 
@@ -262,7 +262,7 @@ namespace helpmebot6
         {
             return chooseRandomMessage( messageName );
         }
-        public string GetMessage( string messageName, params string[ ] args )
+        public string GetMessage( string messageName, string[ ] args )
         {
             return parseMessage( chooseRandomMessage( messageName ), args );
         }
@@ -278,7 +278,7 @@ namespace helpmebot6
             msg = GetMessage( messageName );
             return msg;
         }
-        public string GetMessage( string messageName , string defaultMessageName, params string[ ] args )
+        public string GetMessage( string messageName , string defaultMessageName, string[ ] args )
         {
             string msg = GetMessage( messageName ,args);
             if( msg == string.Empty )

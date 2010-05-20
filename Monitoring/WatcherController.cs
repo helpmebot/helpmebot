@@ -192,7 +192,7 @@ namespace helpmebot6.Monitoring
                     }
                     else
                     {
-                        listString += IsGd.shorten( new Uri( Configuration.Singleton( ).retrieveGlobalStringOption( "wikiUrl" ) + item ) ).ToString();
+                        listString += IsGd.shorten( new Uri( Configuration.Singleton( ).retrieveGlobalStringOption( "wikiUrl" ) + item ) ).ToString( );
                     }
 
                     if( showWaitTime )
@@ -208,22 +208,23 @@ namespace helpmebot6.Monitoring
 
                     listString += ", ";
                 }
-                listString = listString.TrimEnd( ' ' , ',' );
+                listString = listString.TrimEnd( ' ', ',' );
                 string pluralString;
                 if( items.Count == 1 )
                 {
-                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular" , "keywordSingularDefault" );
+                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular", "keywordSingularDefault" );
                 }
                 else
                 {
-                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" );
+                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural", "keywordPluralDefault" );
                 }
-                string[ ] messageParams = { items.Count.ToString( ) , pluralString , listString };
+                string[ ] messageParams = { items.Count.ToString( ), pluralString, listString };
                 message = Configuration.Singleton( ).GetMessage( keyword + ( showDelta ? "New" : "" ) + "HasItems", "keyword" + ( showDelta ? "New" : "" ) + "HasItemsDefault", messageParams );
             }
             else
             {
-                message = Configuration.Singleton( ).GetMessage( keyword + "NoItems" , "keywordNoItemsDefault" , Configuration.Singleton( ).GetMessage( keyword + "Plural" , "keywordPluralDefault" ) );
+                string[ ] mp = { Configuration.Singleton( ).GetMessage( keyword + "Plural", "keywordPluralDefault" ) };
+                message = Configuration.Singleton( ).GetMessage( keyword + "NoItems", "keywordNoItemsDefault", mp );
             }
             return message;
         }
