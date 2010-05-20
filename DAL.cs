@@ -358,7 +358,7 @@ namespace helpmebot6
                 cmd.Parameters.AddWithValue( "@channel", channel );
                 cmd.Parameters[ "@channel" ].Direction = ParameterDirection.Input;
 
-                cmd.Parameters.AddWithValue( "@optionValue", MySqlDbType.VarChar );
+                cmd.Parameters.AddWithValue( "@optionValue", "" );
                 cmd.Parameters[ "@optionValue" ].Direction = ParameterDirection.Output;
                 lock( this )
                 {
