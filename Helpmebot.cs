@@ -198,9 +198,9 @@ namespace helpmebot6
             q.setFrom( "channel" );
             q.addWhere( new DAL.WhereConds( "channel_enabled", 1 ) );
             q.addWhere( new DAL.WhereConds( "channel_network", ircNetwork.ToString( ) ) );
-            foreach( object item in dbal.executeSelect(q) )
+            foreach( object[] item in dbal.executeSelect(q) )
             {
-                irc.IrcJoin( ( (string[ ])item )[ 0 ] );
+                irc.IrcJoin( (string)( item )[ 0 ] );
  
             }
         }
