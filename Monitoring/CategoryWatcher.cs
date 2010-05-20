@@ -156,10 +156,28 @@ namespace helpmebot6.Monitoring
             {
                 Logger.Instance( ).addToLog( "Error contacting API (" + _site + ") " + ex.Message , Logger.LogTypes.DNWB );
             }
+            pages = removeBlacklistedItems( pages );
+
             return pages;
 
         }
 
+        private ArrayList removeBlacklistedItems( ArrayList pageList )
+        {
+            DAL.Select q = new DAL.Select( "ip_title" );
+            q.setFrom( "ignoredpages" );
+            ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
+
+            foreach( object[ ] item in blacklist )
+            {
+                if( pageList.Contains( (string)item[ 0 ] ) )
+                {
+                    pageList.Remove( (string)item[ 0 ] );
+                }
+            }
+
+            return pageList;
+        }
 
         #region IThreadedSystem Members
 
