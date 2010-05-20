@@ -344,28 +344,34 @@ namespace helpmebot6
 
         public string proc_HMB_GET_LOCAL_OPTION( string option, string channel )
         {
-            
 
-            MySqlCommand cmd = new MySqlCommand( );
-            cmd.Connection = _connection;
-            cmd.CommandType = System.Data.CommandType.StoredProcedure;
-            cmd.CommandText = "HMB_GET_LOCAL_OPTION";
-
-            cmd.Parameters.AddWithValue( "@optionName", option );
-            cmd.Parameters[ "@optionName" ].Direction = ParameterDirection.Input;
-
-            cmd.Parameters.AddWithValue( "@channel", channel );
-            cmd.Parameters[ "@channel" ].Direction = ParameterDirection.Input;
-
-            cmd.Parameters.AddWithValue( "@optionValue", MySqlDbType.VarChar );
-            cmd.Parameters[ "@optionValue" ].Direction = ParameterDirection.Output;
-            lock( this )
+            try
             {
-                runConnectionTest( );
-                cmd.ExecuteNonQuery( );
-            }
-            return (string)cmd.Parameters[ "@optionValue" ].Value;
+                MySqlCommand cmd = new MySqlCommand( );
+                cmd.Connection = _connection;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "HMB_GET_LOCAL_OPTION";
 
+                cmd.Parameters.AddWithValue( "@optionName", option );
+                cmd.Parameters[ "@optionName" ].Direction = ParameterDirection.Input;
+
+                cmd.Parameters.AddWithValue( "@channel", channel );
+                cmd.Parameters[ "@channel" ].Direction = ParameterDirection.Input;
+
+                cmd.Parameters.AddWithValue( "@optionValue", MySqlDbType.VarChar );
+                cmd.Parameters[ "@optionValue" ].Direction = ParameterDirection.Output;
+                lock( this )
+                {
+                    runConnectionTest( );
+                    cmd.ExecuteNonQuery( );
+                }
+                return (string)cmd.Parameters[ "@optionValue" ].Value;
+            }
+            catch( FormatException ex )
+            {
+                GlobalFunctions.ErrorLog( ex );
+                Logger.Instance( ).addToLog( option + "@" + channel, Logger.LogTypes.ERROR );
+            }
         }
 
 
