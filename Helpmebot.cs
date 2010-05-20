@@ -38,6 +38,7 @@ namespace helpmebot6
        public static readonly DateTime startupTime = DateTime.Now;
 
        public static bool pagewatcherEnabled = true;
+       public static bool enableTwitter = true;
 
        static void Main( string[ ] args )
        {
@@ -58,6 +59,8 @@ namespace helpmebot6
 
            if( GlobalFunctions.prefixIsInArray( "--disablepagewatcher", args ) != -1 )
                pagewatcherEnabled = false;
+           if( GlobalFunctions.prefixIsInArray( "--disabletwitter", args ) != -1 )
+               enableTwitter = false;
 
 
            InitialiseBot( configFile );

@@ -8,12 +8,15 @@ namespace helpmebot6
     {
         public static void tweet(string status)
         {
-           Twitter twit = new Twitter(
-                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterUsername" ),
-                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterPassword" )
-                );
-           twit.userAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
-           twit.statuses_update( status );
+            if( Helpmebot6.enableTwitter )
+            {
+                Twitter twit = new Twitter(
+                         Configuration.Singleton( ).retrieveGlobalStringOption( "twitterUsername" ),
+                         Configuration.Singleton( ).retrieveGlobalStringOption( "twitterPassword" )
+                     );
+                twit.userAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
+                twit.statuses_update( status );
+            }
         }
 
         public Twitter( string username, string password )
