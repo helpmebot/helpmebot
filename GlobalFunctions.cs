@@ -108,7 +108,6 @@ namespace helpmebot6
             typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
 
             User.userRights accessLevel;
-            string[ ] wc = { "typename = \"" + typename + "\"" };
             DAL.Select q = new DAL.Select( "accesslevel" );
             q.setFrom( "command" );
 

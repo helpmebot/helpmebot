@@ -192,7 +192,6 @@ namespace helpmebot6
 
             DAL db = DAL.Singleton( );
 
-            string[ ] wheres = { "in_id = " + ircNetwork };
 
             DAL.Select q = new DAL.Select( "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log", "in_nickserv" );
             q.setFrom( "ircnetwork" );

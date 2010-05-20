@@ -35,7 +35,6 @@ namespace helpmebot6.Commands
 
         private CommandResponseHandler addPageWatcher(string page, string channel)
         {
-            string[] wc = {"w.`pw_title` = '" + page + "'"};
 
             DAL.Select q = new DAL.Select( "COUNT(*)" );
             q.setFrom( "watchedpages" );

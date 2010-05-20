@@ -80,9 +80,6 @@ namespace helpmebot6.NewYear
 
         private void sendNewYearMessage( string places )
         {
-            string[ ] select = {  };
-            string[ ] wc = { };
-
             DAL.Select q = new DAL.Select( "channel_name" );
             q.setFrom( "channel" );
             q.addWhere( new DAL.WhereConds( "channel_enabled", "1" ) );

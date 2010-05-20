@@ -10,7 +10,6 @@ namespace helpmebot6
     {
         public static Uri shorten( Uri longUrl )
         {
-            string[] wc = {"suc_fullurl = '" + longUrl.ToString() + "'"};
             DAL.Select q = new DAL.Select( "suc_shorturl" );
             q.setFrom("shorturlcache");
             q.addWhere( new DAL.WhereConds( "suc_fullurl", longUrl.ToString( ) ) );

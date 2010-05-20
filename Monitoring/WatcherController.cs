@@ -246,7 +246,6 @@ namespace helpmebot6.Monitoring
 
         private ArrayList removeBlacklistedItems( ArrayList pageList )
         {
-            string[ ] cols = { "ip_title" };
             DAL.Select q = new DAL.Select( "ip_title" );
             q.setFrom( "ignoredpages" );
             ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
