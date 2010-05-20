@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpSvn;
+using System.Diagnostics;
 
 namespace helpmebot6.Commands
 {
@@ -29,23 +29,10 @@ namespace helpmebot6.Commands
 
         public string getVersionString( )
         {
-            SvnClient svn = new SvnClient( );
 
-            SvnTarget tgt = SvnTarget.FromString( "../../Helpmebot.cs" );
-
-            SvnInfoEventArgs info;
-
-            svn.GetInfo( tgt, out info );
-
-            long rev = 0;
-            rev = info.Revision;
-
-            string branch = "trunk";
-            string pq = info.Uri.PathAndQuery;
-            char[ ] splitChars = { '/' };
-            branch = pq.Split( splitChars, StringSplitOptions.RemoveEmptyEntries )[ pq.Split( splitChars, StringSplitOptions.RemoveEmptyEntries ).Length - 2 ];
-
-            string versionString = this.version + "-" + branch + "-r" + rev.ToString( );
+            string rev = Process.Start( "svnversion" ).StandardOutput.ReadLine();
+            
+            string versionString = this.version +  "-r" + rev;
 
             return versionString;
         }
