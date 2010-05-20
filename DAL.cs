@@ -105,48 +105,6 @@ namespace helpmebot6
             Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
         }
 
-        private string ExecuteScalarQuery( string query )
-        {
-            string ret = "";
-            Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
-            lock( this )
-            {
-                Logger.Instance( ).addToLog( "Executing (scalar)query: " + query, Logger.LogTypes.DAL );
-
-                object result = null;
-                try
-                {
-                    runConnectionTest( );
-
-                    MySqlCommand cmd = new MySqlCommand( query, _connection );
-
-                    result = cmd.ExecuteScalar( );
-                }
-                catch( MySqlException ex )
-                {
-                    GlobalFunctions.ErrorLog( ex );
-                }
-                catch( Exception ex )
-                {
-                    GlobalFunctions.ErrorLog( ex );
-                }
-
-
-                if( result == null )
-                {
-                    Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query, Logger.LogTypes.DAL );
-                    ret = "";
-                }
-                else
-                {
-                    ret = result.ToString( );
-                    Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query, Logger.LogTypes.DAL );
-                }
-            }
-            Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
-            return ret;
-        }
-
         private MySqlDataReader ExecuteReaderQuery( string query )
         {
             MySqlDataReader result = null;
@@ -275,7 +233,7 @@ namespace helpmebot6
         }
         public string executeScalarSelect( Select query )
         {
-            return (string)( ( (object[ ])executeSelect( query )[ 0 ] )[ 0 ] );
+            return ( ( (object[ ])executeSelect( query )[ 0 ] )[ 0 ] ).ToString( );
         }
 
         private void runConnectionTest( )
