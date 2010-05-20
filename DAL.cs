@@ -192,7 +192,7 @@ namespace helpmebot6
                 query += "`" + sanitise( col.Key ) + "` = \"" + sanitise( col.Value ) + "\", ";
             }
 
-            query = query.TrimEnd( ',' );
+            query = query.TrimEnd( ',', ' ' );
 
             for( int i = 0; i < conditions.Length; i++ )
             {
