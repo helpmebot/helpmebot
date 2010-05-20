@@ -329,7 +329,10 @@ namespace helpmebot6
         {
             lock( this )
             {
+                runConnectionTest( );
+
                 MySqlCommand cmd = new MySqlCommand( );
+                cmd.Connection = _connection;
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "HMB_UPDATE_BINARYSTORE";
                 cmd.Parameters.Add( "@raw", MySqlDbType.Blob ).Value = raw;
@@ -341,8 +344,10 @@ namespace helpmebot6
 
         public string proc_HMB_GET_LOCAL_OPTION( string option, string channel )
         {
+            
 
             MySqlCommand cmd = new MySqlCommand( );
+            cmd.Connection = _connection;
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.CommandText = "HMB_GET_LOCAL_OPTION";
 
@@ -356,6 +361,7 @@ namespace helpmebot6
             cmd.Parameters[ "@optionValue" ].Direction = ParameterDirection.Output;
             lock( this )
             {
+                runConnectionTest( );
                 cmd.ExecuteNonQuery( );
             }
             return (string)cmd.Parameters[ "@optionValue" ].Value;
