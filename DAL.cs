@@ -233,7 +233,11 @@ namespace helpmebot6
         }
         public string executeScalarSelect( Select query )
         {
-            return ( ( (object[ ])executeSelect( query )[ 0 ] )[ 0 ] ).ToString( );
+            ArrayList al = executeSelect( query );
+            if( al.Count > 0 )
+                return ( ( (object[ ])al[ 0 ] )[ 0 ] ).ToString( );
+            else
+                return "";
         }
 
         private void runConnectionTest( )
