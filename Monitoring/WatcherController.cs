@@ -126,6 +126,7 @@ namespace helpmebot6.Monitoring
             foreach( string item in items )
             {
                 DAL.Select q = new DAL.Select( "COUNT(*)" );
+                q.setFrom( "categoryitems" );
                 q.addWhere( new DAL.WhereConds( "item_name", item ) );
                 q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
                 if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
