@@ -11,7 +11,10 @@ namespace helpmebot6
         public static Uri shorten( Uri longUrl )
         {
             string[] wc = {"suc_fullurl = '" + longUrl.ToString() + "'"};
-            string cachelookup = DAL.Singleton().Select("suc_shorturl", "shorturlcache",null,wc,null,null,null,0,0) ;
+            DAL.Select q = new DAL.Select( "suc_shorturl" );
+            q.setFrom("shorturlcache");
+            q.addWhere( new DAL.WhereConds( "suc_fullurl", longUrl.ToString( ) ) );
+            string cachelookup = DAL.Singleton( ).executeScalarSelect( q );
 
             if( cachelookup == "" )
             {
@@ -23,7 +26,7 @@ namespace helpmebot6
                 {
                     StreamReader sr = new StreamReader( wrs.GetResponseStream( ) );
                     string shorturl = sr.ReadLine( );
-                    DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO shorturlcache VALUES (null, '" + longUrl + "', '" + shorturl + "');" );
+                    DAL.Singleton( ).Insert( "shorturlcache", "", longUrl.ToString( ), shorturl );
                     return new Uri( shorturl );
                 }
                 else

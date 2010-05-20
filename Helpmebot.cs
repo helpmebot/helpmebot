@@ -36,7 +36,9 @@ namespace helpmebot6
        static uint ircNetwork;
 
        public static readonly DateTime startupTime = DateTime.Now;
-        
+
+       public static bool pagewatcherEnabled = true;
+
        static void Main( string[ ] args )
        {
            // startup arguments
@@ -53,6 +55,9 @@ namespace helpmebot6
                Logger.Instance( ).LogDALLOCK = true;
            if( GlobalFunctions.prefixIsInArray( "--logirc" , args ) != -1 )
                Logger.Instance( ).LogIRC = true;
+
+           if( GlobalFunctions.prefixIsInArray( "--disablepagewatcher", args ) != -1 )
+               pagewatcherEnabled = false;
 
 
            InitialiseBot( configFile );
@@ -124,23 +129,20 @@ namespace helpmebot6
 
        static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )
        {
-           string[ ] messageParams = { rcItem.title , rcItem.user , rcItem.comment , rcItem.diffUrl , rcItem.byteDiff , rcItem.flags };
-           string message = Configuration.Singleton( ).GetMessage( "pageWatcherEventNotification" , messageParams );
+           string[ ] messageParams = { rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff, rcItem.flags };
+           string message = Configuration.Singleton( ).GetMessage( "pageWatcherEventNotification", messageParams );
 
-           string[ ] selectCols = { "c.`channel_name`" };
-           DAL.join[ ] jC = new DAL.join[ 2 ];
-           jC[ 0 ].table = "`channel` c";
-           jC[ 0 ].joinType = DAL.joinTypes.INNER;
-           jC[ 0 ].joinConditions = "pwc.`pwc_channel` = c.`channel_id`";
-           jC[ 1 ].table = "`watchedpages` wp";
-           jC[ 1 ].joinType = DAL.joinTypes.INNER;
-           jC[ 1 ].joinConditions = "wp.`pw_id` = pwc.`pwc_pagewatcher`";
-           string[ ] wc = { "wp.`pw_title` = \"" + rcItem.title + "\";" };
-           ArrayList channels = DAL.Singleton( ).Select( selectCols , "`pagewatcherchannels` pwc" , jC , wc , null , null , null , 0 , 0 );
+           DAL.Select q = new DAL.Select( "channel_name" );
+           q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "pwc_channel", "=", false, "channel_id" ) );
+           q.addJoin( "watchedpages", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "pw_id", "=", false, "pwc_pagewatcher" ) );
+           q.addWhere( new DAL.WhereConds( "pw_title", rcItem.title ) );
+           q.setFrom( "pagewatcherchannels" );
 
-           foreach( object[] item in channels )
+           ArrayList channels = DAL.Singleton( ).executeSelect( q );
+
+           foreach( object[ ] item in channels )
            {
-               irc.IrcPrivmsg( (string)item[ 0 ] , message );
+               irc.IrcPrivmsg( (string)item[ 0 ], message );
            }
        }
 
@@ -192,16 +194,14 @@ namespace helpmebot6
             debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
 
-            MySql.Data.MySqlClient.MySqlDataReader dr = dbal.ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '"+ircNetwork.ToString()+"';" );
-            if( dr != null )
+            DAL.Select q = new DAL.Select( "channel_name" );
+            q.setFrom( "channel" );
+            q.addWhere( new DAL.WhereConds( "channel_enabled", 1 ) );
+            q.addWhere( new DAL.WhereConds( "channel_network", ircNetwork.ToString( ) ) );
+            foreach( object item in dbal.executeSelect(q) )
             {
-                while( dr.Read( ) )
-                {
-                    object[ ] channel = new object[ 1 ];
-                    dr.GetValues( channel );
-                    irc.IrcJoin( channel[ 0 ].ToString( ) );
-                }
-                dr.Close( );
+                irc.IrcJoin( ( (string[ ])item )[ 0 ] );
+ 
             }
         }
 

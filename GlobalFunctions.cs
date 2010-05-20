@@ -108,8 +108,14 @@ namespace helpmebot6
             typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
 
             User.userRights accessLevel;
-            string[ ] wc = { "typename = \""+typename+"\"" };
-            string al = DAL.Singleton( ).Select( "accesslevel" , "command" , null , wc , null , null , null , 1 , 0 );
+            string[ ] wc = { "typename = \"" + typename + "\"" };
+            DAL.Select q = new DAL.Select( "accesslevel" );
+            q.setFrom( "command" );
+
+            q.addWhere( new DAL.WhereConds( "typename", typename ) );
+            q.addLimit( 1, 0 );
+
+            string al = DAL.Singleton( ).executeScalarSelect( q );
             switch( al )
             {
                 case "Developer":
@@ -132,12 +138,11 @@ namespace helpmebot6
                     break;
                 default:
                     accessLevel = User.userRights.Developer;
-                    ErrorLog( new ArgumentOutOfRangeException( "command", typename , "not found in commandlist")  );
+                    ErrorLog( new ArgumentOutOfRangeException( "command", typename, "not found in commandlist" ) );
                     break;
             }
             return accessLevel;
         }
-
         public static void removeItemFromArray(string item, ref string[] array)
         {
             int count = 0;

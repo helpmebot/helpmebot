@@ -17,7 +17,7 @@ namespace helpmebot6.Commands
             {
                 switch( GlobalFunctions.popFromFront( ref args ).ToLower() )
                 {
-                    case "add":
+                    case "addOrder":
                         return addPageWatcher( string.Join( " ", args ), channel );
                     case "del":
                         return removePageWatcher( string.Join( " ", args ), channel );
@@ -37,20 +37,28 @@ namespace helpmebot6.Commands
         {
             string[] wc = {"w.`pw_title` = '" + page + "'"};
 
+            DAL.Select q = new DAL.Select( "COUNT(*)" );
+            q.setFrom( "watchedpages" );
+            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+
             // look to see if watchedpage exists
-            if( DAL.Singleton( ).Select( "COUNT(*)" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 0 , 0 ) == "0" )
-            {//    no: add it
-                DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO watchedpages VALUES ( null, \"" + page + "\");" );
+            if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
+            {//    no: addOrder it
+                DAL.Singleton( ).Insert( "watchedpages", "", page );
             }
             
             // get id of watchedpage
-            string watchedPageId = DAL.Singleton( ).Select( "w.`pw_id`" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 1 , 0 );
+            q = new DAL.Select( "pw_id" );
+            q.setFrom( "watchedpages" );
+            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+
+            string watchedPageId = DAL.Singleton( ).executeScalarSelect( q );
             
             // get id of channel
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             
-            // add to pagewatcherchannels
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO pagewatcherchannels VALUES ( " + channelId + ", " + watchedPageId + ");" );
+            // addOrder to pagewatcherchannels
+            DAL.Singleton( ).Insert( "pagewatcherchannels", channelId, watchedPageId );
 
             Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
 
@@ -59,16 +67,18 @@ namespace helpmebot6.Commands
 
         private CommandResponseHandler removePageWatcher( string page , string channel )
         {
-            string[ ] wc = { "w.`pw_title` = '" + page + "'" };
-
             // get id of watchedpage
-            string watchedPageId = DAL.Singleton( ).Select( "w.`pw_id`" , "helpmebot_v6.watchedpages w" , null , wc , null , null , null , 1 , 0 );
+           DAL.Select q = new DAL.Select( "pw_id" );
+            q.setFrom( "watchedpages" );
+            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+
+            string watchedPageId = DAL.Singleton( ).executeScalarSelect( q );
 
             // get id of channel
             string channelId = Configuration.Singleton( ).getChannelId( channel );
 
             // remove from pagewatcherchannels
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM pagewatcherchannels WHERE pwc_channel = " + channelId + " AND pwc_pagewatcher = " + watchedPageId + ";" );
+            DAL.Singleton( ).Delete( "pagewatcherchannels", 0, new DAL.WhereConds( "pwc_channel", channelId ), new DAL.WhereConds( "pwc_pagewatcher", watchedPageId ) );
 
             Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
 

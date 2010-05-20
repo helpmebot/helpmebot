@@ -33,7 +33,7 @@ namespace helpmebot6.Commands
                 case "global":
                     Configuration.Singleton( ).deleteLocalOption( "welcomeNewbie", channel );
                     return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "defaultSetting" ) );
-                case "add":
+                case "addOrder":
                     helpmebot6.Monitoring.NewbieWelcomer.Instance( ).addHost( args[ 1 ] );
                     return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
                 case "del":

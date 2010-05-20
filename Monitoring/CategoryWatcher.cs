@@ -42,7 +42,12 @@ namespace helpmebot6.Monitoring
         {
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
-            _site = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            _site = DAL.Singleton( ).executeScalarSelect( q );
+
             _category = Category;
             _key = Key;
             _sleepTime = SleepTime;

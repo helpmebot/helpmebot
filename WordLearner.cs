@@ -24,39 +24,54 @@ namespace helpmebot6
     {
         public static bool Learn( string word, string phrase )
         {
-            return Learn( word , phrase , false );
+            return Learn( word, phrase, false );
         }
-        public static bool Learn(string word, string phrase, bool action)
+        public static bool Learn( string word, string phrase, bool action )
         {
-            string[] wc = {"keyword_name = \""+word+"\""};
-            if( DAL.Singleton( ).Select( "COUNT(*)" , "keywords" , null , wc , null , null , null , 1 , 0 ) != "0" )
+            DAL.Select q = new DAL.Select( "COUNT(*)" );
+            q.setFrom( "keywords" );
+            q.addLimit( 1, 0 );
+            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+
+
+            if( DAL.Singleton( ).executeScalarSelect( q ) != "0" )
                 return false;
 
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `keywords` (`keyword_name`,`keyword_response`, `keyword_action`) VALUES (\"" + GlobalFunctions.escape( word ) + "\",\"" + GlobalFunctions.escape( phrase ) + "\", " + ( action ? 1 : 0 ) + ");" );
+            DAL.Singleton( ).Insert( "keywords", "", word, phrase, ( action ? "1" : "0 " ) );
             return true;
         }
 
         public static RemeberedWord Remember( string word )
         {
-            string[] whereconds = {"keyword_name = \""+word+"\""};
-            string action = DAL.Singleton( ).Select( "keyword_action" , "keywords" , new DAL.join[ 0 ] , whereconds , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 0 , 0 );
-            string result = DAL.Singleton( ).Select("keyword_response","keywords",new DAL.join[0],whereconds,new string[0],new DAL.order[0],new string[0],0,0);
+
+            DAL.Select q = new DAL.Select( "keyword_action" );
+            q.setFrom( "keywords" );
+            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+
+            string action = DAL.Singleton( ).executeScalarSelect( q );
+            q = new DAL.Select( "keyword_response" );
+            q.setFrom( "keywords" );
+            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+            string result = DAL.Singleton( ).executeScalarSelect( q );
 
             RemeberedWord rW = new RemeberedWord( );
             rW.action = ( action == "1" ? true : false );
             rW.phrase = result;
 
-          //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
+            //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
             return rW;
         }
 
         public static bool Forget( string word )
         {
-            string[ ] wc = { "keyword_name = \"" + word + "\"" };
-            if( DAL.Singleton( ).Select( "COUNT(*)" , "keywords" , null , wc , null , null , null , 1 , 0 ) == "0" )
+            DAL.Select q = new DAL.Select( "COUNT(*)" );
+            q.setFrom( "keywords" );
+            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+
+            if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
                 return false;
 
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `keywords` WHERE `keyword_name` = '" + word + "';" );
+            DAL.Singleton( ).Delete( "keywords", 0, new DAL.WhereConds( "keyword_name", word ) );
             return true;
         }
 

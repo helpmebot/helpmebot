@@ -14,7 +14,9 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
             Helpmebot6.irc.IrcPart( channel , source.ToString( ) );
-            DAL.Singleton( ).ExecuteNonQuery( "UPDATE channel SET channel_enabled = 0 WHERE channel_name = \"" + channel + "\";" );
+            Dictionary<string, string> vals = new Dictionary<string, string>( );
+            vals.Add( "channel_enabled", "0" );
+            DAL.Singleton( ).Update( "channel", vals, 0, new DAL.WhereConds( "channel_name", channel ) );
             return null;
         }
     }

@@ -20,6 +20,8 @@ using System.Text;
 using MySql.Data.MySqlClient;
 using System.IO;
 using System.Collections;
+using System.Data;
+
 namespace helpmebot6
 {
     public class DAL
@@ -31,14 +33,14 @@ namespace helpmebot6
 
         MySqlConnection _connection;
 
-        public static DAL Singleton()
-        {               
+        public static DAL Singleton( )
+        {
             return _singleton;
         }
-        public static DAL Singleton(string Host, uint Port, string Username, string Password, string Schema)
+        public static DAL Singleton( string Host, uint Port, string Username, string Password, string Schema )
         {
-            if (_singleton == null)
-                _singleton = new DAL(Host, Port, Username, Password, Schema);
+            if( _singleton == null )
+                _singleton = new DAL( Host, Port, Username, Password, Schema );
             return _singleton;
         }
 
@@ -55,7 +57,7 @@ namespace helpmebot6
         {
             try
             {
-                Logger.Instance( ).addToLog( "Opening database connection..." , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Opening database connection...", Logger.LogTypes.DAL );
                 MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder( );
                 csb.Database = _mySqlSchema;
                 csb.Password = _mySqlPassword;
@@ -69,22 +71,18 @@ namespace helpmebot6
             }
             catch( MySqlException ex )
             {
-                GlobalFunctions.ErrorLog( ex  );
+                GlobalFunctions.ErrorLog( ex );
                 return false;
             }
         }
 
-        public void ExecuteNonQuery( string query )
-        {
-            ExecuteNonQuery( new MySqlCommand( query, _connection ) );
-        }
-
-        public void ExecuteNonQuery( MySqlCommand cmd )
+        #region internals
+        private void ExecuteNonQuery( ref MySqlCommand cmd )
         {
             Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
-                Logger.Instance( ).addToLog( "Executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Executing (non)query: " + cmd.CommandText, Logger.LogTypes.DAL );
                 try
                 {
 
@@ -102,25 +100,25 @@ namespace helpmebot6
                 {
                     GlobalFunctions.ErrorLog( ex );
                 }
-                Logger.Instance( ).addToLog( "Done executing (non)query: " + cmd.CommandText , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Done executing (non)query: " + cmd.CommandText, Logger.LogTypes.DAL );
             }
             Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
         }
 
-        public string ExecuteScalarQuery( string query )
+        private string ExecuteScalarQuery( string query )
         {
             string ret = "";
             Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
-                Logger.Instance( ).addToLog( "Executing (scalar)query: " + query , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Executing (scalar)query: " + query, Logger.LogTypes.DAL );
 
                 object result = null;
                 try
                 {
                     runConnectionTest( );
 
-                    MySqlCommand cmd = new MySqlCommand( query , _connection );
+                    MySqlCommand cmd = new MySqlCommand( query, _connection );
 
                     result = cmd.ExecuteScalar( );
                 }
@@ -132,31 +130,31 @@ namespace helpmebot6
                 {
                     GlobalFunctions.ErrorLog( ex );
                 }
-                
+
 
                 if( result == null )
                 {
-                    Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query , Logger.LogTypes.DAL );
+                    Logger.Instance( ).addToLog( "Problem executing (scalar)query: " + query, Logger.LogTypes.DAL );
                     ret = "";
                 }
                 else
                 {
                     ret = result.ToString( );
-                    Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query , Logger.LogTypes.DAL );
-                } 
+                    Logger.Instance( ).addToLog( "Done executing (scalar)query: " + query, Logger.LogTypes.DAL );
+                }
             }
             Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
             return ret;
         }
 
-        public MySqlDataReader ExecuteReaderQuery( string query )
+        private MySqlDataReader ExecuteReaderQuery( string query )
         {
             MySqlDataReader result = null;
-            
-            Logger.Instance( ).addToLog( "Locking access to DAL..." , Logger.LogTypes.DALLOCK );
+
+            Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
-                Logger.Instance( ).addToLog( "Executing (reader)query: " + query , Logger.LogTypes.DAL );
+                Logger.Instance( ).addToLog( "Executing (reader)query: " + query, Logger.LogTypes.DAL );
 
                 try
                 {
@@ -165,200 +163,119 @@ namespace helpmebot6
                     MySqlCommand cmd = new MySqlCommand( query );
                     cmd.Connection = _connection;
                     result = cmd.ExecuteReader( );
-                    Logger.Instance( ).addToLog( "Done executing (reader)query: " + query , Logger.LogTypes.DAL );
+                    Logger.Instance( ).addToLog( "Done executing (reader)query: " + query, Logger.LogTypes.DAL );
 
                     return result;
                 }
                 catch( Exception ex )
                 {
-                    Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query , Logger.LogTypes.DAL );
+                    Logger.Instance( ).addToLog( "Problem executing (reader)query: " + query, Logger.LogTypes.DAL );
                     GlobalFunctions.ErrorLog( ex );
                 }
             }
             Logger.Instance( ).addToLog( "DAL Lock released.", Logger.LogTypes.DALLOCK );
             return result;
         }
+        #endregion
 
-        public enum joinTypes
+        public long Insert( string table, params string[ ] values )
         {
-            INNER,
-            LEFT,
-            RIGHT,
-            FULLOUTER
-        }
-
-        public struct join
-        {
-            public joinTypes joinType;
-            public string table;
-            public string joinConditions;
-        }
-
-        public struct order
-        {
-            public string column;
-            public bool asc;
-        }
-
-        public string Select( string select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
-        {
-
-            try
+            string query = "INSERT INTO `" + sanitise( table ) + "` VALUES (";
+            foreach( string item in values )
             {
-                string[ ] selectArray = { select };
-                string query = buildSelect( selectArray , from , joinConds , where , groupby , orderby , having , limit , offset );
-                Logger.Instance( ).addToLog( "Running SELECT query: " + query , Logger.LogTypes.DAL );
-
-                string result = ExecuteScalarQuery( query );
-                Logger.Instance( ).addToLog( "Done SELECT query: " + query , Logger.LogTypes.DAL );
-
-                return result;
-            }
-            catch( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex  );
-                return "";
-            }
-        }
-
-        private string buildSelect( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
-        {
-            string query = "SELECT " + string.Join(", ",select) + " FROM " + from;
-
-            if( joinConds != null )
-            {
-
-                foreach( join item in joinConds )
+                if( item != string.Empty )
                 {
-                    switch( item.joinType )
-                    {
-                        case joinTypes.INNER:
-                            query += " INNER JOIN ";
-                            break;
-                        case joinTypes.LEFT:
-                            query += " LEFT OUTER JOIN ";
-                            break;
-                        case joinTypes.RIGHT:
-                            query += " RIGHT OUTER JOIN ";
-                            break;
-                        case joinTypes.FULLOUTER:
-                            query += " FULL OUTER JOIN ";
-                            break;
-                        default:
-                            break;
-                    }
-
-                    query += item.table;
-
-                    if( item.joinConditions != "" )
-                    {
-                        query += " ON " + item.joinConditions;
-                    }
+                    query += " \"" + sanitise( item ) + "\",";
+                }
+                else
+                {
+                    query += "null,";
                 }
             }
 
-            if( where != null )
+            query = query.TrimEnd( ',' );
+            query += " );";
+
+            MySqlCommand cmd = new MySqlCommand( query );
+            ExecuteNonQuery( ref cmd );
+            return cmd.LastInsertedId;
+        }
+
+        public void Delete( string table, int limit, params WhereConds[ ] conditions )
+        {
+            string query = "DELETE FROM `" + sanitise( table ) + "`";
+            for( int i = 0; i < conditions.Length; i++ )
             {
-                if( where.Length > 0 )
-                {
+                if( i == 0 )
                     query += " WHERE ";
+                else
+                    query += " AND ";
 
-                    for( int i = 0 ; i < where.Length ; i++ )
-                    {
-                        if( i != 0 )
-                            query += " AND ";
-
-                        query += where[ i ];
-                    }
-                }
-            }
-            if( groupby != null )
-            {
-                if( groupby.Length > 0 )
-                {
-                    query += " GROUP BY ";
-
-                    for( int i = 0 ; i < groupby.Length ; i++ )
-                    {
-                        if( i != 0 )
-                            query += ", ";
-
-                        query += groupby[ i ];
-                    }
-                }
-            }
-            if( orderby != null )
-            {
-                if( orderby.Length > 0 )
-                {
-                    query += " ORDER BY ";
-
-                    for( int i = 0 ; i < orderby.Length ; i++ )
-                    {
-                        if( i != 0 )
-                            query += ", ";
-
-                        query += orderby[ i ].column + ( orderby[ i ].asc ? " ASC" : " DESC" );
-
-                    }
-                }
-            }
-            if( having != null )
-            {
-                if( having.Length > 0 )
-                {
-                    query += " HAVING ";
-
-                    for( int i = 0 ; i < having.Length ; i++ )
-                    {
-                        if( i != 0 )
-                            query += ", ";
-
-                        query += having[ i ];
-                    }
-                }
+                query += conditions[ i ].ToString( );
             }
 
-            if( limit != 0 )
-                query += " LIMIT " + limit;
-
-            if( offset != 0 )
-                query += " OFFSET " + offset;
+            if( limit > 0 )
+                query += " LIMIT " + limit.ToString( );
 
             query += ";";
-            return query;
+            MySqlCommand deleteCommand = new MySqlCommand( query );
+            ExecuteNonQuery( ref deleteCommand );
         }
-        public ArrayList Select( string[] select , string from , join[ ] joinConds , string[ ] where , string[ ] groupby , order[ ] orderby , string[ ] having , int limit , int offset )
+
+        public void Update( string table, Dictionary<string, string> items, int limit, params WhereConds[ ] conditions )
         {
-            try
+            if( items.Count < 1 )
+                return;
+
+            string query = "UPDATE `" + sanitise( table ) + "` SET ";
+
+            foreach( KeyValuePair<string, string> col in items )
             {
-                string query = buildSelect( select , from , joinConds , where , groupby , orderby , having , limit , offset );
-                Logger.Instance( ).addToLog( "Running SELECT query: " + query , Logger.LogTypes.DAL );
+                query += "`" + sanitise( col.Key ) + "` = \"" + sanitise( col.Value ) + "\", ";
+            }
 
-                MySqlDataReader dr = ExecuteReaderQuery( query );
+            query = query.TrimEnd( ',' );
 
-                ArrayList resultSet = new ArrayList( );
-                if( dr != null )
+            for( int i = 0; i < conditions.Length; i++ )
+            {
+                if( i == 0 )
+                    query += " WHERE ";
+                else
+                    query += " AND ";
+
+                query += conditions[ i ].ToString( );
+            }
+
+            if( limit > 0 )
+                query += " LIMIT " + limit.ToString( );
+
+            query += ";";
+
+            MySqlCommand updateCommand = new MySqlCommand( query );
+            ExecuteNonQuery( ref updateCommand );
+        }
+
+        public ArrayList executeSelect( Select query )
+        {
+            MySqlDataReader dr = ExecuteReaderQuery( query.ToString() );
+
+            ArrayList resultSet = new ArrayList( );
+            if( dr != null )
+            {
+                object[ ] row = new object[ dr.FieldCount ];
+                while( dr.Read( ) )
                 {
-                    object[ ] row = new object[ dr.FieldCount ];
-                    while( dr.Read( ) )
-                    {
-                        row = new object[ dr.FieldCount ];
-                        dr.GetValues( row );
-                        resultSet.Add( row );
-                    }
-                    dr.Close( );
+                    row = new object[ dr.FieldCount ];
+                    dr.GetValues( row );
+                    resultSet.Add( row );
                 }
-                Logger.Instance( ).addToLog( "Done SELECT query: " + query , Logger.LogTypes.DAL );
-
-                return resultSet;
-                
+                dr.Close( );
             }
-            catch( Exception ex )
-            {
-                GlobalFunctions.ErrorLog( ex );
-                return null;
-            }
+            return resultSet;
+        }
+        public string executeScalarSelect( Select query )
+        {
+            return (string)( ( (object[ ])executeSelect( query )[ 0 ] )[ 0 ] );
         }
 
         private void runConnectionTest( )
@@ -381,7 +298,7 @@ namespace helpmebot6
 
                     System.Threading.Thread.Sleep( sleepTime );
 
-                    sleepTime = (int)(sleepTime * 1.5) > int.MaxValue ? sleepTime : (int)(sleepTime * 1.5);
+                    sleepTime = (int)( sleepTime * 1.5 ) > int.MaxValue ? sleepTime : (int)( sleepTime * 1.5 );
 
                 }
 
@@ -407,5 +324,322 @@ namespace helpmebot6
 
             cmd.ExecuteNonQuery( );
         }
+
+        public void proc_HMB_UPDATE_BINARYSTORE( byte[ ] raw, string desc )
+        {
+            lock( this )
+            {
+                MySqlCommand cmd = new MySqlCommand( );
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "HMB_UPDATE_BINARYSTORE";
+                cmd.Parameters.Add( "@raw", MySqlDbType.Blob ).Value = raw;
+                cmd.Parameters.Add( "@desc", MySqlDbType.VarChar ).Value = desc;
+
+                cmd.ExecuteNonQuery( );
+            }
+        }
+
+        public string proc_HMB_GET_LOCAL_OPTION( string option, string channel )
+        {
+
+            MySqlCommand cmd = new MySqlCommand( );
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "HMB_GET_LOCAL_OPTION";
+
+            cmd.Parameters.AddWithValue( "@optionName", option );
+            cmd.Parameters[ "@optionName" ].Direction = ParameterDirection.Input;
+
+            cmd.Parameters.AddWithValue( "@channel", channel );
+            cmd.Parameters[ "@channel" ].Direction = ParameterDirection.Input;
+
+            cmd.Parameters.AddWithValue( "@optionValue", MySqlDbType.VarChar );
+            cmd.Parameters[ "@optionValue" ].Direction = ParameterDirection.Output;
+            lock( this )
+            {
+                cmd.ExecuteNonQuery( );
+            }
+            return (string)cmd.Parameters[ "@optionValue" ].Value;
+
+        }
+
+
+        /// <summary>
+        /// Class encapsulating a SELECT statement
+        /// </summary>
+        public class Select
+        {
+            private bool shallIEscapeSelects = true;
+
+            private string[ ] fields;
+            private string from;
+            private LinkedList<Join> joins = new LinkedList<Join>( );
+            private LinkedList<WhereConds> wheres;
+            private LinkedList<string> groups;
+            private LinkedList<Order> orders;
+            private LinkedList<WhereConds> havings;
+            private int limit;
+            private int offset;
+
+            public Select( params string[ ] fields )
+            {
+                this.fields = fields;
+                from = string.Empty;
+                limit = offset = 0;
+                joins = new LinkedList<Join>( );
+                wheres = new LinkedList<WhereConds>( );
+                groups = new LinkedList<string>( );
+                orders = new LinkedList<Order>( );
+                havings = new LinkedList<WhereConds>( );
+            }
+
+            public void escapeSelects( bool escape )
+            {
+                this.shallIEscapeSelects = escape;
+            }
+
+            public void setFrom( string from )
+            {
+                this.from = from;
+            }
+
+            public void addJoin( string table, JoinTypes joinType, WhereConds conditions )
+            {
+                joins.AddLast( new Join( joinType, table, conditions ) );
+            }
+
+            public void addWhere( WhereConds conditions )
+            {
+                wheres.AddLast( conditions );
+            }
+
+            public void addGroup( string field )
+            {
+                groups.AddLast( field );
+            }
+
+            public void addOrder( Order order )
+            {
+                orders.AddLast( order );
+            }
+
+            public void addHaving( WhereConds conditions )
+            {
+                havings.AddLast( conditions );
+            }
+
+            public void addLimit( int limit, int offset )
+            {
+                this.limit = limit;
+                this.offset = offset;
+            }
+
+            public override string ToString( )
+            {
+                string query = "SELECT ";
+                bool firstField = true;
+                foreach( string  f in fields )
+                {
+                    if( !firstField )
+                        query += ", ";
+
+                    string fok = MySqlHelper.EscapeString(f);
+                    if( ! shallIEscapeSelects )
+                        fok = f;
+
+                    firstField = false;
+
+                    query += fok;
+                }
+
+                if( from != string.Empty )
+                {
+                    query += " FROM " + "`" + MySqlHelper.EscapeString( from ) + "`";
+                }
+
+                if( joins.Count != 0 )
+                {
+
+                    foreach( Join item in joins )
+                    {
+                        switch( item.joinType )
+                        {
+                            case JoinTypes.INNER:
+                                query += " INNER JOIN ";
+                                break;
+                            case JoinTypes.LEFT:
+                                query += " LEFT OUTER JOIN ";
+                                break;
+                            case JoinTypes.RIGHT:
+                                query += " RIGHT OUTER JOIN ";
+                                break;
+                            case JoinTypes.FULLOUTER:
+                                query += " FULL OUTER JOIN ";
+                                break;
+                            default:
+                                break;
+                        }
+
+                        query += "`" + MySqlHelper.EscapeString(item.table) + "`";
+
+                        query += " ON " + item.joinConditions.ToString( );
+                    }
+                }
+
+                if( wheres.Count > 0 )
+                {
+                    query += " WHERE ";
+
+                    bool first = true;
+
+                    foreach( WhereConds w in wheres )
+                    {
+                        if( !first )
+                            query += " AND ";
+                        first = false;
+                        query += w.ToString( );
+                    }
+
+                }
+                if( groups.Count != 0 )
+                {
+                    query += " GROUP BY ";
+                    bool first = true;
+                    foreach( string group in groups )
+                    {
+                        if( !first )
+                            query += ", ";
+                        first = false;
+                        query += MySqlHelper.EscapeString(group);
+                    }
+                }
+                if( orders.Count > 0 )
+                {
+                    query += " ORDER BY ";
+
+                    bool first = true;
+                    foreach( Order order in orders )
+                    {
+                        if( !first )
+                            query += ", ";
+                        first = false;
+                        query += order.ToString( );
+                    }
+
+                }
+                if( havings.Count > 0 )
+                {
+                    query += " HAVING ";
+
+                    bool first = true;
+
+                    foreach( WhereConds w in havings )
+                    {
+                        if( !first )
+                            query += " AND ";
+                        first = false;
+                        query += w.ToString( );
+                    }
+
+                }
+
+                if( limit != 0 )
+                    query += " LIMIT " + limit;
+
+                if( offset != 0 )
+                    query += " OFFSET " + offset;
+
+                query += ";";
+                return query;
+            }
+
+            public struct Order
+            {
+                public Order( string column, bool asc )
+                {
+                    this.column = column;
+                    this.asc = asc;
+                    escape = true;
+                }
+
+                public Order( string column, bool asc, bool escape )
+                {
+                    this.column = column;
+                    this.asc = asc;
+                    this.escape = escape;
+                }
+
+                private string column;
+                private bool asc;
+                private bool escape;
+
+                public override string ToString( )
+                {
+                    return "`" + ( escape ? MySqlHelper.EscapeString( column ) : column ) + "` " + ( asc ? "ASC" : "DESC" );
+                }
+            }
+
+            private struct Join
+            {
+                public JoinTypes joinType;
+                public string table;
+                public WhereConds joinConditions;
+                public Join( JoinTypes type, string table, WhereConds conditions)
+                {
+                    this.joinType = type;
+                    this.table = table;
+                    this.joinConditions = conditions;
+                }
+            }
+
+            public enum JoinTypes
+            {
+                INNER,
+                LEFT,
+                RIGHT,
+                FULLOUTER
+            }
+        }
+        public struct WhereConds
+        {
+            bool quoteA, quoteB;
+            string a, b, comparer;
+            public WhereConds( bool aNeedsQuoting, string a, string comparer, bool bNeedsQuoting, string b )
+            {
+                this.quoteA = aNeedsQuoting;
+                this.quoteB = bNeedsQuoting;
+                this.a = a;
+                this.b = b;
+                this.comparer = comparer;
+            }
+            public WhereConds( string column, string value )
+            {
+                this.quoteA = false;
+                this.quoteB = true;
+                this.a = column;
+                this.b = value;
+                this.comparer = "=";
+            }
+            public WhereConds( string column, int value )
+            {
+                this.quoteA = false;
+                this.quoteB = true;
+                this.a = column;
+                this.b = value.ToString();
+                this.comparer = "=";
+            }
+            public override string ToString( )
+            {
+                string actualA = ( quoteA ? "\"" : "" ) + MySqlHelper.EscapeString( a ) + ( quoteA ? "\"" : "" );
+                string actualB = ( quoteB ? "\"" : "" ) + MySqlHelper.EscapeString( b ) + ( quoteB ? "\"" : "" );
+                string actualComp = MySqlHelper.EscapeString( comparer );
+                return actualA + " " + actualComp + " " + actualB;
+            }
+        }
+
+        private string sanitise( string rawData )
+        {
+            return MySqlHelper.EscapeString( rawData );
+        }
+
     }
 }

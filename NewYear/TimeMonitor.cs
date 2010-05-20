@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using MySql.Data.MySqlClient;
 using helpmebot6.Threading;
+using System.Collections;
 namespace helpmebot6.NewYear
 {
     class TimeMonitor : IThreadedSystem
@@ -30,23 +31,23 @@ namespace helpmebot6.NewYear
             monitorThread = new Thread( new ThreadStart( monitorThreadMethod ) );
 
             timezoneList = new Dictionary<DateTime, string>( );
-            string tzQuery = "SELECT tz_places as Places, ADDDATE(ADDDATE(\"" + targetDate + "\", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE) as UtcDate FROM timezones t ORDER BY ADDDATE(ADDDATE(\"" + targetDate + "\", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE) DESC;";
 
-            MySqlDataReader dr = DAL.Singleton( ).ExecuteReaderQuery( tzQuery );
+            DAL.Select q = new DAL.Select(
+                "tz_places",
+                "ADDDATE(ADDDATE(\"" + MySqlHelper.EscapeString( targetDate ) + "\", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE)"
+                );
+            q.setFrom( "timezones" );
+            q.escapeSelects( false );
+            q.addOrder( new DAL.Select.Order( "ADDDATE(ADDDATE(\"" + MySqlHelper.EscapeString( targetDate ) + "\", INTERVAL -tz_offset_hours HOUR), INTERVAL -tz_offset_minutes MINUTE)", false, false ) );
+            
+            ArrayList al = DAL.Singleton().executeSelect(q);
 
-            while( dr.Read( ) )
+            foreach (object[] row in al)
             {
-                object[ ] vals = new object[ 2 ];
-
-                dr.GetValues( vals );
-
-                System.Text.ASCIIEncoding.ASCII.GetChars( (byte[ ])vals[ 1 ] );
 
 
-                timezoneList.Add( ( DateTime.Parse( new String( System.Text.ASCIIEncoding.ASCII.GetChars( (byte[ ])vals[ 1 ] ) ) ) ), vals[ 0 ].ToString( ) );
+                timezoneList.Add( ( DateTime.Parse( new String( ASCIIEncoding.UTF8.GetChars( ( (byte[ ])( (object[ ])row )[ 1 ] ) ) ) ) ), (string)( row[ 0 ] ) );
             }
-            dr.Close( );
-
 
             RegisterInstance( );
             monitorThread.Start( );
@@ -79,10 +80,16 @@ namespace helpmebot6.NewYear
 
         private void sendNewYearMessage( string places )
         {
-            string[ ] select = { "channel_name" };
-            string[ ] wc = { "channel_enabled = 1"};
+            string[ ] select = {  };
+            string[ ] wc = { };
 
-            foreach( object[] res in DAL.Singleton( ).Select( select, "channel", null, wc, null, null, null, 0, 0 ) )
+            DAL.Select q = new DAL.Select( "channel_name" );
+            q.setFrom( "channel" );
+            q.addWhere( new DAL.WhereConds( "channel_enabled", "1" ) );
+
+
+            foreach( object[ ] res in DAL.Singleton( ).executeSelect(q) )
+                
             {
                 string channel = res[ 0 ].ToString( );
                 if( Configuration.Singleton( ).retrieveLocalStringOption( "newYearDateAlerting", channel ) == "true" )

@@ -102,7 +102,12 @@ namespace helpmebot6
             if( success )
             {
                 string iwprefix = link.Split( ':' )[ 0 ];
-                string url = DAL.Singleton( ).ExecuteScalarQuery( "select iw_url from interwikis where iw_prefix = \"" + iwprefix + "\";" );
+
+                DAL.Select q = new DAL.Select( "iw_url" );
+                q.setFrom( "interwikis" );
+                q.addWhere( new DAL.WhereConds( "iw_prefix", iwprefix ) );
+                string url = DAL.Singleton( ).executeScalarSelect( q );
+
                 if( url == string.Empty )
                 {
                     url = Configuration.Singleton( ).retrieveLocalStringOption( ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination );

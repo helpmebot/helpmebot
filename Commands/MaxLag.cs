@@ -28,8 +28,11 @@ namespace helpmebot6.Commands
             // look up site id
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
             // get api
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
 
             System.Xml.XmlTextReader mlreader = new System.Xml.XmlTextReader( HttpRequest.get( api+ "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml" ));
             do

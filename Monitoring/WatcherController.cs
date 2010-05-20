@@ -16,11 +16,12 @@ namespace helpmebot6.Monitoring
         protected WatcherController( )
         {
             watchers = new Dictionary<string , CategoryWatcher>( );
-            string[] cols = {"watcher_category", "watcher_keyword", "watcher_sleeptime"};
-            DAL.order[ ] o = new DAL.order[ 1 ];
-            o[ 0 ].asc = true;
-            o[ 0 ].column = "watcher_priority";
-            ArrayList watchersInDb = DAL.Singleton( ).Select( cols , "watcher" , null ,null , null , o , null , 100 , 0 );
+
+            DAL.Select q = new DAL.Select( "watcher_category", "watcher_keyword", "watcher_sleeptime" );
+            q.addOrder( new DAL.Select.Order( "watcher_priority", true ) );
+            q.setFrom( "watcher" );
+            q.addLimit( 100, 0 );
+            ArrayList watchersInDb = DAL.Singleton( ).executeSelect( q );
             foreach( object[] item in watchersInDb )
             {
                 watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] , int.Parse( ( (UInt32)item[ 2 ] ).ToString( ) ) ) );
@@ -61,12 +62,15 @@ namespace helpmebot6.Monitoring
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             int watcherId = getWatcherId( keyword );
 
-            string[ ] wc = { "cw_channel = " + channelId, "cw_watcher = " + watcherId };
-            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatchers", null, wc, null, null, null, 0, 0 );
+            DAL.Select q = new DAL.Select("COUNT(*)");
+            q.setFrom("channelwatchers");
+            q.addWhere(new DAL.WhereConds("cw_channel",channelId));
+            q.addWhere(new DAL.WhereConds("cw_watcher",watcherId));
+            string count = DAL.Singleton( ).executeScalarSelect( q );
 
             if( count == "0" )
             {
-                DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO channelwatchers VALUES ( " + channelId + " , " + watcherId.ToString( ) + " );" );
+                DAL.Singleton( ).Insert( "channelwatchers", channelId, watcherId.ToString( ) );
                 return true;
             }
             else
@@ -78,7 +82,7 @@ namespace helpmebot6.Monitoring
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             int watcherId = getWatcherId( keyword );
 
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM channelwatchers WHERE cw_channel = " + channelId + " AND cw_watcher = " + watcherId.ToString( ) + " ;" );
+            DAL.Singleton( ).Delete( "channelwatchers", 0, new DAL.WhereConds( "cw_channel", channelId ), new DAL.WhereConds( "cw_watcher", watcherId ) );
         }
 
         public string forceUpdate( string key, string destination )
@@ -98,16 +102,14 @@ namespace helpmebot6.Monitoring
         {
             ArrayList newItems = updateDatabaseTable( items, keyword );
 
-            string[ ] queryCols = { "c.`channel_name`" };
-            DAL.join[ ] queryJoin = new DAL.join[ 2 ];
-            queryJoin[ 0 ].joinType = DAL.joinTypes.INNER;
-            queryJoin[ 0 ].table = "channelwatchers cw";
-            queryJoin[ 0 ].joinConditions = "w.`watcher_id` = cw.`cw_watcher`";
-            queryJoin[ 1 ].joinType = DAL.joinTypes.INNER;
-            queryJoin[ 1 ].table = "channel c";
-            queryJoin[ 1 ].joinConditions = "c.`channel_id` = cw.`cw_channel`";
-            string[ ] queryWhere = { "w.`watcher_keyword` = '"+keyword+"'" };
-            ArrayList channels = DAL.Singleton( ).Select( queryCols , "watcher w" , queryJoin , queryWhere , new string[ 0 ] , null , null , 10 , 0 );
+            DAL.Select q = new DAL.Select( "channel_name" );
+            q.addJoin( "channelwatchers", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "watcher_id", "=", false, "cw_watcher" ) );
+            q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "channel_id", "=", false, "cw_channel" ) );
+            q.setFrom( "watcher" );
+            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
+            q.addLimit( 10, 0 );
+
+            ArrayList channels = DAL.Singleton( ).executeSelect( q );
             foreach( object[ ] item in channels )
             {
                 string message = compileMessage( items, keyword, (string)item[ 0 ], false );
@@ -123,19 +125,26 @@ namespace helpmebot6.Monitoring
             ArrayList newItems = new ArrayList( );
             foreach( string item in items )
             {
-                string[ ] wc = { "item_name = '" + item + "'", "item_keyword = '" + keyword + "'" };
-                if( DAL.Singleton( ).Select( "COUNT(*)", "categoryitems", new DAL.join[ 0 ], wc, null, null, null, 0, 0 ) == "0" )
+                DAL.Select q = new DAL.Select( "COUNT(*)" );
+                q.addWhere( new DAL.WhereConds( "item_name", item ) );
+                q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
+                if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
                 {
-                    DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO categoryitems VALUES( null, '" + item + "', null, '" + keyword + "', 1);" );
+                    DAL.Singleton( ).Insert( "categoryitems", "", item, "", keyword, "1" );
                     newItems.Add( item );
                 }
                 else
                 {
-                    DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 1 WHERE item_name = '" + item + "' AND item_keyword = '" + keyword + "' LIMIT 1;" );
+                    Dictionary<string, string> v = new Dictionary<string, string>( );
+                    v.Add( "item_updateflag", "1" );
+                    DAL.Singleton( ).Update( "categoryitems", v, 1, new DAL.WhereConds( "item_name", item ), new DAL.WhereConds( "item_keyword", keyword ) );
+
                 }
             }
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM categoryitems WHERE item_updateflag = 0 AND item_keyword = '" + keyword + "';" );
-            DAL.Singleton( ).ExecuteNonQuery( "UPDATE categoryitems SET item_updateflag = 0;" );
+            DAL.Singleton( ).Delete( "categoryitems", 0, new DAL.WhereConds( "item_updateflag", 0 ), new DAL.WhereConds( "item_keyword", keyword ) );
+            Dictionary<string, string> val = new Dictionary<string, string>( );
+            val.Add( "item_updateflag", "0" );
+            DAL.Singleton( ).Update( "categoryitems", val, 0 );
             return newItems;
         }
 
@@ -188,8 +197,11 @@ namespace helpmebot6.Monitoring
 
                     if( showWaitTime )
                     {
-                        string[ ] wc = { "item_name = '" + item + "'", "item_keyword = '" + keyword + "'" };
-                        TimeSpan ts = DateTime.Now - DateTime.Parse( DAL.Singleton( ).Select( "item_entrytime", "categoryitems", null, wc, null, null, null, 1, 0 ) );
+                        DAL.Select q = new DAL.Select( "item_entrytime" );
+                        q.addWhere( new DAL.WhereConds( "item_name", item ) );
+                        q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
+                        q.setFrom( "categoryitems" );
+                        TimeSpan ts = DateTime.Now - DateTime.Parse( DAL.Singleton( ).executeScalarSelect( q ) );
                         string[ ] messageparams = { ts.Hours.ToString( ).PadLeft( 2, '0' ), ts.Minutes.ToString( ).PadLeft( 2, '0' ), ts.Seconds.ToString( ).PadLeft( 2, '0' ) };
                         listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
                     }
@@ -234,7 +246,9 @@ namespace helpmebot6.Monitoring
         private ArrayList removeBlacklistedItems( ArrayList pageList )
         {
             string[ ] cols = { "ip_title" };
-            ArrayList blacklist = DAL.Singleton( ).Select( cols , "ignoredpages" , null , null , null , null , null , 0 , 0 );
+            DAL.Select q = new DAL.Select( "ip_title" );
+            q.setFrom( "ignoredpages" );
+            ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
 
             foreach( object[] item in blacklist )
             {
@@ -258,7 +272,9 @@ namespace helpmebot6.Monitoring
             CategoryWatcher cw = getWatcher( keyword );
             if( cw != null )
             {
-                DAL.Singleton( ).ExecuteNonQuery( "UPDATE watcher SET watcher_sleeptime = " + newDelay + " WHERE watcher_keyword = '" + keyword + "';" );
+                Dictionary<string, string> vals = new Dictionary<string, string>( );
+                vals.Add( "watcher_sleeptime", newDelay.ToString( ) );
+                DAL.Singleton( ).Update( "watcher", vals, 0, new DAL.WhereConds( "watcher_keyword", keyword ) );
                 cw.SleepTime = newDelay;
                 return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
             }
@@ -281,8 +297,10 @@ namespace helpmebot6.Monitoring
 
         private int getWatcherId( string keyword )
         {
-            string[ ] wC = { "w.`watcher_keyword` = '" + keyword + "'" };
-            string watcherIdString = DAL.Singleton( ).Select( "w.`watcher_id`" , "watcher w" , null , wC , null , null , null , 1 , 0 );
+            DAL.Select q = new DAL.Select( "watcher_id" );
+            q.setFrom( "watcher" );
+            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
+            string watcherIdString = DAL.Singleton( ).executeScalarSelect( q );
 
             return int.Parse( watcherIdString );
         }
@@ -290,17 +308,14 @@ namespace helpmebot6.Monitoring
 
         public bool isWatcherInChannel( string channel, string keyword )
         {
-            DAL.join[ ] j = new DAL.join[ 2 ];
-            j[ 0 ].table = "channel";
-            j[ 0 ].joinType = DAL.joinTypes.INNER;
-            j[ 0 ].joinConditions = "cw_channel = channel_id";
-            j[ 1 ].joinConditions = "cw_watcher = watcher_id";
-            j[ 1 ].joinType = DAL.joinTypes.INNER;
-            j[ 1 ].table = "watcher";
-            string[ ] w = new string[ 2 ];
-            w[ 0 ] = "channel_name = \"" + channel + "\"";
-            w[ 1 ] = "watcher_keyword = \"" + keyword + "\"";
-            string count = DAL.Singleton( ).Select( "COUNT(*)", "channelwatchers", j, w, null, null, null, 0, 0 );
+            DAL.Select q =new DAL.Select("COUNT(*)");
+            q.setFrom("channelwatchers");
+            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
+            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
+            q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "cw_channel", "=", false, "channel_id" ) );
+            q.addJoin( "watcher", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "cw_watcher", "=", false, "watcher_id" ) );
+
+            string count = DAL.Singleton( ).executeScalarSelect( q );
             if( count == "0" )
                 return false;
             else

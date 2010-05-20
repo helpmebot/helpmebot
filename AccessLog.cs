@@ -19,7 +19,7 @@ namespace helpmebot6
 
         public void Save( AccessLogEntry logEntry )
         {
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO accesslog VALUES (null, '" + logEntry.al_user.ToString( ) + "', '" + logEntry.al_user.AccessLevel.ToString( ) + "', '" + logEntry.al_reqaccesslevel.ToString( ) + "', null, '" + logEntry.al_class.ToString( ) + "', " + ( logEntry.al_allowed ? 1 : 0 ) + ");" );
+            DAL.Singleton( ).Insert("accesslog","", logEntry.al_user.ToString( ) , logEntry.al_user.AccessLevel.ToString( ) ,logEntry.al_reqaccesslevel.ToString( ), "", logEntry.al_class.ToString( ) , ( logEntry.al_allowed ? "1" : "0" )  );
         }
 
         public struct AccessLogEntry

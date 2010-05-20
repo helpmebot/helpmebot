@@ -20,7 +20,7 @@ namespace helpmebot6.Commands
             {
                 switch( args[0].ToLower() )
                 {
-                    case "add":
+                    case "addOrder":
                         if( args.Length > 2 )
                         {
                             User.userRights aL = User.userRights.Normal;
@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
                         crh = delAccessEntry( int.Parse( args[ 1 ] ) );
                         break;
                 }
-                // add <source> <level>
+                // addOrder <source> <level>
 
                 // del <id>
             }
@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
             
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             Logger.Instance( ).addToLog( "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( ) , Logger.LogTypes.COMMAND );
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `user` VALUES(NULL, '" + newEntry.Nickname + "', '" + newEntry.Username + "', '" + newEntry.Hostname + "', '" + AccessLevel.ToString( ) + "');" );
+            DAL.Singleton( ).Insert( "user", "", newEntry.Nickname, newEntry.Username, newEntry.Hostname, AccessLevel.ToString( ) );
 
             return new CommandResponseHandler( message );
         }
@@ -81,7 +81,7 @@ namespace helpmebot6.Commands
             string message = Configuration.Singleton( ).GetMessage( "removeAccessEntry", messageParams );
 
             Logger.Instance( ).addToLog( "Removing access entry #" + id.ToString( ) , Logger.LogTypes.COMMAND );
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM `user` WHERE `user_id` = " + id.ToString( ) + " LIMIT 1;" );
+            DAL.Singleton( ).Delete( "user", 1, new DAL.WhereConds( "user_id", id.ToString( ) ) );
 
             return new CommandResponseHandler( message );
         }

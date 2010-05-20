@@ -106,14 +106,7 @@ namespace helpmebot6
 
         public string retrieveLocalStringOption (string optionName, string channel)
         {
-            string qry = "SELECT `cc_value` AS 'value' FROM `channelconfig` INNER JOIN `configuration` ON `cc_config` = " +
-            "`configuration_id` INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '" + channel + "' " +
-            "AND `configuration_name` = '" + optionName + "' UNION SELECT `configuration_value` AS 'value' FROM " +
-            "`configuration` WHERE `configuration_name` = '" + optionName + "' LIMIT 1;";
-
-            string option = DAL.Singleton( ).ExecuteScalarQuery( qry );
-            return option;
-            
+            return dbal.proc_HMB_GET_LOCAL_OPTION( optionName, channel );
         }
 
         private string retrieveOptionFromDatabase( string optionName )
@@ -121,51 +114,65 @@ namespace helpmebot6
             string result = "";
             try
             {
-                string[] whereclause = {"configuration_name = \""+optionName+"\""};
-                result = dbal.Select( "configuration_value" , "configuration" , new DAL.join[ 0 ] , whereclause , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
-                //result = dbal.ExecuteScalarQuery( "SELECT c.`configuration_value` FROM configuration c WHERE c.`configuration_name` = \"" + optionName + "\" LIMIT 1;" );
-                if ( result == null )
+                DAL.Select q = new DAL.Select( "configuration_value" );
+                q.setFrom( "configuration" );
+                q.addLimit( 1, 0 );
+                q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
+
+                result = dbal.executeScalarSelect( q );
+                if( result == null )
                 {
                     result = "";
                 }
                 return result;
             }
-            catch ( Exception ex )
+            catch( Exception ex )
             {
-                GlobalFunctions.ErrorLog( ex  );
+                GlobalFunctions.ErrorLog( ex );
             }
             return null;
         }
 
         public void setGlobalOption( string optionName , string newValue )
         {
-            dbal.ExecuteNonQuery( "UPDATE `configuration` SET `configuration_value` = '" + newValue + "' WHERE `configuration`.`configuration_name` = '" + optionName + "' LIMIT 1;" );
+            Dictionary<string, string> vals = new Dictionary<string, string>( );
+            vals.Add( "configuration_value", newValue );
+            dbal.Update( "configuration", vals, 1, new DAL.WhereConds( "configuration_name", optionName ) );
         }
-        public void setLocalOption( string optionName , string channel , string newValue )
+        public void setLocalOption( string optionName, string channel, string newValue )
         {
             // convert channel to ID
-            string[] wc = {"channel_name = '" + channel + "'"};
-            string channelId = dbal.Select( "channel_id" , "channel" , null , wc , null , null , null , 1 , 0 );
-            string[ ] wc2 = {"configuration_name = '" + optionName + "'" };
-            string configId = dbal.Select( "configuration_id" , "configuration" , null , wc2 , null , null , null , 1 , 0 );
+            DAL.Select q = new DAL.Select( "channel_id" );
+            q.setFrom( "channel" );
+            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
+
+            string channelId = dbal.executeScalarSelect( q );
+            q = new DAL.Select( "configuration_id" );
+            q.setFrom( "configuration" );
+            q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
+
+            string configId = dbal.executeScalarSelect( q );
 
             // does setting exist in local table?
-           //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
+            //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
 
-            string[ ] wc3 = { "`cc_channel` = '" + channelId + "'" , "`cc_config` = '" + configId + "'" };
-            string count = dbal.Select( "COUNT(*)" , "channelconfig" , null , wc3 , null , null , null , 1 , 0 );
+            q = new DAL.Select( "COUNT(*)" );
+            q.setFrom( "channelconfig" );
+            q.addWhere( new DAL.WhereConds( "cc_channel", channelId ) );
+            q.addWhere( new DAL.WhereConds( "cc_config", configId ) );
+            string count = dbal.executeScalarSelect( q );
 
             if( count == "1" )
             {
                 //yes: update
-                string qry = "UPDATE `channelconfig` SET `cc_value` = '" + newValue + "' WHERE `channelconfig`.`cc_channel` =" + channelId + " AND `channelconfig`.`cc_config` =" + configId + " LIMIT 1 ;";
-                dbal.ExecuteNonQuery( qry );
+                Dictionary<string, string> vals = new Dictionary<string, string>( );
+                vals.Add( "cc_value", newValue );
+                dbal.Update( "channelconfig", vals, 1, new DAL.WhereConds( "cc_channel", channelId ), new DAL.WhereConds( "cc_config", configId ) );
             }
             else
             {
                 // no: insert
-                string qry = "INSERT INTO `channelconfig` (`cc_channel`, `cc_config`, `cc_value`) VALUES ('" + channelId + "', '" + configId + "', '" + newValue + "');";
-                dbal.ExecuteNonQuery( qry );
+                dbal.Insert( "channelconfig", channelId, configId, newValue );
             }
         }
 
@@ -183,25 +190,25 @@ namespace helpmebot6
 
         public void deleteLocalOption( string optionName , string target )
         {
-            DAL.Singleton( ).ExecuteNonQuery( "DELETE FROM channelconfig WHERE cc_config = " + getOptionId( optionName ) + " AND cc_channel = " + getChannelId( target ) + " LIMIT 1;" );
+            dbal.Delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ), new DAL.WhereConds( "cc_channel", getChannelId( target ) ) );
         }
 
         private string getOptionId( string optionName )
         {
-            //SELECT c.`configuration_id` FROM configuration c
-            //WHERE c.`configuration_name` = "ircNetwork";
+            DAL.Select q = new DAL.Select( "configuration_id" );
+            q.setFrom( "configuration" );
+            q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
 
-            string[ ] wC = { "c.`configuration_name` = '" + optionName + "'" };
-            return DAL.Singleton( ).Select( "c.`configuration_id`" , "configuration c" , null , wC, null , null , null , 1 , 0 );
+            return dbal.executeScalarSelect( q );
         }
 
         public string getChannelId( string channel )
         {
-            //SELECT c.`channel_id` FROM channel c
-            //WHERE c.`channel_name` = "##stwalkerster";
+            DAL.Select q = new DAL.Select( "channel_id" );
+            q.setFrom( "channel" );
+            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
 
-            string[ ] wC = { "c.`channel_name` = '"+channel+"'" };
-            return DAL.Singleton( ).Select( "c.`channel_id`" , "channel c" , null , wC , null , null , null , 1 , 0 );
+            return dbal.executeScalarSelect( q );
         }
 
         public static void readHmbotConfigFile( string filename, 
@@ -222,21 +229,19 @@ namespace helpmebot6
 
         private ArrayList getMessages( string messageName )
         {
-            MySql.Data.MySqlClient.MySqlDataReader dr =  dbal.ExecuteReaderQuery( "SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
+            //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
 
-            System.Collections.ArrayList al = new System.Collections.ArrayList( );
+            DAL.Select q = new DAL.Select( "message_text" );
+            q.setFrom( "message" );
+            q.addWhere( new DAL.WhereConds( "message_name", messageName ) );
+            
+            ArrayList resultset = dbal.executeSelect( q );
 
-            if( dr != null )
+            ArrayList al = new ArrayList( );
+
+            foreach( object[] item in resultset )
             {
-                while( dr.Read( ) )
-                {
-                    al.Add( dr.GetString( 0 ) );
-                }
-                dr.Close( );
-            }
-            else
-            {
-                GlobalFunctions.ErrorLog( new System.IO.InvalidDataException( )  );
+                al.Add( (string)( item )[ 0 ] );
             }
             return al;
         }
@@ -292,7 +297,7 @@ namespace helpmebot6
 
         public void SaveMessage( string messageName , string messageDescription , string messageContent )
         {
-            DAL.Singleton( ).ExecuteNonQuery( "INSERT INTO `message` VALUES ( NULL, \"" + messageName + "\", \"" + messageDescription + "\", \"" + messageContent + "\" , 1);" );
+            dbal.Insert( "message", "", messageName, messageDescription, messageContent, "1" );
         }
         #endregion
     }

@@ -192,9 +192,14 @@ namespace helpmebot6
 
             DAL db = DAL.Singleton( );
 
-            string[ ] selects = { "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log", "in_nickserv" };
             string[ ] wheres = { "in_id = " + ircNetwork };
-            ArrayList configSettings = db.Select( selects , "ircnetwork" , new DAL.join[ 0 ] , wheres , new string[ 0 ] , new DAL.order[ 0 ] , new string[ 0 ] , 1 , 0 );
+
+            DAL.Select q = new DAL.Select( "in_host", "in_port", "in_nickname", "in_password", "in_username", "in_realname", "in_log", "in_nickserv" );
+            q.setFrom( "ircnetwork" );
+            q.addLimit( 1, 0 );
+            q.addWhere( new DAL.WhereConds( "in_id", ircNetwork.ToString() ) );
+
+            ArrayList configSettings = db.executeSelect( q );
 
             _ircServer = (string)(((object[])configSettings[ 0 ])[ 0 ]);
             _ircPort = (uint)( (object[ ])configSettings[ 0 ] )[ 1 ];

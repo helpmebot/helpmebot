@@ -57,9 +57,11 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException( );
             }
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
-       
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
 
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
 
             string returnStr = "";
             string rightsList;

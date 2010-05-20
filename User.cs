@@ -142,11 +142,14 @@ namespace helpmebot6
                 {
                     if ( _retrieved_accessLevel == false )
                     {
-                        string[] whereconds = {"'" + _nickname + "' LIKE user_nickname", "'" + _username + "' LIKE user_username","'" + _hostname + "' LIKE user_hostname" };
-                        DAL.order[] ob = { new DAL.order() };
-                        ob[0].asc=true;
-                        ob[0].column = "user_accesslevel";
-                        string accesslevel = db.Select("user_accesslevel","user",new DAL.join[0],whereconds,new string[0],ob,new string[0],1,0).ToString( );
+                        DAL.Select q=new DAL.Select("user_accesslevel");
+                        q.addWhere(new DAL.WhereConds(true,_nickname,"LIKE",false,"user_nickname"));
+                        q.addWhere(new DAL.WhereConds(true,_username,"LIKE",false,"user_username"));
+                        q.addWhere(new DAL.WhereConds(true,_hostname,"LIKE",false,"user_hostname"));
+                        q.addOrder(new DAL.Select.Order("user_accesslevel",true));
+                        q.setFrom("user");
+
+                        string accesslevel = db.executeScalarSelect( q );
                         if ( accesslevel == null )
                         {
                             accesslevel = "Normal";

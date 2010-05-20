@@ -104,7 +104,11 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
             
             // get api
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
+
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
@@ -118,7 +122,10 @@ namespace helpmebot6.Commands
             mainpagename = mainpagename.Replace( " " , "_" );
            
             // get mainpage url from site table
-            string mainpageurl = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            q = new DAL.Select( "site_mainpage" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string mainpageurl = DAL.Singleton( ).executeScalarSelect( q );
 
             // replace mainpage in mainpage url with user:<username>
 
@@ -136,7 +143,10 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             // get api
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
@@ -150,7 +160,10 @@ namespace helpmebot6.Commands
             mainpagename = mainpagename.Replace( " " , "_" );
 
             // get mainpage url from site table
-            string mainpageurl = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            q = new DAL.Select( "site_mainpage" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string mainpageurl = DAL.Singleton( ).executeScalarSelect( q );
 
             // replace mainpage in mainpage url with user:<username>
 
@@ -168,7 +181,10 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
 
             // get api
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
@@ -182,7 +198,10 @@ namespace helpmebot6.Commands
             mainpagename = mainpagename.Replace( " " , "_" );
 
             // get mainpage url from site table
-            string mainpageurl = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            q = new DAL.Select( "site_mainpage" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string mainpageurl = DAL.Singleton( ).executeScalarSelect( q );
 
             // replace mainpage in mainpage url with user:<username>
 
@@ -200,7 +219,10 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki",channel );
 
             // get api
-            string api = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_api` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            DAL.Select q = new DAL.Select( "site_api" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string api = DAL.Singleton( ).executeScalarSelect( q );
 
             // api-> get mainpage name (Mediawiki:mainpage)
             string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
@@ -214,7 +236,10 @@ namespace helpmebot6.Commands
             mainpagename = mainpagename.Replace( " " , "_" );
 
             // get mainpage url from site table
-            string mainpageurl = DAL.Singleton( ).ExecuteScalarQuery( "SELECT `site_mainpage` FROM `site` WHERE `site_id` = " + baseWiki + ";" );
+            q = new DAL.Select( "site_mainpage" );
+            q.setFrom( "site" );
+            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
+            string mainpageurl = DAL.Singleton( ).executeScalarSelect( q );
 
             // replace mainpage in mainpage url with user:<username>
 

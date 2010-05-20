@@ -11,14 +11,18 @@ namespace helpmebot6.Monitoring.PageWatcher
         private static PageWatcherController _instance;
         protected PageWatcherController( )
         {
+            
             watchedPageList = new ArrayList( );
-            LoadAllWatchedPages( );
-            uint wikiRCIrc = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
-            if( wikiRCIrc != 0 )
+            if( Helpmebot6.pagewatcherEnabled )
             {
-                irc = new IAL(wikiRCIrc );
-                SetupEvents( );
-                irc.Connect( );
+                LoadAllWatchedPages( );
+                uint wikiRCIrc = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
+                if( wikiRCIrc != 0 )
+                {
+                    irc = new IAL( wikiRCIrc );
+                    SetupEvents( );
+                    irc.Connect( );
+                }
             }
             
         }
@@ -65,8 +69,9 @@ namespace helpmebot6.Monitoring.PageWatcher
         public void LoadAllWatchedPages( )
         {
             watchedPageList.Clear( );
-            string[ ] sCols = { "pw_title" };
-            ArrayList pL = DAL.Singleton( ).Select( sCols , "watchedpages" , null , null , null , null , null , 0 , 0 );
+            DAL.Select q = new DAL.Select( "pw_title" );
+            q.setFrom( "watchedpages" );
+            ArrayList pL = DAL.Singleton( ).executeSelect( q );
             foreach( object[] item in pL )
             {
                 watchedPageList.Add( (string)item[ 0 ] );
@@ -93,16 +98,15 @@ namespace helpmebot6.Monitoring.PageWatcher
         private void irc_ConnectionRegistrationSucceededEvent( )
         {
             uint network = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
-            MySql.Data.MySqlClient.MySqlDataReader dr = DAL.Singleton().ExecuteReaderQuery( "SELECT `channel_name` FROM `channel` WHERE `channel_enabled` = 1 AND `channel_network` = '"+network.ToString()+"';" );
-            if( dr != null )
+
+            DAL.Select q = new DAL.Select( "channel_name" );
+            q.setFrom( "channel" );
+            q.addWhere( new DAL.WhereConds( "channel_enabled", 1 ) );
+            q.addWhere( new DAL.WhereConds( "channel_network", network.ToString( ) ) );
+            foreach( object[] item in DAL.Singleton( ).executeSelect( q ) )
             {
-                while( dr.Read( ) )
-                {
-                    object[ ] channel = new object[ 1 ];
-                    dr.GetValues( channel );
-                    irc.IrcJoin( channel[ 0 ].ToString( ) );
-                }
-                dr.Close( );
+                irc.IrcJoin( (string)( item[0] ) );
+
             }
         }
 
@@ -145,16 +149,16 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void watchPage( string pageName )
         {
-            // add to database
-            DAL.Singleton( ).ExecuteNonQuery( "insert into watchedpages values (null, \"" + pageName + "\");" );
-            // add to arraylist
+            // addOrder to database
+            DAL.Singleton( ).Insert( "watchedpages", "", pageName );
+            // addOrder to arraylist
             watchedPageList.Add( pageName );
         }
 
         public void unwatchPage( string pageName )
         {
             //remove from database
-            DAL.Singleton( ).ExecuteNonQuery( "delete from watchedpages where pw_title = \"" + pageName + "\";" );
+            DAL.Singleton( ).Delete( "watchedpages", 0, new DAL.WhereConds( "pw_title", pageName ) );
             // remove from arraylist
             watchedPageList.Remove( pageName );
         }

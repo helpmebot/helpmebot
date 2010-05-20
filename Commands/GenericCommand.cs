@@ -12,8 +12,13 @@ namespace helpmebot6.Commands
             get
             {
                 string command = this.GetType( ).ToString( );
-                string[ ] wc = { "typename = \"" + command + "\"" };
-                string al = DAL.Singleton( ).Select( "accesslevel", "command", null, wc, null, null, null, 1, 0 );
+
+                DAL.Select q = new DAL.Select( "accesslevel" );
+                q.setFrom("command");
+                q.addLimit(1,0);
+                q.addWhere(new DAL.WhereConds("typename", command));
+
+                string al = DAL.Singleton( ).executeScalarSelect( q );
                 try
                 {
                    return (User.userRights)Enum.Parse( typeof( User.userRights ), al, true );

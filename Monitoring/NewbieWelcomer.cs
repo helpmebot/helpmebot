@@ -12,9 +12,10 @@ namespace helpmebot6.Monitoring
         private static NewbieWelcomer _instance;
         protected NewbieWelcomer( )
         {
-            string[ ] select = { "bin_blob" };
-            string[ ] where = { "bin_desc = 'newbie_hostnames'" };
-           System.Collections.ArrayList result = DAL.Singleton( ).Select( select, "binary_store", null, where, null, null, null, 0, 0 );
+            DAL.Select q = new DAL.Select( "bin_blob" );
+            q.setFrom("binary_store");
+            q.addWhere( new DAL.WhereConds( "bin_desc", "newbie_hostnames" ) );
+            System.Collections.ArrayList result = DAL.Singleton( ).executeSelect( q );
  
            byte[ ] list =  ( (byte[ ])( ( (object[ ])( result[ 0 ] ) )[ 0 ] ) );
             
@@ -93,11 +94,7 @@ namespace helpmebot6.Monitoring
 
             byte[ ] buf = ms.GetBuffer( );
 
-            MySql.Data.MySqlClient.MySqlCommand cmd = new MySql.Data.MySqlClient.MySqlCommand( );
-            cmd.CommandText = "UPDATE binary_store SET bin_blob = @raw WHERE bin_desc = 'newbie_hostnames';";
-            cmd.Parameters.Add( "@raw", MySql.Data.MySqlClient.MySqlDbType.Blob ).Value = buf;
-
-            DAL.Singleton( ).ExecuteNonQuery( cmd );
+            DAL.Singleton( ).proc_HMB_UPDATE_BINARYSTORE( buf, "newbie_hostnames" );
         }
     }
 

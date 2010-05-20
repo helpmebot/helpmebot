@@ -9,23 +9,28 @@ namespace helpmebot6.Commands
     /// </summary>
     class Join : GenericCommand
     {
-        public Join( )
-        {
-
-        }
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
-            string[ ] whereParams = { "channel_name = '" + args[ 0 ] + "'" };
-            string count = DAL.Singleton( ).Select( "count(*)" , "channel" , null , whereParams , null , null , null , 3 , 0 );
+            DAL.Select q = new DAL.Select(  "count(*)");
+            q.addWhere( new DAL.WhereConds( "channel_name", args[ 0 ] ) );
+            q.setFrom("channel");
+
+            string count = DAL.Singleton( ).executeScalarSelect( q );
+
+
             if( count == "1" )
             { // entry exists
-                DAL.Singleton( ).ExecuteNonQuery( "update channel set channel_enabled = 1 where channel_name = \"" + args[ 0 ] + "\" limit 1;" );
+
+                Dictionary<string, string> vals = new Dictionary<string, string>( );
+                vals.Add( "channel_enabled", "1" );
+                DAL.Singleton( ).Update( "channel", vals, 1, new DAL.WhereConds( "channel_name", args[ 0 ] ) );
+
                 Helpmebot6.irc.IrcJoin( args[ 0 ] );
             }
             else
             {
-                DAL.Singleton( ).ExecuteNonQuery( "insert into channel values ( null, \"" + args[ 0 ] + "\", \"\", 1,1);" );
+                DAL.Singleton( ).Insert( "channel", "", args[ 0 ], "", "1", "1" );
                 Helpmebot6.irc.IrcJoin( args[ 0 ] );
             }
             return null;
