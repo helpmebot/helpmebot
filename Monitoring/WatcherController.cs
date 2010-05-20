@@ -115,7 +115,8 @@ namespace helpmebot6.Monitoring
                 Helpmebot6.irc.IrcPrivmsg( (string)item[ 0 ] , message );
             }
 
-            Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<", false ) );
+            if( newItems.Count > 0 )
+                Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<", false ) );
 
         }
 
@@ -165,6 +166,11 @@ namespace helpmebot6.Monitoring
                 fakedestination = destination;
 
             bool showWaitTime = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
+            
+            TimeSpan minimumWaitTime;
+            if( !TimeSpan.TryParse( Configuration.Singleton( ).retrieveLocalStringOption( "minimumWaitTime", destination ), out minimumWaitTime ) )
+                minimumWaitTime = new TimeSpan( 0 );
+
             bool shortenUrls = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "useShortUrlsInsteadOfWikilinks", destination ) == "true" ? true : false ) );
             bool showDelta = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "catWatcherShowDelta", destination ) == "true" ? true : false ) );
 
@@ -176,8 +182,6 @@ namespace helpmebot6.Monitoring
 
             if( forceShowAll )
                 showDelta = false;
-
-            items = removeBlacklistedItems( items );
 
             string message;
 
@@ -201,9 +205,19 @@ namespace helpmebot6.Monitoring
                         q.addWhere( new DAL.WhereConds( "item_name", item ) );
                         q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
                         q.setFrom( "categoryitems" );
-                        TimeSpan ts = DateTime.Now - DateTime.Parse( DAL.Singleton( ).executeScalarSelect( q ) );
-                        string[ ] messageparams = { ts.Hours.ToString( ).PadLeft( 2, '0' ), ts.Minutes.ToString( ).PadLeft( 2, '0' ), ts.Seconds.ToString( ).PadLeft( 2, '0' ) };
-                        listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
+
+                        string insertDate = DAL.Singleton( ).executeScalarSelect( q );
+                        DateTime realInsertDate;
+                        if( !DateTime.TryParse( insertDate, out realInsertDate ) )
+                            realInsertDate = DateTime.Now;
+
+                        TimeSpan ts = DateTime.Now - realInsertDate;
+
+                        if( ts >= minimumWaitTime )
+                        {
+                            string[ ] messageparams = { ts.Hours.ToString( ).PadLeft( 2, '0' ), ts.Minutes.ToString( ).PadLeft( 2, '0' ), ts.Seconds.ToString( ).PadLeft( 2, '0' ) };
+                            listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
+                        }
                     }
 
                     listString += ", ";

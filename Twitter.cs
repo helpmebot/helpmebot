@@ -107,9 +107,15 @@ namespace helpmebot6
                 byte[ ] bytes = encoding.GetBytes( parameters );
                 writeStream.Write( bytes, 0, bytes.Length );
             }
-
-            HttpWebResponse wrsp = (HttpWebResponse)wr.GetResponse( );
-
+            HttpWebResponse wrsp = null;
+            try
+            {
+                wrsp = (HttpWebResponse)wr.GetResponse( );
+            }
+            catch( WebException ex )
+            {
+                wrsp = (HttpWebResponse)ex.Response;
+            }
             return wrsp;
         }
 
