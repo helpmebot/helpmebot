@@ -371,7 +371,9 @@ namespace helpmebot6
             {
                 GlobalFunctions.ErrorLog( ex );
                 Logger.Instance( ).addToLog( option + "@" + channel, Logger.LogTypes.ERROR );
+                throw;
             }
+            
         }
 
 
