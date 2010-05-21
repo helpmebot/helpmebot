@@ -124,6 +124,7 @@
     <Compile Include="Commands\Raw.cs" />
     <Compile Include="Commands\Rawctcp.cs" />
     <Compile Include="Commands\Registration.cs" />
+    <Compile Include="Commands\Resolve.cs" />
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\FunStuff\SayHi.cs" />
     <Compile Include="Commands\Set.cs" />
