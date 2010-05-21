@@ -58,7 +58,7 @@ namespace helpmebot6.Commands
 
         }
 
-        struct GeolocateResult
+        public struct GeolocateResult
         {
            public string Status, CountryCode, Country, RegionCode, Region, City, ZipPostalCode;
            public float Latitude, Longitude;
