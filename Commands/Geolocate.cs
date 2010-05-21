@@ -10,47 +10,48 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
-            GeolocateResult location = getLocation( IPAddress.Parse( args[ 1 ] ) );
+            GeolocateResult location = getLocation( IPAddress.Parse( args[ 0 ] ) );
             string[ ] messageArgs = { location.ToString( ) };
             return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "locationMessage", messageArgs ) );
         }
 
         public static GeolocateResult getLocation( IPAddress ip )
         {
-            XmlTextReader xtr = new XmlTextReader( HttpRequest.get( "http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip.ToString( ) ) );
-
+         System.IO.Stream s =   HttpRequest.get( "http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip.ToString( ) );
+         XmlTextReader xtr = new XmlTextReader( s );
             GeolocateResult result = new GeolocateResult();
 
             while( !xtr.EOF )
             {
+                xtr.Read( );
                 switch( xtr.Name )
                 {
                     case "Status":
-                        result.Status = xtr.ReadContentAsString( );
+                        result.Status = xtr.ReadElementContentAsString( );
                         break;
                     case "CountryCode":
-                        result.CountryCode = xtr.ReadContentAsString( );
+                        result.CountryCode = xtr.ReadElementContentAsString( );
                         break;
                     case "CountryName":
-                        result.Country = xtr.ReadContentAsString( );
+                        result.Country = xtr.ReadElementContentAsString( );
                         break;
                     case "RegionCode":
-                        result.RegionCode = xtr.ReadContentAsString( );
+                        result.RegionCode = xtr.ReadElementContentAsString( );
                         break;
                     case "RegionName":
-                        result.Region = xtr.ReadContentAsString( );
+                        result.Region = xtr.ReadElementContentAsString( );
                         break;
                     case "City":
-                        result.City = xtr.ReadContentAsString( );
+                        result.City = xtr.ReadElementContentAsString( );
                         break;
                     case "ZipPostalCode":
-                        result.ZipPostalCode = xtr.ReadContentAsString( );
+                        result.ZipPostalCode = xtr.ReadElementContentAsString( );
                         break;
                     case "Latitude":
-                        result.Latitude = xtr.ReadContentAsFloat( );
+                        result.Latitude = xtr.ReadElementContentAsFloat( );
                         break;
                     case "Longitude":
-                        result.Longitude = xtr.ReadContentAsFloat( );
+                        result.Longitude = xtr.ReadElementContentAsFloat( );
                         break;
                 }
             }

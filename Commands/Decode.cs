@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
+using System.Net.Sockets;
 
 namespace helpmebot6.Commands
 {
@@ -20,11 +21,27 @@ namespace helpmebot6.Commands
 
             IPAddress ipAddr = new IPAddress( ip );
 
-            IPHostEntry iphe = Dns.GetHostEntry( ipAddr );
+            string hostname = "";
+            try
+            {
+                hostname = Dns.GetHostEntry( ipAddr ).HostName;
+            }
+            catch( SocketException )
+            {
 
-            string[ ] messageargs = { args[ 0 ], ipAddr.ToString( ), iphe.HostName };
+            }
+            if( hostname != string.Empty )
+            {
+                string[ ] messageargs = { args[ 0 ], ipAddr.ToString( ), hostname };
+                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "hexDecodeResult", messageargs ) );
 
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "hexDecodeResult", messageargs ) );
+            }
+            else
+            {
+                string[ ] messageargs = { args[ 0 ], ipAddr.ToString( ) };
+                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "hexDecodeResultNoResolve", messageargs ) );
+
+            }
         }
     }
 }
