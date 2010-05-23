@@ -42,8 +42,6 @@ namespace helpmebot6
 
        static void Main( string[ ] args )
        {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
            // startup arguments
            int configFileArg = GlobalFunctions.prefixIsInArray( "--configfile", args );
            string configFile = ".hmbot";
@@ -70,8 +68,6 @@ namespace helpmebot6
 
        private static void InitialiseBot( string configFile )
        {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
            string server, username, password, schema;
            uint port = 0;
            server = username = password = schema = "";

@@ -7,6 +7,8 @@ namespace helpmebot6
 {
     class Logger
     {
+        private static object lockfile = new object( );
+
         private static Logger _instance;
         protected Logger( )
         {
@@ -14,6 +16,7 @@ namespace helpmebot6
             IRClogger = new StreamWriter( "irc.log" );
             IalLogger = new StreamWriter( "ial.log" );
             ErrorLogger = new StreamWriter( "error.log" );
+
 
             DalLogger.AutoFlush = true;
             IRClogger.AutoFlush = true;
@@ -26,7 +29,7 @@ namespace helpmebot6
             IalLogger.WriteLine( init );
             ErrorLogger.WriteLine( init );
 
-            addToLog( init , LogTypes.GENERAL );
+            addToLog( init, LogTypes.GENERAL );
         }
         public static Logger Instance( )
         {
@@ -34,6 +37,7 @@ namespace helpmebot6
                 _instance = new Logger( );
             return _instance;
         }
+       
 
         private StreamWriter DalLogger;
         private StreamWriter IalLogger;
@@ -92,8 +96,6 @@ namespace helpmebot6
 
         public void addToLog( string message , LogTypes type )
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
             lock( this )
             {
                 Console.ResetColor( );
