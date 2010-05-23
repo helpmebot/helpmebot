@@ -16,6 +16,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( args.Length > 0 )
             {
                 string userName = string.Join( " " , args );
@@ -47,6 +49,8 @@ namespace helpmebot6.Commands
 
         public int getEditCount( string username, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( username == string.Empty )
             {
                 throw new ArgumentNullException( );

@@ -19,6 +19,8 @@ namespace helpmebot6
 
         public void Save( AccessLogEntry logEntry )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Singleton( ).Insert("accesslog","", logEntry.al_user.ToString( ) , logEntry.al_user.AccessLevel.ToString( ) ,logEntry.al_reqaccesslevel.ToString( ), "", logEntry.al_class.ToString( ) , ( logEntry.al_allowed ? "1" : "0" )  );
         }
 
@@ -108,6 +110,8 @@ namespace helpmebot6
 
         public bool doFloodCheck( User source )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return false;
         }
     }

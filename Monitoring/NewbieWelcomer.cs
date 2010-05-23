@@ -12,6 +12,8 @@ namespace helpmebot6.Monitoring
         private static NewbieWelcomer _instance;
         protected NewbieWelcomer( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "bin_blob" );
             q.setFrom("binary_store");
             q.addWhere( new DAL.WhereConds( "bin_desc", "newbie_hostnames" ) );
@@ -43,6 +45,8 @@ namespace helpmebot6.Monitoring
 
         public void execute( User source, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
             {
                 bool match = false;
@@ -67,6 +71,8 @@ namespace helpmebot6.Monitoring
 
         public void addHost( string host )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             hostNames.Add( host );
 
             saveHostnames( );
@@ -74,6 +80,8 @@ namespace helpmebot6.Monitoring
 
         public void delHost( string host )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             hostNames.Remove( host );
 
             saveHostnames( );
@@ -88,6 +96,8 @@ namespace helpmebot6.Monitoring
 
         private void saveHostnames( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             BinaryFormatter bf = new BinaryFormatter( );
             MemoryStream ms = new MemoryStream( );
             bf.Serialize( ms, hostNames );

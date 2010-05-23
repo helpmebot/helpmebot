@@ -8,6 +8,8 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler accessDenied( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponseHandler crh = new Myaccess( ).run( source, channel, args );
             crh.append( base.accessDenied( source, channel, args ) );
             return crh;
@@ -15,6 +17,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponseHandler crh=new CommandResponseHandler();
             if( args.Length > 1 )
             {
@@ -65,6 +69,8 @@ namespace helpmebot6.Commands
 
         CommandResponseHandler addAccessEntry( User newEntry , User.userRights AccessLevel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string[ ] messageParams = { newEntry.ToString( ), AccessLevel.ToString( ) };
             string message = Configuration.Singleton( ).GetMessage( "addAccessEntry", messageParams );
             
@@ -77,6 +83,8 @@ namespace helpmebot6.Commands
 
         CommandResponseHandler delAccessEntry( int id )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string[ ] messageParams = { id.ToString( ) };
             string message = Configuration.Singleton( ).GetMessage( "removeAccessEntry", messageParams );
 

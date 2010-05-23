@@ -12,6 +12,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select(  "count(*)");
             q.addWhere( new DAL.WhereConds( "channel_name", args[ 0 ] ) );
             q.setFrom("channel");

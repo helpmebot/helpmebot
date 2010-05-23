@@ -32,6 +32,8 @@ namespace helpmebot6
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
         public static int isInArray( string needle, string[ ] haystack )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             int id = 0;
             foreach ( string straw in haystack )
             {
@@ -51,6 +53,8 @@ namespace helpmebot6
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
         public static int prefixIsInArray( string needlehead, string[ ] haystack )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             int id = 0;
             foreach ( string straw in haystack )
             {
@@ -72,6 +76,8 @@ namespace helpmebot6
         /// <returns>The first item from the array</returns>
         public static string popFromFront( ref string[ ] list )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string firstItem = list[ 0 ];
             list = string.Join( " ", list, 1, list.Length - 1 ).Split( ' ' );
             return firstItem;
@@ -83,6 +89,8 @@ namespace helpmebot6
         /// <param name="ex">The exception thrown</param>
         public static void ErrorLog(Exception ex)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Logger.Instance().addToLog( ex.ToString( ) + ex.StackTrace , Logger.LogTypes.ERROR);
 
             System.Diagnostics.StackTrace stack = new System.Diagnostics.StackTrace( );
@@ -96,6 +104,8 @@ namespace helpmebot6
 
         public static string escape( string str )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return MySql.Data.MySqlClient.MySqlHelper.EscapeString( str );
         }
 
@@ -103,6 +113,8 @@ namespace helpmebot6
 
         public static User.userRights commandAccessLevel( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string typename = "";
             System.Diagnostics.StackTrace foo = new System.Diagnostics.StackTrace( );
             typename = foo.GetFrame( 1 ).GetMethod( ).DeclaringType.FullName;
@@ -144,6 +156,8 @@ namespace helpmebot6
         }
         public static void removeItemFromArray(string item, ref string[] array)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             int count = 0;
             foreach( string i in array )
             {
@@ -169,6 +183,8 @@ namespace helpmebot6
 
         public static int RealArrayLength( string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             int argsLength = 0;
             foreach( string arg in args )
             {
@@ -180,6 +196,8 @@ namespace helpmebot6
 
         public static void silentPrivmsg( IAL irc, string channel, string message )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "true" )
                 return;
             else

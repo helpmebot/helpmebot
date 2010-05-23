@@ -55,6 +55,8 @@ namespace helpmebot6
 
         public bool Connect( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             try
             {
                 Logger.Instance( ).addToLog( "Opening database connection...", Logger.LogTypes.DAL );
@@ -79,6 +81,8 @@ namespace helpmebot6
         #region internals
         private void ExecuteNonQuery( ref MySqlCommand cmd )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
             lock( this )
             {
@@ -107,6 +111,8 @@ namespace helpmebot6
 
         private MySqlDataReader ExecuteReaderQuery( string query )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             MySqlDataReader result = null;
 
             Logger.Instance( ).addToLog( "Locking access to DAL...", Logger.LogTypes.DALLOCK );
@@ -138,6 +144,8 @@ namespace helpmebot6
 
         public long Insert( string table, params string[ ] values )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string query = "INSERT INTO `" + sanitise( table ) + "` VALUES (";
             foreach( string item in values )
             {
@@ -161,6 +169,8 @@ namespace helpmebot6
 
         public void Delete( string table, int limit, params WhereConds[ ] conditions )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string query = "DELETE FROM `" + sanitise( table ) + "`";
             for( int i = 0; i < conditions.Length; i++ )
             {
@@ -182,6 +192,8 @@ namespace helpmebot6
 
         public void Update( string table, Dictionary<string, string> items, int limit, params WhereConds[ ] conditions )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( items.Count < 1 )
                 return;
 
@@ -215,6 +227,8 @@ namespace helpmebot6
 
         public ArrayList executeSelect( Select query )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             MySqlDataReader dr = ExecuteReaderQuery( query.ToString() );
 
             ArrayList resultSet = new ArrayList( );
@@ -233,6 +247,8 @@ namespace helpmebot6
         }
         public string executeScalarSelect( Select query )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             ArrayList al = executeSelect( query );
             if( al.Count > 0 )
                 return ( ( (object[ ])al[ 0 ] )[ 0 ] ).ToString( );
@@ -242,6 +258,8 @@ namespace helpmebot6
 
         private void runConnectionTest( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             // ok, first let's assume the connection is dead.
             bool connectionOk = false;
 
@@ -271,6 +289,8 @@ namespace helpmebot6
 
         public void executeProcedure( string name, params string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             MySqlCommand cmd = new MySqlCommand( );
             cmd.CommandType = System.Data.CommandType.StoredProcedure;
             cmd.CommandText = name;
@@ -289,6 +309,8 @@ namespace helpmebot6
 
         public void proc_HMB_UPDATE_BINARYSTORE( byte[ ] raw, string desc )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             lock( this )
             {
                 runConnectionTest( );
@@ -306,6 +328,7 @@ namespace helpmebot6
 
         public string proc_HMB_GET_LOCAL_OPTION( string option, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
             try
             {
@@ -411,6 +434,8 @@ namespace helpmebot6
 
             public override string ToString( )
             {
+                Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
                 string query = "SELECT ";
                 bool firstField = true;
                 foreach( string  f in fields )

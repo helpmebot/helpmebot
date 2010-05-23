@@ -11,7 +11,8 @@ namespace helpmebot6.Monitoring.PageWatcher
         private static PageWatcherController _instance;
         protected PageWatcherController( )
         {
-            
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             watchedPageList = new ArrayList( );
             if( Helpmebot6.pagewatcherEnabled )
             {
@@ -50,6 +51,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void SetupEvents( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( irc_ConnectionRegistrationSucceededEvent );
             irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
             this.PageWatcherNotificationEvent += new PageWatcherNotificationEventDelegate( PageWatcherController_PageWatcherNotificationEvent );
@@ -61,6 +64,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public string[ ] getWatchedPages( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string[ ] wp = new string[ watchedPageList.Count ];
             watchedPageList.CopyTo( wp );
             return wp;
@@ -68,6 +73,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void LoadAllWatchedPages( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             watchedPageList.Clear( );
             DAL.Select q = new DAL.Select( "pw_title" );
             q.setFrom( "watchedpages" );
@@ -80,6 +87,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void irc_PrivmsgEvent( User source , string destination , string message )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( source.ToString( ) == Configuration.Singleton( ).retrieveGlobalStringOption( "wikimediaRcBot" ) )
             {
                 RcPageChange rcItem = rcParser( message );
@@ -97,6 +106,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void irc_ConnectionRegistrationSucceededEvent( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             uint network = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
 
             DAL.Select q = new DAL.Select( "channel_name" );
@@ -112,6 +123,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         RcPageChange rcParser( string rcItem )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string colorCodeControlChar = "\x03";
             string[ ] colorCodes = { 
                                        colorCodeControlChar + "4" , 
@@ -149,6 +162,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void watchPage( string pageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             // addOrder to database
             DAL.Singleton( ).Insert( "watchedpages", "", pageName );
             // addOrder to arraylist
@@ -157,6 +172,8 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void unwatchPage( string pageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             //remove from database
             DAL.Singleton( ).Delete( "watchedpages", 0, new DAL.WhereConds( "pw_title", pageName ) );
             // remove from arraylist

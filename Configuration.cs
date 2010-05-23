@@ -55,6 +55,8 @@ namespace helpmebot6
 
         public string retrieveGlobalStringOption( string optionName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
           
             foreach ( ConfigurationSetting s in configurationCache )
             {
@@ -91,6 +93,8 @@ namespace helpmebot6
         }
         public uint retrieveGlobalUintOption( string optionName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string optionValue = retrieveGlobalStringOption( optionName );
             uint value;
             try
@@ -106,11 +110,15 @@ namespace helpmebot6
 
         public string retrieveLocalStringOption (string optionName, string channel)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return dbal.proc_HMB_GET_LOCAL_OPTION( optionName, channel );
         }
 
         private string retrieveOptionFromDatabase( string optionName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string result = "";
             try
             {
@@ -135,12 +143,16 @@ namespace helpmebot6
 
         public void setGlobalOption( string optionName , string newValue )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Dictionary<string, string> vals = new Dictionary<string, string>( );
             vals.Add( "configuration_value", newValue );
             dbal.Update( "configuration", vals, 1, new DAL.WhereConds( "configuration_name", optionName ) );
         }
         public void setLocalOption( string optionName, string channel, string newValue )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             // convert channel to ID
 
 
@@ -173,6 +185,8 @@ namespace helpmebot6
 
         public void setOption(  string optionName , string target , string newValue )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( target == "global" )
             {
                 setGlobalOption( optionName , newValue );
@@ -185,11 +199,15 @@ namespace helpmebot6
 
         public void deleteLocalOption( string optionName , string target )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             dbal.Delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ), new DAL.WhereConds( "cc_channel", getChannelId( target ) ) );
         }
 
         private string getOptionId( string optionName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "configuration_id" );
             q.setFrom( "configuration" );
             q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
@@ -199,6 +217,8 @@ namespace helpmebot6
 
         public string getChannelId( string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "channel_id" );
             q.setFrom( "channel" );
             q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
@@ -211,6 +231,8 @@ namespace helpmebot6
                 ref string mySqlPassword, ref uint mySqlServerPort, 
                 ref string mySqlSchema )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             StreamReader settingsreader = new StreamReader( filename );
             mySqlServerHostname = settingsreader.ReadLine( );
             mySqlServerPort = uint.Parse( settingsreader.ReadLine( ) );
@@ -224,6 +246,8 @@ namespace helpmebot6
 
         private ArrayList getMessages( string messageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
 
             DAL.Select q = new DAL.Select( "message_text" );
@@ -244,6 +268,8 @@ namespace helpmebot6
         //returns a random message chosen from the list of possible message names
         private string chooseRandomMessage( string messageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Random rnd = new Random( );
             ArrayList al = getMessages( messageName );
             if( al.Count == 0 )
@@ -256,19 +282,27 @@ namespace helpmebot6
 
         private string parseMessage( string messageFormat, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return String.Format( messageFormat, args );
         }
         public string GetMessage( string messageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return chooseRandomMessage( messageName );
         }
         public string GetMessage( string messageName, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return parseMessage( chooseRandomMessage( messageName ), args );
         }
 
         public string GetMessage( string messageName , string defaultMessageName )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string msg = GetMessage( messageName );
             if( msg == string.Empty )
             {
@@ -280,6 +314,8 @@ namespace helpmebot6
         }
         public string GetMessage( string messageName , string defaultMessageName, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string msg = GetMessage( messageName ,args);
             if( msg == string.Empty )
             {
@@ -292,6 +328,8 @@ namespace helpmebot6
 
         public void SaveMessage( string messageName , string messageDescription , string messageContent )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             dbal.Insert( "message", "", messageName, messageDescription, messageContent, "1" );
         }
         #endregion

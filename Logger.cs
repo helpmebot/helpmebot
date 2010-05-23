@@ -92,6 +92,8 @@ namespace helpmebot6
 
         public void addToLog( string message , LogTypes type )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             lock( this )
             {
                 Console.ResetColor( );

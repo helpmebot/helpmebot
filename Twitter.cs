@@ -8,6 +8,8 @@ namespace helpmebot6
     {
         public static void tweet(string status)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( Helpmebot6.enableTwitter )
             {
                 Twitter twit = new Twitter(

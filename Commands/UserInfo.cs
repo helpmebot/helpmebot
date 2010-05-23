@@ -36,6 +36,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             bool useLongInfo = bool.Parse( Configuration.Singleton( ).retrieveLocalStringOption( "useLongUserInfo" , channel ) );
 
             if( args.Length > 0 )
@@ -96,6 +98,8 @@ namespace helpmebot6.Commands
 
         private string getUserPageUrl( string userName, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
@@ -135,6 +139,8 @@ namespace helpmebot6.Commands
         }
         private string getUserTalkPageUrl( string userName, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
@@ -173,6 +179,8 @@ namespace helpmebot6.Commands
         }
         private string getUserContributionsUrl( string userName, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
@@ -211,6 +219,8 @@ namespace helpmebot6.Commands
         }
         private string getBlockLogUrl( string userName ,string channel)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( userName == string.Empty )
             {
                 throw new ArgumentNullException( );
@@ -250,6 +260,8 @@ namespace helpmebot6.Commands
 
         private UserInformation retrieveUserInformation( string userName, ref UserInformation initial, string channel)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             try
             {
                 initial.userName = userName;
@@ -294,6 +306,8 @@ namespace helpmebot6.Commands
 
         private void sendShortUserInfo( UserInformation userInformation)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string regex = "^http://en.wikipedia.org/wiki/";
             string shortUrlAlias = "http://enwp.org/";
             System.Text.RegularExpressions.Regex r = new System.Text.RegularExpressions.Regex( regex );
@@ -323,6 +337,8 @@ namespace helpmebot6.Commands
 
         private void sendLongUserInfo( UserInformation userInformation )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
          
 
             crh.respond( userInformation.userPage );

@@ -16,11 +16,15 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return new CommandResponseHandler( getBlockInformation( string.Join( " ", args ), channel ).ToString( ) );
         }
 
         public BlockInformation getBlockInformation( string userName, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            System.Net.IPAddress ip;
 
             string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki",channel );
@@ -87,6 +91,8 @@ namespace helpmebot6.Commands
 
             public override string ToString( )
             {
+                Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
                 string[ ] emptyMessageParams = { "", "", "", "", "", "", "" };
                 string emptyMessage = Configuration.Singleton( ).GetMessage( "blockInfoShort", emptyMessageParams );
                 

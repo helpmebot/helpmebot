@@ -19,11 +19,15 @@ namespace helpmebot6
 
         void irc_PrivmsgEvent( User source , string destination , string message )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             ParseMessage( message, destination );
         }
 
         public static Linker Instance( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( _singleton == null )
                 _singleton = new Linker( );
             return _singleton;
@@ -31,6 +35,8 @@ namespace helpmebot6
 
         public void ParseMessage( string Message, string Channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string newLink = reallyParseMessage( Message );
             if( newLink != "" )
             {
@@ -45,6 +51,8 @@ namespace helpmebot6
 
         public string reallyParseMessage( string Message )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string newLink = "";
 
             if( ( Message.Contains( "[[" ) && Message.Contains( "]]" ) ) )
@@ -93,10 +101,14 @@ namespace helpmebot6
 
         public string GetLink(string destination)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return GetLink(destination, false);
         }
         public string GetLink( string destination, bool useSecureServer )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string link;
             bool success = lastLink.TryGetValue( destination , out link );
             if( success )
@@ -124,6 +136,8 @@ namespace helpmebot6
 
         string antispace( string source )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             int currloc = 0;
             string result = "";
             while( currloc < source.Length )
@@ -143,6 +157,8 @@ namespace helpmebot6
 
         void sendLink(string Channel, string Link)
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if (Configuration.Singleton().retrieveLocalStringOption("autoLink", Channel) == "true")
                 Helpmebot6.irc.IrcPrivmsg(Channel, GetLink(Link,false));
         }

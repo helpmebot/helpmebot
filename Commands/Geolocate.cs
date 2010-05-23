@@ -10,6 +10,8 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             GeolocateResult location = getLocation( IPAddress.Parse( args[ 0 ] ) );
             string[ ] messageArgs = { location.ToString( ) };
             return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "locationMessage", messageArgs ) );
@@ -17,6 +19,8 @@ namespace helpmebot6.Commands
 
         public static GeolocateResult getLocation( IPAddress ip )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
          System.IO.Stream s =   HttpRequest.get( "http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip.ToString( ) );
          XmlTextReader xtr = new XmlTextReader( s );
             GeolocateResult result = new GeolocateResult();
@@ -66,6 +70,8 @@ namespace helpmebot6.Commands
 
            public override string ToString( )
            {
+               Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
                return City + ", " + Region + ", " + Country;
            }
         }

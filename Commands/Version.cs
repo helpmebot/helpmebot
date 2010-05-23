@@ -21,6 +21,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( GlobalFunctions.isInArray( "@svn", args ) != -1 )
                 return new CommandResponseHandler( getVersionString( ) );
             else
@@ -29,6 +31,8 @@ namespace helpmebot6.Commands
 
         public string getVersionString( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
 
             string rev = Process.Start( "svnversion" ).StandardOutput.ReadLine();
             

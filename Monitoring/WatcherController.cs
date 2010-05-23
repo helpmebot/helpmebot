@@ -14,6 +14,8 @@ namespace helpmebot6.Monitoring
 
         protected WatcherController( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             watchers = new Dictionary<string , CategoryWatcher>( );
 
             DAL.Select q = new DAL.Select( "watcher_category", "watcher_keyword", "watcher_sleeptime" );
@@ -53,11 +55,15 @@ namespace helpmebot6.Monitoring
 
         public bool isValidKeyword( string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return watchers.ContainsKey( keyword );
         }
 
         public bool addWatcherToChannel( string keyword , string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             int watcherId = getWatcherId( keyword );
 
@@ -78,6 +84,8 @@ namespace helpmebot6.Monitoring
 
         public void removeWatcherFromChannel( string keyword , string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string channelId = Configuration.Singleton( ).getChannelId( channel );
             int watcherId = getWatcherId( keyword );
 
@@ -86,6 +94,8 @@ namespace helpmebot6.Monitoring
 
         public string forceUpdate( string key, string destination )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CategoryWatcher cw;
             if( watchers.TryGetValue( key , out cw ) )
             {
@@ -99,6 +109,8 @@ namespace helpmebot6.Monitoring
 
         private void CategoryHasItemsEvent( ArrayList items , string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             ArrayList newItems = updateDatabaseTable( items, keyword );
 
             DAL.Select q = new DAL.Select( "channel_name" );
@@ -122,6 +134,8 @@ namespace helpmebot6.Monitoring
 
         private ArrayList updateDatabaseTable( ArrayList items, string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             ArrayList newItems = new ArrayList( );
             foreach( string item in items )
             {
@@ -157,7 +171,10 @@ namespace helpmebot6.Monitoring
         {   // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
-            // keywordSingular
+            // keywordSingular           
+            
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
 
             string fakedestination;
             if( destination == ">TWITTER<" )
@@ -245,6 +262,8 @@ namespace helpmebot6.Monitoring
 
         private CategoryWatcher getWatcher( string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CategoryWatcher cw;
             bool success = watchers.TryGetValue( keyword , out cw );
             if( success )
@@ -255,11 +274,15 @@ namespace helpmebot6.Monitoring
 
         public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return watchers.Keys;
         }
 
         private ArrayList removeBlacklistedItems( ArrayList pageList )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "ip_title" );
             q.setFrom( "ignoredpages" );
             ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
@@ -277,6 +300,8 @@ namespace helpmebot6.Monitoring
 
         public CommandResponseHandler setDelay( string keyword , int newDelay )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( newDelay < 1 )
             {
                 string message = Configuration.Singleton( ).GetMessage( "delayTooShort" );
@@ -300,6 +325,8 @@ namespace helpmebot6.Monitoring
 
         public int getDelay( string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CategoryWatcher cw = getWatcher( keyword );
             if( cw != null )
             {
@@ -311,6 +338,8 @@ namespace helpmebot6.Monitoring
 
         private int getWatcherId( string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "watcher_id" );
             q.setFrom( "watcher" );
             q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
@@ -322,6 +351,8 @@ namespace helpmebot6.Monitoring
 
         public bool isWatcherInChannel( string channel, string keyword )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q =new DAL.Select("COUNT(*)");
             q.setFrom("channelwatchers");
             q.addWhere( new DAL.WhereConds( "channel_name", channel ) );

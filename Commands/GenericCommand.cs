@@ -41,6 +41,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         public CommandResponseHandler run( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string command = this.GetType( ).ToString( );
 
             Log( "Running command: " + command );
@@ -57,6 +59,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected virtual CommandResponseHandler accessTest( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             // check the access level
             if( source.AccessLevel < accessLevel )
             {
@@ -77,6 +81,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected virtual CommandResponseHandler reallyRun( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             AccessLog.instance( ).Save( new AccessLog.AccessLogEntry( source, this.GetType( ), true ) );
             Log( "Starting command execution..." );
             CommandResponseHandler crh;
@@ -102,6 +108,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected virtual CommandResponseHandler accessDenied( User source, string channel, string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponseHandler response = new CommandResponseHandler( );
 
             response.respond( Configuration.Singleton( ).GetMessage( "accessDenied", "" ), CommandResponseDestination.PRIVATE_MESSAGE );
@@ -121,6 +129,8 @@ namespace helpmebot6.Commands
 
         protected void Log( string message )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Logger.Instance( ).addToLog( message, Logger.LogTypes.COMMAND );
         }
 

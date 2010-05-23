@@ -38,6 +38,8 @@ namespace helpmebot6
         }
         public void respond( string message  )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponse cr;
             cr.Destination = CommandResponseDestination.DEFAULT;
             cr.Message = message;
@@ -46,6 +48,8 @@ namespace helpmebot6
         }
         public void respond( string message, CommandResponseDestination destination )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponse cr;
             cr.Destination = destination;
             cr.Message = message;
@@ -55,6 +59,8 @@ namespace helpmebot6
 
         public void append( CommandResponseHandler moreResponses )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             foreach( object item in moreResponses.getResponses() )
             {
                 responses.Add( item );

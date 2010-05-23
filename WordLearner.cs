@@ -24,10 +24,14 @@ namespace helpmebot6
     {
         public static bool Learn( string word, string phrase )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return Learn( word, phrase, false );
         }
         public static bool Learn( string word, string phrase, bool action )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "COUNT(*)" );
             q.setFrom( "keywords" );
             q.addLimit( 1, 0 );
@@ -43,6 +47,7 @@ namespace helpmebot6
 
         public static RemeberedWord Remember( string word )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
             DAL.Select q = new DAL.Select( "keyword_action" );
             q.setFrom( "keywords" );
@@ -64,6 +69,8 @@ namespace helpmebot6
 
         public static bool Forget( string word )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             DAL.Select q = new DAL.Select( "COUNT(*)" );
             q.setFrom( "keywords" );
             q.addWhere( new DAL.WhereConds( "keyword_name", word ) );

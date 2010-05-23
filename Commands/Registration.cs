@@ -16,6 +16,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             CommandResponseHandler crh = new CommandResponseHandler( );
             if( args.Length > 0 )
             {
@@ -47,6 +49,8 @@ namespace helpmebot6.Commands
 
         public DateTime getRegistrationDate( string username, string channel )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( username == string.Empty )
             {
                 throw new ArgumentNullException( );

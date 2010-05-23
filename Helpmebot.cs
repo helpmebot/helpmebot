@@ -42,6 +42,8 @@ namespace helpmebot6
 
        static void Main( string[ ] args )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            // startup arguments
            int configFileArg = GlobalFunctions.prefixIsInArray( "--configfile", args );
            string configFile = ".hmbot";
@@ -68,6 +70,8 @@ namespace helpmebot6
 
        private static void InitialiseBot( string configFile )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            string server, username, password, schema;
            uint port = 0;
            server = username = password = schema = "";
@@ -112,6 +116,8 @@ namespace helpmebot6
 
        static void SetupEvents( )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( JoinChannels );
 
            irc.JoinEvent += new IAL.JoinEventHandler( welcomeNewbieOnJoinEvent );
@@ -127,11 +133,16 @@ namespace helpmebot6
 
        static void irc_ThreadFatalError( object sender, EventArgs e )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            Stop( );
        }
 
        static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
+
            string[ ] messageParams = { rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff, rcItem.flags };
            string message = Configuration.Singleton( ).GetMessage( "pageWatcherEventNotification", messageParams );
 
@@ -151,17 +162,24 @@ namespace helpmebot6
 
        static void irc_InviteEvent( User source , string nickname , string channel )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
+
            string[ ] args = { channel };
            new Commands.Join( ).run( source ,channel, args);
        }
 
        static void welcomeNewbieOnJoinEvent( User source , string channel )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            Monitoring.NewbieWelcomer.Instance( ).execute( source, channel );
        }
 
        static void ReceivedMessage( User source , string destination , string message )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            CommandParser cmd = new CommandParser( );
            try
            {
@@ -193,7 +211,9 @@ namespace helpmebot6
        }
 
        static void JoinChannels( )
-        {
+       {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
             irc.IrcJoin( debugChannel );
 
@@ -224,6 +244,8 @@ namespace helpmebot6
         /// </remarks>
        static bool isRecognisedMessage( ref string message , ref bool overrideSilence )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            string[ ] words = message.Split( ' ' );
 
            if( words[ 0 ].StartsWith( Trigger ) )
@@ -284,6 +306,8 @@ namespace helpmebot6
 
        static public void Stop( )
        {
+           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
            ThreadList.instance( ).stop( );
        }
     }

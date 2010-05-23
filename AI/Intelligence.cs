@@ -22,6 +22,8 @@ namespace helpmebot6.AI
 
         public string Respond( string input )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string[ ] tokens = input.Split( ' ' );
 
             string[ ] hello = { "hi" , "hey" , "heya" , "hello" };

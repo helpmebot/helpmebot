@@ -44,6 +44,8 @@ namespace helpmebot6
 
         public void handleCommand( User source , string destination , string command , string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             Logger.Instance().addToLog( "Handling recieved message..." , Logger.LogTypes.GENERAL);
 
             // if on ignore list, ignore!
@@ -139,6 +141,8 @@ namespace helpmebot6
 
         private string FindRedirection( string destination , ref string[ ] args )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string directedTo = "";
             foreach( string arg in args )
             {
@@ -155,6 +159,8 @@ namespace helpmebot6
 
         private void HandleCommandResponseHandler( User source , string destination , string directedTo , CommandResponseHandler response )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             if( response != null )
             {
                 foreach( CommandResponse item in response.getResponses( ) )

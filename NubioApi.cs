@@ -35,6 +35,8 @@ namespace helpmebot6
 
         public string fetchFaqText( int id )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             try
             {
                 XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&noparse=true&action=fetch&id=" + id ));
@@ -80,6 +82,8 @@ namespace helpmebot6
 
         public string searchFaq( string searchTerm )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             try
             {
                 XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&action=search&noparse=true&query=" + searchTerm) );
@@ -124,6 +128,8 @@ namespace helpmebot6
 
         public string viewLink( int id )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             return _apiUri.ToString( ).Replace( "api.php", "index.php?id=" + id.ToString( ) );
         }
     }

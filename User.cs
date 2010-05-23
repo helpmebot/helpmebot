@@ -70,7 +70,9 @@ namespace helpmebot6
         }
 
         public static User newFromString(string source)
-        {    
+        {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+  
             string nick, user, host;
             nick = user = host = null;
             try
@@ -120,6 +122,8 @@ namespace helpmebot6
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
         public override string ToString( )
         {
+            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+
             string endResult = this.Nickname;
 
             if ( this.Username != null )
