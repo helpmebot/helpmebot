@@ -27,7 +27,7 @@ namespace helpmebot6
        static DAL dbal;
        static Configuration config;
        static UdpListener.UDPListener udp;
-
+       static Monitoring.MonitorService nagMon;
        static string Trigger;
 
        public static string debugChannel;
@@ -102,6 +102,8 @@ namespace helpmebot6
                return;
            }
 
+           nagMon = new Monitoring.MonitorService( 62167, "Helpmebot v6 (Nagios Monitor service)" );
+           
            udp = new helpmebot6.UdpListener.UDPListener( 4357 );
 
            string[ ] twparms = { server, schema, irc.IrcServer };
