@@ -16,6 +16,7 @@ namespace helpmebot6.Commands
 
             DAL.Select q = new DAL.Select(  "count(*)");
             q.addWhere( new DAL.WhereConds( "channel_name", args[ 0 ] ) );
+            q.addWhere( new DAL.WhereConds( "channel_network", source.Network.ToString( ) ) );
             q.setFrom("channel");
 
             string count = DAL.Singleton( ).executeScalarSelect( q );
@@ -32,7 +33,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                DAL.Singleton( ).Insert( "channel", "", args[ 0 ], "", "1", "1" );
+                DAL.Singleton( ).Insert( "channel", "", args[ 0 ], "", "1", source.Network.ToString( ) );
                 Helpmebot6.irc.IrcJoin( args[ 0 ] );
             }
             return null;

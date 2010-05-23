@@ -882,7 +882,7 @@ namespace helpmebot6
 
             if ( messagesource != null )
             {
-                source = User.newFromString( messagesource );
+                source = User.newFromString( messagesource, this._networkId );
             }
 
             switch ( command )

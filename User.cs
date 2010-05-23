@@ -28,6 +28,8 @@ namespace helpmebot6
         private userRights _accessLevel;
         private bool _retrieved_accessLevel = false;
 
+        private uint networkId;
+
         public User()
         {
             db = DAL.Singleton();
@@ -69,7 +71,19 @@ namespace helpmebot6
             }
         }
 
-        public static User newFromString(string source)
+        public uint Network
+        {
+            get
+            {
+                return networkId;
+            }
+        }
+
+        public static User newFromString( string source )
+        {
+            return newFromString( source, 0 );
+        }
+        public static User newFromString(string source, uint network)
         {
             Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
   
@@ -111,7 +125,7 @@ namespace helpmebot6
             ret.Hostname = host;
             ret.Nickname = nick;
             ret.Username = user;
-
+            ret.networkId = network;
             return ret;
 
         }

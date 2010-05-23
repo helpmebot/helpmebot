@@ -18,7 +18,7 @@ namespace helpmebot6.Commands
             Helpmebot6.irc.IrcPart( channel , source.ToString( ) );
             Dictionary<string, string> vals = new Dictionary<string, string>( );
             vals.Add( "channel_enabled", "0" );
-            DAL.Singleton( ).Update( "channel", vals, 0, new DAL.WhereConds( "channel_name", channel ) );
+            DAL.Singleton( ).Update( "channel", vals, 0, new DAL.WhereConds( "channel_name", channel ), new DAL.WhereConds( "channel_network", source.Network.ToString( ) ) );
             return null;
         }
     }
