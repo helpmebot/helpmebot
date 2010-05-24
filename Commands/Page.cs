@@ -33,7 +33,7 @@ namespace helpmebot6.Commands
                         case "r":
                             // redirect!
                             // <r from="Sausages" to="Sausage" />
-                            redirects = xtr.GetAttribute( "to" );
+                            redirects = xtr.GetAttribute( "from" );
                             break;
                         case "page":
                             if( xtr.GetAttribute( "missing" ) != null )
@@ -67,7 +67,7 @@ namespace helpmebot6.Commands
 
             if( redirects != null )
             {
-                string[ ] redirArgs = { redirects };
+                string[ ] redirArgs = { redirects,title };
                 crh.respond( Configuration.Singleton( ).GetMessage( "pageRedirect", redirArgs ) );
             }
 
