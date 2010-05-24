@@ -123,8 +123,11 @@ namespace helpmebot6.Monitoring
             ArrayList channels = DAL.Singleton( ).executeSelect( q );
             foreach( object[ ] item in channels )
             {
-                string message = compileMessage( items, keyword, (string)item[ 0 ], false );
-                Helpmebot6.irc.IrcPrivmsg( (string)item[ 0 ] , message );
+                string channel = (string)item[ 0 ];
+
+                string message = compileMessage( items, keyword, channel, false );
+                if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" )
+                    Helpmebot6.irc.IrcPrivmsg( channel, message );
             }
 
             if( newItems.Count > 0 )

@@ -154,7 +154,9 @@ namespace helpmebot6
 
            foreach( object[ ] item in channels )
            {
-               irc.IrcPrivmsg( (string)item[ 0 ], message );
+               string channel = (string)item[ 0 ];
+               if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" )
+                   irc.IrcPrivmsg( channel, message );
            }
        }
 
@@ -194,7 +196,7 @@ namespace helpmebot6
 
                }
                string aiResponse = AI.Intelligence.Singleton( ).Respond( message );
-               if( aiResponse != string.Empty )
+               if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", destination ) == "false" && aiResponse != string.Empty )
                {
                    string[ ] aiParameters = { source.Nickname };
                    irc.IrcPrivmsg( destination, config.GetMessage( aiResponse, aiParameters ) );

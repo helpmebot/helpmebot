@@ -47,7 +47,8 @@ namespace helpmebot6.Monitoring
         {
             Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
-            if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
+            if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" &&
+                Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
             {
                 bool match = false;
                 foreach( object item in hostNames )
