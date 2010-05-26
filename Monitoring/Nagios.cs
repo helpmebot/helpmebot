@@ -37,7 +37,7 @@ namespace helpmebot6.Monitoring
                 alive = true;
                 service.Start( );
 
-                while( service.Pending( ) || alive )
+                while( alive )
                 {
                     if( !service.Pending( ) )
                     {

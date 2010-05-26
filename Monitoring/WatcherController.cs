@@ -240,7 +240,7 @@ namespace helpmebot6.Monitoring
                         }
                     }
 
-                    listString += ", ";
+                    listString += Configuration.Singleton( ).GetMessage( "listSeparator" );
                 }
                 listString = listString.TrimEnd( ' ', ',' );
                 string pluralString;
