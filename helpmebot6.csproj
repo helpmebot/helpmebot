@@ -103,7 +103,7 @@
     <Compile Include="Commands\Autolink.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
-    <Compile Include="Commands\Count.cs" />
+    <Compile Include="Commands\Editcount.cs" />
     <Compile Include="Commands\Decode.cs" />
     <Compile Include="Commands\Faq.cs" />
     <Compile Include="Commands\Fetchall.cs" />
@@ -112,6 +112,7 @@
     <Compile Include="Commands\FunStuff\Trout.cs" />
     <Compile Include="Commands\GenericCommand.cs" />
     <Compile Include="Commands\Geolocate.cs" />
+    <Compile Include="Commands\Helper.cs" />
     <Compile Include="Commands\Isgd.cs" />
     <Compile Include="Commands\Join.cs" />
     <Compile Include="Commands\Learn.cs" />
