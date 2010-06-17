@@ -24,7 +24,7 @@ namespace helpmebot6.Commands
             {
                 switch( args[0].ToLower() )
                 {
-                    case "addOrder":
+                    case "add":
                         if( args.Length > 2 )
                         {
                             User.userRights aL = User.userRights.Normal;
@@ -60,7 +60,7 @@ namespace helpmebot6.Commands
                         crh = delAccessEntry( int.Parse( args[ 1 ] ) );
                         break;
                 }
-                // addOrder <source> <level>
+                // add <source> <level>
 
                 // del <id>
             }
