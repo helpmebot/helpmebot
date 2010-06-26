@@ -1,180 +1,148 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.IO;
+
+#endregion
 
 namespace helpmebot6
 {
-    class Logger
+    internal class Logger
     {
-        private static object lockfile = new object( );
-
         private static Logger _instance;
-        protected Logger( )
+
+        protected Logger()
         {
-            DalLogger = new StreamWriter( "dal.log" );
-            IRClogger = new StreamWriter( "irc.log" );
-            IalLogger = new StreamWriter( "ial.log" );
-            ErrorLogger = new StreamWriter( "error.log" );
+            this._dalLogger = new StreamWriter("dal.log");
+            this._ircLogger = new StreamWriter("irc.log");
+            this._ialLogger = new StreamWriter("ial.log");
+            this._errorLogger = new StreamWriter("error.log");
 
 
-            DalLogger.AutoFlush = true;
-            IRClogger.AutoFlush = true;
-            IalLogger.AutoFlush = true;
-            ErrorLogger.AutoFlush = true;
+            this._dalLogger.AutoFlush = true;
+            this._ircLogger.AutoFlush = true;
+            this._ialLogger.AutoFlush = true;
+            this._errorLogger.AutoFlush = true;
 
-            string init = "Welcome to Helpmebot v6.";
-            DalLogger.WriteLine( init );
-            IRClogger.WriteLine( init );
-            IalLogger.WriteLine( init );
-            ErrorLogger.WriteLine( init );
+            const string init = "Welcome to Helpmebot v6.";
+            this._dalLogger.WriteLine(init);
+            this._ircLogger.WriteLine(init);
+            this._ialLogger.WriteLine(init);
+            this._errorLogger.WriteLine(init);
 
-            addToLog( init, LogTypes.GENERAL );
+            addToLog(init, LogTypes.General);
         }
-        public static Logger Instance( )
+
+        public static Logger instance()
         {
-            if( _instance == null )
-                _instance = new Logger( );
-            return _instance;
+            return _instance ?? ( _instance = new Logger( ) );
         }
-       
 
-        private StreamWriter DalLogger;
-        private StreamWriter IalLogger;
-        private StreamWriter IRClogger;
-        private StreamWriter ErrorLogger;
+        private readonly StreamWriter _dalLogger;
+        private readonly StreamWriter _ialLogger;
+        private readonly StreamWriter _ircLogger;
+        private readonly StreamWriter _errorLogger;
 
-        private bool logDal;
-        private bool logIRC;
-        private bool logDallock;
+        public bool logDAL { get; set; }
 
-        public bool LogDAL
-        {
-            get
-            {
-                return logDal;
-            }
-            set
-            {
-                logDal = value;
-            }
-        }
-        public bool LogIRC
-        {
-            get
-            {
-                return logIRC;
-            }
-            set
-            {
-                logIRC = value;
-            }
-        }
-        public bool LogDALLOCK
-        {
-            get
-            {
-                return logDallock;
-            }
-            set
-            {
-                logDallock = value;
-            }
-        }
+        public bool logIrc { get; set; }
+
+        public bool logDalLock { get; set; }
 
         public enum LogTypes
         {
-            DNWB ,// dotnetwikibot, GREY, no choice
-            DAL , // Database stuff, MAGENTA
-            IAL , // IRC stuff YELLOW
-            COMMAND , // command log events, BLUE
-            GENERAL , // general log events, WHITE
-            ERROR, // error events, RED
+            DNWB, // dotnetwikibot, GREY, no choice
+            DAL, // Database stuff, MAGENTA
+            IAL, // IRC stuff YELLOW
+            Command, // command log events, BLUE
+            General, // general log events, WHITE
+            Error, // error events, RED
             IRC, // raw IRC events, 
-            DALLOCK
-        } // DATE: GREEN
+            DalLock
+        }
 
-        public void addToLog( string message , LogTypes type )
+        // DATE: GREEN
+
+        public void addToLog(string message, LogTypes type)
         {
-            lock( this )
+            lock (this)
             {
-                Console.ResetColor( );
+                Console.ResetColor();
 
-                string dateString = "[ " + DateTime.Now.ToShortDateString( ) + " " + DateTime.Now.ToLongTimeString( ) + " ] ";
+                string dateString = "[ " + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToLongTimeString() +
+                                    " ] ";
 
-                switch( type )
+                switch (type)
                 {
                     case LogTypes.DNWB:
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write( dateString );
+                        Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine( "A " + message );
+                        Console.WriteLine("A " + message);
                         break;
-                    case LogTypes.DALLOCK:
-                        if( logDallock )
+                    case LogTypes.DalLock:
+                        if (this.logDalLock)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write( dateString );
+                            Console.Write(dateString);
                             Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine( "DL " + message );
+                            Console.WriteLine("DL " + message);
                         }
-                        DalLogger.WriteLine( dateString + message );
+                        this._dalLogger.WriteLine(dateString + message);
                         break;
                     case LogTypes.DAL:
-                        if( logDal )
+                        if (this.logDAL)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write( dateString );
+                            Console.Write(dateString);
                             Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine( "D " + message );
+                            Console.WriteLine("D " + message);
                         }
-                        DalLogger.WriteLine( dateString + message );
+                        this._dalLogger.WriteLine(dateString + message);
                         break;
                     case LogTypes.IAL:
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write( dateString );
+                        Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        IalLogger.WriteLine( dateString + message );
-                        Console.WriteLine( "I " + message );
+                        this._ialLogger.WriteLine(dateString + message);
+                        Console.WriteLine("I " + message);
                         break;
-                    case LogTypes.COMMAND:
+                    case LogTypes.Command:
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write( dateString );
+                        Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.WriteLine( "C " + message );
+                        Console.WriteLine("C " + message);
                         break;
-                    case LogTypes.GENERAL:
+                    case LogTypes.General:
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write( dateString );
+                        Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.WriteLine( "G " + message );
+                        Console.WriteLine("G " + message);
                         break;
-                    case LogTypes.ERROR:
+                    case LogTypes.Error:
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write( dateString );
+                        Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        ErrorLogger.WriteLine( dateString + message );
-                        Console.WriteLine( "E " + message );
+                        this._errorLogger.WriteLine(dateString + message);
+                        Console.WriteLine("E " + message);
                         break;
                     case LogTypes.IRC:
-                        if( logIRC )
+                        if (this.logIrc)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write( dateString );
+                            Console.Write(dateString);
                             Console.ForegroundColor = ConsoleColor.Black;
                             Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine( "R " + message );
+                            Console.WriteLine("R " + message);
                         }
-                        IRClogger.WriteLine( dateString + message );
+                        this._ircLogger.WriteLine(dateString + message);
 
                         break;
                     default:
                         break;
                 }
-                Console.ResetColor( );
+                Console.ResetColor();
             }
         }
-
-
     }
 }

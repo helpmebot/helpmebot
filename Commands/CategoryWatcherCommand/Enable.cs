@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+using helpmebot6.Monitoring;
+
+#endregion
 
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
-    class Enable : GenericCommand
+    internal class Enable : GenericCommand
     {
-        public Enable( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            if( Monitoring.WatcherController.Instance( ).addWatcherToChannel( args[ 0 ], channel ) )
-                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "no-change" ) );
+            if (WatcherController.instance().addWatcherToChannel(args[0], channel))
+                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+            return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
         }
     }
 }

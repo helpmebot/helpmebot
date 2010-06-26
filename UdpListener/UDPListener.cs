@@ -1,91 +1,97 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net.Sockets;
-using System.Threading;
-using System.Net;
-using System.Security.Cryptography;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿#region Usings
+
+using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
 using helpmebot6.Threading;
+
+#endregion
+
 namespace helpmebot6.UdpListener
 {
-    public class UDPListener:IThreadedSystem
+    public class UDPListener : IThreadedSystem
     {
-        public UDPListener( int port )
+        public UDPListener(int port)
         {
-            key = Configuration.Singleton( ).retrieveGlobalStringOption( "udpKey" );
-            udpClient = new UdpClient( port );
-            listenerThread = new Thread( new ThreadStart( threadMethod ) );
-            RegisterInstance( );
-            listenerThread.Start( );
+            this._key = Configuration.singleton().retrieveGlobalStringOption("udpKey");
+            this._udpClient = new UdpClient(port);
+            this._listenerThread = new Thread(threadMethod);
+            this.registerInstance();
+            this._listenerThread.Start();
         }
 
-        
-        Thread listenerThread;
-        UdpClient udpClient;
-        string key;
 
-        private void threadMethod( )
+        private readonly Thread _listenerThread;
+        private readonly UdpClient _udpClient;
+        private readonly string _key;
+
+        private void threadMethod()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             try
             {
-                while( true )
+                while (true)
                 {
-                    IPEndPoint ipep = new IPEndPoint( IPAddress.Any, 0 );
-                    if( udpClient.Available != 0 )
+                    IPEndPoint ipep = new IPEndPoint(IPAddress.Any, 0);
+                    if (this._udpClient.Available != 0)
                     {
-                        byte[ ] datagram = udpClient.Receive( ref ipep );
+                        byte[] datagram = this._udpClient.Receive(ref ipep);
 
-                        BinaryFormatter bf = new BinaryFormatter( );
-                        UdpMessage recievedMessage = (UdpMessage)bf.Deserialize( new MemoryStream( datagram ) );
+                        BinaryFormatter bf = new BinaryFormatter();
+                        UdpMessage recievedMessage = (UdpMessage) bf.Deserialize(new MemoryStream(datagram));
 
-                        byte[ ] bm = ASCIIEncoding.ASCII.GetBytes( recievedMessage.Message + key );
-                        byte[ ] bh = MD5.Create( ).ComputeHash( bm );
-                        string hash = ASCIIEncoding.ASCII.GetString( bh );
-                        if( hash == recievedMessage.Hash )
+                        byte[] bm = Encoding.ASCII.GetBytes(recievedMessage.message + this._key);
+                        byte[] bh = MD5.Create().ComputeHash(bm);
+                        string hash = Encoding.ASCII.GetString(bh);
+                        if (hash == recievedMessage.hash)
                         {
-                            Helpmebot6.irc.SendRawLine( "PRIVMSG " + recievedMessage.Message );
+                            Helpmebot6.irc.sendRawLine("PRIVMSG " + recievedMessage.message);
                         }
                     }
                     else
                     {
-                        Thread.Sleep( 500 );
+                        Thread.Sleep(500);
                     }
                 }
             }
-            catch( ThreadAbortException )
+            catch (ThreadAbortException)
             {
-                EventHandler temp = ThreadFatalError;
-                if( temp != null )
+                EventHandler temp = this.threadFatalError;
+                if (temp != null)
                 {
-                    temp( this, new EventArgs( ) );
+                    temp(this, new EventArgs());
                 }
             }
         }
 
         #region IThreadedSystem Members
 
-        public void Stop( )
+        public void stop()
         {
-            listenerThread.Abort( );
+            this._listenerThread.Abort();
         }
 
-        public void RegisterInstance( )
+        public void registerInstance()
         {
-            ThreadList.instance( ).register( this );
+            ThreadList.instance().register(this);
         }
 
-        public string[ ] getThreadStatus( )
+        public string[] getThreadStatus()
         {
-            string[ ] statuses = { this.listenerThread.ThreadState.ToString() };
+            string[] statuses = {this._listenerThread.ThreadState.ToString()};
             return statuses;
         }
 
-        public event EventHandler ThreadFatalError;
+        public event EventHandler threadFatalError;
 
         #endregion
     }

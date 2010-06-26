@@ -1,29 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+using helpmebot6.Monitoring;
+
+#endregion
 
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
-    class Delay : GenericCommand
+    internal class Delay : GenericCommand
     {
-        public Delay( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            if(args.Length>2)
-            { // 2 or more args
-                return Monitoring.WatcherController.Instance( ).setDelay( args[ 0 ] , int.Parse( args[ 2 ] ) );
+            if (args.Length > 2)
+            {
+                // 2 or more args
+                return WatcherController.instance().setDelay(args[0], int.Parse(args[2]));
             }
-            else if( args.Length==2){
-                int delay = Monitoring.WatcherController.Instance( ).getDelay( args[ 0 ] );
-                string[ ] messageParams = { args[0], delay.ToString( ) };
-                string message = Configuration.Singleton( ).GetMessage( "catWatcherCurrentDelay" , messageParams );
-                return new CommandResponseHandler( message );
+            if (args.Length == 2)
+            {
+                int delay = WatcherController.instance().getDelay(args[0]);
+                string[] messageParams = {args[0], delay.ToString()};
+                string message = Configuration.singleton().getMessage("catWatcherCurrentDelay", messageParams);
+                return new CommandResponseHandler(message);
             }
             // TODO: fix
             return null;

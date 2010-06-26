@@ -1,24 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Uptime:GenericCommand
+    internal class Uptime : GenericCommand
     {
-        public Uptime( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            string[ ] messageParams = { Helpmebot6.startupTime.DayOfWeek.ToString( ) , Helpmebot6.startupTime.ToLongDateString( ) , Helpmebot6.startupTime.ToLongTimeString( ) };
-            string message = Configuration.Singleton( ).GetMessage( "cmdUptimeUpSince" , messageParams );
-            return new CommandResponseHandler( message );
-
+            string[] messageParams = {
+                                         Helpmebot6.StartupTime.DayOfWeek.ToString(),
+                                         Helpmebot6.StartupTime.ToLongDateString(),
+                                         Helpmebot6.StartupTime.ToLongTimeString()
+                                     };
+            string message = Configuration.singleton().getMessage("cmdUptimeUpSince", messageParams);
+            return new CommandResponseHandler(message);
         }
     }
 }

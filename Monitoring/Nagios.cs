@@ -1,86 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net.Sockets;
-using System.Net;
-using System.Threading;
+﻿#region Usings
+
+using System;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using helpmebot6.Threading;
+
+#endregion
 
 namespace helpmebot6.Monitoring
 {
-    class MonitorService : IThreadedSystem
+    internal class MonitorService : IThreadedSystem
     {
-        TcpListener service;
+        private readonly TcpListener _service;
 
-        bool alive;
+        private bool _alive;
 
-        Thread monitorthread;
+        private readonly Thread _monitorthread;
 
-        readonly string message;
+        private readonly string _message;
 
-        public MonitorService( int port, string message )
+        public MonitorService(int port, string message)
         {
-            monitorthread = new Thread( new ThreadStart( threadMethod ) );
+            this._monitorthread = new Thread(threadMethod);
 
-            this.message = message;
+            this._message = message;
 
-            service = new TcpListener( System.Net.IPAddress.Any, port );
-            RegisterInstance( );
-            monitorthread.Start( );
+            this._service = new TcpListener(IPAddress.Any, port);
+            this.registerInstance();
+            this._monitorthread.Start();
         }
 
-        void threadMethod( )
+        private void threadMethod()
         {
             try
             {
-                alive = true;
-                service.Start( );
+                this._alive = true;
+                this._service.Start();
 
-                while( alive )
+                while (this._alive)
                 {
-                    if( !service.Pending( ) )
+                    if (!this._service.Pending())
                     {
-                        Thread.Sleep( 10 );
+                        Thread.Sleep(10);
                         continue;
                     }
 
-                    TcpClient client = service.AcceptTcpClient( );
+                    TcpClient client = this._service.AcceptTcpClient();
 
-                    StreamWriter sw = new StreamWriter( client.GetStream( ) );
+                    StreamWriter sw = new StreamWriter(client.GetStream());
 
-                    sw.WriteLine( message );
-                    sw.Flush( );
-                    client.Close( );
+                    sw.WriteLine(this._message);
+                    sw.Flush();
+                    client.Close();
                 }
             }
-            catch( ThreadAbortException )
+            catch (ThreadAbortException)
             {
-                this.ThreadFatalError( this, new EventArgs( ) );
+                this.threadFatalError(this, new EventArgs());
             }
         }
 
-        public void Stop( )
+        public void stop()
         {
-            service.Stop( );
-            alive = false;
-
+            this._service.Stop();
+            this._alive = false;
         }
 
         #region IThreadedSystem Members
 
-        public void RegisterInstance( )
+        public void registerInstance()
         {
-            ThreadList.instance( ).register( this );
+            ThreadList.instance().register(this);
         }
 
-        public string[ ] getThreadStatus( )
+        public string[] getThreadStatus()
         {
-            string[ ] status = { "NagiosMonitor thread: " + monitorthread.ThreadState.ToString( ) };
+            string[] status = {"NagiosMonitor thread: " + this._monitorthread.ThreadState};
             return status;
         }
 
-        public event EventHandler ThreadFatalError;
+        public event EventHandler threadFatalError;
 
         #endregion
     }

@@ -1,48 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Resolve : GenericCommand
+    internal class Resolve : GenericCommand
     {
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            IPAddress[ ] addresses = new IPAddress[ 0 ];
+            IPAddress[] addresses = new IPAddress[0];
             try
             {
-                addresses = Dns.GetHostEntry( args[ 0 ] ).AddressList;
+                addresses = Dns.GetHostEntry(args[0]).AddressList;
             }
-            catch( SocketException )
+            catch (SocketException)
             {
-
             }
-            if( addresses.Length != 0 )
+            if (addresses.Length != 0)
             {
                 string ipList = "";
                 bool first = true;
-                foreach( IPAddress item in addresses )
+                foreach (IPAddress item in addresses)
                 {
-                    if( !first )
+                    if (!first)
                         ipList += ", ";
-                    ipList += item.ToString( );
+                    ipList += item.ToString();
                     first = false;
                 }
-                string[ ] messageargs = { args[ 0 ], ipList };
+                string[] messageargs = {args[0], ipList};
 
-                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "resolve", messageargs ) );
+                return new CommandResponseHandler(Configuration.singleton().getMessage("resolve", messageargs));
             }
             else
             {
-                string[ ] messageargs = { args[ 0 ] };
-                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "resolveFail", messageargs ) );
-
+                string[] messageargs = {args[0]};
+                return new CommandResponseHandler(Configuration.singleton().getMessage("resolveFail", messageargs));
             }
-
         }
     }
 }

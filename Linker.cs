@@ -1,167 +1,177 @@
-﻿using System;
+﻿#region Usings
+
 using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
     public class Linker
     {
-        Dictionary<string , string> lastLink;
+        private readonly Dictionary<string, string> _lastLink;
 
         private static Linker _singleton;
 
-        protected Linker( )
+        protected Linker()
         {
-            lastLink = new Dictionary<string , string>( );
-            Helpmebot6.irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
-            Helpmebot6.irc.NoticeEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
+            this._lastLink = new Dictionary<string, string>();
+            Helpmebot6.irc.privmsgEvent += irc_PrivmsgEvent;
+            Helpmebot6.irc.noticeEvent += irc_PrivmsgEvent;
         }
 
-        void irc_PrivmsgEvent( User source , string destination , string message )
+        private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            ParseMessage( message, destination );
+            this.parseMessage(message, destination);
         }
 
-        public static Linker Instance( )
+        public static Linker instance()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( _singleton == null )
-                _singleton = new Linker( );
-            return _singleton;
+            return _singleton ?? ( _singleton = new Linker( ) );
         }
 
-        public void ParseMessage( string Message, string Channel )
+        public void parseMessage(string message, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string newLink = reallyParseMessage( Message );
-            if( newLink != "" )
+            string newLink = reallyParseMessage(message);
+            if ( newLink == "" ) return;
+            if (this._lastLink.ContainsKey(channel))
             {
-                if( lastLink.ContainsKey( Channel ) )
-                {
-                    lastLink.Remove( Channel );
-                }
-                lastLink.Add( Channel , newLink );
-                sendLink(Channel, newLink); 
+                this._lastLink.Remove(channel);
             }
+            this._lastLink.Add(channel, newLink);
+            this.sendLink(channel, newLink);
         }
 
-        public string reallyParseMessage( string Message )
+        public string reallyParseMessage(string message)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             string newLink = "";
 
-            if( ( Message.Contains( "[[" ) && Message.Contains( "]]" ) ) )
+            if ((message.Contains("[[") && message.Contains("]]")))
             {
                 // [[newLink]]
 
-                int startIndex = Message.IndexOf( "[[" );
-                int endIndex = Message.IndexOf( "]]", startIndex );
+                int startIndex = message.IndexOf("[[");
+                int endIndex = message.IndexOf("]]", startIndex);
 
-                if( endIndex != -1 )
+                if (endIndex != -1)
                 {
+                    int nextStartIndex = message.IndexOf("[[", startIndex + 2, endIndex - startIndex);
 
-
-
-                    int nextStartIndex = Message.IndexOf( "[[", startIndex + 2, endIndex - startIndex );
-
-                    while( nextStartIndex != -1 )
+                    while (nextStartIndex != -1)
                     {
                         startIndex = nextStartIndex;
-                        nextStartIndex = Message.IndexOf( "[[", startIndex + 2, endIndex - startIndex );
+                        nextStartIndex = message.IndexOf("[[", startIndex + 2, endIndex - startIndex);
                     }
 
-                    newLink = Message.Substring( startIndex + 2, endIndex - startIndex - 2 );
+                    newLink = message.Substring(startIndex + 2, endIndex - startIndex - 2);
                 }
             }
-            if( ( Message.Contains( "{{" ) && Message.Contains( "}}" ) ) )
+            if ((message.Contains("{{") && message.Contains("}}")))
             {
-                int startIndex = Message.IndexOf( "{{" );
-                int endIndex = Message.IndexOf( "}}", startIndex );
-                if( endIndex != -1 )
+                int startIndex = message.IndexOf("{{");
+                int endIndex = message.IndexOf("}}", startIndex);
+                if (endIndex != -1)
                 {
-                    int nextStartIndex = Message.IndexOf( "{{", startIndex + 2, endIndex - startIndex );
+                    int nextStartIndex = message.IndexOf("{{", startIndex + 2, endIndex - startIndex);
 
-                    while( nextStartIndex != -1 )
+                    while (nextStartIndex != -1)
                     {
                         startIndex = nextStartIndex;
-                        nextStartIndex = Message.IndexOf( "{{", startIndex + 2, endIndex - startIndex );
+                        nextStartIndex = message.IndexOf("{{", startIndex + 2, endIndex - startIndex);
                     }
 
-                    newLink = "Template:" + Message.Substring( startIndex + 2, endIndex - startIndex - 2 );
+                    newLink = "Template:" + message.Substring(startIndex + 2, endIndex - startIndex - 2);
                 }
             }
-            newLink = newLink.Trim( '[' );
+            newLink = newLink.Trim('[');
             return newLink;
         }
 
-        public string GetLink(string destination)
+        public string getLink(string destination)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return GetLink(destination, false);
+            return this.getLink(destination, false);
         }
-        public string GetLink( string destination, bool useSecureServer )
+
+        public string getLink(string destination, bool useSecureServer)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             string link;
-            bool success = lastLink.TryGetValue( destination , out link );
-            if( success )
+            bool success = this._lastLink.TryGetValue(destination, out link);
+            if (success)
             {
-                string iwprefix = link.Split( ':' )[ 0 ];
+                string iwprefix = link.Split(':')[0];
 
-                DAL.Select q = new DAL.Select( "iw_url" );
-                q.setFrom( "interwikis" );
-                q.addWhere( new DAL.WhereConds( "iw_prefix", iwprefix ) );
-                string url = DAL.Singleton( ).executeScalarSelect( q );
+                DAL.Select q = new DAL.Select("iw_url");
+                q.setFrom("interwikis");
+                q.addWhere(new DAL.WhereConds("iw_prefix", iwprefix));
+                string url = DAL.singleton().executeScalarSelect(q);
 
-                if( url == string.Empty )
+                if (url == string.Empty)
                 {
-                    url = Configuration.Singleton( ).retrieveLocalStringOption( ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination );
-                    return url + antispace( link );
+                    url =
+                        Configuration.singleton().retrieveLocalStringOption(
+                            (useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
+                    return url + antispace(link);
                 }
-                else
-                {
-                    return url.Replace( "$1", antispace( string.Join( ":", link.Split( ':' ), 1, link.Split( ':' ).Length - 1 ) ) );
-                }
+                return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
             }
-            else
-                return "";
+            return "";
         }
 
-        string antispace( string source )
+        private static string antispace(string source)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             int currloc = 0;
             string result = "";
-            while( currloc < source.Length )
+            while (currloc < source.Length)
             {
-                if( source.Substring( currloc , 1 ) == " " )
+                if (source.Substring(currloc, 1) == " ")
                 {
                     result += "_";
                 }
                 else
                 {
-                    result += source.Substring( currloc , 1 );
+                    result += source.Substring(currloc, 1);
                 }
                 currloc += 1;
             }
             return result;
         }
 
-        void sendLink(string Channel, string Link)
+        private void sendLink(string channel, string link)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if (Configuration.Singleton().retrieveLocalStringOption("autoLink", Channel) == "true")
-                Helpmebot6.irc.IrcPrivmsg(Channel, GetLink(Link,false));
+            if (Configuration.singleton().retrieveLocalStringOption("autoLink", channel) == "true")
+                Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
         }
-
     }
 }

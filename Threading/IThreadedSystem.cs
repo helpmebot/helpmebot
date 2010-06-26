@@ -1,27 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+
+#endregion
 
 namespace helpmebot6.Threading
 {
     public interface IThreadedSystem
     {
         /// <summary>
-        /// Stop all threads in this instance to allow for a clean shutdown.
+        ///   Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
-        void Stop( );
+        void stop();
 
         /// <summary>
-        /// Register this instance of the threaded class with the global list
+        ///   Register this instance of the threaded class with the global list
         /// </summary>
-        void RegisterInstance( );
+        void registerInstance();
 
         /// <summary>
-        /// Get the status of thread(s) in this instance.
+        ///   Get the status of thread(s) in this instance.
         /// </summary>
         /// <returns></returns>
-        string[ ] getThreadStatus( );
+        string[] getThreadStatus();
 
-        event EventHandler ThreadFatalError;
+        event EventHandler threadFatalError;
     }
 }

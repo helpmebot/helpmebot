@@ -1,25 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Blockuser: GenericCommand
+    internal class Blockuser : GenericCommand
     {
-        public Blockuser( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
+            string name = string.Join(" ", args);
 
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            string url = Configuration.singleton().retrieveLocalStringOption("wikiUrl", channel);
 
-            string name = string.Join( " ", args );
-
-            string url = Configuration.Singleton( ).retrieveLocalStringOption( "wikiUrl", channel );
-
-            return new CommandResponseHandler( url + "Special:BlockIP/" + name );
+            return new CommandResponseHandler(url + "Special:BlockIP/" + name);
         }
     }
 }

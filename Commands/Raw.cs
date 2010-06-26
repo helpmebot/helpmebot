@@ -1,23 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Raw : GenericCommand
+    internal class Raw : GenericCommand
     {
-        public Raw()
-        {
-        }
-
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Helpmebot6.irc.SendRawLine(string.Join(" ", args));
+            Helpmebot6.irc.sendRawLine(string.Join(" ", args));
 
             return new CommandResponseHandler();
         }
-
     }
 }

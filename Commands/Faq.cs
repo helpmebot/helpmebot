@@ -1,49 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Talks to the Nubio(squared) API to retrive FAQ information
+    ///   Talks to the Nubio(squared) API to retrive FAQ information
     /// </summary>
-    class Faq : GenericCommand
+    internal class Faq : GenericCommand
     {
-        public Faq( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
+            string command = GlobalFunctions.popFromFront(ref args).ToLower();
+            CommandResponseHandler crh = new CommandResponseHandler();
 
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            string command = GlobalFunctions.popFromFront( ref args ).ToLower();
-            CommandResponseHandler crh = new CommandResponseHandler( );
-
-            NubioApi faqRepo = new NubioApi( new Uri( Configuration.Singleton().retrieveGlobalStringOption( "faqApiUri" ) ) );
+            NubioApi faqRepo = new NubioApi(new Uri(Configuration.singleton().retrieveGlobalStringOption("faqApiUri")));
             string result;
-            switch( command )
+            switch (command)
             {
                 case "search":
-                    result = faqRepo.searchFaq( string.Join( " " , args ) );
-                    if( result != null )
+                    result = faqRepo.searchFaq(string.Join(" ", args));
+                    if (result != null)
                     {
-                        crh.respond( result );
+                        crh.respond(result);
                     }
                     break;
                 case "fetch":
-                    result = faqRepo.fetchFaqText( int.Parse( args[ 0 ] ) );
-                    if( result != null )
+                    result = faqRepo.fetchFaqText(int.Parse(args[0]));
+                    if (result != null)
                     {
-                        crh.respond( result );
+                        crh.respond(result);
                     }
                     break;
                 case "link":
-                    result = faqRepo.viewLink( int.Parse( args[ 0 ] ) );
-                    if( result != null )
+                    result = faqRepo.viewLink(int.Parse(args[0]));
+                    if (result != null)
                     {
-                        crh.respond( result );
+                        crh.respond(result);
                     }
                     break;
                 default:

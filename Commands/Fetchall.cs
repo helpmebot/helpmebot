@@ -1,40 +1,41 @@
-﻿using System;
+﻿#region Usings
+
 using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+using helpmebot6.Monitoring;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Fetchall:GenericCommand
+    internal class Fetchall : GenericCommand
     {
-        public Fetchall( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             CommandResponseHandler crh = new CommandResponseHandler();
-            Dictionary<string , Monitoring.CategoryWatcher>.KeyCollection kc = Monitoring.WatcherController.Instance( ).getKeywords( );
-            if( GlobalFunctions.isInArray( "@cats", args ) != -1 )
+            Dictionary<string, Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.instance().getKeywords();
+            if (GlobalFunctions.isInArray("@cats", args) != -1)
             {
-                GlobalFunctions.removeItemFromArray( "@cats", ref args );
-                string listSep = Configuration.Singleton( ).GetMessage( "listSeparator" );
-                string list = Configuration.Singleton( ).GetMessage( "allCategoryCodes" );
-                foreach( string item in kc )
+                GlobalFunctions.removeItemFromArray("@cats", ref args);
+                string listSep = Configuration.singleton().getMessage("listSeparator");
+                string list = Configuration.singleton().getMessage("allCategoryCodes");
+                foreach (string item in kc)
                 {
                     list += item;
                     list += listSep;
                 }
 
-                crh.respond( list.TrimEnd( listSep.ToCharArray( ) ) );
+                crh.respond(list.TrimEnd(listSep.ToCharArray()));
             }
             else
             {
-                foreach( string key in kc )
+                foreach (string key in kc)
                 {
-                    crh.respond( Monitoring.WatcherController.Instance( ).forceUpdate( key , channel) );
+                    crh.respond(WatcherController.instance().forceUpdate(key, channel));
                 }
             }
             return crh;

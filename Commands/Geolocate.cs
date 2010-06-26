@@ -1,79 +1,94 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Xml;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Geolocate : GenericCommand
+    internal class Geolocate : GenericCommand
     {
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            GeolocateResult location = getLocation( IPAddress.Parse( args[ 0 ] ) );
-            string[ ] messageArgs = { location.ToString( ) };
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "locationMessage", messageArgs ) );
+            GeolocateResult location = getLocation(IPAddress.Parse(args[0]));
+            string[] messageArgs = {location.ToString()};
+            return new CommandResponseHandler(Configuration.singleton().getMessage("locationMessage", messageArgs));
         }
 
-        public static GeolocateResult getLocation( IPAddress ip )
+        public static GeolocateResult getLocation(IPAddress ip)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-         System.IO.Stream s =   HttpRequest.get( "http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip.ToString( ) );
-         XmlTextReader xtr = new XmlTextReader( s );
+            Stream s = HttpRequest.get("http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip);
+            XmlTextReader xtr = new XmlTextReader(s);
             GeolocateResult result = new GeolocateResult();
 
-            while( !xtr.EOF )
+            while (!xtr.EOF)
             {
-                xtr.Read( );
-                switch( xtr.Name )
+                xtr.Read();
+                switch (xtr.Name)
                 {
                     case "Status":
-                        result.Status = xtr.ReadElementContentAsString( );
+                        result.status = xtr.ReadElementContentAsString();
                         break;
                     case "CountryCode":
-                        result.CountryCode = xtr.ReadElementContentAsString( );
+                        result.countryCode = xtr.ReadElementContentAsString();
                         break;
                     case "CountryName":
-                        result.Country = xtr.ReadElementContentAsString( );
+                        result.country = xtr.ReadElementContentAsString();
                         break;
                     case "RegionCode":
-                        result.RegionCode = xtr.ReadElementContentAsString( );
+                        result.regionCode = xtr.ReadElementContentAsString();
                         break;
                     case "RegionName":
-                        result.Region = xtr.ReadElementContentAsString( );
+                        result.region = xtr.ReadElementContentAsString();
                         break;
                     case "City":
-                        result.City = xtr.ReadElementContentAsString( );
+                        result.city = xtr.ReadElementContentAsString();
                         break;
                     case "ZipPostalCode":
-                        result.ZipPostalCode = xtr.ReadElementContentAsString( );
+                        result.zipPostalCode = xtr.ReadElementContentAsString();
                         break;
                     case "Latitude":
-                        result.Latitude = xtr.ReadElementContentAsFloat( );
+                        result.latitude = xtr.ReadElementContentAsFloat();
                         break;
                     case "Longitude":
-                        result.Longitude = xtr.ReadElementContentAsFloat( );
+                        result.longitude = xtr.ReadElementContentAsFloat();
                         break;
                 }
             }
             return result;
-
         }
 
         public struct GeolocateResult
         {
-           public string Status, CountryCode, Country, RegionCode, Region, City, ZipPostalCode;
-           public float Latitude, Longitude;
+            public string status;
+            public string countryCode;
+            public string country;
+            public string regionCode;
+            public string region;
+            public string city;
+            public string zipPostalCode;
+            public float latitude;
+            public float longitude;
 
-           public override string ToString( )
-           {
-               Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            public override string ToString()
+            {
+                Logger.instance().addToLog(
+                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                    Logger.LogTypes.DNWB);
 
-               return City + ", " + Region + ", " + Country;
-           }
+                return this.city + ", " + this.region + ", " + this.country;
+            }
         }
     }
 }

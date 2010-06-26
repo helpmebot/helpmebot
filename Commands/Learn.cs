@@ -1,42 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Learns a keyword
+    ///   Learns a keyword
     /// </summary>
-    class Learn : GenericCommand
+    internal class Learn : GenericCommand
     {
-        public Learn( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             bool action = false;
-            if( args[ 0 ] == "@action" )
+            if (args[0] == "@action")
             {
                 action = true;
-                GlobalFunctions.popFromFront( ref args );
+                GlobalFunctions.popFromFront(ref args);
             }
 
-            if( args.Length >= 2 )
+            if (args.Length >= 2)
             {
-               if( WordLearner.Learn( args[ 0 ] , string.Join( " " , args , 1 , args.Length - 1 ) , action))
-                   Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnDone"  ) );
-               else
-                   Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdLearnError"  ) );
- 
+                Helpmebot6.irc.ircNotice( source.nickname,
+                                          WordLearner.learn( args[ 0 ],
+                                                             string.Join( " ",
+                                                                          args,
+                                                                          1,
+                                                                          args.
+                                                                              Length -
+                                                                          1 ),
+                                                             action )
+                                              ? Configuration.singleton( ).
+                                                    getMessage( "cmdLearnDone" )
+                                              : Configuration.singleton( ).
+                                                    getMessage( "cmdLearnError" ) );
             }
             else
             {
-                string[ ] messageParameters = { "learn" , "2" , args.Length.ToString( ) };
-                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                string[] messageParameters = {"learn", "2", args.Length.ToString()};
+                Helpmebot6.irc.ircNotice(source.nickname,
+                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
             }
             return null;
         }

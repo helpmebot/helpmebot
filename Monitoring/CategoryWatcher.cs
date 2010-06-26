@@ -14,175 +14,189 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Collections;
+using System.Reflection;
+using System.Threading;
+using System.Xml;
 using helpmebot6.Threading;
+
+#endregion
 
 namespace helpmebot6.Monitoring
 {
     public class CategoryWatcher : IThreadedSystem
     {
+        private readonly string _site;
+        private readonly string _category;
+        private readonly string _key;
 
-        string _site;
-        string _category;
-        string _key;
+        private Thread _watcherThread;
 
-        Thread watcherThread;
-
-        int _sleepTime = 180;
+        private int _sleepTime = 180;
 
 
-        public delegate void CategoryHasItemsEventHook( ArrayList items, string keyword);
-        public event CategoryHasItemsEventHook CategoryHasItemsEvent;
+        public delegate void CategoryHasItemsEventHook(ArrayList items, string keyword);
 
-        public CategoryWatcher( string Category, string Key, int SleepTime )
+        public event CategoryHasItemsEventHook categoryHasItemsEvent;
+
+        public CategoryWatcher(string category, string key, int sleepTime)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             // look up site id
-            string baseWiki = Configuration.Singleton( ).retrieveGlobalStringOption( "baseWiki" );
+            string baseWiki = Configuration.singleton().retrieveGlobalStringOption("baseWiki");
 
-            DAL.Select q = new DAL.Select( "site_api" );
-            q.setFrom( "site" );
-            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
-            _site = DAL.Singleton( ).executeScalarSelect( q );
+            DAL.Select q = new DAL.Select("site_api");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            _site = DAL.singleton().executeScalarSelect(q);
 
-            _category = Category;
-            _key = Key;
-            _sleepTime = SleepTime;
+            _category = category;
+            _key = key;
+            _sleepTime = sleepTime;
 
-            RegisterInstance( );
+            this.registerInstance();
 
-            watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
-            watcherThread.Start( );
-           
+            this._watcherThread = new Thread(watcherThreadMethod);
+            this._watcherThread.Start();
         }
 
-        private void watcherThreadMethod( )
+        private void watcherThreadMethod()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Logger.Instance( ).addToLog( "Starting category watcher for '" + _key + "'..." , Logger.LogTypes.GENERAL );
+            Logger.instance().addToLog("Starting category watcher for '" + _key + "'...", Logger.LogTypes.General);
             try
             {
-                while ( true )
+                while (true)
                 {
-                    Thread.Sleep( this.SleepTime * 1000 );
-                    ArrayList categoryResults = this.doCategoryCheck( );
-                    if ( categoryResults.Count > 0)
+                    Thread.Sleep(this.sleepTime*1000);
+                    ArrayList categoryResults = doCategoryCheck();
+                    if (categoryResults.Count > 0)
                     {
-                        CategoryHasItemsEvent( categoryResults, _key);
+                        this.categoryHasItemsEvent(categoryResults, _key);
                     }
                 }
             }
-            catch ( ThreadAbortException )
+            catch (ThreadAbortException)
             {
-                EventHandler temp = ThreadFatalError;
-                if( temp != null )
+                EventHandler temp = this.threadFatalError;
+                if (temp != null)
                 {
-                    temp( this, new EventArgs( ) );
+                    temp(this, new EventArgs());
                 }
             }
-            Logger.Instance( ).addToLog( "Category watcher for '" + _key + "' died." , Logger.LogTypes.ERROR );
+            Logger.instance().addToLog("Category watcher for '" + _key + "' died.", Logger.LogTypes.Error);
         }
-
 
 
         /// <summary>
-        /// The time to sleep, in seconds.
+        ///   The time to sleep, in seconds.
         /// </summary>
-        public int SleepTime
+        public int sleepTime
         {
-            get
-            {
-                return _sleepTime;
-            }
+            get { return _sleepTime; }
             set
             {
                 _sleepTime = value;
-                Logger.Instance( ).addToLog( "Restarting watcher...", Logger.LogTypes.COMMAND );
-                watcherThread.Abort( );
-                System.Threading.Thread.Sleep( 500 );
-                watcherThread = new Thread( new ThreadStart( this.watcherThreadMethod ) );
-                watcherThread.Start( );
+                Logger.instance().addToLog("Restarting watcher...", Logger.LogTypes.Command);
+                this._watcherThread.Abort();
+                Thread.Sleep(500);
+                this._watcherThread = new Thread(watcherThreadMethod);
+                this._watcherThread.Start();
             }
         }
 
-        public override string ToString( )
+        public override string ToString()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             return _key;
         }
 
-        public ArrayList doCategoryCheck( )
+        public ArrayList doCategoryCheck()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Logger.Instance( ).addToLog( "Getting items in category " + _key , Logger.LogTypes.GENERAL);
-            ArrayList pages = new ArrayList( );
+            Logger.instance().addToLog("Getting items in category " + _key, Logger.LogTypes.General);
+            ArrayList pages = new ArrayList();
             try
             {
                 //Create the XML Reader
-                System.Xml.XmlTextReader xmlreader = new System.Xml.XmlTextReader(  HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" + _category ));
+                XmlTextReader xmlreader =
+                    new XmlTextReader(
+                        HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" +
+                                        _category))
+                        {
+                            WhitespaceHandling = WhitespaceHandling.None
+                        };
 
                 //Disable whitespace so that you don't have to read over whitespaces
-                xmlreader.WhitespaceHandling = System.Xml.WhitespaceHandling.None;
 
                 //read the xml declaration and advance to api tag
-                xmlreader.Read( );
+                xmlreader.Read();
                 //read the api tag
-                xmlreader.Read( );
+                xmlreader.Read();
                 //read the query tag
-                xmlreader.Read( );
+                xmlreader.Read();
                 //read the categorymembers tag
-                xmlreader.Read( );
+                xmlreader.Read();
 
-                while( true )
+                while (true)
                 {
                     //Go to the name tag
-                    xmlreader.Read( );
+                    xmlreader.Read();
 
                     //if not start element exit while loop
-                    if( !xmlreader.IsStartElement( ) )
+                    if (!xmlreader.IsStartElement())
                     {
                         break;
                     }
 
                     //Get the title Attribute Value
-                    string titleAttribute = xmlreader.GetAttribute( "title" );
-                    pages.Add( titleAttribute );
+                    string titleAttribute = xmlreader.GetAttribute("title");
+                    pages.Add(titleAttribute);
                 }
 
                 //close the reader
-                xmlreader.Close( );
+                xmlreader.Close();
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
-                Logger.Instance( ).addToLog( "Error contacting API (" + _site + ") " + ex.Message , Logger.LogTypes.DNWB );
+                Logger.instance().addToLog("Error contacting API (" + _site + ") " + ex.Message, Logger.LogTypes.DNWB);
             }
-            pages = removeBlacklistedItems( pages );
+            pages = removeBlacklistedItems(pages);
 
             return pages;
-
         }
 
-        private ArrayList removeBlacklistedItems( ArrayList pageList )
+        private static ArrayList removeBlacklistedItems(ArrayList pageList)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "ip_title" );
-            q.setFrom( "ignoredpages" );
-            ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
+            DAL.Select q = new DAL.Select("ip_title");
+            q.setFrom("ignoredpages");
+            ArrayList blacklist = DAL.singleton().executeSelect(q);
 
-            foreach( object[ ] item in blacklist )
+            foreach (object[] item in blacklist)
             {
-                if( pageList.Contains( (string)item[ 0 ] ) )
+                if (pageList.Contains(item[0]))
                 {
-                    pageList.Remove( (string)item[ 0 ] );
+                    pageList.Remove(item[0]);
                 }
             }
 
@@ -191,24 +205,24 @@ namespace helpmebot6.Monitoring
 
         #region IThreadedSystem Members
 
-        public void RegisterInstance( )
+        public void registerInstance()
         {
-            ThreadList.instance( ).register( this );
+            ThreadList.instance().register(this);
         }
 
-        public void Stop( )
+        public void stop()
         {
-            Logger.Instance( ).addToLog( "Stopping Watcher Thread for " + _category + " ...", Logger.LogTypes.GENERAL );
-            watcherThread.Abort( );
+            Logger.instance().addToLog("Stopping Watcher Thread for " + _category + " ...", Logger.LogTypes.General);
+            this._watcherThread.Abort();
         }
 
-        public string[ ] getThreadStatus( )
+        public string[] getThreadStatus()
         {
-            string[] statuses = {this._key + " " + watcherThread.ThreadState};
+            string[] statuses = {_key + " " + this._watcherThread.ThreadState};
             return statuses;
         }
 
-        public event EventHandler ThreadFatalError;
+        public event EventHandler threadFatalError;
 
         #endregion
     }

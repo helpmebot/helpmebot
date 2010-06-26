@@ -1,97 +1,95 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+using System.Reflection;
+using System.Xml;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Returns the registration date of a wikipedian
+    ///   Returns the registration date of a wikipedian
     /// </summary>
-    class Registration : GenericCommand
+    internal class Registration : GenericCommand
     {
-        public Registration( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            CommandResponseHandler crh = new CommandResponseHandler( );
-            if( args.Length > 0 )
+            CommandResponseHandler crh = new CommandResponseHandler();
+            if (args.Length > 0)
             {
-                string userName = string.Join( " " , args );
-                DateTime registrationDate = getRegistrationDate( userName, channel );
-                if( registrationDate == new DateTime( 0 ) )
+                string userName = string.Join(" ", args);
+                DateTime registrationDate = getRegistrationDate(userName, channel);
+                if (registrationDate == new DateTime(0))
                 {
-                    string[ ] messageParams = { userName };
-                    string message = Configuration.Singleton( ).GetMessage( "noSuchUser" , messageParams );
-                    crh.respond( message );
+                    string[] messageParams = {userName};
+                    string message = Configuration.singleton().getMessage("noSuchUser", messageParams);
+                    crh.respond(message);
                 }
                 else
                 {
-
-
-                    string[ ] messageParameters = { userName , registrationDate.ToString( "hh:mm:ss t" ) , registrationDate.ToString( "d MMMM yyyy" ) };
-                    string message = Configuration.Singleton( ).GetMessage( "registrationDate" , messageParameters );
-                    crh.respond( message );
+                    string[] messageParameters = {
+                                                     userName, registrationDate.ToString("hh:mm:ss t"),
+                                                     registrationDate.ToString("d MMMM yyyy")
+                                                 };
+                    string message = Configuration.singleton().getMessage("registrationDate", messageParameters);
+                    crh.respond(message);
                 }
             }
             else
             {
-                string[ ] messageParameters = { "registration" , "1" , args.Length.ToString( ) };
-                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
-
+                string[] messageParameters = {"registration", "1", args.Length.ToString()};
+                Helpmebot6.irc.ircNotice(source.nickname,
+                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
             }
             return crh;
         }
 
-        public DateTime getRegistrationDate( string username, string channel )
+        public DateTime getRegistrationDate(string username, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( username == string.Empty )
+            if (username == string.Empty)
             {
-                throw new ArgumentNullException( );
+                throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
+            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
 
-            DAL.Select q = new DAL.Select( "site_api" );
-            q.setFrom( "site" );
-            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
-            string api = DAL.Singleton( ).executeScalarSelect( q );
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader(  HttpRequest.get(api + "?action=query&list=users&usprop=registration&format=xml&ususers=" + username ));
+            DAL.Select q = new DAL.Select("site_api");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            string api = DAL.singleton().executeScalarSelect(q);
+            XmlTextReader creader =
+                new XmlTextReader(
+                    HttpRequest.get(api + "?action=query&list=users&usprop=registration&format=xml&ususers=" + username));
             do
             {
-                creader.Read( );
-            } while( creader.Name != "user" );
-            string apiRegDate = creader.GetAttribute( "registration" );
-            if( apiRegDate != null )
+                creader.Read();
+            } while (creader.Name != "user");
+            string apiRegDate = creader.GetAttribute("registration");
+            if (apiRegDate != null)
             {
-                if( apiRegDate == "" )
+                if (apiRegDate == "")
                 {
-                    return new DateTime( 1970 , 1 , 1 , 0 , 0 , 0 );
+                    return new DateTime(1970, 1, 1, 0, 0, 0);
                 }
-                else
-                {
-                    DateTime regDate = DateTime.Parse( apiRegDate );
-                    return regDate;
-                }
+                DateTime regDate = DateTime.Parse(apiRegDate);
+                return regDate;
             }
-            else
-            {
-                return new DateTime( 0 );
-            }
-
+            return new DateTime(0);
         }
     }
 
     /// <summary>
-    /// Returns the registration date of a wikipedian. Alias for Registration
+    ///   Returns the registration date of a wikipedian. Alias for Registration
     /// </summary>
-    class Reg : Registration
+    internal class Reg : Registration
     {
-
     }
 }

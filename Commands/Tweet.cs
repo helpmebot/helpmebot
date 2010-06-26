@@ -1,32 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.Net;
-using System.IO;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Tweet : GenericCommand 
+    internal class Tweet : GenericCommand
     {
-
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             Twitter twit = new Twitter(
-                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterUsername" ),
-                    Configuration.Singleton( ).retrieveGlobalStringOption( "twitterPassword" )
-                );
+                Configuration.singleton().retrieveGlobalStringOption("twitterUsername"),
+                Configuration.singleton().retrieveGlobalStringOption("twitterPassword")
+                )
+                               {
+                                   userAgent =
+                                       Configuration.singleton( ).
+                                       retrieveGlobalStringOption( "useragent" )
+                               };
 
-            twit.userAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
+            string status = string.Join(" ", args);
 
-            string status = string.Join( " ", args );
-
-            HttpStatusCode wrsp = twit.statuses_update( status );
-            if( wrsp == HttpStatusCode.OK )
-                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
-            else
-                throw new Exception( );
+            HttpStatusCode wrsp = twit.statuses_update(status);
+            if (wrsp == HttpStatusCode.OK)
+                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+            throw new Exception();
         }
     }
 }

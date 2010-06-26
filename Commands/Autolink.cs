@@ -1,46 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Autolink : GenericCommand
+    internal class Autolink : GenericCommand
     {
-        public Autolink( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             bool global = false;
 
 
-            if( args.Length > 0 )
+            if (args.Length > 0)
             {
-                if( args[ 0 ].ToLower() == "@global" )
+                if (args[0].ToLower() == "@global")
                 {
                     global = true;
-                    GlobalFunctions.popFromFront( ref args );
+                    GlobalFunctions.popFromFront(ref args);
                 }
             }
-            bool oldValue;
 
-            if( !global )
-            {
-                oldValue = bool.Parse(Configuration.Singleton().retrieveLocalStringOption("autoLink", channel));
-            }
-            else
-            {
-                oldValue = bool.Parse(Configuration.Singleton().retrieveGlobalStringOption("autoLink"));
-            }
+            bool oldValue = bool.Parse( !global ? Configuration.singleton().retrieveLocalStringOption("autoLink", channel) : Configuration.singleton().retrieveGlobalStringOption("autoLink") );
 
-            if( args.Length > 0 )
+            if (args.Length > 0)
             {
                 string newValue = "global";
-                switch( args[0].ToLower() )
+                switch (args[0].ToLower())
                 {
                     case "enable":
                         newValue = "true";
@@ -52,31 +43,27 @@ namespace helpmebot6.Commands
                         newValue = "global";
                         break;
                 }
-                if( newValue == oldValue.ToString().ToLower() )
+                if (newValue == oldValue.ToString().ToLower())
                 {
-                    return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "no-change" ) , CommandResponseDestination.PRIVATE_MESSAGE );
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"),
+                                                      CommandResponseDestination.PrivateMessage);
                 }
+                if (newValue == "global")
+                {
+                    Configuration.singleton().deleteLocalOption("autoLink", channel);
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("defaultConfig"),
+                                                      CommandResponseDestination.PrivateMessage);
+                }
+                if (!global)
+                    Configuration.singleton().setLocalOption("autoLink", channel, newValue);
                 else
-                {
-                    if( newValue == "global" )
-                    {
-                        Configuration.Singleton().deleteLocalOption("autoLink", channel);
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "defaultConfig" ) , CommandResponseDestination.PRIVATE_MESSAGE );
-
-                    }
-                    else
-                    {
-                        if( !global )
-                            Configuration.Singleton().setLocalOption("autoLink", channel, newValue);
-                        else
-                            Configuration.Singleton().setGlobalOption("autoLink", newValue);
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) , CommandResponseDestination.PRIVATE_MESSAGE );
-
-                    }
-                }
+                    Configuration.singleton().setGlobalOption("autoLink", newValue);
+                return new CommandResponseHandler(Configuration.singleton().getMessage("done"),
+                                                  CommandResponseDestination.PrivateMessage);
             }
-            string[] mP = { "autolink", 1.ToString(), args.Length.ToString() };
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "notEnoughParameters" , mP ) , CommandResponseDestination.PRIVATE_MESSAGE );
+            string[] mP = {"autolink", 1.ToString(), args.Length.ToString()};
+            return new CommandResponseHandler(Configuration.singleton().getMessage("notEnoughParameters", mP),
+                                              CommandResponseDestination.PrivateMessage);
         }
     }
 }

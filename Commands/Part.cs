@@ -1,24 +1,25 @@
-﻿using System;
+﻿#region Usings
+
 using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Part : GenericCommand
+    internal class Part : GenericCommand
     {
-        public Part( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            Helpmebot6.irc.IrcPart( channel , source.ToString( ) );
-            Dictionary<string, string> vals = new Dictionary<string, string>( );
-            vals.Add( "channel_enabled", "0" );
-            DAL.Singleton( ).Update( "channel", vals, 0, new DAL.WhereConds( "channel_name", channel ), new DAL.WhereConds( "channel_network", source.Network.ToString( ) ) );
+            Helpmebot6.irc.ircPart(channel, source.ToString());
+            Dictionary<string, string> vals = new Dictionary<string, string>
+                                                  { { "channel_enabled", "0" } };
+            DAL.singleton().update("channel", vals, 0, new DAL.WhereConds("channel_name", channel),
+                                   new DAL.WhereConds("channel_network", source.network.ToString()));
             return null;
         }
     }

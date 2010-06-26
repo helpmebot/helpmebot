@@ -1,21 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
 using helpmebot6.Threading;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Threadstatus : GenericCommand
+    internal class Threadstatus : GenericCommand
     {
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string[ ] statuses = ThreadList.instance( ).getAllThreadStatus( );
-            CommandResponseHandler crh = new CommandResponseHandler( );
-            foreach( string item in statuses )
+            string[] statuses = ThreadList.instance().getAllThreadStatus();
+            CommandResponseHandler crh = new CommandResponseHandler();
+            foreach (string item in statuses)
             {
-                crh.respond( item );
+                crh.respond(item);
             }
             return crh;
         }

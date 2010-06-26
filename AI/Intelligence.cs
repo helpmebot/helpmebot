@@ -1,78 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.AI
 {
-    class Intelligence
+    internal class Intelligence
     {
-        private static Intelligence singleton;
-        public static Intelligence Singleton( )
-        {
-            if( singleton == null )
-                singleton = new Intelligence( );
+        private static Intelligence _singleton;
 
-            return singleton;
+        public static Intelligence singleton()
+        {
+            return _singleton ?? ( _singleton = new Intelligence( ) );
         }
 
-        protected Intelligence( )
+        protected Intelligence()
         {
-
         }
 
-        public string Respond( string input )
+        public string respond(string input)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string[ ] tokens = input.Split( ' ' );
+            string[] tokens = input.Split(' ');
 
-            string[ ] hello = { "hi" , "hey" , "heya" , "hello" };
-            string helloResponses = "cmdSayHi1";
-            string[ ] morning = { "morning" , "good morning" };
-            string morningResponses = "cmdSayHiMorning";
-            string[ ] afternoon = { "afternoon" , "good afternoon" };
-            string afternoonResponses = "cmdSayHiAfternoon";
-            string[ ] evening = { "evening" , "good evening" };
-            string eveningResponses = "cmdSayHiEvening";
+            string[] hello = {"hi", "hey", "heya", "hello"};
+            const string helloResponses = "cmdSayHi1";
+            string[] morning = {"morning", "good morning"};
+            const string morningResponses = "cmdSayHiMorning";
+            string[] afternoon = {"afternoon", "good afternoon"};
+            const string afternoonResponses = "cmdSayHiAfternoon";
+            string[] evening = {"evening", "good evening"};
+            const string eveningResponses = "cmdSayHiEvening";
 
-            foreach( string word in hello )
+            foreach (string word in hello)
             {
-                if( tokens.Length > 1 )
+                if ( tokens.Length <= 1 ) continue;
+                if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
                 {
-                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
-                    {
-                        return helloResponses;
-                    }
+                    return helloResponses;
                 }
             }
 
-            foreach( string word in morning )
+            foreach (string word in morning)
             {
-                if( tokens.Length > 1 )
+                if (tokens.Length > 1)
                 {
-                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
                     {
                         return morningResponses;
                     }
                 }
             }
 
-            foreach( string word in afternoon )
+            foreach (string word in afternoon)
             {
-                if( tokens.Length > 1 )
+                if (tokens.Length > 1)
                 {
-                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
                     {
                         return afternoonResponses;
                     }
                 }
             }
 
-            foreach( string word in evening )
+            foreach (string word in evening)
             {
-                if( tokens.Length > 1 )
+                if (tokens.Length > 1)
                 {
-                    if( tokens[ 0 ] == word && tokens[ 1 ] == Helpmebot6.irc.IrcNickname )
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
                     {
                         return eveningResponses;
                     }
@@ -81,6 +80,5 @@ namespace helpmebot6.AI
 
             return "";
         }
-
     }
 }

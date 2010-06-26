@@ -14,301 +14,327 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections;
+using System.Reflection;
+using helpmebot6.AI;
+using helpmebot6.Commands;
+using helpmebot6.Monitoring;
+using helpmebot6.Monitoring.PageWatcher;
+using helpmebot6.NewYear;
 using helpmebot6.Threading;
+using helpmebot6.UdpListener;
+
+#endregion
+
 namespace helpmebot6
 {
     public class Helpmebot6
     {
-       public static IAL irc ;
-       static DAL dbal;
-       static Configuration config;
-       static UdpListener.UDPListener udp;
-       static Monitoring.MonitorService nagMon;
-       static string Trigger;
+        public static IAL irc;
+        private static DAL _dbal;
+        private static Configuration _config;
+        private static UDPListener udp;
+        private static MonitorService nagMon;
+        private static string _trigger;
 
-       public static string debugChannel;
-       public static string mainChannel;
+        public static string debugChannel;
+        public static string mainChannel;
 
-       static uint ircNetwork;
+        private static uint _ircNetwork;
 
-       public static readonly DateTime startupTime = DateTime.Now;
+        public static readonly DateTime StartupTime = DateTime.Now;
 
-       public static bool pagewatcherEnabled = true;
-       public static bool enableTwitter = true;
+        public static bool pagewatcherEnabled = true;
+        public static bool enableTwitter = true;
 
-       static void Main( string[ ] args )
-       {
-           // startup arguments
-           int configFileArg = GlobalFunctions.prefixIsInArray( "--configfile", args );
-           string configFile = ".hmbot";
-           if ( configFileArg!=-1 )
-           {
-               configFile = args[ configFileArg ].Substring( args[ configFileArg ].IndexOf( '=' ) );
-           }
-
-           if( GlobalFunctions.prefixIsInArray( "--logdal" , args ) != -1 )
-               Logger.Instance( ).LogDAL = true;
-           if( GlobalFunctions.prefixIsInArray( "--logdallock", args ) != -1 )
-               Logger.Instance( ).LogDALLOCK = true;
-           if( GlobalFunctions.prefixIsInArray( "--logirc" , args ) != -1 )
-               Logger.Instance( ).LogIRC = true;
-
-           if( GlobalFunctions.prefixIsInArray( "--disablepagewatcher", args ) != -1 )
-               pagewatcherEnabled = false;
-           if( GlobalFunctions.prefixIsInArray( "--disabletwitter", args ) != -1 )
-               enableTwitter = false;
-
-
-           InitialiseBot( configFile );
-       }
-
-       private static void InitialiseBot( string configFile )
-       {
-           string server, username, password, schema;
-           uint port = 0;
-           server = username = password = schema = "";
-
-           Configuration.readHmbotConfigFile( configFile, ref server, ref username, ref password, ref port, ref schema );
-
-           dbal = DAL.Singleton( server, port, username, password, schema );
-
-           if( !dbal.Connect( ) )
-           { // can't connect to database, DIE
-               return;
-           }
-
-           config = Configuration.Singleton( );
-
-
-           ircNetwork = config.retrieveGlobalUintOption( "ircNetwork" );
-
-
-           Trigger = config.retrieveGlobalStringOption( "commandTrigger" );
-
-           irc = new IAL( ircNetwork );
-
-           Monitoring.PageWatcher.PageWatcherController.Instance( );
-
-           SetupEvents( );
-
-           NewYear.TimeMonitor.instance( );
-
-           if( !irc.Connect( ) )
-           { // if can't connect to irc, die
-               return;
-           }
-
-           nagMon = new Monitoring.MonitorService( 62167, "Helpmebot v6 (Nagios Monitor service)" );
-           
-           udp = new helpmebot6.UdpListener.UDPListener( 4357 );
-
-           string[ ] twparms = { server, schema, irc.IrcServer };
-           Twitter.tweet( Configuration.Singleton( ).GetMessage( "tweetStartup", twparms ) );
-       }
-
-
-
-       static void SetupEvents( )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-           irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( JoinChannels );
-
-           irc.JoinEvent += new IAL.JoinEventHandler( welcomeNewbieOnJoinEvent );
-
-           irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( ReceivedMessage );
-
-           irc.InviteEvent += new IAL.InviteEventHandler( irc_InviteEvent );
-
-           irc.ThreadFatalError += new EventHandler( irc_ThreadFatalError );
-
-           Monitoring.PageWatcher.PageWatcherController.Instance( ).PageWatcherNotificationEvent += new helpmebot6.Monitoring.PageWatcher.PageWatcherController.PageWatcherNotificationEventDelegate( Helpmebot6_PageWatcherNotificationEvent );
-       }
-
-       static void irc_ThreadFatalError( object sender, EventArgs e )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-           Stop( );
-       }
-
-       static void Helpmebot6_PageWatcherNotificationEvent( helpmebot6.Monitoring.PageWatcher.PageWatcherController.RcPageChange rcItem )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-
-           string[ ] messageParams = { rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff, rcItem.flags };
-           string message = Configuration.Singleton( ).GetMessage( "pageWatcherEventNotification", messageParams );
-
-           DAL.Select q = new DAL.Select( "channel_name" );
-           q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "pwc_channel", "=", false, "channel_id" ) );
-           q.addJoin( "watchedpages", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "pw_id", "=", false, "pwc_pagewatcher" ) );
-           q.addWhere( new DAL.WhereConds( "pw_title", rcItem.title ) );
-           q.setFrom( "pagewatcherchannels" );
-
-           ArrayList channels = DAL.Singleton( ).executeSelect( q );
-
-           foreach( object[ ] item in channels )
-           {
-               string channel = (string)item[ 0 ];
-               if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" )
-                   irc.IrcPrivmsg( channel, message );
-           }
-       }
-
-       static void irc_InviteEvent( User source , string nickname , string channel )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-
-           string[ ] args = { channel };
-           new Commands.Join( ).run( source ,channel, args);
-       }
-
-       static void welcomeNewbieOnJoinEvent( User source , string channel )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-           Monitoring.NewbieWelcomer.Instance( ).execute( source, channel );
-       }
-
-       static void ReceivedMessage( User source , string destination , string message )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-           CommandParser cmd = new CommandParser( );
-           try
-           {
-               bool overrideSilence = cmd.overrideBotSilence;
-               if( isRecognisedMessage( ref message , ref overrideSilence ) )
-               {
-                   cmd.overrideBotSilence = overrideSilence;
-                   string[ ] messageWords = message.Split( ' ' );
-                   string command = messageWords[ 0 ];
-                   string[ ] commandArgs = string.Join( " " , messageWords , 1 , messageWords.Length - 1 ).Split( ' ' );
-
-                   cmd.handleCommand( source , destination , command , commandArgs );
-
-
-               }
-               string aiResponse = AI.Intelligence.Singleton( ).Respond( message );
-               if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", destination ) == "false" && aiResponse != string.Empty )
-               {
-                   string[ ] aiParameters = { source.Nickname };
-                   irc.IrcPrivmsg( destination, config.GetMessage( aiResponse, aiParameters ) );
-               }
-           }
-           catch( Exception ex )
-           {
-               GlobalFunctions.ErrorLog( ex  );
-           }
-
-
-       }
-
-       static void JoinChannels( )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            debugChannel = config.retrieveGlobalStringOption( "channelDebug" );
-            irc.IrcJoin( debugChannel );
-
-            DAL.Select q = new DAL.Select( "channel_name" );
-            q.setFrom( "channel" );
-            q.addWhere( new DAL.WhereConds( "channel_enabled", 1 ) );
-            q.addWhere( new DAL.WhereConds( "channel_network", ircNetwork.ToString( ) ) );
-            foreach( object[] item in dbal.executeSelect(q) )
+        private static void Main(string[] args)
+        {
+            // startup arguments
+            int configFileArg = GlobalFunctions.prefixIsInArray("--configfile", args);
+            string configFile = ".hmbot";
+            if (configFileArg != -1)
             {
-                irc.IrcJoin( (string)( item )[ 0 ] );
- 
+                configFile = args[configFileArg].Substring(args[configFileArg].IndexOf('='));
+            }
+
+            if (GlobalFunctions.prefixIsInArray("--logdal", args) != -1)
+                Logger.instance().logDAL = true;
+            if (GlobalFunctions.prefixIsInArray("--logdallock", args) != -1)
+                Logger.instance().logDalLock = true;
+            if (GlobalFunctions.prefixIsInArray("--logirc", args) != -1)
+                Logger.instance().logIrc = true;
+
+            if (GlobalFunctions.prefixIsInArray("--disablepagewatcher", args) != -1)
+                pagewatcherEnabled = false;
+            if (GlobalFunctions.prefixIsInArray("--disabletwitter", args) != -1)
+                enableTwitter = false;
+
+
+            initialiseBot(configFile);
+        }
+
+        private static void initialiseBot(string configFile)
+        {
+            string username;
+            string password;
+            string schema;
+            uint port = 0;
+            string server = username = password = schema = "";
+
+            Configuration.readHmbotConfigFile(configFile, ref server, ref username, ref password, ref port, ref schema);
+
+            _dbal = DAL.singleton(server, port, username, password, schema);
+
+            if (!_dbal.connect())
+            {
+                // can't connect to database, DIE
+                return;
+            }
+
+            _config = Configuration.singleton();
+
+
+            _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
+
+
+            _trigger = _config.retrieveGlobalStringOption("commandTrigger");
+
+            irc = new IAL(_ircNetwork);
+
+            PageWatcherController.instance();
+
+            setupEvents();
+
+            TimeMonitor.instance();
+
+            if (!irc.connect())
+            {
+                // if can't connect to irc, die
+                return;
+            }
+
+            nagMon = new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
+
+            udp = new UDPListener(4357);
+
+            string[] twparms = {server, schema, irc.ircServer};
+            Twitter.tweet(Configuration.singleton().getMessage("tweetStartup", twparms));
+        }
+
+
+        private static void setupEvents()
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            irc.connectionRegistrationSucceededEvent += joinChannels;
+
+            irc.joinEvent += welcomeNewbieOnJoinEvent;
+
+            irc.privmsgEvent += receivedMessage;
+
+            irc.inviteEvent += irc_InviteEvent;
+
+            irc.threadFatalError += irc_ThreadFatalError;
+
+            PageWatcherController.instance().pageWatcherNotificationEvent += pageWatcherNotificationEvent;
+        }
+
+        private static void irc_ThreadFatalError(object sender, EventArgs e)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            stop();
+        }
+
+        private static void pageWatcherNotificationEvent(PageWatcherController.RcPageChange rcItem)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+
+            string[] messageParams = {
+                                         rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff,
+                                         rcItem.flags
+                                     };
+            string message = Configuration.singleton().getMessage("pageWatcherEventNotification", messageParams);
+
+            DAL.Select q = new DAL.Select("channel_name");
+            q.addJoin("channel", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "pwc_channel", "=", false, "channel_id"));
+            q.addJoin("watchedpages", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "pw_id", "=", false, "pwc_pagewatcher"));
+            q.addWhere(new DAL.WhereConds("pw_title", rcItem.title));
+            q.setFrom("pagewatcherchannels");
+
+            ArrayList channels = DAL.singleton().executeSelect(q);
+
+            foreach (object[] item in channels)
+            {
+                string channel = (string) item[0];
+                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                    irc.ircPrivmsg(channel, message);
+            }
+        }
+
+        private static void irc_InviteEvent(User source, string nickname, string channel)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+
+            string[] args = {channel};
+            new Join().run(source, channel, args);
+        }
+
+        private static void welcomeNewbieOnJoinEvent(User source, string channel)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            NewbieWelcomer.instance().execute(source, channel);
+        }
+
+        private static void receivedMessage(User source, string destination, string message)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            CommandParser cmd = new CommandParser();
+            try
+            {
+                bool overrideSilence = cmd.overrideBotSilence;
+                if (isRecognisedMessage(ref message, ref overrideSilence))
+                {
+                    cmd.overrideBotSilence = overrideSilence;
+                    string[] messageWords = message.Split(' ');
+                    string command = messageWords[0];
+                    string[] commandArgs = string.Join(" ", messageWords, 1, messageWords.Length - 1).Split(' ');
+
+                    cmd.handleCommand(source, destination, command, commandArgs);
+                }
+                string aiResponse = Intelligence.singleton().respond(message);
+                if (Configuration.singleton().retrieveLocalStringOption("silence", destination) == "false" &&
+                    aiResponse != string.Empty)
+                {
+                    string[] aiParameters = {source.nickname};
+                    irc.ircPrivmsg(destination, _config.getMessage(aiResponse, aiParameters));
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+        }
+
+        private static void joinChannels()
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            debugChannel = _config.retrieveGlobalStringOption("channelDebug");
+            irc.ircJoin(debugChannel);
+
+            DAL.Select q = new DAL.Select("channel_name");
+            q.setFrom("channel");
+            q.addWhere(new DAL.WhereConds("channel_enabled", 1));
+            q.addWhere(new DAL.WhereConds("channel_network", _ircNetwork.ToString()));
+            foreach (object[] item in _dbal.executeSelect(q))
+            {
+                irc.ircJoin((string) (item)[0]);
             }
         }
 
         /// <summary>
-        /// Tests against recognised message formats
+        ///   Tests against recognised message formats
         /// </summary>
-        /// <param name="message">the message recieved</param>
-        /// <param name="overrideSilence">ref: whether this message format overrides any imposed silence</param>
+        /// <param name = "message">the message recieved</param>
+        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
         /// <returns>true if the message is in a recognised format</returns>
-        /// <remarks>Allowed formats:
-        /// !command
-        /// !helpmebot command
-        /// Helpmebot: command
-        /// Helpmebot command
-        /// Helpmebot, command
-        /// Helpmebot> command
+        /// <remarks>
+        ///   Allowed formats:
+        ///   !command
+        ///   !helpmebot command
+        ///   Helpmebot: command
+        ///   Helpmebot command
+        ///   Helpmebot, command
+        ///   Helpmebot> command
         /// </remarks>
-       static bool isRecognisedMessage( ref string message , ref bool overrideSilence )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+        private static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-           string[ ] words = message.Split( ' ' );
+            string[] words = message.Split(' ');
 
-           if( words[ 0 ].StartsWith( Trigger ) )
-           {
+            if (words[0].StartsWith(_trigger))
+            {
+                // !
 
-               /// !
+                if (message.Length == _trigger.Length)
+                    return false;
 
-               if( message.Length == Trigger.Length )
-                   return false;
-
-               /// !command
-               /// !helpmebot command
+                // !command
+                // !helpmebot command
 
 
-               if( words[ 0 ].ToLower() == ( Trigger + irc.IrcNickname.ToLower()) )
-               {
-                   overrideSilence = true;
-                   message = string.Join( " " , words , 1 , words.Length - 1 );
-                   return true;
-               }
-               else
-               {
-                   message = message.Substring( 1 );
-                   overrideSilence = false;
-                   return true;
-               }
-           }
-           else
-           {
-               if( words[ 0 ].ToLower() == irc.IrcNickname.ToLower() )/// Helpmebot command
-               {
-                   message = string.Join( " " , words , 1 , words.Length - 1 );
-                   overrideSilence = true;
-                   return true;
-               }
-               else if( words[ 0 ].ToLower() == ( irc.IrcNickname.ToLower() + ":" ) ) /// Helpmebot: command
-               {
-                   message = string.Join( " " , words , 1 , words.Length - 1 );
-                   overrideSilence = true;
-                   return true;
-               }
-               else if( words[ 0 ].ToLower() == ( irc.IrcNickname.ToLower() + ">" ) ) /// Helpmebot> command
-               {
-                   message = string.Join( " " , words , 1 , words.Length - 1 );
-                   overrideSilence = true;
-                   return true;
-               }
-               else if(words[ 0 ].ToLower() == (irc.IrcNickname.ToLower() + ",")) /// Helpmebot, command
-               {
-                   message = string.Join( " " , words , 1 , words.Length - 1 );
-                   overrideSilence = true;
-                   return true;
-               }
+                if (words[0].ToLower() == (_trigger + irc.ircNickname.ToLower()))
+                {
+                    overrideSilence = true;
+                    message = string.Join(" ", words, 1, words.Length - 1);
+                    return true;
+                }
+                message = message.Substring(1);
+                overrideSilence = false;
+                return true;
+            }
+            if (words[0].ToLower() == irc.ircNickname.ToLower()) // Helpmebot command
+            {
+                message = string.Join(" ", words, 1, words.Length - 1);
+                overrideSilence = true;
+                return true;
+            }
+            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ":")) // Helpmebot: command
+            {
+                message = string.Join(" ", words, 1, words.Length - 1);
+                overrideSilence = true;
+                return true;
+            }
+            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ">")) // Helpmebot> command
+            {
+                message = string.Join(" ", words, 1, words.Length - 1);
+                overrideSilence = true;
+                return true;
+            }
+            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ",")) // Helpmebot, command
+            {
+                message = string.Join(" ", words, 1, words.Length - 1);
+                overrideSilence = true;
+                return true;
+            }
+            return false;
+        }
 
-           }
-           return false;
-       }
+        public static void stop()
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-       static public void Stop( )
-       {
-           Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-           ThreadList.instance( ).stop( );
-       }
+            ThreadList.instance().stop();
+        }
     }
 }

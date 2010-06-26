@@ -14,324 +14,368 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
     public class Configuration
     {
-        DAL dbal = DAL.Singleton();
+        private readonly DAL _dbal = DAL.singleton();
 
         private static Configuration _singleton;
-        public static Configuration Singleton( )
+
+        public static Configuration singleton()
         {
-            if( _singleton == null )
-                _singleton = new Configuration( );
-            return _singleton;
-        }
-        protected Configuration(  )
-        {
-            configurationCache = new System.Collections.ArrayList( );
+            return _singleton ?? ( _singleton = new Configuration( ) );
         }
 
-
-        System.Collections.ArrayList configurationCache;
-
-        public string this[ string globalOption ]
+        protected Configuration()
         {
-            get
-            {
-                return retrieveGlobalStringOption( globalOption );
-            }
-            set
-            {
-                setGlobalOption( globalOption, value );
-            }
+            this._configurationCache = new ArrayList();
         }
 
-        public string retrieveGlobalStringOption( string optionName )
+
+        private readonly ArrayList _configurationCache;
+
+        public string this[string globalOption]
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            get { return retrieveGlobalStringOption(globalOption); }
+            set { setGlobalOption(globalOption, value); }
+        }
 
-          
-            foreach ( ConfigurationSetting s in configurationCache )
+        public string retrieveGlobalStringOption(string optionName)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+
+            foreach (ConfigurationSetting s in this._configurationCache)
             {
-                if ( s.Name == optionName )
-                { // option found, deal with option
-          
-                    if ( s.isValid( ) == true )
-                    {//option cache is still valid
-                        return s.Value;
-                    }
-                    else
-                    {//option cache is not valid
-                        // fetch new item from database
-                        string optionValue1 = retrieveOptionFromDatabase( optionName );
+                if ( s.name != optionName ) continue;
 
-                        s.Value = optionValue1;
-                        return s.Value;
-                    }
-                }
+                // option found, deal with option
 
-            }
-
-          
-           // option not found, add entry to cache
-                string optionValue2 = retrieveOptionFromDatabase( optionName );
-
-                if( optionValue2 != string.Empty )
+                if (s.isValid())
                 {
-                    ConfigurationSetting cachedSetting = new ConfigurationSetting( optionName , optionValue2 );
-                    configurationCache.Add( cachedSetting );
+                    //option cache is still valid
+                    return s.value;
                 }
-                return optionValue2;
-            
-        }
-        public uint retrieveGlobalUintOption( string optionName )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+                //option cache is not valid
+                // fetch new item from database
+                string optionValue1 = this.retrieveOptionFromDatabase(optionName);
 
-            string optionValue = retrieveGlobalStringOption( optionName );
+                s.value = optionValue1;
+                return s.value;
+            }
+
+            // option not found, add entry to cache
+            string optionValue2 = retrieveOptionFromDatabase(optionName);
+
+            if (optionValue2 != string.Empty)
+            {
+                ConfigurationSetting cachedSetting = new ConfigurationSetting(optionName, optionValue2);
+                this._configurationCache.Add(cachedSetting);
+            }
+            return optionValue2;
+        }
+
+        public uint retrieveGlobalUintOption(string optionName)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            string optionValue = retrieveGlobalStringOption(optionName);
             uint value;
             try
             {
-                value = uint.Parse( optionValue );
+                value = uint.Parse(optionValue);
             }
-            catch ( Exception )
+            catch (Exception)
             {
                 return 0;
             }
             return value;
         }
 
-        public string retrieveLocalStringOption (string optionName, string channel)
+        public string retrieveLocalStringOption(string optionName, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return dbal.proc_HMB_GET_LOCAL_OPTION( optionName, channel );
+            return this._dbal.proc_HMB_GET_LOCAL_OPTION(optionName, channel);
         }
 
-        private string retrieveOptionFromDatabase( string optionName )
+        private string retrieveOptionFromDatabase(string optionName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string result = "";
             try
             {
-                DAL.Select q = new DAL.Select( "configuration_value" );
-                q.setFrom( "configuration" );
-                q.addLimit( 1, 0 );
-                q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
+                DAL.Select q = new DAL.Select("configuration_value");
+                q.setFrom("configuration");
+                q.addLimit(1, 0);
+                q.addWhere(new DAL.WhereConds("configuration_name", optionName));
 
-                result = dbal.executeScalarSelect( q );
-                if( result == null )
-                {
-                    result = "";
-                }
+                string result = this._dbal.executeScalarSelect(q) ?? "";
                 return result;
             }
-            catch( Exception ex )
+            catch (Exception ex)
             {
-                GlobalFunctions.ErrorLog( ex );
+                GlobalFunctions.errorLog(ex);
             }
             return null;
         }
 
-        public void setGlobalOption( string optionName , string newValue )
+        public void setGlobalOption(string optionName, string newValue)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Dictionary<string, string> vals = new Dictionary<string, string>( );
-            vals.Add( "configuration_value", newValue );
-            dbal.Update( "configuration", vals, 1, new DAL.WhereConds( "configuration_name", optionName ) );
+            Dictionary<string, string> vals = new Dictionary<string, string>
+                                                  {
+                                                      {
+                                                          "configuration_value",
+                                                          newValue
+                                                          }
+                                                  };
+            this._dbal.update("configuration", vals, 1, new DAL.WhereConds("configuration_name", optionName));
         }
-        public void setLocalOption( string optionName, string channel, string newValue )
+
+        public void setLocalOption(string optionName, string channel, string newValue)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             // convert channel to ID
 
 
-            string channelId = getChannelId( channel );
+            string channelId = getChannelId(channel);
 
-            string configId = getOptionId( optionName );
-            
+            string configId = getOptionId(optionName);
+
             // does setting exist in local table?
             //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
 
-            DAL.Select q = new DAL.Select( "COUNT(*)" );
-            q.setFrom( "channelconfig" );
-            q.addWhere( new DAL.WhereConds( "cc_channel", channelId ) );
-            q.addWhere( new DAL.WhereConds( "cc_config", configId ) );
-            string count = dbal.executeScalarSelect( q );
+            DAL.Select q = new DAL.Select("COUNT(*)");
+            q.setFrom("channelconfig");
+            q.addWhere(new DAL.WhereConds("cc_channel", channelId));
+            q.addWhere(new DAL.WhereConds("cc_config", configId));
+            string count = this._dbal.executeScalarSelect(q);
 
-            if( count == "1" )
+            if (count == "1")
             {
                 //yes: update
-                Dictionary<string, string> vals = new Dictionary<string, string>( );
-                vals.Add( "cc_value", newValue );
-                dbal.Update( "channelconfig", vals, 1, new DAL.WhereConds( "cc_channel", channelId ), new DAL.WhereConds( "cc_config", configId ) );
+                Dictionary<string, string> vals = new Dictionary<string, string>
+                                                      {
+                                                          { "cc_value", newValue }
+                                                      };
+                this._dbal.update("channelconfig", vals, 1, new DAL.WhereConds("cc_channel", channelId),
+                            new DAL.WhereConds("cc_config", configId));
             }
             else
             {
                 // no: insert
-                dbal.Insert( "channelconfig", channelId, configId, newValue );
+                this._dbal.insert("channelconfig", channelId, configId, newValue);
             }
         }
 
-        public void setOption(  string optionName , string target , string newValue )
+        public void setOption(string optionName, string target, string newValue)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( target == "global" )
+            if (target == "global")
             {
-                setGlobalOption( optionName , newValue );
+                setGlobalOption(optionName, newValue);
             }
             else
             {
-                setLocalOption( optionName , target , newValue );
+                setLocalOption(optionName, target, newValue);
             }
         }
 
-        public void deleteLocalOption( string optionName , string target )
+        public void deleteLocalOption(string optionName, string target)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            dbal.Delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ), new DAL.WhereConds( "cc_channel", getChannelId( target ) ) );
+            this._dbal.delete("channelconfig", 1, new DAL.WhereConds("cc_config", getOptionId(optionName)),
+                        new DAL.WhereConds("cc_channel", getChannelId(target)));
         }
 
-        private string getOptionId( string optionName )
+        private string getOptionId(string optionName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "configuration_id" );
-            q.setFrom( "configuration" );
-            q.addWhere( new DAL.WhereConds( "configuration_name", optionName ) );
+            DAL.Select q = new DAL.Select("configuration_id");
+            q.setFrom("configuration");
+            q.addWhere(new DAL.WhereConds("configuration_name", optionName));
 
-            return dbal.executeScalarSelect( q );
+            return this._dbal.executeScalarSelect(q);
         }
 
-        public string getChannelId( string channel )
+        public string getChannelId(string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "channel_id" );
-            q.setFrom( "channel" );
-            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
+            DAL.Select q = new DAL.Select("channel_id");
+            q.setFrom("channel");
+            q.addWhere(new DAL.WhereConds("channel_name", channel));
 
-            return dbal.executeScalarSelect( q );
+            return this._dbal.executeScalarSelect(q);
         }
 
-        public static void readHmbotConfigFile( string filename, 
-                ref string mySqlServerHostname, ref string mySqlUsername, 
-                ref string mySqlPassword, ref uint mySqlServerPort, 
-                ref string mySqlSchema )
+        public static void readHmbotConfigFile(string filename,
+                                               ref string mySqlServerHostname, ref string mySqlUsername,
+                                               ref string mySqlPassword, ref uint mySqlServerPort,
+                                               ref string mySqlSchema)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            StreamReader settingsreader = new StreamReader( filename );
-            mySqlServerHostname = settingsreader.ReadLine( );
-            mySqlServerPort = uint.Parse( settingsreader.ReadLine( ) );
-            mySqlUsername = settingsreader.ReadLine( );
-            mySqlPassword = settingsreader.ReadLine( );
-            mySqlSchema = settingsreader.ReadLine( );
-            settingsreader.Close( );
+            StreamReader settingsreader = new StreamReader(filename);
+            mySqlServerHostname = settingsreader.ReadLine();
+            mySqlServerPort = uint.Parse(settingsreader.ReadLine());
+            mySqlUsername = settingsreader.ReadLine();
+            mySqlPassword = settingsreader.ReadLine();
+            mySqlSchema = settingsreader.ReadLine();
+            settingsreader.Close();
         }
 
         #region messaging
 
-        private ArrayList getMessages( string messageName )
+        private ArrayList getMessages(string messageName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
 
-            DAL.Select q = new DAL.Select( "message_text" );
-            q.setFrom( "message" );
-            q.addWhere( new DAL.WhereConds( "message_name", messageName ) );
-            
-            ArrayList resultset = dbal.executeSelect( q );
+            DAL.Select q = new DAL.Select("message_text");
+            q.setFrom("message");
+            q.addWhere(new DAL.WhereConds("message_name", messageName));
 
-            ArrayList al = new ArrayList( );
+            ArrayList resultset = this._dbal.executeSelect(q);
 
-            foreach( object[] item in resultset )
+            ArrayList al = new ArrayList();
+
+            foreach (object[] item in resultset)
             {
-                al.Add( (string)( item )[ 0 ] );
+                al.Add((item)[0]);
             }
             return al;
         }
 
         //returns a random message chosen from the list of possible message names
-        private string chooseRandomMessage( string messageName )
+        private string chooseRandomMessage(string messageName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Random rnd = new Random( );
-            ArrayList al = getMessages( messageName );
-            if( al.Count == 0 )
+            Random rnd = new Random();
+            ArrayList al = getMessages(messageName);
+            if (al.Count == 0)
             {
-                Helpmebot6.irc.IrcPrivmsg( Helpmebot6.debugChannel , "***ERROR*** Message '" + messageName + "' not found in message table" );
+                Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
+                                          "***ERROR*** Message '" + messageName + "' not found in message table");
                 return "";
             }
-            return al[ rnd.Next( 0, al.Count ) ].ToString( );
+            return al[rnd.Next(0, al.Count)].ToString();
         }
 
-        private string parseMessage( string messageFormat, string[ ] args )
+        private static string parseMessage(string messageFormat, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return String.Format( messageFormat, args );
-        }
-        public string GetMessage( string messageName )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            return chooseRandomMessage( messageName );
-        }
-        public string GetMessage( string messageName, string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            return parseMessage( chooseRandomMessage( messageName ), args );
+            return String.Format(messageFormat, args);
         }
 
-        public string GetMessage( string messageName , string defaultMessageName )
+        public string getMessage(string messageName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string msg = GetMessage( messageName );
-            if( msg == string.Empty )
+            return chooseRandomMessage(messageName);
+        }
+
+        public string getMessage(string messageName, string[] args)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            return parseMessage(chooseRandomMessage(messageName), args);
+        }
+
+        public string getMessage(string messageName, string defaultMessageName)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            string msg = this.getMessage(messageName);
+            if (msg == string.Empty)
             {
-                msg = GetMessage( defaultMessageName );
-                SaveMessage( messageName , "" , msg );
+                msg = this.getMessage(defaultMessageName);
+                this.saveMessage(messageName, "", msg);
             }
-            msg = GetMessage( messageName );
-            return msg;
-        }
-        public string GetMessage( string messageName , string defaultMessageName, string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            string msg = GetMessage( messageName ,args);
-            if( msg == string.Empty )
-            {
-                msg = GetMessage( defaultMessageName );
-                SaveMessage( messageName , "" , msg );
-            }
-            msg = GetMessage( messageName, args );
+            msg = this.getMessage(messageName);
             return msg;
         }
 
-        public void SaveMessage( string messageName , string messageDescription , string messageContent )
+        public string getMessage(string messageName, string defaultMessageName, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            dbal.Insert( "message", "", messageName, messageDescription, messageContent, "1" );
+            string msg = this.getMessage(messageName, args);
+            if (msg == string.Empty)
+            {
+                msg = this.getMessage(defaultMessageName);
+                this.saveMessage(messageName, "", msg);
+            }
+            msg = this.getMessage(messageName, args);
+            return msg;
         }
+
+        public void saveMessage(string messageName, string messageDescription, string messageContent)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            this._dbal.insert("message", "", messageName, messageDescription, messageContent, "1");
+        }
+
         #endregion
     }
 }

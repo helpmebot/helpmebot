@@ -14,71 +14,84 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Text;
+
+#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
     public class WordLearner
     {
-        public static bool Learn( string word, string phrase )
+        public static bool learn(string word, string phrase)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return Learn( word, phrase, false );
+            return learn(word, phrase, false);
         }
-        public static bool Learn( string word, string phrase, bool action )
+
+        public static bool learn(string word, string phrase, bool action)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "COUNT(*)" );
-            q.setFrom( "keywords" );
-            q.addLimit( 1, 0 );
-            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+            DAL.Select q = new DAL.Select("COUNT(*)");
+            q.setFrom("keywords");
+            q.addLimit(1, 0);
+            q.addWhere(new DAL.WhereConds("keyword_name", word));
 
 
-            if( DAL.Singleton( ).executeScalarSelect( q ) != "0" )
+            if (DAL.singleton().executeScalarSelect(q) != "0")
                 return false;
 
-            DAL.Singleton( ).Insert( "keywords", "", word, phrase, ( action ? "1" : "0 " ) );
+            DAL.singleton().insert("keywords", "", word, phrase, (action ? "1" : "0 "));
             return true;
         }
 
-        public static RemeberedWord Remember( string word )
+        public static RemeberedWord remember(string word)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "keyword_action" );
-            q.setFrom( "keywords" );
-            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+            DAL.Select q = new DAL.Select("keyword_action");
+            q.setFrom("keywords");
+            q.addWhere(new DAL.WhereConds("keyword_name", word));
 
-            string action = DAL.Singleton( ).executeScalarSelect( q );
-            q = new DAL.Select( "keyword_response" );
-            q.setFrom( "keywords" );
-            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
-            string result = DAL.Singleton( ).executeScalarSelect( q );
+            string action = DAL.singleton().executeScalarSelect(q);
+            q = new DAL.Select("keyword_response");
+            q.setFrom("keywords");
+            q.addWhere(new DAL.WhereConds("keyword_name", word));
+            string result = DAL.singleton().executeScalarSelect(q);
 
-            RemeberedWord rW = new RemeberedWord( );
-            rW.action = ( action == "1" ? true : false );
-            rW.phrase = result;
+            RemeberedWord rW = new RemeberedWord
+                                   {
+                                       action = ( action == "1" ? true : false ),
+                                       phrase = result
+                                   };
 
-            //  string result =  DAL.Singleton().ExecuteScalarQuery( "SELECT k.`keyword_response` FROM u_stwalkerster_hmb6.keywords k WHERE k.`keyword_name` = \"" + GlobalFunctions.escape( word ) + "\";" );
             return rW;
         }
 
-        public static bool Forget( string word )
+        public static bool forget(string word)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "COUNT(*)" );
-            q.setFrom( "keywords" );
-            q.addWhere( new DAL.WhereConds( "keyword_name", word ) );
+            DAL.Select q = new DAL.Select("COUNT(*)");
+            q.setFrom("keywords");
+            q.addWhere(new DAL.WhereConds("keyword_name", word));
 
-            if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
+            if (DAL.singleton().executeScalarSelect(q) == "0")
                 return false;
 
-            DAL.Singleton( ).Delete( "keywords", 0, new DAL.WhereConds( "keyword_name", word ) );
+            DAL.singleton().delete("keywords", 0, new DAL.WhereConds("keyword_name", word));
             return true;
         }
 
@@ -87,6 +100,5 @@ namespace helpmebot6
             public string phrase;
             public bool action;
         }
-
     }
 }

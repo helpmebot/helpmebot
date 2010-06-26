@@ -1,75 +1,87 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
 using System.Collections;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
-    enum CommandResponseDestination
+    internal enum CommandResponseDestination
     {
-        DEFAULT,
-        CHANNEL_DEBUG,
-        PRIVATE_MESSAGE
+        Default,
+        ChannelDebug,
+        PrivateMessage
     }
 
-    struct CommandResponse
+    internal struct CommandResponse
     {
-        public CommandResponseDestination Destination;
-        public string Message;
+        public CommandResponseDestination destination;
+        public string message;
     }
 
-    class CommandResponseHandler
+    internal class CommandResponseHandler
     {
-        ArrayList responses;
+        private readonly ArrayList _responses;
 
-        public CommandResponseHandler( )
+        public CommandResponseHandler()
         {
-            responses = new ArrayList( );
+            this._responses = new ArrayList();
         }
-        public CommandResponseHandler( string message )
+
+        public CommandResponseHandler(string message)
         {
-            responses = new ArrayList( );
-            respond( message );
+            this._responses = new ArrayList();
+            respond(message);
         }
-        public CommandResponseHandler( string message , CommandResponseDestination destination )
+
+        public CommandResponseHandler(string message, CommandResponseDestination destination)
         {
-            responses = new ArrayList( );
-            respond( message , destination );
+            this._responses = new ArrayList();
+            respond(message, destination);
         }
-        public void respond( string message  )
+
+        public void respond(string message)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             CommandResponse cr;
-            cr.Destination = CommandResponseDestination.DEFAULT;
-            cr.Message = message;
+            cr.destination = CommandResponseDestination.Default;
+            cr.message = message;
 
-            responses.Add( cr );
+            this._responses.Add(cr);
         }
-        public void respond( string message, CommandResponseDestination destination )
+
+        public void respond(string message, CommandResponseDestination destination)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             CommandResponse cr;
-            cr.Destination = destination;
-            cr.Message = message;
-                
-            responses.Add( cr );
+            cr.destination = destination;
+            cr.message = message;
+
+            this._responses.Add(cr);
         }
 
-        public void append( CommandResponseHandler moreResponses )
+        public void append(CommandResponseHandler moreResponses)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            foreach( object item in moreResponses.getResponses() )
+            foreach (object item in moreResponses.getResponses())
             {
-                responses.Add( item );
+                this._responses.Add(item);
             }
         }
 
         public ArrayList getResponses()
         {
-            return responses;
+            return this._responses;
         }
     }
 }

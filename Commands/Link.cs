@@ -1,21 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Link : GenericCommand
+    internal class Link : GenericCommand
     {
-        public Link( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                string.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
+                              MethodBase.GetCurrentMethod().Name), Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            bool secure = bool.Parse(Configuration.Singleton().retrieveLocalStringOption("useSecureWikiServer", channel));
+            bool secure = bool.Parse(Configuration.singleton().retrieveLocalStringOption("useSecureWikiServer", channel));
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")
@@ -26,13 +25,13 @@ namespace helpmebot6.Commands
             }
 
             string key = channel;
-            if( GlobalFunctions.RealArrayLength(args) > 0 )
+            if (GlobalFunctions.realArrayLength(args) > 0)
             {
                 key = "<<<REALTIME>>>";
-                Linker.Instance( ).ParseMessage( string.Join( " " , args ) , key );
+                Linker.instance().parseMessage(string.Join(" ", args), key);
             }
 
-            return new CommandResponseHandler(Linker.Instance().GetLink(key, secure));
+            return new CommandResponseHandler(Linker.instance().getLink(key, secure));
         }
     }
 }

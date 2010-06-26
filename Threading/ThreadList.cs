@@ -1,90 +1,101 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.Collections;
+using System.Reflection;
+using System.Threading;
+
+#endregion
 
 namespace helpmebot6.Threading
 {
-    class ThreadList
+    internal class ThreadList
     {
         private static ThreadList _instance;
-        public static ThreadList instance( )
-        {
-            if( _instance == null )
-                _instance = new ThreadList( );
 
-            return _instance;
-        }
-        protected ThreadList( )
+        public static ThreadList instance()
         {
-            threadedObjects = new ArrayList( );
+            return _instance ?? ( _instance = new ThreadList( ) );
         }
 
-        ArrayList threadedObjects;
-
-        public void register( IThreadedSystem sender )
+        protected ThreadList()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            threadedObjects.Add( sender );
+            this._threadedObjects = new ArrayList();
         }
 
-        public void stop( )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+        private readonly ArrayList _threadedObjects;
 
-            System.Threading.Thread shutdownControllerThread
-                    = new System.Threading.Thread( new System.Threading.ThreadStart( shutdown_method ) );
+        public void register(IThreadedSystem sender)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            this._threadedObjects.Add(sender);
+        }
+
+        public void stop()
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            Thread shutdownControllerThread
+                = new Thread(this.shutdownMethod);
 
             shutdownControllerThread.Start();
         }
 
-        private void shutdown_method()
+        private void shutdownMethod()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            foreach( object obj in threadedObjects )
+            foreach (object obj in this._threadedObjects)
             {
                 try
                 {
-                    Logger.Instance( ).addToLog( "Attempting to shut down threaded system: " + obj.GetType( ), Logger.LogTypes.GENERAL );
-                    ( (IThreadedSystem)obj ).Stop( );
+                    Logger.instance().addToLog("Attempting to shut down threaded system: " + obj.GetType(),
+                                               Logger.LogTypes.General);
+                    ((IThreadedSystem) obj).stop();
                 }
-                catch( NotImplementedException ex )
+                catch (NotImplementedException ex)
                 {
-                    GlobalFunctions.ErrorLog( ex );
+                    GlobalFunctions.errorLog(ex);
                 }
             }
 
-            Logger.Instance( ).addToLog( "All threaded systems have been shut down.", Logger.LogTypes.GENERAL );
+            Logger.instance().addToLog("All threaded systems have been shut down.", Logger.LogTypes.General);
         }
 
-        public string[ ] getAllThreadStatus( )
+        public string[] getAllThreadStatus()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            ArrayList responses = new ArrayList( );
-            foreach( IThreadedSystem item in threadedObjects )
+            ArrayList responses = new ArrayList();
+            foreach (IThreadedSystem item in this._threadedObjects)
             {
-                string status = item.GetType( ).ToString( ) + ": ";
+                string status = item.GetType() + ": ";
                 try
                 {
-                    foreach( string i in item.getThreadStatus( ) )
+                    foreach (string i in item.getThreadStatus())
                     {
-                        responses.Add( status + i );
+                        responses.Add(status + i);
                     }
                 }
-                catch( NotImplementedException )
+                catch (NotImplementedException)
                 {
                     status += "Not available.";
-                    responses.Add( status );
+                    responses.Add(status);
                 }
-
             }
 
-            string[ ] responseArray = new string[ responses.Count ];
+            string[] responseArray = new string[responses.Count];
 
-            responses.CopyTo( responseArray );
+            responses.CopyTo(responseArray);
 
             return responseArray;
         }

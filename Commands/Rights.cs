@@ -1,96 +1,93 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+using System.Reflection;
+using System.Xml;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Returns the user rights of a wikipedian
+    ///   Returns the user rights of a wikipedian
     /// </summary>
-    class Rights : GenericCommand
+    internal class Rights : GenericCommand
     {
-        public Rights( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            CommandResponseHandler crh = new CommandResponseHandler( );
-            if( args.Length > 0 )
+            CommandResponseHandler crh = new CommandResponseHandler();
+            if (args.Length > 0)
             {
+                string username = string.Join(" ", args);
+                string rights = getRights(username, channel);
 
-                string username = string.Join( " " , args );
-                string rights = getRights( username, channel );
 
-
-                string message = "";
-                if( rights != "" )
+                string message;
+                if (rights != "")
                 {
-                    string[ ] messageParameters = { username , rights };
-                    message = Configuration.Singleton( ).GetMessage( "cmdRightsList" , messageParameters );
-
+                    string[] messageParameters = {username, rights};
+                    message = Configuration.singleton().getMessage("cmdRightsList", messageParameters);
                 }
                 else
                 {
-                    string[ ] messageParameters = { username };
-                    message = Configuration.Singleton( ).GetMessage( "cmdRightsNone" , messageParameters );
+                    string[] messageParameters = {username};
+                    message = Configuration.singleton().getMessage("cmdRightsNone", messageParameters);
                 }
 
-               crh.respond( message );
+                crh.respond(message);
             }
             else
             {
-                string[ ] messageParameters = { "rights" , "1" , args.Length.ToString() };
-                
-                Helpmebot6.irc.IrcNotice( source.Nickname ,Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                string[] messageParameters = {"rights", "1", args.Length.ToString()};
+
+                Helpmebot6.irc.ircNotice(source.nickname,
+                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
             }
             return crh;
         }
 
 
-
-       public string getRights( string username, string channel )
+        public string getRights(string username, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( username == string.Empty )
+            if (username == string.Empty)
             {
-                throw new ArgumentNullException( );
+                throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki", channel );
+            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
 
-            DAL.Select q = new DAL.Select( "site_api" );
-            q.setFrom( "site" );
-            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
-            string api = DAL.Singleton( ).executeScalarSelect( q );
+            DAL.Select q = new DAL.Select("site_api");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            string api = DAL.singleton().executeScalarSelect(q);
 
             string returnStr = "";
-            string rightsList;
             int rightsCount = 0;
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader(  HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username ));
+            XmlTextReader creader =
+                new XmlTextReader(
+                    HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
             do
-                creader.Read( );
-            while( creader.Name != "user" );
-            creader.Read( );
-            if( creader.Name == "groups" ) //the start of the group list
+                creader.Read(); while (creader.Name != "user");
+            creader.Read();
+            if (creader.Name == "groups") //the start of the group list
             {
                 do
                 {
-                    creader.Read( );
-                    rightsList = ( creader.ReadString( ) );
-                    if( rightsList != "" )
+                    creader.Read();
+                    string rightsList = (creader.ReadString());
+                    if (rightsList != "")
                         returnStr = returnStr + rightsList + ", ";
                     rightsCount = rightsCount + 1;
-                }
-                while( creader.Name == "g" ); //each group should be added
+                } while (creader.Name == "g"); //each group should be added
             }
-            if( rightsCount == 0 )
-                returnStr = "";
-            else
-                returnStr = returnStr.Remove( returnStr.Length - 2 );
+            returnStr = rightsCount == 0 ? "" : returnStr.Remove(returnStr.Length - 2);
 
 
             return returnStr;

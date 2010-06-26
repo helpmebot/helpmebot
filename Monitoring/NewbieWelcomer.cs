@@ -1,112 +1,124 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿#region Usings
+
+using System.Collections;
 using System.IO;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
- 
+
+#endregion
+
 namespace helpmebot6.Monitoring
 {
-    class NewbieWelcomer
+    internal class NewbieWelcomer
     {
         private static NewbieWelcomer _instance;
-        protected NewbieWelcomer( )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
-            DAL.Select q = new DAL.Select( "bin_blob" );
+        protected NewbieWelcomer()
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            DAL.Select q = new DAL.Select("bin_blob");
             q.setFrom("binary_store");
-            q.addWhere( new DAL.WhereConds( "bin_desc", "newbie_hostnames" ) );
-            System.Collections.ArrayList result = DAL.Singleton( ).executeSelect( q );
- 
-           byte[ ] list =  ( (byte[ ])( ( (object[ ])( result[ 0 ] ) )[ 0 ] ) );
-            
+            q.addWhere(new DAL.WhereConds("bin_desc", "newbie_hostnames"));
+            ArrayList result = DAL.singleton().executeSelect(q);
 
-           BinaryFormatter bf = new BinaryFormatter( );
-           try
-           {
-               hostNames = (SerializableArrayList)bf.Deserialize( new MemoryStream( list ) );
-           }
-           catch( System.Runtime.Serialization.SerializationException ex )
-           {
-               GlobalFunctions.ErrorLog( ex );
-               hostNames = new SerializableArrayList( );
-           }
-            
-        }
-        public static NewbieWelcomer Instance( )
-        {
-            if( _instance == null )
-                _instance = new NewbieWelcomer( );
-            return _instance;
+            byte[] list = ((byte[]) (((object[]) (result[0]))[0]));
+
+
+            BinaryFormatter bf = new BinaryFormatter();
+            try
+            {
+                this._hostNames = (SerializableArrayList) bf.Deserialize(new MemoryStream(list));
+            }
+            catch (SerializationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+                this._hostNames = new SerializableArrayList();
+            }
         }
 
-        SerializableArrayList hostNames; 
-
-        public void execute( User source, string channel )
+        public static NewbieWelcomer instance()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            return _instance ?? ( _instance = new NewbieWelcomer( ) );
+        }
 
-            if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" &&
-                Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
+        private readonly SerializableArrayList _hostNames;
+
+        public void execute(User source, string channel)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false" &&
+                Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
             {
                 bool match = false;
-                foreach( object item in hostNames )
+                foreach (object item in this._hostNames)
                 {
-                    string pattern = (string)item;
-                    Regex rX = new Regex( pattern );
-                    if( rX.IsMatch( source.Hostname ) )
+                    string pattern = (string) item;
+                    Regex rX = new Regex(pattern);
+                    if (rX.IsMatch(source.hostname))
                     {
                         match = true;
                         break;
                     }
                 }
 
-                if( match )
+                if (match)
                 {
-                    string[ ] cmdArgs = { source.Nickname, channel };
-                    Helpmebot6.irc.IrcPrivmsg( channel, Configuration.Singleton( ).GetMessage( "welcomeMessage", cmdArgs ) );
+                    string[] cmdArgs = {source.nickname, channel};
+                    Helpmebot6.irc.ircPrivmsg(channel, Configuration.singleton().getMessage("welcomeMessage", cmdArgs));
                 }
             }
         }
 
-        public void addHost( string host )
+        public void addHost(string host)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            hostNames.Add( host );
+            this._hostNames.Add(host);
 
-            saveHostnames( );
+            saveHostnames();
         }
 
-        public void delHost( string host )
+        public void delHost(string host)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            hostNames.Remove( host );
+            this._hostNames.Remove(host);
 
-            saveHostnames( );
+            saveHostnames();
         }
 
-        public string[ ] getHosts( )
+        public string[] getHosts()
         {
-            string[] list = new string[hostNames.Count];
-            hostNames.CopyTo( list );
+            string[] list = new string[this._hostNames.Count];
+            this._hostNames.CopyTo(list);
             return list;
         }
 
-        private void saveHostnames( )
+        private void saveHostnames()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            BinaryFormatter bf = new BinaryFormatter( );
-            MemoryStream ms = new MemoryStream( );
-            bf.Serialize( ms, hostNames );
+            BinaryFormatter bf = new BinaryFormatter();
+            MemoryStream ms = new MemoryStream();
+            bf.Serialize(ms, this._hostNames);
 
-            byte[ ] buf = ms.GetBuffer( );
+            byte[] buf = ms.GetBuffer();
 
-            DAL.Singleton( ).proc_HMB_UPDATE_BINARYSTORE( buf, "newbie_hostnames" );
+            DAL.singleton().proc_HMB_UPDATE_BINARYSTORE(buf, "newbie_hostnames");
         }
     }
-
 }

@@ -1,44 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
+﻿#region Usings
+
+using System;
 using System.IO;
+using System.Net;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
-    class IsGd
+    internal class IsGd
     {
-        public static Uri shorten( Uri longUrl )
+        public static Uri shorten(Uri longUrl)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "suc_shorturl" );
+            DAL.Select q = new DAL.Select("suc_shorturl");
             q.setFrom("shorturlcache");
-            q.addWhere( new DAL.WhereConds( "suc_fullurl", longUrl.ToString( ) ) );
-            string cachelookup = DAL.Singleton( ).executeScalarSelect( q );
+            q.addWhere(new DAL.WhereConds("suc_fullurl", longUrl.ToString()));
+            string cachelookup = DAL.singleton().executeScalarSelect(q);
 
-            if( cachelookup == "" )
+            if (cachelookup == "")
             {
-
-                HttpWebRequest wrq = (HttpWebRequest)WebRequest.Create( "http://is.gd/api.php?longurl=" + longUrl.ToString( ) );
-                wrq.UserAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
-                HttpWebResponse wrs = (HttpWebResponse)wrq.GetResponse( );
-                if( wrs.StatusCode == HttpStatusCode.OK )
+                HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
+                wrq.UserAgent = Configuration.singleton().retrieveGlobalStringOption("useragent");
+                HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
+                if (wrs.StatusCode == HttpStatusCode.OK)
                 {
-                    StreamReader sr = new StreamReader( wrs.GetResponseStream( ) );
-                    string shorturl = sr.ReadLine( );
-                    DAL.Singleton( ).Insert( "shorturlcache", "", longUrl.ToString( ), shorturl );
-                    return new Uri( shorturl );
+                    StreamReader sr = new StreamReader(wrs.GetResponseStream());
+                    string shorturl = sr.ReadLine();
+                    DAL.singleton().insert("shorturlcache", "", longUrl.ToString(), shorturl);
+                    return new Uri(shorturl);
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
-            else
-            {
-                return new Uri( cachelookup );
-            }
+            return new Uri(cachelookup);
         }
     }
 }

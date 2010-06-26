@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Returns the number of messages that have been sent by the bot to IRC
+    ///   Returns the number of messages that have been sent by the bot to IRC
     /// </summary>
-    class Messagecount : GenericCommand
+    internal class Messagecount : GenericCommand
     {
-        public Messagecount( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-			string[] messageParameters = {Helpmebot6.irc.MessageCount.ToString() };
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "messageCountReport" , messageParameters ) );
+            string[] messageParameters = {Helpmebot6.irc.messageCount.ToString()};
+            return
+                new CommandResponseHandler(Configuration.singleton().getMessage("messageCountReport", messageParameters));
         }
     }
 }

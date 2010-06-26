@@ -1,116 +1,92 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+using System.Reflection;
+using helpmebot6.Commands;
+
+#endregion
 
 namespace helpmebot6
 {
     public class AccessLog
     {
         private static AccessLog _instance;
-        public static AccessLog instance( )
+
+        public static AccessLog instance()
         {
-            if( _instance == null )
-                _instance = new AccessLog( );
-            return _instance;
+            return _instance ?? ( _instance = new AccessLog( ) );
         }
-        protected AccessLog( )
+
+        protected AccessLog()
         {
         }
 
-        public void Save( AccessLogEntry logEntry )
+        public void save(AccessLogEntry logEntry)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Singleton( ).Insert("accesslog","", logEntry.al_user.ToString( ) , logEntry.al_user.AccessLevel.ToString( ) ,logEntry.al_reqaccesslevel.ToString( ), "", logEntry.al_class.ToString( ) , ( logEntry.al_allowed ? "1" : "0" )  );
+            DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
+                                   logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
+                                   (logEntry.alAllowed ? "1" : "0"));
         }
 
         public struct AccessLogEntry
         {
-            public AccessLogEntry( User source, Type command, bool success )
+            public AccessLogEntry(User source, Type command, bool success)
             {
-                _al_id = 0;
-                _al_date = new DateTime( 0 );
-                _al_user = source;
-                _al_class = command;
-                _al_allowed = success;
-                _al_reqaccesslevel = ( (Commands.GenericCommand)Activator.CreateInstance( _al_class ) ).accessLevel;
+                this._alId = 0;
+                this._alDate = new DateTime(0);
+                this._alUser = source;
+                this._alClass = command;
+                this._alAllowed = success;
+                this._alReqaccesslevel = ((GenericCommand) Activator.CreateInstance(this._alClass)).accessLevel;
             }
 
-            int _al_id;
-            User _al_user;
-            User.userRights _al_reqaccesslevel;
-            Type _al_class;
-            DateTime _al_date;
-            bool _al_allowed;
+            private readonly int _alId;
+            private readonly User _alUser;
+            private readonly User.UserRights _alReqaccesslevel;
+            private readonly Type _alClass;
+            private readonly DateTime _alDate;
+            private readonly bool _alAllowed;
 
-            public int al_id
+            public int alId
             {
-                get
-                {
-                    return _al_id;
-                }
+                get { return this._alId; }
             }
 
-            public User al_user
+            public User alUser
             {
-                get
-                {
-                    return _al_user;
-                }
-                private set
-                {
-                    _al_user = value;
-                }
+                get { return this._alUser; }
             }
 
-            public User.userRights al_reqaccesslevel
+            public User.UserRights alReqaccesslevel
             {
-                get
-                {
-                    return _al_reqaccesslevel;
-                }
-                private set
-                {
-                    _al_reqaccesslevel = value;
-                }
+                get { return this._alReqaccesslevel; }
             }
 
-            public Type al_class
+            public Type alClass
             {
-                get
-                {
-                    return _al_class;
-                }
-                private set
-                {
-                    _al_class = value;
-                }
+                get { return this._alClass; }
             }
 
-            public DateTime al_date
+            public DateTime alDate
             {
-                get
-                {
-                    return _al_date;
-                }
+                get { return this._alDate; }
             }
 
-            public bool al_allowed
+            public bool alAllowed
             {
-                get
-                {
-                    return _al_allowed;
-                }
-                private set
-                {
-                    _al_allowed = value;
-                }
+                get { return this._alAllowed; }
             }
         }
 
-        public bool doFloodCheck( User source )
+        public bool doFloodCheck(User source)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             return false;
         }

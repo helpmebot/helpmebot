@@ -1,22 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Net;
+﻿#region Usings
+
 using System.IO;
+using System.Net;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
-    static class HttpRequest
+    internal static class HttpRequest
     {
-        public static Stream get( string uri )
+        public static Stream get(string uri)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            HttpWebRequest hwr = (HttpWebRequest)WebRequest.Create( uri );
-            hwr.UserAgent = Configuration.Singleton( ).retrieveGlobalStringOption( "useragent" );
-            HttpWebResponse resp = (HttpWebResponse)hwr.GetResponse( );
+            HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
+            hwr.UserAgent = Configuration.singleton().retrieveGlobalStringOption("useragent");
+            HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
 
-            return resp.GetResponseStream( );
+            return resp.GetResponseStream();
         }
     }
 }

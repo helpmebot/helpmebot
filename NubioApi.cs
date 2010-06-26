@@ -14,123 +14,142 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
+using System.Net;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web;
+using System.Xml;
+
+#endregion
+
 namespace helpmebot6
 {
     /// <summary>
-    /// Talks to the API for Nubio squared.
+    ///   Talks to the API for Nubio squared.
     /// </summary>
     public class NubioApi
     {
-        Uri _apiUri; // http://stable.toolserver.org/nubio/api.php
+        private readonly Uri _apiUri; // http://stable.toolserver.org/nubio/api.php
 
-        public NubioApi( Uri apiUri )
+        public NubioApi(Uri apiUri)
         {
             _apiUri = apiUri;
         }
 
-        public string fetchFaqText( int id )
+        public string fetchFaqText(int id)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             try
             {
-                XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&noparse=true&action=fetch&id=" + id ));
-                xtr.WhitespaceHandling = WhitespaceHandling.None;
+                XmlTextReader xtr =
+                    new XmlTextReader(HttpRequest.get(_apiUri + "?format=xml&noparse=true&action=fetch&id=" + id))
+                        {
+                            WhitespaceHandling = WhitespaceHandling.None
+                        };
 
-                xtr.Read( );
+                xtr.Read();
                 try
                 {
-                    xtr.Read( );
+                    xtr.Read();
                 }
-                catch ( System.Net.WebException )
+                catch (WebException)
                 {
                 }
-                string text, title;
-                text = title = "";
-                while ( xtr.Read( ))
+                string title = "";
+                string text =  "";
+                while (xtr.Read())
                 {
-                    if ( xtr.NodeType == XmlNodeType.Element )
+                    if (xtr.NodeType == XmlNodeType.Element)
                     {
-                        if ( xtr.Name == "rev_text" )
-                            text = System.Web.HttpUtility.HtmlDecode( Regex.Replace( xtr.ReadElementContentAsString( ).Replace( "\\", "" ), "<(.|\n)*?>", "" ) );
-                        if ( xtr.Name == "page_title" )
-                            title = System.Web.HttpUtility.HtmlDecode( Regex.Replace( xtr.ReadElementContentAsString( ).Replace( "\\", "" ), "<(.|\n)*?>", "" ) );
+                        if (xtr.Name == "rev_text")
+                            text =
+                                HttpUtility.HtmlDecode(Regex.Replace(
+                                    xtr.ReadElementContentAsString().Replace("\\", ""), "<(.|\n)*?>", ""));
+                        if (xtr.Name == "page_title")
+                            title =
+                                HttpUtility.HtmlDecode(Regex.Replace(
+                                    xtr.ReadElementContentAsString().Replace("\\", ""), "<(.|\n)*?>", ""));
                     }
                 }
 
-                if ( text != "" && title != "" )
+                if (text != "" && title != "")
                 {
                     return title + ": " + text;
-
                 }
-                else
-                {
-                    return Configuration.Singleton().GetMessage( "fetchFaqTextNotFound", id.ToString( ) );
-                }
+                return Configuration.singleton().getMessage("fetchFaqTextNotFound", id.ToString());
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                GlobalFunctions.ErrorLog( ex  );
+                GlobalFunctions.errorLog(ex);
             }
             return null;
         }
 
-        public string searchFaq( string searchTerm )
+        public string searchFaq(string searchTerm)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             try
             {
-                XmlTextReader xtr = new XmlTextReader(  HttpRequest.get(_apiUri + "?format=xml&action=search&noparse=true&query=" + searchTerm) );
-                xtr.WhitespaceHandling = WhitespaceHandling.None;
+                XmlTextReader xtr =
+                    new XmlTextReader(
+                        HttpRequest.get(_apiUri + "?format=xml&action=search&noparse=true&query=" + searchTerm))
+                        {
+                            WhitespaceHandling = WhitespaceHandling.None
+                        };
 
-                xtr.Read( );
+                xtr.Read();
                 try
                 {
-                    xtr.Read( );
+                    xtr.Read();
                 }
-                catch ( System.Net.WebException )
+                catch (WebException)
                 {
                 }
 
-                string text, title;
-                text = title = "";
+                string title;
+                string text = title = "";
 
-                while ( xtr.Read( ) )
+                while (xtr.Read())
                 {
-                    if ( xtr.Name == "page_title" && xtr.NodeType == XmlNodeType.Element )
+                    if (xtr.Name == "page_title" && xtr.NodeType == XmlNodeType.Element)
                     {
-                        title = System.Web.HttpUtility.HtmlDecode( Regex.Replace( xtr.ReadElementContentAsString( ).Replace( "\\", "" ), "<(.|\n)*?>", "" ) );
-                        text = System.Web.HttpUtility.HtmlDecode( Regex.Replace( xtr.ReadString( ).Replace( "\\", "" ), "<(.|\n)*?>", "" ) );
+                        title =
+                            HttpUtility.HtmlDecode(Regex.Replace(xtr.ReadElementContentAsString().Replace("\\", ""),
+                                                                 "<(.|\n)*?>", ""));
+                        text =
+                            HttpUtility.HtmlDecode(Regex.Replace(xtr.ReadString().Replace("\\", ""), "<(.|\n)*?>", ""));
                     }
- 
                 }
-                if ( text != "" && title != "")
+                if (text != "" && title != "")
                 {
                     return title + ": " + text;
                 }
-                else
-                {
-                    return Configuration.Singleton().GetMessage( "fetchFaqTextNotFound", searchTerm );
-                }
+                return Configuration.singleton().getMessage("fetchFaqTextNotFound", searchTerm);
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                GlobalFunctions.ErrorLog( ex );
+                GlobalFunctions.errorLog(ex);
             }
             return null;
         }
 
-        public string viewLink( int id )
+        public string viewLink(int id)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return _apiUri.ToString( ).Replace( "api.php", "index.php?id=" + id.ToString( ) );
+            return _apiUri.ToString().Replace("api.php", "index.php?id=" + id);
         }
     }
 }

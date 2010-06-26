@@ -1,24 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+using helpmebot6.Monitoring;
+
+#endregion
 
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
-    class Status : GenericCommand
+    internal class Status : GenericCommand
     {
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string[ ] messageParams = { 
-                    args[ 0 ], 
-                    Monitoring.WatcherController.Instance( ).isWatcherInChannel(channel,args[0] ) 
-                            ? Configuration.Singleton( ).GetMessage( "enabled" ) 
-                            : Configuration.Singleton( ).GetMessage( "disabled" ), 
-                    Monitoring.WatcherController.Instance( ).getDelay( args[ 0 ] ).ToString( ) 
-                    };
+            string[] messageParams = {
+                                         args[0],
+                                         WatcherController.instance().isWatcherInChannel(channel, args[0])
+                                             ? Configuration.singleton().getMessage("enabled")
+                                             : Configuration.singleton().getMessage("disabled"),
+                                         WatcherController.instance().getDelay(args[0]).ToString()
+                                     };
 
-            return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "keywordStatus", messageParams ) );
+            return new CommandResponseHandler(Configuration.singleton().getMessage("keywordStatus", messageParams));
         }
     }
 }

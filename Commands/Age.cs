@@ -1,59 +1,62 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Returns the age of a wikipedian
+    ///   Returns the age of a wikipedian
     /// </summary>
-    class Age  : GenericCommand
+    internal class Age : GenericCommand
     {
-        public Age( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            if( args.Length > 0 )
+            if (args.Length > 0)
             {
-                string username = string.Join( " " , args );
-                TimeSpan time = getWikipedianAge( username, channel );
+                string username = string.Join(" ", args);
+                TimeSpan time = getWikipedianAge(username, channel);
                 string message;
-                if( time.Equals( new TimeSpan( 0 ) ) )
+                if (time.Equals(new TimeSpan(0)))
                 {
-                    string[ ] messageParameters = { username };
-                    message = Configuration.Singleton( ).GetMessage( "noSuchUser" , messageParameters );
+                    string[] messageParameters = {username};
+                    message = Configuration.singleton().getMessage("noSuchUser", messageParameters);
                 }
                 else
                 {
-                    string[ ] messageParameters = { username , ( time.Days / 365 ).ToString( ) , ( time.Days % 365 ).ToString( ) , time.Hours.ToString( ) , time.Minutes.ToString( ) , time.Seconds.ToString( ) };
-                    message = Configuration.Singleton( ).GetMessage( "cmdAge" , messageParameters );
+                    string[] messageParameters = {
+                                                     username, (time.Days/365).ToString(), (time.Days%365).ToString(),
+                                                     time.Hours.ToString(), time.Minutes.ToString(),
+                                                     time.Seconds.ToString()
+                                                 };
+                    message = Configuration.singleton().getMessage("cmdAge", messageParameters);
                 }
-                return new CommandResponseHandler( message );
+                return new CommandResponseHandler(message);
             }
-            else
-            {
-                string[ ] messageParameters = { "age" , "1" , args.Length.ToString( ) };
-                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
-
-            }
+            string[] messageParameters2 = {"age", "1", args.Length.ToString()};
+            Helpmebot6.irc.ircNotice(source.nickname,
+                                     Configuration.singleton().getMessage("notEnoughParameters", messageParameters2));
             return null;
         }
 
-        public TimeSpan getWikipedianAge( string userName , string channel)
+        public TimeSpan getWikipedianAge(string userName, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            Registration regCommand = new Registration( );
-            DateTime regdate = regCommand.getRegistrationDate( userName, channel );
-            TimeSpan age = DateTime.Now.Subtract( regdate );
-            if( regdate.Equals( new DateTime( 0001 , 1 , 1 ) ) )
+            Registration regCommand = new Registration();
+            DateTime regdate = regCommand.getRegistrationDate(userName, channel);
+            TimeSpan age = DateTime.Now.Subtract(regdate);
+            if (regdate.Equals(new DateTime(0001, 1, 1)))
             {
-                age = new TimeSpan( 0 );
+                age = new TimeSpan(0);
             }
             return age;
         }

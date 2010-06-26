@@ -1,90 +1,90 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+using helpmebot6.Monitoring.PageWatcher;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Pagewatcher : GenericCommand
+    internal class Pagewatcher : GenericCommand
     {
-        public Pagewatcher( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            if( args.Length > 1 )
+            if (args.Length > 1)
             {
-                switch( GlobalFunctions.popFromFront( ref args ).ToLower() )
+                switch (GlobalFunctions.popFromFront(ref args).ToLower())
                 {
                     case "add":
-                        return addPageWatcher( string.Join( " ", args ), channel );
+                        return addPageWatcher(string.Join(" ", args), channel);
                     case "del":
-                        return removePageWatcher( string.Join( " ", args ), channel );
+                        return removePageWatcher(string.Join(" ", args), channel);
                     case "list":
-                        CommandResponseHandler crh = new CommandResponseHandler( );
-                        foreach( string item in Monitoring.PageWatcher.PageWatcherController.Instance().getWatchedPages() )
+                        CommandResponseHandler crh = new CommandResponseHandler();
+                        foreach (string item in PageWatcherController.instance().getWatchedPages())
                         {
                             crh.respond(item);
                         }
                         return crh;
                 }
             }
-            return new CommandResponseHandler( );
+            return new CommandResponseHandler();
         }
 
-        private CommandResponseHandler addPageWatcher(string page, string channel)
+        private static CommandResponseHandler addPageWatcher(string page, string channel)
         {
-
-            DAL.Select q = new DAL.Select( "COUNT(*)" );
-            q.setFrom( "watchedpages" );
-            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+            DAL.Select q = new DAL.Select("COUNT(*)");
+            q.setFrom("watchedpages");
+            q.addWhere(new DAL.WhereConds("pw_title", page));
 
             // look to see if watchedpage exists
-            if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
-            {//    no: addOrder it
-                DAL.Singleton( ).Insert( "watchedpages", "", page );
+            if (DAL.singleton().executeScalarSelect(q) == "0")
+            {
+//    no: addOrder it
+                DAL.singleton().insert("watchedpages", "", page);
             }
-            
+
             // get id of watchedpage
-            q = new DAL.Select( "pw_id" );
-            q.setFrom( "watchedpages" );
-            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+            q = new DAL.Select("pw_id");
+            q.setFrom("watchedpages");
+            q.addWhere(new DAL.WhereConds("pw_title", page));
 
-            string watchedPageId = DAL.Singleton( ).executeScalarSelect( q );
-            
+            string watchedPageId = DAL.singleton().executeScalarSelect(q);
+
             // get id of channel
-            string channelId = Configuration.Singleton( ).getChannelId( channel );
-            
-            // addOrder to pagewatcherchannels
-            DAL.Singleton( ).Insert( "pagewatcherchannels", channelId, watchedPageId );
+            string channelId = Configuration.singleton().getChannelId(channel);
 
-            Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
+            // addOrder to pagewatcherchannels
+            DAL.singleton().insert("pagewatcherchannels", channelId, watchedPageId);
+
+            PageWatcherController.instance().loadAllWatchedPages();
 
             return null;
         }
 
-        private CommandResponseHandler removePageWatcher( string page , string channel )
+        private static CommandResponseHandler removePageWatcher(string page, string channel)
         {
             // get id of watchedpage
-           DAL.Select q = new DAL.Select( "pw_id" );
-            q.setFrom( "watchedpages" );
-            q.addWhere( new DAL.WhereConds( "pw_title", page ) );
+            DAL.Select q = new DAL.Select("pw_id");
+            q.setFrom("watchedpages");
+            q.addWhere(new DAL.WhereConds("pw_title", page));
 
-            string watchedPageId = DAL.Singleton( ).executeScalarSelect( q );
+            string watchedPageId = DAL.singleton().executeScalarSelect(q);
 
             // get id of channel
-            string channelId = Configuration.Singleton( ).getChannelId( channel );
+            string channelId = Configuration.singleton().getChannelId(channel);
 
             // remove from pagewatcherchannels
-            DAL.Singleton( ).Delete( "pagewatcherchannels", 0, new DAL.WhereConds( "pwc_channel", channelId ), new DAL.WhereConds( "pwc_pagewatcher", watchedPageId ) );
+            DAL.singleton().delete("pagewatcherchannels", 0, new DAL.WhereConds("pwc_channel", channelId),
+                                   new DAL.WhereConds("pwc_pagewatcher", watchedPageId));
 
-            Monitoring.PageWatcher.PageWatcherController.Instance( ).LoadAllWatchedPages( );
+            PageWatcherController.instance().loadAllWatchedPages();
 
             return null;
         }
-        
     }
 }

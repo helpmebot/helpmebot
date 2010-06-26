@@ -1,34 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Trout  :GenericCommand
+    internal class Trout : GenericCommand
     {
-        public Trout( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
+            string name = string.Join(" ", args);
 
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            string[] forbiddenTargets = {
+                                            "stwalkerster", "itself", "himself", "herself",
+                                            Helpmebot6.irc.ircNickname.ToLower()
+                                        };
 
-            string name = string.Join( " ", args );
-
-            string[] forbiddenTargets = { "stwalkerster", "itself", "himself", "herself", Helpmebot6.irc.IrcNickname.ToLower( ) };
-
-            if( GlobalFunctions.isInArray(name.ToLower(),forbiddenTargets) != -1)
+            if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
             {
-                name = source.Nickname;
+                name = source.nickname;
             }
 
-            string[ ] messageparams = { name };
-            string message = IAL.wrapCTCP( "ACTION", Configuration.Singleton( ).GetMessage( "cmdTrout", messageparams ) );
+            string[] messageparams = {name};
+            string message = IAL.wrapCTCP("ACTION", Configuration.singleton().getMessage("cmdTrout", messageparams));
 
-            return new CommandResponseHandler( message );
-
+            return new CommandResponseHandler(message);
         }
     }
 }

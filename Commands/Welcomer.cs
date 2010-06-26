@@ -1,56 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+using helpmebot6.Monitoring;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
-    class Welcomer : GenericCommand
+    internal class Welcomer : GenericCommand
     {
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            switch( args[0].ToLower() )
+            switch (args[0].ToLower())
             {
                 case "enable":
-                    if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "true" )
+                    if (Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
                     {
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "no-change" ) );
+                        return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
                     }
-                    else
-                    {
-                        Configuration.Singleton( ).setLocalOption( "welcomeNewbie", channel, "true" );
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
-                    }
+                    Configuration.singleton().setLocalOption("welcomeNewbie", channel, "true");
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "disable":
-                    if( Configuration.Singleton( ).retrieveLocalStringOption( "welcomeNewbie", channel ) == "false" )
+                    if (Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "false")
                     {
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "no-change" ) );
+                        return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
                     }
-                    else
-                    {
-                        Configuration.Singleton( ).setLocalOption( "welcomeNewbie", channel, "false" );
-                        return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
-                    }
+                    Configuration.singleton().setLocalOption("welcomeNewbie", channel, "false");
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "global":
-                    Configuration.Singleton( ).deleteLocalOption( "welcomeNewbie", channel );
-                    return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "defaultSetting" ) );
+                    Configuration.singleton().deleteLocalOption("welcomeNewbie", channel);
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("defaultSetting"));
                 case "addOrder":
-                    helpmebot6.Monitoring.NewbieWelcomer.Instance( ).addHost( args[ 1 ] );
-                    return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
+                    NewbieWelcomer.instance().addHost(args[1]);
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "del":
-                    helpmebot6.Monitoring.NewbieWelcomer.Instance( ).delHost( args[ 1 ] );
-                    return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
+                    NewbieWelcomer.instance().delHost(args[1]);
+                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "list":
-                    CommandResponseHandler crh = new CommandResponseHandler( );
-                    string[ ] list = helpmebot6.Monitoring.NewbieWelcomer.Instance( ).getHosts( );
-                    foreach( string item in list )
+                    CommandResponseHandler crh = new CommandResponseHandler();
+                    string[] list = NewbieWelcomer.instance().getHosts();
+                    foreach (string item in list)
                     {
-                        crh.respond( item );
+                        crh.respond(item);
                     }
                     return crh;
             }
-            return new CommandResponseHandler( );
+            return new CommandResponseHandler();
         }
     }
 }

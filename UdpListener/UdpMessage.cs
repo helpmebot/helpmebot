@@ -1,53 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Text;
+
+#endregion
+
 namespace helpmebot6.UdpListener
 {
-    [Serializable()]
-    public class  UdpMessage : ISerializable
+    [Serializable]
+    public class UdpMessage : ISerializable
     {
-        public string Hash
-        {
-            get
-            {
-                return _hash;
-            }
-        }
+        public string hash { get; private set; }
 
-        public string Message
-        {
-            get
-            {
-                return _message;
-            }
-        }
+        public string message { get; private set; }
 
-        string _hash;
-        string _message;
-
-        public UdpMessage(string message, string key )
+        public UdpMessage(string message, string key)
         {
-            _message = message;
-            byte[ ] bm = ASCIIEncoding.ASCII.GetBytes( message + key );
-            byte[ ] bh = MD5.Create( ).ComputeHash( bm );
-            _hash = ASCIIEncoding.ASCII.GetString( bh );
+            this.message = message;
+            byte[] bm = Encoding.ASCII.GetBytes(message + key);
+            byte[] bh = MD5.Create().ComputeHash(bm);
+            this.hash = Encoding.ASCII.GetString(bh);
         }
 
         #region ISerializable Members
 
-        public UdpMessage( SerializationInfo info, StreamingContext ctxt )
+        public UdpMessage(SerializationInfo info, StreamingContext ctxt)
         {
-            _hash = info.GetString( "hash" );
-            _message = info.GetString( "message" );
+            this.hash = info.GetString("hash");
+            this.message = info.GetString("message");
         }
 
-        public void GetObjectData( SerializationInfo info, StreamingContext context )
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue( "hash", _hash );
-            info.AddValue( "message", _message );
+            info.AddValue("hash", this.hash);
+            info.AddValue("message", this.message);
         }
 
         #endregion

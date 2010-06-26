@@ -14,216 +14,172 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6
 {
     public class User
     {
-        private DAL db;
+        private readonly DAL _db;
 
-        private string _nickname, _username, _hostname;
-        private userRights _accessLevel;
-        private bool _retrieved_accessLevel = false;
-
-        private uint networkId;
+        private UserRights _accessLevel;
+        private bool _retrievedAccessLevel;
 
         public User()
         {
-            db = DAL.Singleton();
+            this._db = DAL.singleton();
         }
 
-        public string Nickname
+        public string nickname { get; set; }
+
+        public string username { get; set; }
+
+        public string hostname { get; set; }
+
+        public uint network { get; private set; }
+
+        public static User newFromString(string source)
         {
-            get
-            {
-                return _nickname;
-            }
-            set
-            {
-                _nickname = value;
-            }
+            return newFromString(source, 0);
         }
 
-        public string Username
-        {
-            get
-            {
-                return _username;
-            }
-            set
-            {
-                _username=value;
-            }
-        }
-
-        public string Hostname
-        {
-            get
-            {
-                return _hostname;
-            }
-            set
-            {
-                _hostname = value;
-            }
-        }
-
-        public uint Network
-        {
-            get
-            {
-                return networkId;
-            }
-        }
-
-        public static User newFromString( string source )
-        {
-            return newFromString( source, 0 );
-        }
         public static User newFromString(string source, uint network)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-  
-            string nick, user, host;
-            nick = user = host = null;
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            string user, host;
+            string nick = user = host = null;
             try
             {
-
-                if ( ( source.Contains( "@" ) ) && ( source.Contains( "!" ) ) )
+                if ((source.Contains("@")) && (source.Contains("!")))
                 {
-                    char[ ] splitSeparators = { '!', '@' };
-                    string[ ] sourceSegment = source.Split( splitSeparators, 3 );
-                    nick = sourceSegment[ 0 ];
-                    user = sourceSegment[ 1 ];
-                    host = sourceSegment[ 2 ];
+                    char[] splitSeparators = {'!', '@'};
+                    string[] sourceSegment = source.Split(splitSeparators, 3);
+                    nick = sourceSegment[0];
+                    user = sourceSegment[1];
+                    host = sourceSegment[2];
                 }
-                else if ( source.Contains( "@" ) )
+                else if (source.Contains("@"))
                 {
-                    char[ ] splitSeparators = { '@' };
-                    string[ ] sourceSegment = source.Split( splitSeparators, 2 );
-                    nick = sourceSegment[ 0 ];
-                    user = null;
-                    host = sourceSegment[ 1 ];
+                    char[] splitSeparators = {'@'};
+                    string[] sourceSegment = source.Split(splitSeparators, 2);
+                    nick = sourceSegment[0];
+                    host = sourceSegment[1];
                 }
                 else
                 {
                     nick = source;
-                    user = null;
-                    host = null;
-
                 }
             }
-            catch ( IndexOutOfRangeException ex )
+            catch (IndexOutOfRangeException ex)
             {
-                GlobalFunctions.ErrorLog( ex );
+                GlobalFunctions.errorLog(ex);
             }
 
-            User ret = new User( );
-            ret.Hostname = host;
-            ret.Nickname = nick;
-            ret.Username = user;
-            ret.networkId = network;
+            User ret = new User
+                           {
+                               hostname = host,
+                               nickname = nick,
+                               username = user,
+                               network = network
+                           };
             return ret;
-
         }
 
         /// <summary>
-        /// Recompiles the source string
+        ///   Recompiles the source string
         /// </summary>
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
-        public override string ToString( )
+        public override string ToString()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string endResult = this.Nickname;
+            string endResult = this.nickname;
 
-            if ( this.Username != null )
+            if (this.username != null)
             {
-                endResult += "!" + this.Username;
+                endResult += "!" + this.username;
             }
-            if ( this.Hostname != null )
+            if (this.hostname != null)
             {
-                endResult += "@" + this.Hostname;
+                endResult += "@" + this.hostname;
             }
 
             return endResult;
         }
 
-        public userRights AccessLevel
+        public UserRights accessLevel
         {
             get
             {
                 try
                 {
-                    if ( _retrieved_accessLevel == false )
+                    if (this._retrievedAccessLevel == false)
                     {
-                        DAL.Select q=new DAL.Select("user_accesslevel");
-                        q.addWhere(new DAL.WhereConds(true,_nickname,"LIKE",false,"user_nickname"));
-                        q.addWhere(new DAL.WhereConds(true,_username,"LIKE",false,"user_username"));
-                        q.addWhere(new DAL.WhereConds(true,_hostname,"LIKE",false,"user_hostname"));
-                        q.addOrder(new DAL.Select.Order("user_accesslevel",true));
+                        DAL.Select q = new DAL.Select("user_accesslevel");
+                        q.addWhere(new DAL.WhereConds(true, this.nickname, "LIKE", false, "user_nickname"));
+                        q.addWhere(new DAL.WhereConds(true, this.username, "LIKE", false, "user_username"));
+                        q.addWhere(new DAL.WhereConds(true, this.hostname, "LIKE", false, "user_hostname"));
+                        q.addOrder(new DAL.Select.Order("user_accesslevel", true));
                         q.setFrom("user");
 
-                        string accesslevel = db.executeScalarSelect( q );
-                        if ( accesslevel == null )
-                        {
-                            accesslevel = "Normal";
-                        }
+                        string accesslevel = this._db.executeScalarSelect(q) ??
+                                             "Normal";
 
-                        userRights ret;
+                        UserRights ret;
 
-                        switch ( accesslevel )
+                        switch (accesslevel)
                         {
                             case "Developer":
-                                ret = userRights.Developer;
+                                ret = UserRights.Developer;
                                 break;
                             case "Superuser":
-                                ret = userRights.Superuser;
+                                ret = UserRights.Superuser;
                                 break;
                             case "Advanced":
-                                ret = userRights.Advanced;
+                                ret = UserRights.Advanced;
                                 break;
                             case "Normal":
-                                ret = userRights.Normal;
+                                ret = UserRights.Normal;
                                 break;
                             case "Semi-ignored":
-                                ret = userRights.Semiignored;
+                                ret = UserRights.Semiignored;
                                 break;
                             case "Ignored":
-                                ret = userRights.Ignored;
+                                ret = UserRights.Ignored;
                                 break;
                             default:
-                                ret = userRights.Normal;
+                                ret = UserRights.Normal;
                                 break;
                         }
 
                         _accessLevel = ret;
-                        _retrieved_accessLevel = true;
+                        this._retrievedAccessLevel = true;
                         return ret;
                     }
-                    else
-                    {
-                        return _accessLevel;
-                    }
+                    return this._accessLevel;
                 }
-                catch ( Exception ex )
+                catch (Exception ex)
                 {
-                    GlobalFunctions.ErrorLog( ex );
+                    GlobalFunctions.errorLog(ex);
                 }
-          
-                    return userRights.Normal;
-                
+
+                return UserRights.Normal;
             }
-            set
-            {
-                throw new NotImplementedException( );                
-            }
+            set { throw new NotImplementedException(); }
         }
-        
-        public enum userRights
+
+        public enum UserRights
         {
             Developer = 3,
             Superuser = 2,
@@ -232,7 +188,5 @@ namespace helpmebot6
             Semiignored = -1,
             Ignored = -2
         }
-
-        
     }
 }

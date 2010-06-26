@@ -14,53 +14,47 @@
  *   You should have received a copy of the GNU General Public License      *
  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
  ****************************************************************************/
+
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Text;
+
+#endregion
 
 namespace helpmebot6
 {
     public class ConfigurationSetting
     {
-        double _cacheTimeout = 5;
+        private const double CACHE_TIMEOUT = 5;
 
-        string _settingValue, _settingName;
-        DateTime _lastRetrieval;
+        private string _settingValue;
+        private readonly string _settingName;
+        private DateTime _lastRetrieval;
 
-        public ConfigurationSetting( string name, string value )
+        public ConfigurationSetting(string name, string value)
         {
             _settingName = name;
             _settingValue = value;
             _lastRetrieval = DateTime.Now;
         }
 
-        public bool isValid( )
+        public bool isValid()
         {
             try
             {
                 TimeSpan difference = DateTime.Now - _lastRetrieval;
-                if ( difference.TotalMinutes > _cacheTimeout )
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return difference.TotalMinutes <= CACHE_TIMEOUT;
             }
-            catch ( Exception ex )
+            catch (Exception ex)
             {
-                GlobalFunctions.ErrorLog( ex );
+                GlobalFunctions.errorLog(ex);
             }
             return false;
         }
 
-        public string Value
+        public string value
         {
-            get
-            {
-                return _settingValue;
-            }
+            get { return _settingValue; }
             set
             {
                 _settingValue = value;
@@ -68,15 +62,12 @@ namespace helpmebot6
             }
         }
 
-        public string Name
+        public string name
         {
-            get
-            {
-                return _settingName;
-            }
+            get { return _settingName; }
         }
 
-        public override string ToString( )
+        public override string ToString()
         {
             return _settingName;
         }

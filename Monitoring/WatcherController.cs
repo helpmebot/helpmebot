@@ -1,35 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.Collections;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Reflection;
+
+#endregion
+
 namespace helpmebot6.Monitoring
 {
     /// <summary>
-    /// Controls instances of CategoryWatchers for the bot
+    ///   Controls instances of CategoryWatchers for the bot
     /// </summary>
-    class WatcherController
+    internal class WatcherController
     {
-        Dictionary<string , CategoryWatcher> watchers;
+        private readonly Dictionary<string, CategoryWatcher> _watchers;
 
-        protected WatcherController( )
+        protected WatcherController()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            watchers = new Dictionary<string , CategoryWatcher>( );
+            this._watchers = new Dictionary<string, CategoryWatcher>();
 
-            DAL.Select q = new DAL.Select( "watcher_category", "watcher_keyword", "watcher_sleeptime" );
-            q.addOrder( new DAL.Select.Order( "watcher_priority", true ) );
-            q.setFrom( "watcher" );
-            q.addLimit( 100, 0 );
-            ArrayList watchersInDb = DAL.Singleton( ).executeSelect( q );
-            foreach( object[] item in watchersInDb )
+            DAL.Select q = new DAL.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
+            q.addOrder(new DAL.Select.Order("watcher_priority", true));
+            q.setFrom("watcher");
+            q.addLimit(100, 0);
+            ArrayList watchersInDb = DAL.singleton().executeSelect(q);
+            foreach (object[] item in watchersInDb)
             {
-                watchers.Add( (string)item[ 1 ] , new CategoryWatcher( (string)item[ 0 ] , (string)item[ 1 ] , int.Parse( ( (UInt32)item[ 2 ] ).ToString( ) ) ) );
+                this._watchers.Add((string) item[1],
+                             new CategoryWatcher((string) item[0], (string) item[1],
+                                                 int.Parse(((UInt32) item[2]).ToString())));
             }
-            foreach( KeyValuePair<string,CategoryWatcher> item in watchers )
+            foreach (KeyValuePair<string, CategoryWatcher> item in this._watchers)
             {
-                item.Value.CategoryHasItemsEvent+=new CategoryWatcher.CategoryHasItemsEventHook(CategoryHasItemsEvent);
+                item.Value.categoryHasItemsEvent += categoryHasItemsEvent;
             }
         }
 
@@ -45,124 +53,141 @@ namespace helpmebot6.Monitoring
         }*/
 
         // woo singleton
-        public static WatcherController Instance( )
+        public static WatcherController instance()
         {
-            if( _instance == null )
-                _instance = new WatcherController( );
-            return _instance;
+            return _instance ?? ( _instance = new WatcherController( ) );
         }
+
         private static WatcherController _instance;
 
-        public bool isValidKeyword( string keyword )
+        public bool isValidKeyword(string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return watchers.ContainsKey( keyword );
+            return this._watchers.ContainsKey(keyword);
         }
 
-        public bool addWatcherToChannel( string keyword , string channel )
+        public bool addWatcherToChannel(string keyword, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string channelId = Configuration.Singleton( ).getChannelId( channel );
-            int watcherId = getWatcherId( keyword );
+            string channelId = Configuration.singleton().getChannelId(channel);
+            int watcherId = getWatcherId(keyword);
 
             DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("channelwatchers");
-            q.addWhere(new DAL.WhereConds("cw_channel",channelId));
-            q.addWhere(new DAL.WhereConds("cw_watcher",watcherId));
-            string count = DAL.Singleton( ).executeScalarSelect( q );
+            q.addWhere(new DAL.WhereConds("cw_channel", channelId));
+            q.addWhere(new DAL.WhereConds("cw_watcher", watcherId));
+            string count = DAL.singleton().executeScalarSelect(q);
 
-            if( count == "0" )
+            if (count == "0")
             {
-                DAL.Singleton( ).Insert( "channelwatchers", channelId, watcherId.ToString( ) );
+                DAL.singleton().insert("channelwatchers", channelId, watcherId.ToString());
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
-        public void removeWatcherFromChannel( string keyword , string channel )
+        public void removeWatcherFromChannel(string keyword, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string channelId = Configuration.Singleton( ).getChannelId( channel );
-            int watcherId = getWatcherId( keyword );
+            string channelId = Configuration.singleton().getChannelId(channel);
+            int watcherId = getWatcherId(keyword);
 
-            DAL.Singleton( ).Delete( "channelwatchers", 0, new DAL.WhereConds( "cw_channel", channelId ), new DAL.WhereConds( "cw_watcher", watcherId ) );
+            DAL.singleton().delete("channelwatchers", 0, new DAL.WhereConds("cw_channel", channelId),
+                                   new DAL.WhereConds("cw_watcher", watcherId));
         }
 
-        public string forceUpdate( string key, string destination )
+        public string forceUpdate(string key, string destination)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             CategoryWatcher cw;
-            if( watchers.TryGetValue( key , out cw ) )
+            if (this._watchers.TryGetValue(key, out cw))
             {
-                ArrayList items = cw.doCategoryCheck( );
-                updateDatabaseTable( items, key );
-                return compileMessage( items , key, destination, true );
+                ArrayList items = cw.doCategoryCheck();
+                updateDatabaseTable(items, key);
+                return compileMessage(items, key, destination, true);
             }
-            else
-                return null;
+            return null;
         }
 
-        private void CategoryHasItemsEvent( ArrayList items , string keyword )
+        private static void categoryHasItemsEvent(ArrayList items, string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            ArrayList newItems = updateDatabaseTable( items, keyword );
+            ArrayList newItems = updateDatabaseTable(items, keyword);
 
-            DAL.Select q = new DAL.Select( "channel_name" );
-            q.addJoin( "channelwatchers", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "watcher_id", "=", false, "cw_watcher" ) );
-            q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "channel_id", "=", false, "cw_channel" ) );
-            q.setFrom( "watcher" );
-            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
-            q.addLimit( 10, 0 );
+            DAL.Select q = new DAL.Select("channel_name");
+            q.addJoin("channelwatchers", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
+            q.addJoin("channel", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "channel_id", "=", false, "cw_channel"));
+            q.setFrom("watcher");
+            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
+            q.addLimit(10, 0);
 
-            ArrayList channels = DAL.Singleton( ).executeSelect( q );
-            foreach( object[ ] item in channels )
+            ArrayList channels = DAL.singleton().executeSelect(q);
+            foreach (object[] item in channels)
             {
-                string channel = (string)item[ 0 ];
+                string channel = (string) item[0];
 
-                string message = compileMessage( items, keyword, channel, false );
-                if( Configuration.Singleton( ).retrieveLocalStringOption( "silence", channel ) == "false" )
-                    Helpmebot6.irc.IrcPrivmsg( channel, message );
+                string message = compileMessage(items, keyword, channel, false);
+                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                    Helpmebot6.irc.ircPrivmsg(channel, message);
             }
 
-            if( newItems.Count > 0 )
-                Twitter.tweet( compileMessage( newItems, keyword, ">TWITTER<", false ) );
-
+            if (newItems.Count > 0)
+                Twitter.tweet(compileMessage(newItems, keyword, ">TWITTER<", false));
         }
 
-        private ArrayList updateDatabaseTable( ArrayList items, string keyword )
+        private static ArrayList updateDatabaseTable(ArrayList items, string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            ArrayList newItems = new ArrayList( );
-            foreach( string item in items )
+            ArrayList newItems = new ArrayList();
+            foreach (string item in items)
             {
-                DAL.Select q = new DAL.Select( "COUNT(*)" );
-                q.setFrom( "categoryitems" );
-                q.addWhere( new DAL.WhereConds( "item_name", item ) );
-                q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
-                if( DAL.Singleton( ).executeScalarSelect( q ) == "0" )
+                DAL.Select q = new DAL.Select("COUNT(*)");
+                q.setFrom("categoryitems");
+                q.addWhere(new DAL.WhereConds("item_name", item));
+                q.addWhere(new DAL.WhereConds("item_keyword", keyword));
+                if (DAL.singleton().executeScalarSelect(q) == "0")
                 {
-                    DAL.Singleton( ).Insert( "categoryitems", "", item, "", keyword, "1" );
-                    newItems.Add( item );
+                    DAL.singleton().insert("categoryitems", "", item, "", keyword, "1");
+                    newItems.Add(item);
                 }
                 else
                 {
-                    Dictionary<string, string> v = new Dictionary<string, string>( );
-                    v.Add( "item_updateflag", "1" );
-                    DAL.Singleton( ).Update( "categoryitems", v, 1, new DAL.WhereConds( "item_name", item ), new DAL.WhereConds( "item_keyword", keyword ) );
-
+                    Dictionary<string, string> v = new Dictionary<string, string>
+                                                       {
+                                                           {
+                                                               "item_updateflag",
+                                                               "1"
+                                                               }
+                                                       };
+                    DAL.singleton().update("categoryitems", v, 1, new DAL.WhereConds("item_name", item),
+                                           new DAL.WhereConds("item_keyword", keyword));
                 }
             }
-            DAL.Singleton( ).Delete( "categoryitems", 0, new DAL.WhereConds( "item_updateflag", 0 ), new DAL.WhereConds( "item_keyword", keyword ) );
-            Dictionary<string, string> val = new Dictionary<string, string>( );
-            val.Add( "item_updateflag", "0" );
-            DAL.Singleton( ).Update( "categoryitems", val, 0 );
+            DAL.singleton().delete("categoryitems", 0, new DAL.WhereConds("item_updateflag", 0),
+                                   new DAL.WhereConds("item_keyword", keyword));
+            Dictionary<string, string> val = new Dictionary<string, string>
+                                                 { { "item_updateflag", "0" } };
+            DAL.singleton().update("categoryitems", val, 0);
             return newItems;
         }
 
@@ -170,204 +195,234 @@ namespace helpmebot6.Monitoring
         //{
         //    return compileMessage( items, keyword, "" , false);
         //}
-        private string compileMessage( ArrayList items, string keyword, string destination, bool forceShowAll )
-        {   // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
+        private static string compileMessage(ArrayList items, string keyword, string destination, bool forceShowAll)
+        {
+            // keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             // keywordNoItems: 0: plural word(s)
             // keywordPlural
             // keywordSingular           
-            
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string fakedestination;
-            if( destination == ">TWITTER<" )
-                fakedestination = "";
-            else
-                fakedestination = destination;
+            string fakedestination = destination == ">TWITTER<" ? "" : destination;
 
-            bool showWaitTime = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "showWaitTime", destination ) == "true" ? true : false ) );
-            
+            bool showWaitTime = (fakedestination == ""
+                                     ? false
+                                     : (Configuration.singleton().retrieveLocalStringOption("showWaitTime", destination) ==
+                                        "true"
+                                            ? true
+                                            : false));
+
             TimeSpan minimumWaitTime;
-            if( !TimeSpan.TryParse( Configuration.Singleton( ).retrieveLocalStringOption( "minimumWaitTime", destination ), out minimumWaitTime ) )
-                minimumWaitTime = new TimeSpan( 0 );
+            if (
+                !TimeSpan.TryParse(Configuration.singleton().retrieveLocalStringOption("minimumWaitTime", destination),
+                                   out minimumWaitTime))
+                minimumWaitTime = new TimeSpan(0);
 
-            bool shortenUrls = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "useShortUrlsInsteadOfWikilinks", destination ) == "true" ? true : false ) );
-            bool showDelta = ( fakedestination == "" ? false : ( Configuration.Singleton( ).retrieveLocalStringOption( "catWatcherShowDelta", destination ) == "true" ? true : false ) );
+            bool shortenUrls = (fakedestination == ""
+                                    ? false
+                                    : (Configuration.singleton().retrieveLocalStringOption(
+                                        "useShortUrlsInsteadOfWikilinks", destination) == "true"
+                                           ? true
+                                           : false));
+            bool showDelta = (fakedestination == ""
+                                  ? false
+                                  : (Configuration.singleton().retrieveLocalStringOption("catWatcherShowDelta",
+                                                                                         destination) == "true"
+                                         ? true
+                                         : false));
 
-            if( destination == ">TWITTER<" )
+            if (destination == ">TWITTER<")
             {
                 shortenUrls = true;
                 showDelta = true;
             }
 
-            if( forceShowAll )
+            if (forceShowAll)
                 showDelta = false;
 
             string message;
 
-            if( items.Count > 0 )
+            if (items.Count > 0)
             {
                 string listString = "";
-                foreach( string item in items )
+                foreach (string item in items)
                 {
-                    if( !shortenUrls )
+                    if (!shortenUrls)
                     {
                         listString += "[[" + item + "]]";
                     }
                     else
                     {
-                        listString += IsGd.shorten( new Uri( Configuration.Singleton( ).retrieveGlobalStringOption( "wikiUrl" ) + item ) ).ToString( );
+                        listString +=
+                            IsGd.shorten(new Uri(Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item))
+                                .ToString();
                     }
 
-                    if( showWaitTime )
+                    if (showWaitTime)
                     {
-                        DAL.Select q = new DAL.Select( "item_entrytime" );
-                        q.addWhere( new DAL.WhereConds( "item_name", item ) );
-                        q.addWhere( new DAL.WhereConds( "item_keyword", keyword ) );
-                        q.setFrom( "categoryitems" );
+                        DAL.Select q = new DAL.Select("item_entrytime");
+                        q.addWhere(new DAL.WhereConds("item_name", item));
+                        q.addWhere(new DAL.WhereConds("item_keyword", keyword));
+                        q.setFrom("categoryitems");
 
-                        string insertDate = DAL.Singleton( ).executeScalarSelect( q );
+                        string insertDate = DAL.singleton().executeScalarSelect(q);
                         DateTime realInsertDate;
-                        if( !DateTime.TryParse( insertDate, out realInsertDate ) )
+                        if (!DateTime.TryParse(insertDate, out realInsertDate))
                             realInsertDate = DateTime.Now;
 
                         TimeSpan ts = DateTime.Now - realInsertDate;
 
-                        if( ts >= minimumWaitTime )
+                        if (ts >= minimumWaitTime)
                         {
-                            string[ ] messageparams = { ts.Hours.ToString( ).PadLeft( 2, '0' ), ts.Minutes.ToString( ).PadLeft( 2, '0' ), ts.Seconds.ToString( ).PadLeft( 2, '0' ) };
-                            listString += Configuration.Singleton( ).GetMessage( "catWatcherWaiting", messageparams );
+                            string[] messageparams = {
+                                                         ts.Hours.ToString().PadLeft(2, '0'),
+                                                         ts.Minutes.ToString().PadLeft(2, '0'),
+                                                         ts.Seconds.ToString().PadLeft(2, '0')
+                                                     };
+                            listString += Configuration.singleton().getMessage("catWatcherWaiting", messageparams);
                         }
                     }
 
-                    listString += Configuration.Singleton( ).GetMessage( "listSeparator" );
+                    listString += Configuration.singleton().getMessage("listSeparator");
                 }
-                listString = listString.TrimEnd( ' ', ',' );
-                string pluralString;
-                if( items.Count == 1 )
-                {
-                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Singular", "keywordSingularDefault" );
-                }
-                else
-                {
-                    pluralString = Configuration.Singleton( ).GetMessage( keyword + "Plural", "keywordPluralDefault" );
-                }
-                string[ ] messageParams = { items.Count.ToString( ), pluralString, listString };
-                message = Configuration.Singleton( ).GetMessage( keyword + ( showDelta ? "New" : "" ) + "HasItems", "keyword" + ( showDelta ? "New" : "" ) + "HasItemsDefault", messageParams );
+                listString = listString.TrimEnd(' ', ',');
+                string pluralString = items.Count == 1 ? Configuration.singleton().getMessage(keyword + "Singular", "keywordSingularDefault") : Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault");
+                string[] messageParams = {items.Count.ToString(), pluralString, listString};
+                message = Configuration.singleton().getMessage(keyword + (showDelta ? "New" : "") + "HasItems",
+                                                               "keyword" + (showDelta ? "New" : "") + "HasItemsDefault",
+                                                               messageParams);
             }
             else
             {
-                string[ ] mp = { Configuration.Singleton( ).GetMessage( keyword + "Plural", "keywordPluralDefault" ) };
-                message = Configuration.Singleton( ).GetMessage( keyword + "NoItems", "keywordNoItemsDefault", mp );
+                string[] mp = {Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault")};
+                message = Configuration.singleton().getMessage(keyword + "NoItems", "keywordNoItemsDefault", mp);
             }
             return message;
         }
 
-        private CategoryWatcher getWatcher( string keyword )
+        private CategoryWatcher getWatcher(string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             CategoryWatcher cw;
-            bool success = watchers.TryGetValue( keyword , out cw );
-            if( success )
+            bool success = this._watchers.TryGetValue(keyword, out cw);
+            if (success)
                 return cw;
-            else
-                return null;
+            return null;
         }
 
-        public Dictionary<string,CategoryWatcher>.KeyCollection getKeywords( )
+        public Dictionary<string, CategoryWatcher>.KeyCollection getKeywords()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return watchers.Keys;
+            return this._watchers.Keys;
         }
 
-        private ArrayList removeBlacklistedItems( ArrayList pageList )
+        private ArrayList removeBlacklistedItems(ArrayList pageList)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "ip_title" );
-            q.setFrom( "ignoredpages" );
-            ArrayList blacklist = DAL.Singleton( ).executeSelect( q );
+            DAL.Select q = new DAL.Select("ip_title");
+            q.setFrom("ignoredpages");
+            ArrayList blacklist = DAL.singleton().executeSelect(q);
 
-            foreach( object[] item in blacklist )
+            foreach (object[] item in blacklist)
             {
-                if( pageList.Contains( (string)item[ 0 ] ) )
+                if (pageList.Contains(item[0]))
                 {
-                    pageList.Remove( (string)item[ 0 ] );
+                    pageList.Remove(item[0]);
                 }
             }
 
             return pageList;
         }
 
-        public CommandResponseHandler setDelay( string keyword , int newDelay )
+        public CommandResponseHandler setDelay(string keyword, int newDelay)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( newDelay < 1 )
+            if (newDelay < 1)
             {
-                string message = Configuration.Singleton( ).GetMessage( "delayTooShort" );
-                return new CommandResponseHandler( message );
+                string message = Configuration.singleton().getMessage("delayTooShort");
+                return new CommandResponseHandler(message);
             }
 
-            CategoryWatcher cw = getWatcher( keyword );
-            if( cw != null )
+            CategoryWatcher cw = getWatcher(keyword);
+            if (cw != null)
             {
-                Dictionary<string, string> vals = new Dictionary<string, string>( );
-                vals.Add( "watcher_sleeptime", newDelay.ToString( ) );
-                DAL.Singleton( ).Update( "watcher", vals, 0, new DAL.WhereConds( "watcher_keyword", keyword ) );
-                cw.SleepTime = newDelay;
-                return new CommandResponseHandler( Configuration.Singleton( ).GetMessage( "done" ) );
+                Dictionary<string, string> vals = new Dictionary<string, string>
+                                                      {
+                                                          {
+                                                              "watcher_sleeptime",
+                                                              newDelay.ToString( )
+                                                              }
+                                                      };
+                DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
+                cw.sleepTime = newDelay;
+                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
             }
-            else
-            {
-                return new CommandResponseHandler( );
-            }
+            return new CommandResponseHandler();
         }
 
-        public int getDelay( string keyword )
+        public int getDelay(string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            CategoryWatcher cw = getWatcher( keyword );
-            if( cw != null )
+            CategoryWatcher cw = getWatcher(keyword);
+            if (cw != null)
             {
-                return cw.SleepTime;
+                return cw.sleepTime;
             }
-            else
-                return 0;
+            return 0;
         }
 
-        private int getWatcherId( string keyword )
+        private static int getWatcherId(string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q = new DAL.Select( "watcher_id" );
-            q.setFrom( "watcher" );
-            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
-            string watcherIdString = DAL.Singleton( ).executeScalarSelect( q );
+            DAL.Select q = new DAL.Select("watcher_id");
+            q.setFrom("watcher");
+            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
+            string watcherIdString = DAL.singleton().executeScalarSelect(q);
 
-            return int.Parse( watcherIdString );
+            return int.Parse(watcherIdString);
         }
 
 
-        public bool isWatcherInChannel( string channel, string keyword )
+        public bool isWatcherInChannel(string channel, string keyword)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            DAL.Select q =new DAL.Select("COUNT(*)");
+            DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("channelwatchers");
-            q.addWhere( new DAL.WhereConds( "channel_name", channel ) );
-            q.addWhere( new DAL.WhereConds( "watcher_keyword", keyword ) );
-            q.addJoin( "channel", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "cw_channel", "=", false, "channel_id" ) );
-            q.addJoin( "watcher", DAL.Select.JoinTypes.INNER, new DAL.WhereConds( false, "cw_watcher", "=", false, "watcher_id" ) );
+            q.addWhere(new DAL.WhereConds("channel_name", channel));
+            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
+            q.addJoin("channel", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "cw_channel", "=", false, "channel_id"));
+            q.addJoin("watcher", DAL.Select.JoinTypes.Inner,
+                      new DAL.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
 
-            string count = DAL.Singleton( ).executeScalarSelect( q );
-            if( count == "0" )
+            string count = DAL.singleton().executeScalarSelect(q);
+            if (count == "0")
                 return false;
-            else
-                return true;
+            return true;
         }
     }
 }

@@ -1,42 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Net;
+using System.Reflection;
+using System.Xml;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Returns the block information of a wikipedian
+    ///   Returns the block information of a wikipedian
     /// </summary>
-    class Blockinfo : GenericCommand
+    internal class Blockinfo : GenericCommand
     {
-        public Blockinfo( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
+            return new CommandResponseHandler(getBlockInformation(string.Join(" ", args), channel).ToString());
         }
 
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
+        public BlockInformation getBlockInformation(string userName, string channel)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            return new CommandResponseHandler( getBlockInformation( string.Join( " ", args ), channel ).ToString( ) );
-        }
+            IPAddress ip;
 
-        public BlockInformation getBlockInformation( string userName, string channel )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
 
-           System.Net.IPAddress ip;
-
-            string baseWiki = Configuration.Singleton( ).retrieveLocalStringOption( "baseWiki",channel );
-
-            DAL.Select q = new DAL.Select( "site_api" );
-            q.setFrom( "site" );
-            q.addWhere( new DAL.WhereConds( "site_id", baseWiki ) );
-            string api = DAL.Singleton( ).executeScalarSelect( q );
+            DAL.Select q = new DAL.Select("site_api");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            string api = DAL.singleton().executeScalarSelect(q);
 
 
             string apiParams = "?action=query&list=blocks&bk";
-            if( System.Net.IPAddress.TryParse( userName, out ip ) )
+            if (IPAddress.TryParse(userName, out ip))
             {
                 apiParams += "ip";
             }
@@ -44,36 +47,54 @@ namespace helpmebot6.Commands
             {
                 apiParams += "users";
             }
-            apiParams+= "="+userName+"&format=xml";
-            System.Xml.XmlTextReader creader = new System.Xml.XmlTextReader( HttpRequest.get( api + apiParams) );
+            apiParams += "=" + userName + "&format=xml";
+            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiParams));
 
-            while( creader.Name != "blocks" )
+            while (creader.Name != "blocks")
             {
-                creader.Read( );
+                creader.Read();
             }
-            creader.Read( );
+            creader.Read();
 
-            if( creader.Name == "block" )
-            {
-                BlockInformation bi = new BlockInformation( );
-                bi.id = creader.GetAttribute( "id" );
-                bi.target = creader.GetAttribute( "user" );
-                bi.blockedBy = creader.GetAttribute( "by" );
-                bi.start = creader.GetAttribute( "timestamp" );
-                bi.expiry = creader.GetAttribute( "expiry" );
-                bi.blockReason = creader.GetAttribute( "reason" );
-
-                bi.autoblock = creader.GetAttribute( "autoblock" ) == "" ? true : false;
-                bi.nocreate = creader.GetAttribute( "nocreate" ) == "" ? true : false;
-                bi.noemail = creader.GetAttribute( "noemail" ) == "" ? true : false;
-                bi.allowusertalk = creader.GetAttribute( "allowusertalk" ) == "" ? true : false;
-
-                return bi;
-            }
-            else
-            {
+            if ( creader.Name != "block" )
                 return new BlockInformation( );
-            }
+            BlockInformation bi = new BlockInformation
+                                      {
+                                          id = creader.GetAttribute( "id" ),
+                                          target =
+                                              creader.GetAttribute( "user" ),
+                                          blockedBy =
+                                              creader.GetAttribute( "by" ),
+                                          start =
+                                              creader.GetAttribute(
+                                                  "timestamp" ),
+                                          expiry =
+                                              creader.GetAttribute( "expiry" ),
+                                          blockReason =
+                                              creader.GetAttribute( "reason" ),
+                                          autoblock =
+                                              creader.GetAttribute(
+                                                  "autoblock" ) == ""
+                                                  ? true
+                                                  : false,
+                                          nocreate =
+                                              creader.GetAttribute(
+                                                  "nocreate" ) == ""
+                                                  ? true
+                                                  : false,
+                                          noemail =
+                                              creader.GetAttribute(
+                                                  "noemail" ) == ""
+                                                  ? true
+                                                  : false,
+                                          allowusertalk =
+                                              creader.GetAttribute(
+                                                  "allowusertalk" ) == ""
+                                                  ? true
+                                                  : false
+                                      };
+
+            return bi;
         }
 
         public struct BlockInformation
@@ -89,28 +110,30 @@ namespace helpmebot6.Commands
             public bool noemail;
             public bool allowusertalk;
 
-            public override string ToString( )
+            public override string ToString()
             {
-                Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+                Logger.instance().addToLog(
+                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                    Logger.LogTypes.DNWB);
 
-                string[ ] emptyMessageParams = { "", "", "", "", "", "", "" };
-                string emptyMessage = Configuration.Singleton( ).GetMessage( "blockInfoShort", emptyMessageParams );
-                
+                string[] emptyMessageParams = {"", "", "", "", "", "", ""};
+                string emptyMessage = Configuration.singleton().getMessage("blockInfoShort", emptyMessageParams);
+
                 string info = "";
-                if( nocreate )
+                if (nocreate)
                     info += "NOCREATE ";
-                if( autoblock )
+                if (autoblock)
                     info += "AUTOBLOCK ";
-                if( noemail )
+                if (noemail)
                     info += "NOEMAIL ";
-                if( allowusertalk )
+                if (allowusertalk)
                     info += "ALLOWUSERTALK ";
-                string[ ] messageParams = { id, target, blockedBy, expiry, start, blockReason, info };
-                string message = Configuration.Singleton( ).GetMessage( "blockInfoShort", messageParams );
+                string[] messageParams = {id, target, blockedBy, expiry, start, blockReason, info};
+                string message = Configuration.singleton().getMessage("blockInfoShort", messageParams);
 
-                if( message == emptyMessage )
+                if (message == emptyMessage)
                 {
-                    message = Configuration.Singleton( ).GetMessage( "noBlocks" );
+                    message = Configuration.singleton().getMessage("noBlocks");
                 }
 
                 return message;

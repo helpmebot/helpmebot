@@ -1,43 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System;
 using System.Collections;
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Monitoring.PageWatcher
 {
-    class PageWatcherController
+    internal class PageWatcherController
     {
         #region woo singleton
-        private static PageWatcherController _instance;
-        protected PageWatcherController( )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
 
-            watchedPageList = new ArrayList( );
-            if( Helpmebot6.pagewatcherEnabled )
-            {
-                LoadAllWatchedPages( );
-                uint wikiRCIrc = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
-                if( wikiRCIrc != 0 )
-                {
-                    irc = new IAL( wikiRCIrc );
-                    SetupEvents( );
-                    irc.Connect( );
-                }
-            }
-            
-        }
-        public static PageWatcherController Instance( )
+        private static PageWatcherController _instance;
+
+        protected PageWatcherController()
         {
-            if( _instance == null )
-                _instance = new PageWatcherController( );
-            return _instance;
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+            this._watchedPageList = new ArrayList();
+            if ( !Helpmebot6.pagewatcherEnabled ) return;
+            this.loadAllWatchedPages();
+            uint wikiRCIrc = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
+            if ( wikiRCIrc == 0 ) return;
+            this._irc = new IAL(wikiRCIrc);
+            this.setupEvents();
+            this._irc.connect();
+        }
+
+        public static PageWatcherController instance()
+        {
+            return _instance ?? ( _instance = new PageWatcherController( ) );
         }
         #endregion
 
-        private IAL irc;
+        private readonly IAL _irc;
 
-        private ArrayList watchedPageList;
+        private readonly ArrayList _watchedPageList;
 
         public struct RcPageChange
         {
@@ -49,139 +50,156 @@ namespace helpmebot6.Monitoring.PageWatcher
             public string comment;
         }
 
-        private void SetupEvents( )
+        private void setupEvents()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            irc.ConnectionRegistrationSucceededEvent += new IAL.ConnectionRegistrationEventHandler( irc_ConnectionRegistrationSucceededEvent );
-            irc.PrivmsgEvent += new IAL.PrivmsgEventHandler( irc_PrivmsgEvent );
-            this.PageWatcherNotificationEvent += new PageWatcherNotificationEventDelegate( PageWatcherController_PageWatcherNotificationEvent );
+            this._irc.connectionRegistrationSucceededEvent += irc_ConnectionRegistrationSucceededEvent;
+            this._irc.privmsgEvent += irc_PrivmsgEvent;
+            this.pageWatcherNotificationEvent += pageWatcherControllerPageWatcherNotificationEvent;
         }
 
-        void PageWatcherController_PageWatcherNotificationEvent( PageWatcherController.RcPageChange rcItem )
+        private static void pageWatcherControllerPageWatcherNotificationEvent(RcPageChange rcItem)
         {
         }
 
-        public string[ ] getWatchedPages( )
+        public string[] getWatchedPages()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string[ ] wp = new string[ watchedPageList.Count ];
-            watchedPageList.CopyTo( wp );
+            string[] wp = new string[this._watchedPageList.Count];
+            this._watchedPageList.CopyTo(wp);
             return wp;
         }
 
-        public void LoadAllWatchedPages( )
+        public void loadAllWatchedPages()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            watchedPageList.Clear( );
-            DAL.Select q = new DAL.Select( "pw_title" );
-            q.setFrom( "watchedpages" );
-            ArrayList pL = DAL.Singleton( ).executeSelect( q );
-            foreach( object[] item in pL )
+            this._watchedPageList.Clear();
+            DAL.Select q = new DAL.Select("pw_title");
+            q.setFrom("watchedpages");
+            ArrayList pL = DAL.singleton().executeSelect(q);
+            foreach (object[] item in pL)
             {
-                watchedPageList.Add( (string)item[ 0 ] );
+                this._watchedPageList.Add(item[0]);
             }
         }
 
-        private void irc_PrivmsgEvent( User source , string destination , string message )
+        private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            if( source.ToString( ) == Configuration.Singleton( ).retrieveGlobalStringOption( "wikimediaRcBot" ) )
+            if (source.ToString() == Configuration.singleton().retrieveGlobalStringOption("wikimediaRcBot"))
             {
-                RcPageChange rcItem = rcParser( message );
+                RcPageChange rcItem = rcParser(message);
 
                 // not a page edit
-                if( rcItem.title == string.Empty )
+                if (rcItem.title == string.Empty)
                     return;
 
-                if( watchedPageList.Contains( rcItem.title ) )
+                if (this._watchedPageList.Contains(rcItem.title))
                 {
-                    PageWatcherNotificationEvent( rcItem );
+                    this.pageWatcherNotificationEvent(rcItem);
                 }
             }
         }
 
-        private void irc_ConnectionRegistrationSucceededEvent( )
+        private void irc_ConnectionRegistrationSucceededEvent()
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            uint network = Configuration.Singleton( ).retrieveGlobalUintOption( "wikimediaRcNetwork" );
+            uint network = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
 
-            DAL.Select q = new DAL.Select( "channel_name" );
-            q.setFrom( "channel" );
-            q.addWhere( new DAL.WhereConds( "channel_enabled", 1 ) );
-            q.addWhere( new DAL.WhereConds( "channel_network", network.ToString( ) ) );
-            foreach( object[] item in DAL.Singleton( ).executeSelect( q ) )
+            DAL.Select q = new DAL.Select("channel_name");
+            q.setFrom("channel");
+            q.addWhere(new DAL.WhereConds("channel_enabled", 1));
+            q.addWhere(new DAL.WhereConds("channel_network", network.ToString()));
+            foreach (object[] item in DAL.singleton().executeSelect(q))
             {
-                irc.IrcJoin( (string)( item[0] ) );
-
+                this._irc.ircJoin((string) (item[0]));
             }
         }
 
-        RcPageChange rcParser( string rcItem )
+        private static RcPageChange rcParser(string rcItem)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-            string colorCodeControlChar = "\x03";
-            string[ ] colorCodes = { 
-                                       colorCodeControlChar + "4" , 
-                                       colorCodeControlChar + "5" , 
-                                       colorCodeControlChar + "07" , 
-                                       colorCodeControlChar + "10" , 
-                                       colorCodeControlChar + "14" , 
-                                       colorCodeControlChar + "02" , 
-                                       colorCodeControlChar + "03" , 
-                                       colorCodeControlChar 
+            const string colorCodeControlChar = "\x03";
+            string[] colorCodes = {
+                                      colorCodeControlChar + "4",
+                                      colorCodeControlChar + "5",
+                                      colorCodeControlChar + "07",
+                                      colorCodeControlChar + "10",
+                                      colorCodeControlChar + "14",
+                                      colorCodeControlChar + "02",
+                                      colorCodeControlChar + "03",
+                                      colorCodeControlChar
+                                  };
+
+            string[] parts = rcItem.Split(colorCodes, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 12)
+            {
+                return new RcPageChange();
+            }
+            if (parts[1].Contains("Special:"))
+            {
+                return new RcPageChange();
+            }
+
+            RcPageChange ret = new RcPageChange
+                                   {
+                                       title = parts[ 1 ],
+                                       flags = parts[ 3 ].Trim( ),
+                                       diffUrl = parts[ 5 ],
+                                       user = parts[ 9 ],
+                                       byteDiff = parts[ 12 ].Trim( '(', ')' )
                                    };
-
-            string[ ] parts = rcItem.Split( colorCodes , StringSplitOptions.RemoveEmptyEntries );
-            if( parts.Length < 12 )
+            if (parts.Length > 13)
             {
-                return new RcPageChange( );
-            }
-            if( parts[ 1 ].Contains( "Special:" ) )
-            {
-                return new RcPageChange( );
-            }
-
-            RcPageChange ret = new RcPageChange( );
-            ret.title = parts[ 1 ];
-            ret.flags = parts[ 3 ].Trim( );
-            ret.diffUrl = parts[ 5 ];
-            ret.user = parts[ 9 ];
-            ret.byteDiff = parts[ 12 ].Trim( '(' , ')' );
-            if( parts.Length > 13 )
-            {
-                ret.comment = parts[ 13 ];
+                ret.comment = parts[13];
             }
             return ret;
         }
 
-        public void watchPage( string pageName )
+        public void watchPage(string pageName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             // addOrder to database
-            DAL.Singleton( ).Insert( "watchedpages", "", pageName );
+            DAL.singleton().insert("watchedpages", "", pageName);
             // addOrder to arraylist
-            watchedPageList.Add( pageName );
+            this._watchedPageList.Add(pageName);
         }
 
-        public void unwatchPage( string pageName )
+        public void unwatchPage(string pageName)
         {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
             //remove from database
-            DAL.Singleton( ).Delete( "watchedpages", 0, new DAL.WhereConds( "pw_title", pageName ) );
+            DAL.singleton().delete("watchedpages", 0, new DAL.WhereConds("pw_title", pageName));
             // remove from arraylist
-            watchedPageList.Remove( pageName );
+            this._watchedPageList.Remove(pageName);
         }
 
         public delegate void PageWatcherNotificationEventDelegate(RcPageChange rcItem);
-        public event PageWatcherNotificationEventDelegate PageWatcherNotificationEvent;
 
+        public event PageWatcherNotificationEventDelegate pageWatcherNotificationEvent;
     }
 }

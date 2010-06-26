@@ -1,34 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
-{   
+{
     /// <summary>
-    /// Forgets a keyword
+    ///   Forgets a keyword
     /// </summary>
-    class Forget : GenericCommand
+    internal class Forget : GenericCommand
     {
-        public Forget( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
-
-            if( args.Length >= 1 )
+            if (args.Length >= 1)
             {
-                if( WordLearner.Forget( args[ 0 ] ) )
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetDone"  ) );
+                if (WordLearner.forget(args[0]))
+                    Helpmebot6.irc.ircNotice(source.nickname, Configuration.singleton().getMessage("cmdForgetDone"));
                 else
-                    Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "cmdForgetError" ) );
+                    Helpmebot6.irc.ircNotice(source.nickname, Configuration.singleton().getMessage("cmdForgetError"));
             }
             else
             {
-                string[ ] messageParameters = { "forget" , "1" , args.Length.ToString( ) };
-                Helpmebot6.irc.IrcNotice( source.Nickname , Configuration.Singleton( ).GetMessage( "notEnoughParameters" , messageParameters ) );
+                string[] messageParameters = {"forget", "1", args.Length.ToString()};
+                Helpmebot6.irc.ircNotice(source.nickname,
+                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
             }
             return null;
         }

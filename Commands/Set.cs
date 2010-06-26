@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿#region Usings
+
+using System.Reflection;
+
+#endregion
 
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Sets a global config option.
+    ///   Sets a global config option.
     /// </summary>
-    class Set : GenericCommand
+    internal class Set : GenericCommand
     {
-        public Set( )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-
-        }
-
-        protected override CommandResponseHandler execute( User source , string channel , string[ ] args )
-        {
-            Logger.Instance( ).addToLog( "Method:" + System.Reflection.MethodInfo.GetCurrentMethod( ).DeclaringType.Name + System.Reflection.MethodInfo.GetCurrentMethod( ).Name, Logger.LogTypes.DNWB );
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
 
 
-            Configuration.Singleton( ).setOption( args[ 1 ] , args[ 0 ] , args[ 2 ] );
+            Configuration.singleton().setOption(args[1], args[0], args[2]);
             return null;
         }
     }
-
 }
