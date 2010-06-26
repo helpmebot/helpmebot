@@ -101,11 +101,9 @@ namespace helpmebot6
 
             _config = Configuration.singleton();
 
+            debugChannel = _config.retrieveGlobalStringOption("channelDebug");
 
             _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
-
-            twitter = new Twitter( Configuration.singleton( )[ "twitterConsumerKey" ],
-                                   Configuration.singleton( )[ "twitterConsumerSecret" ] );
 
             _trigger = _config.retrieveGlobalStringOption("commandTrigger");
 
@@ -122,6 +120,9 @@ namespace helpmebot6
                 // if can't connect to irc, die
                 return;
             }
+
+            twitter = new Twitter(Configuration.singleton()["twitterConsumerKey"],
+                       Configuration.singleton()["twitterConsumerSecret"]);
 
             nagMon = new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
@@ -257,7 +258,6 @@ namespace helpmebot6
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            debugChannel = _config.retrieveGlobalStringOption("channelDebug");
             irc.ircJoin(debugChannel);
 
             DAL.Select q = new DAL.Select("channel_name");
