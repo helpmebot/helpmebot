@@ -57,6 +57,9 @@ namespace helpmebot6
         {
             status = (status.Length > 140 ? status.Substring(0, 140) : status);
 
+            if (_accessToken == "")
+                throw new TwitterizerException( "Must authorise first!" );
+
             OAuthTokens tokens = new OAuthTokens
                                      {
                                          AccessToken = _accessToken,

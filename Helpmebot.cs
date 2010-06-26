@@ -104,6 +104,8 @@ namespace helpmebot6
 
             _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
 
+            twitter = new Twitter( Configuration.singleton( )[ "twitterConsumerKey" ],
+                                   Configuration.singleton( )[ "twitterConsumerSecret" ] );
 
             _trigger = _config.retrieveGlobalStringOption("commandTrigger");
 
@@ -126,7 +128,14 @@ namespace helpmebot6
             udp = new UDPListener(4357);
 
             string[] twparms = {server, schema, irc.ircServer};
-            twitter.updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
+            try
+            {
+                twitter.updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
+            }
+            catch(Twitterizer.TwitterizerException ex)
+            {
+                GlobalFunctions.errorLog( ex );
+            }
         }
 
 
