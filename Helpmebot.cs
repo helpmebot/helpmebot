@@ -39,6 +39,8 @@ namespace helpmebot6
         private static Configuration _config;
         private static UDPListener udp;
         private static MonitorService nagMon;
+        internal static Twitter twitter;
+
         private static string _trigger;
 
         public static string debugChannel;
@@ -51,7 +53,9 @@ namespace helpmebot6
         public static bool pagewatcherEnabled = true;
         public static bool enableTwitter = true;
 
+// ReSharper disable InconsistentNaming
         private static void Main(string[] args)
+// ReSharper restore InconsistentNaming
         {
             // startup arguments
             int configFileArg = GlobalFunctions.prefixIsInArray("--configfile", args);
@@ -122,7 +126,7 @@ namespace helpmebot6
             udp = new UDPListener(4357);
 
             string[] twparms = {server, schema, irc.ircServer};
-            Twitter.tweet(Configuration.singleton().getMessage("tweetStartup", twparms));
+            twitter.updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
         }
 
 

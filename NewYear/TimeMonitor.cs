@@ -105,16 +105,14 @@ namespace helpmebot6.NewYear
 
 
             foreach (object[] res in DAL.singleton().executeSelect(q))
-
             {
-                string channel = res[0].ToString();
-                if (Configuration.singleton().retrieveLocalStringOption("newYearDateAlerting", channel) == "true")
-                {
-                    string[] args = {places};
-                    string message = Configuration.singleton().getMessage("newYearMessage", args);
-                    Helpmebot6.irc.ircPrivmsg(channel, message);
-                    Twitter.tweet(message);
-                }
+                string channel = res[ 0 ].ToString( );
+                if ( Configuration.singleton( ).retrieveLocalStringOption( "newYearDateAlerting", channel ) != "true" )
+                    continue;
+                string[ ] args = { places };
+                string message = Configuration.singleton( ).getMessage( "newYearMessage", args );
+                Helpmebot6.irc.ircPrivmsg( channel, message );
+                Helpmebot6.twitter.updateStatus( message );
             }
         }
 

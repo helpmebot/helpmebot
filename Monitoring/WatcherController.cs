@@ -149,7 +149,7 @@ namespace helpmebot6.Monitoring
             }
 
             if (newItems.Count > 0)
-                Twitter.tweet(compileMessage(newItems, keyword, ">TWITTER<", false));
+               Helpmebot6.twitter.updateStatus(compileMessage(newItems, keyword, ">TWITTER<", false));
         }
 
         private static ArrayList updateDatabaseTable(ArrayList items, string keyword)

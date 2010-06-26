@@ -8,7 +8,7 @@ using Twitterizer;
 
 namespace helpmebot6.Commands
 {
-    internal class Tweet : GenericCommand
+    internal class Oauth : GenericCommand
     {
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
@@ -18,10 +18,8 @@ namespace helpmebot6.Commands
 
             Twitter twit = Helpmebot6.twitter;
 
+            twit.authorise( args[ 0 ] );
 
-            string status = string.Join(" ", args);
-
-            twit.updateStatus(status);
             return new CommandResponseHandler( Configuration.singleton( ).getMessage( "done" ) );
         }
     }
