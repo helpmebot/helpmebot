@@ -62,11 +62,9 @@ namespace helpmebot6.Monitoring
                 {
                     string pattern = (string) item;
                     Regex rX = new Regex(pattern);
-                    if (rX.IsMatch(source.hostname))
-                    {
-                        match = true;
-                        break;
-                    }
+                    if ( !rX.IsMatch( source.hostname ) ) continue;
+                    match = true;
+                    break;
                 }
 
                 if (match)
