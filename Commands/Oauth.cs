@@ -1,9 +1,6 @@
 ﻿#region Usings
-
-using System;
-using System.Net;
 using System.Reflection;
-using Twitterizer;
+
 #endregion
 
 namespace helpmebot6.Commands
