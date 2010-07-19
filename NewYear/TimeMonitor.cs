@@ -112,7 +112,7 @@ namespace helpmebot6.NewYear
                 string[ ] args = { places };
                 string message = Configuration.singleton( ).getMessage( "newYearMessage", args );
                 Helpmebot6.irc.ircPrivmsg( channel, message );
-                Helpmebot6.twitter.updateStatus( message );
+                new Twitter().updateStatus( message );
             }
         }
 

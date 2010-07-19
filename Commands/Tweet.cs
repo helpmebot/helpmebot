@@ -13,12 +13,12 @@ namespace helpmebot6.Commands
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            Twitter twit = Helpmebot6.twitter;
+            
 
 
             string status = string.Join(" ", args);
 
-            twit.updateStatus(status);
+            new Twitter().updateStatus(status);
             return new CommandResponseHandler( Configuration.singleton( ).getMessage( "done" ) );
         }
     }

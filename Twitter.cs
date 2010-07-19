@@ -12,40 +12,57 @@ namespace helpmebot6
         private readonly string _consumerKey;
         private readonly string _consumerSecret;
 
-        public Twitter( string consumerKey, string consumerSecret )
+        public Twitter()
         {
-            _consumerKey = consumerKey;
-            _consumerSecret = consumerSecret;
+            _consumerKey = Configuration.singleton( )[ "twitterConsumerKey" ];
+            _consumerSecret = Configuration.singleton( )[ "twitterConsumerSecret" ];
 
             _accessToken = Configuration.singleton( )[ "twitterAccessToken" ];
-            _accessTokenSecret = Configuration.singleton()["twitterAccessTokenSecret"];
+            _accessTokenSecret = Configuration.singleton( )[ "twitterAccessTokenSecret" ];
 
-            if (_accessToken != "" || _accessTokenSecret != "")
+
+
+            if ( _accessToken != "" && _accessTokenSecret != "" )
                 return;
 
-            _requestToken = OAuthUtility.GetRequestToken( _consumerKey, _consumerSecret );
+            try
+            {
 
-            Uri authorizationUri = OAuthUtility.BuildAuthorizationUri( _requestToken.Token );
+                OAuthTokenResponse tkn = OAuthUtility.GetRequestToken( _consumerKey, _consumerSecret );
+                Configuration.singleton( )[ "twitterRequestToken" ] = tkn.Token;
 
-            Helpmebot6.irc.ircPrivmsg( Helpmebot6.debugChannel,
-                                       "Please authorise access to Twitter: " + authorizationUri );
 
+                Uri authorizationUri = OAuthUtility.BuildAuthorizationUri( tkn.Token );
+
+
+
+                Helpmebot6.irc.ircPrivmsg( Helpmebot6.debugChannel,
+                                           "Please authorise access to Twitter: " + authorizationUri );
+            }
+            catch (TwitterizerException ex)
+            {
+                GlobalFunctions.errorLog( ex );
+            }
         }
 
-        private readonly OAuthTokenResponse _requestToken;
         private string _accessToken;
         private string _accessTokenSecret;
 
-
         public void authorise( string pinCode )
         {
-            OAuthTokenResponse  accessToken = OAuthUtility.GetAccessToken( _consumerKey, _consumerSecret, _requestToken.Token, pinCode );
+            OAuthTokenResponse accessToken = OAuthUtility.GetAccessToken(_consumerKey, _consumerSecret, Configuration.singleton()["twitterRequestToken"], pinCode);
 
             Configuration.singleton( )[ "twitterAccessToken" ] = _accessToken = accessToken.Token;
             Configuration.singleton( )[ "twitterAccessTokenSecret" ] = _accessTokenSecret = accessToken.TokenSecret;
+
+            Configuration.singleton( )[ "twitterRequestToken" ] = "";
         }
 
-
+        public void deauth( )
+        {
+            Configuration.singleton()["twitterAccessToken"] = "";
+            Configuration.singleton()["twitterAccessTokenSecret"] = "";
+        }
 
 
         /// <summary>

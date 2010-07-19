@@ -39,7 +39,6 @@ namespace helpmebot6
         private static Configuration _config;
         private static UDPListener udp;
         private static MonitorService nagMon;
-        internal static Twitter twitter;
 
         private static string _trigger;
 
@@ -121,9 +120,6 @@ namespace helpmebot6
                 return;
             }
 
-            twitter = new Twitter(Configuration.singleton()["twitterConsumerKey"],
-                       Configuration.singleton()["twitterConsumerSecret"]);
-
             nagMon = new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
             udp = new UDPListener(4357);
@@ -131,7 +127,7 @@ namespace helpmebot6
             string[] twparms = {server, schema, irc.ircServer};
             try
             {
-                twitter.updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
+                new Twitter( ).updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
             }
             catch(Twitterizer.TwitterizerException ex)
             {

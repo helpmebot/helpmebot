@@ -16,12 +16,11 @@ namespace helpmebot6.Commands
 
             if ( args.Length == 1  && args[0] != "")
             {
-                Helpmebot6.twitter.authorise( args[ 0 ] );
+                new Twitter( ).authorise( args[ 0 ] );
             }
             else
             {
-                Helpmebot6.twitter = new Twitter( Configuration.singleton( )[ "twitterConsumerKey" ],
-                                                  Configuration.singleton( )[ "twitterConsumerSecret" ] );
+                new Twitter( );
             }
 
             return new CommandResponseHandler( Configuration.singleton( ).getMessage( "done" ) );

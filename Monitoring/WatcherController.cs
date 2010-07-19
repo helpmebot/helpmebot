@@ -149,7 +149,7 @@ namespace helpmebot6.Monitoring
             }
 
             if (newItems.Count > 0)
-               Helpmebot6.twitter.updateStatus(compileMessage(newItems, keyword, ">TWITTER<", false));
+              new Twitter(  ).updateStatus(compileMessage(newItems, keyword, ">TWITTER<", false));
         }
 
         private static ArrayList updateDatabaseTable(ArrayList items, string keyword)
@@ -311,9 +311,7 @@ namespace helpmebot6.Monitoring
 
             CategoryWatcher cw;
             bool success = this._watchers.TryGetValue(keyword, out cw);
-            if (success)
-                return cw;
-            return null;
+            return success ? cw : null;
         }
 
         public Dictionary<string, CategoryWatcher>.KeyCollection getKeywords()
