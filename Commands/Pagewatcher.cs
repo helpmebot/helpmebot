@@ -15,7 +15,7 @@ namespace helpmebot6.Commands
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            if (args.Length > 1)
+            if (args.Length >= 1)
             {
                 switch (GlobalFunctions.popFromFront(ref args).ToLower())
                 {
