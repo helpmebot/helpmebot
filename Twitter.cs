@@ -22,7 +22,7 @@ namespace helpmebot6
 
 
 
-            if ( _accessToken != "" && _accessTokenSecret != "" )
+            if (Configuration.singleton()["twitterRequestToken"] != "" || ( _accessToken != "" && _accessTokenSecret != "" ))
                 return;
 
             try
