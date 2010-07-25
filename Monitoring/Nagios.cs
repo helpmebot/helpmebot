@@ -60,6 +60,10 @@ namespace helpmebot6.Monitoring
             {
                 this.threadFatalError(this, new EventArgs());
             }
+            catch(ObjectDisposedException)
+            {
+                this.threadFatalError(this, new EventArgs());
+            }
         }
 
         public void stop()
