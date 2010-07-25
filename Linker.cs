@@ -150,12 +150,12 @@ namespace helpmebot6
             q.addWhere(new DAL.WhereConds("iw_prefix", iwprefix));
             string url = DAL.singleton().executeScalarSelect(q);
 
-            if (url == string.Empty)
+            if (link.Split(':').Length == 1 || url == string.Empty)
             {
                 url =
-                    Configuration.singleton().retrieveLocalStringOption(
-                        (useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
-                return url + antispace(link);
+                    Configuration.singleton( ).retrieveLocalStringOption(
+                        ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination );
+                return url + antispace( link );
             }
             return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
         }
