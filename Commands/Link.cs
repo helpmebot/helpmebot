@@ -6,6 +6,9 @@ using System.Reflection;
 
 namespace helpmebot6.Commands
 {
+    using System.Collections;
+    using System.Linq;
+
     internal class Link : GenericCommand
     {
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
@@ -24,14 +27,15 @@ namespace helpmebot6.Commands
                 }
             }
 
-            string key = channel;
             if (GlobalFunctions.realArrayLength(args) > 0)
             {
-                key = "<<<REALTIME>>>";
-                Linker.instance().parseMessage(string.Join(" ", args), key);
-            }
+               ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
 
-            return new CommandResponseHandler(Linker.instance().getLink(key, secure));
+                string message = links.Cast<string>( ).Aggregate( "", ( current, link ) => current + " "+ Linker.getRealLink( channel, link, secure ) );
+
+                return new CommandResponseHandler(message);
+            }
+            return new CommandResponseHandler( Linker.instance( ).getLink( channel, secure ) );
         }
     }
 }

@@ -7,6 +7,8 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    using System.Collections;
+
     public class Linker
     {
         private readonly Dictionary<string, string> _lastLink;
@@ -44,63 +46,79 @@ namespace helpmebot6
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            string newLink = reallyParseMessage(message);
-            if ( newLink == "" ) return;
+            ArrayList newLink = reallyParseMessage(message);
+            if (newLink.Count == 0)
+                return;
             if (this._lastLink.ContainsKey(channel))
             {
                 this._lastLink.Remove(channel);
             }
-            this._lastLink.Add(channel, newLink);
-            this.sendLink(channel, newLink);
+            this._lastLink.Add(channel, (string)newLink[0]);
+            this.sendLink(channel, (string)newLink[0]);
         }
 
-        public string reallyParseMessage(string message)
+        public ArrayList reallyParseMessage(string message)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            string newLink = "";
+            ArrayList newLinks = new ArrayList();
 
-            if ((message.Contains("[[") && message.Contains("]]")))
+            for ( int start = 0; start < message.Length; start++ )
             {
-                // [[newLink]]
-
-                int startIndex = message.IndexOf("[[");
-                int endIndex = message.IndexOf("]]", startIndex);
-
-                if (endIndex != -1)
+                if (( message.Substring(start).Contains("[[") && message.Substring(start).Contains("]]")) )
                 {
-                    int nextStartIndex = message.IndexOf("[[", startIndex + 2, endIndex - startIndex);
+                    // [[newLink]]
 
-                    while (nextStartIndex != -1)
+                    int startIndex = message.Substring(start).IndexOf("[[");
+                    int endIndex = message.Substring(start).IndexOf("]]", startIndex);
+
+                    if (endIndex != -1)
                     {
-                        startIndex = nextStartIndex;
-                        nextStartIndex = message.IndexOf("[[", startIndex + 2, endIndex - startIndex);
-                    }
+                        int nextStartIndex = message.Substring(start).IndexOf("[[", startIndex + 2, endIndex - startIndex);
 
-                    newLink = message.Substring(startIndex + 2, endIndex - startIndex - 2);
+                        while (nextStartIndex != -1)
+                        {
+                            startIndex = nextStartIndex;
+                            nextStartIndex = message.Substring(start).IndexOf("[[", startIndex + 2, endIndex - startIndex);
+                        }
+                        string link =
+                            message.Substring( start ).Substring( startIndex + 2, endIndex - startIndex - 2 ).Trim( '[' );
+                        newLinks.Add(link);
+                        start = start + endIndex;
+                        continue;
+                    }
+                }
+                if (( message.Substring(start).Contains("{{") && message.Substring(start).Contains("}}") ))
+                {
+                    // [[newLink]]
+
+                    int startIndex = message.Substring(start).IndexOf("{{");
+                    int endIndex = message.Substring(start).IndexOf("}}", startIndex);
+
+                    if (endIndex != -1)
+                    {
+                        int nextStartIndex = message.Substring(start).IndexOf("{{", startIndex + 2, endIndex - startIndex);
+
+                        while (nextStartIndex != -1)
+                        {
+                            startIndex = nextStartIndex;
+                            nextStartIndex = message.Substring(start).IndexOf("}}", startIndex + 2, endIndex - startIndex);
+                        }
+
+                        newLinks.Add( "Template:" +
+                                      message.Substring( start ).Substring( startIndex + 2, endIndex - startIndex - 2 ).
+                                          Trim( '[' ) );
+
+                        start = start + endIndex;
+                        continue;
+                    }
                 }
             }
-            if ((message.Contains("{{") && message.Contains("}}")))
-            {
-                int startIndex = message.IndexOf("{{");
-                int endIndex = message.IndexOf("}}", startIndex);
-                if (endIndex != -1)
-                {
-                    int nextStartIndex = message.IndexOf("{{", startIndex + 2, endIndex - startIndex);
 
-                    while (nextStartIndex != -1)
-                    {
-                        startIndex = nextStartIndex;
-                        nextStartIndex = message.IndexOf("{{", startIndex + 2, endIndex - startIndex);
-                    }
 
-                    newLink = "Template:" + message.Substring(startIndex + 2, endIndex - startIndex - 2);
-                }
-            }
-            newLink = newLink.Trim('[');
-            return newLink;
+            return newLinks;
         }
 
         public string getLink(string destination)
@@ -120,25 +138,26 @@ namespace helpmebot6
 
             string link;
             bool success = this._lastLink.TryGetValue(destination, out link);
-            if (success)
+            return success ? getRealLink( destination, link, useSecureServer ) : "";
+        }
+
+        public static string getRealLink( string destination, string link, bool useSecureServer )
+        {
+            string iwprefix = link.Split(':')[0];
+
+            DAL.Select q = new DAL.Select("iw_url");
+            q.setFrom("interwikis");
+            q.addWhere(new DAL.WhereConds("iw_prefix", iwprefix));
+            string url = DAL.singleton().executeScalarSelect(q);
+
+            if (url == string.Empty)
             {
-                string iwprefix = link.Split(':')[0];
-
-                DAL.Select q = new DAL.Select("iw_url");
-                q.setFrom("interwikis");
-                q.addWhere(new DAL.WhereConds("iw_prefix", iwprefix));
-                string url = DAL.singleton().executeScalarSelect(q);
-
-                if (url == string.Empty)
-                {
-                    url =
-                        Configuration.singleton().retrieveLocalStringOption(
-                            (useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
-                    return url + antispace(link);
-                }
-                return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
+                url =
+                    Configuration.singleton().retrieveLocalStringOption(
+                        (useSecureServer ? "wikiSecureUrl" : "wikiUrl"), destination);
+                return url + antispace(link);
             }
-            return "";
+            return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
         }
 
         private static string antispace(string source)
