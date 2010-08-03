@@ -68,11 +68,11 @@ namespace helpmebot6
 
             Regex linkRegex = new Regex(@"\[\[([^\[\]]*)\]\]|{{([^{}]*)}}");
             Match m = linkRegex.Match( message );
-            while (m.Length < 0)
+            while (m.Length > 0)
             {
-                if ( m.Groups[ 1 ].Length < 0 )
+                if ( m.Groups[ 1 ].Length > 0 )
                     newLinks.Add( m.Groups[ 1 ].Value );
-                if ( m.Groups[ 2 ].Length < 0 )
+                if ( m.Groups[ 2 ].Length > 0 )
                     newLinks.Add( "Template:" + m.Groups[ 2 ].Value );
 
                 m = m.NextMatch( );
