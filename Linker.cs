@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -65,58 +66,17 @@ namespace helpmebot6
 
             ArrayList newLinks = new ArrayList();
 
-            for ( int start = 0; start < message.Length; start++ )
+            Regex linkRegex = new Regex(@"\[\[([^\[\]]*)\]\]|{{([^{}]*)}}");
+            Match m = linkRegex.Match( message );
+            while (m.Length < 0)
             {
-                if (( message.Substring(start).Contains("[[") && message.Substring(start).Contains("]]")) )
-                {
-                    // [[newLink]]
+                if ( m.Groups[ 1 ].Length < 0 )
+                    newLinks.Add( m.Groups[ 1 ].Value );
+                if ( m.Groups[ 2 ].Length < 0 )
+                    newLinks.Add( "Template:" + m.Groups[ 2 ].Value );
 
-                    int startIndex = message.Substring(start).IndexOf("[[");
-                    int endIndex = message.Substring(start).IndexOf("]]", startIndex);
-
-                    if (endIndex != -1)
-                    {
-                        int nextStartIndex = message.Substring(start).IndexOf("[[", startIndex + 2, endIndex - startIndex);
-
-                        while (nextStartIndex != -1)
-                        {
-                            startIndex = nextStartIndex;
-                            nextStartIndex = message.Substring(start).IndexOf("[[", startIndex + 2, endIndex - startIndex);
-                        }
-                        string link =
-                            message.Substring( start ).Substring( startIndex + 2, endIndex - startIndex - 2 ).Trim( '[' );
-                        newLinks.Add(link);
-                        start = start + endIndex;
-                        continue;
-                    }
-                }
-                if (( message.Substring(start).Contains("{{") && message.Substring(start).Contains("}}") ))
-                {
-                    // [[newLink]]
-
-                    int startIndex = message.Substring(start).IndexOf("{{");
-                    int endIndex = message.Substring(start).IndexOf("}}", startIndex);
-
-                    if (endIndex != -1)
-                    {
-                        int nextStartIndex = message.Substring(start).IndexOf("{{", startIndex + 2, endIndex - startIndex);
-
-                        while (nextStartIndex != -1)
-                        {
-                            startIndex = nextStartIndex;
-                            nextStartIndex = message.Substring(start).IndexOf("}}", startIndex + 2, endIndex - startIndex);
-                        }
-
-                        newLinks.Add( "Template:" +
-                                      message.Substring( start ).Substring( startIndex + 2, endIndex - startIndex - 2 ).
-                                          Trim( '[' ) );
-
-                        start = start + endIndex;
-                        continue;
-                    }
-                }
+                m = m.NextMatch( );
             }
-
 
             return newLinks;
         }
