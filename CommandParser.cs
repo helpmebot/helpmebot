@@ -27,6 +27,8 @@ using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
 namespace helpmebot6
 {
+    using System.Text.RegularExpressions;
+
     public class CommandParser
     {
         public CommandParser()
@@ -39,7 +41,7 @@ namespace helpmebot6
         public void handleCommand(User source, string destination, string command, string[] args)
         {
             Logger.instance().addToLog(
-                string.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
+                String.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
                               MethodBase.GetCurrentMethod().Name), Logger.LogTypes.DNWB);
 
             Logger.instance().addToLog("Handling recieved message...", Logger.LogTypes.General);
@@ -64,7 +66,7 @@ namespace helpmebot6
                 int newArrayPos = 1;
                 for (int i = 0; i < args.Length; i++)
                 {
-                    if (!string.IsNullOrEmpty(args[i]))
+                    if (!String.IsNullOrEmpty(args[i]))
                         newArgs[newArrayPos] = args[i];
                     newArrayPos++;
                 }
@@ -106,7 +108,7 @@ namespace helpmebot6
                 CommandResponseHandler crh = new CommandResponseHandler();
                 string wordResponse = rW.phrase;
                 string directedTo = "";
-                if (wordResponse != string.Empty)
+                if (wordResponse != String.Empty)
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
@@ -118,7 +120,7 @@ namespace helpmebot6
                     }
                     else
                     {
-                        wordResponse = string.Format(wordResponse, args);
+                        wordResponse = String.Format(wordResponse, args);
                         if (rW.action)
                         {
                             crh.respond(IAL.wrapCTCP("ACTION", wordResponse));
@@ -139,7 +141,7 @@ namespace helpmebot6
         private static string findRedirection(string destination, ref string[] args)
         {
             Logger.instance().addToLog(
-                string.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
+                String.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
                               MethodBase.GetCurrentMethod().Name), Logger.LogTypes.DNWB);
 
             string directedTo = "";
@@ -167,7 +169,7 @@ namespace helpmebot6
                 {
                     string message = item.message;
 
-                    if (directedTo != string.Empty)
+                    if (directedTo != String.Empty)
                     {
                         message = directedTo + ": " + message;
                     }
@@ -190,6 +192,54 @@ namespace helpmebot6
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///   Tests against recognised message formats
+        /// </summary>
+        /// <param name = "message">the message recieved</param>
+        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
+        /// <returns>true if the message is in a recognised format</returns>
+        /// <remarks>
+        ///   Allowed formats:
+        ///   !command
+        ///   !helpmebot command
+        ///   Helpmebot: command
+        ///   Helpmebot command
+        ///   Helpmebot, command
+        ///   Helpmebot> command
+        /// </remarks>
+        public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+           
+
+            Regex validCommand =
+                new Regex(
+                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
+                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
+                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$" );
+
+            /*
+            new Regex(
+                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
+                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
+                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$");
+             */
+
+            Match m = validCommand.Match(message);
+
+            if( m.Length > 0 )
+            {
+                message = m.Groups[ "cmd" ].Value +
+                          ( m.Groups[ "args" ].Length > 0 ? " " + m.Groups[ "args" ].Value : "" );
+                return true;
+            }
+
+            return false;
         }
     }
 }

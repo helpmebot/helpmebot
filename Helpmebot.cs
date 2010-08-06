@@ -100,11 +100,11 @@ namespace helpmebot6
 
             _config = Configuration.singleton();
 
-            debugChannel = _config.retrieveGlobalStringOption("channelDebug");
+            debugChannel = _config["channelDebug"];
 
             _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
 
-            _trigger = _config.retrieveGlobalStringOption("commandTrigger");
+            _trigger = _config["commandTrigger"];
 
             irc = new IAL(_ircNetwork);
 
@@ -225,7 +225,7 @@ namespace helpmebot6
             try
             {
                 bool overrideSilence = cmd.overrideBotSilence;
-                if (isRecognisedMessage(ref message, ref overrideSilence))
+                if (CommandParser.isRecognisedMessage(ref message, ref overrideSilence))
                 {
                     cmd.overrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
@@ -266,77 +266,6 @@ namespace helpmebot6
             }
         }
 
-        /// <summary>
-        ///   Tests against recognised message formats
-        /// </summary>
-        /// <param name = "message">the message recieved</param>
-        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
-        /// <returns>true if the message is in a recognised format</returns>
-        /// <remarks>
-        ///   Allowed formats:
-        ///   !command
-        ///   !helpmebot command
-        ///   Helpmebot: command
-        ///   Helpmebot command
-        ///   Helpmebot, command
-        ///   Helpmebot> command
-        /// </remarks>
-        private static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            string[] words = message.Split(' ');
-
-            if (words[0].StartsWith(_trigger))
-            {
-                // !
-
-                if (message.Length == _trigger.Length)
-                    return false;
-
-                // !command
-                // !helpmebot command
-
-
-                if (words[0].ToLower() == (_trigger + irc.ircNickname.ToLower()))
-                {
-                    overrideSilence = true;
-                    message = string.Join(" ", words, 1, words.Length - 1);
-                    return true;
-                }
-                message = message.Substring(1);
-                overrideSilence = false;
-                return true;
-            }
-            if (words[0].ToLower() == irc.ircNickname.ToLower()) // Helpmebot command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ":")) // Helpmebot: command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ">")) // Helpmebot> command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ",")) // Helpmebot, command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            return false;
-        }
-
         public static void stop()
         {
             Logger.instance().addToLog(
@@ -344,6 +273,18 @@ namespace helpmebot6
                 Logger.LogTypes.DNWB);
 
             ThreadList.instance().stop();
+        }
+
+        public static string trigger
+        {
+            get
+            {
+                return _trigger;
+            }
+            set
+            {
+                _trigger = value;
+            }
         }
     }
 }
