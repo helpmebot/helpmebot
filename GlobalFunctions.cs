@@ -20,13 +20,14 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using MySql.Data.MySqlClient;
 
 #endregion
-
+ 
 namespace helpmebot6
 {
-    public class GlobalFunctions
+    using System.Linq;
+
+    internal class GlobalFunctions
     {
         /// <summary>
         ///   Searches the array haystack for needle
@@ -114,82 +115,20 @@ namespace helpmebot6
             }
         }
 
-        public static string escape(string str)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return MySqlHelper.EscapeString(str);
-        }
-
-        //public static void Log(string message) { Console.WriteLine("# " + message); }
-
-        public static User.UserRights commandAccessLevel()
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            StackTrace foo = new StackTrace();
-            string typename = foo.GetFrame(1).GetMethod().DeclaringType.FullName;
-
-            User.UserRights accessLevel;
-            DAL.Select q = new DAL.Select("accesslevel");
-            q.setFrom("command");
-
-            q.addWhere(new DAL.WhereConds("typename", typename));
-            q.addLimit(1, 0);
-
-            string al = DAL.singleton().executeScalarSelect(q);
-            switch (al)
-            {
-                case "Developer":
-                    accessLevel = User.UserRights.Developer;
-                    break;
-                case "Superuser":
-                    accessLevel = User.UserRights.Superuser;
-                    break;
-                case "Advanced":
-                    accessLevel = User.UserRights.Advanced;
-                    break;
-                case "Normal":
-                    accessLevel = User.UserRights.Normal;
-                    break;
-                case "Semi-ignored":
-                    accessLevel = User.UserRights.Semiignored;
-                    break;
-                case "Ignored":
-                    accessLevel = User.UserRights.Ignored;
-                    break;
-                default:
-                    accessLevel = User.UserRights.Developer;
-                    errorLog(new ArgumentOutOfRangeException("command", typename, "not found in commandlist"));
-                    break;
-            }
-            return accessLevel;
-        }
-
         public static void removeItemFromArray(string item, ref string[] array)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            int count = 0;
-            foreach (string i in array)
-            {
-                if (i == item)
-                    count++;
-            }
+            int count = array.Count( i => i == item );
 
             string[] newArray = new string[array.Length - count];
 
             int nextAddition = 0;
 
-            foreach (string  i in array)
+            foreach ( string i in array.Where( i => i != item ) )
             {
-                if (i == item) continue;
                 newArray[nextAddition] = i;
                 nextAddition++;
             }
@@ -203,25 +142,8 @@ namespace helpmebot6
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            int argsLength = 0;
-            foreach (string arg in args)
-            {
-                if (!string.IsNullOrEmpty(arg))
-                    argsLength++;
-            }
-            return argsLength;
+            return args.Count( arg => !string.IsNullOrEmpty( arg ) );
         }
 
-        public static void silentPrivmsg(IAL irc, string channel, string message)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "true")
-                return;
-
-            irc.ircPrivmsg(channel, message);
-        }
     }
 }
