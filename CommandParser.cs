@@ -28,7 +28,7 @@ namespace helpmebot6
 {
     using System.Text.RegularExpressions;
 
-    public class CommandParser
+    internal class CommandParser
     {
         public CommandParser()
         {

@@ -71,11 +71,11 @@ namespace helpmebot6.Commands
                                                       CommandResponseDestination.PrivateMessage);
                 }
                 if (!global)
-                    Configuration.singleton().setLocalOption("silence", channel, newValue);
+                    Configuration.singleton().oldSetLocalOption("silence", channel, newValue);
                 else
                 {
                     if (source.accessLevel >= User.UserRights.Superuser)
-                        Configuration.singleton().setGlobalOption("silence", newValue);
+                        Configuration.singleton().oldSetGlobalOption("silence", newValue);
                 }
                 return new CommandResponseHandler(Configuration.singleton().getMessage("done"),
                                                   CommandResponseDestination.PrivateMessage);

@@ -62,15 +62,11 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         public CommandResponseHandler run(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string command = GetType().ToString();
 
             this.log("Running command: " + command);
 
-            return accessTest(source, channel, args);
+            return accessTest(source, channel)? this.reallyRun(source,channel,args  ):this.accessDenied(source,command,args  );
         }
 
         /// <summary>
@@ -78,18 +74,11 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name = "source"></param>
         /// <param name = "channel"></param>
-        /// <param name = "args"></param>
         /// <returns></returns>
-        protected virtual CommandResponseHandler accessTest(User source, string channel, string[] args)
+        protected virtual bool accessTest(User source, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             // check the access level
-            if ( source.accessLevel >= this.accessLevel )
-                return this.reallyRun( source, channel, args );
-            return this.accessDenied(source, channel, args);
+            return source.accessLevel >= this.accessLevel ? true : false;
         }
 
         /// <summary>
@@ -101,10 +90,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected virtual CommandResponseHandler reallyRun(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true));
             this.log("Starting command execution...");
             CommandResponseHandler crh;
@@ -154,11 +139,8 @@ namespace helpmebot6.Commands
 
         protected void log(string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            Logger.instance().addToLog(message, Logger.LogTypes.Command);
+            Logger.instance( ).addToLog( MethodBase.GetCurrentMethod( ).DeclaringType.Name + ": " + message,
+                                         Logger.LogTypes.Command );
         }
     }
 }

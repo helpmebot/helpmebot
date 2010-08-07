@@ -135,32 +135,8 @@ namespace helpmebot6
                         string accesslevel = this._db.executeScalarSelect(q) ??
                                              "Normal";
 
-                        UserRights ret;
-
-                        switch (accesslevel)
-                        {
-                            case "Developer":
-                                ret = UserRights.Developer;
-                                break;
-                            case "Superuser":
-                                ret = UserRights.Superuser;
-                                break;
-                            case "Advanced":
-                                ret = UserRights.Advanced;
-                                break;
-                            case "Normal":
-                                ret = UserRights.Normal;
-                                break;
-                            case "Semi-ignored":
-                                ret = UserRights.Semiignored;
-                                break;
-                            case "Ignored":
-                                ret = UserRights.Ignored;
-                                break;
-                            default:
-                                ret = UserRights.Normal;
-                                break;
-                        }
+                        UserRights ret =
+                            (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
 
                         _accessLevel = ret;
                         this._retrievedAccessLevel = true;

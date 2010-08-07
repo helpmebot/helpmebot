@@ -24,7 +24,7 @@ using helpmebot6.Commands;
 
 namespace helpmebot6
 {
-    public class AccessLog
+    internal class AccessLog
     {
         private static AccessLog _instance;
 
@@ -100,10 +100,7 @@ namespace helpmebot6
 
         public bool doFloodCheck(User source)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
+            //TODO: Implement
             return false;
         }
     }

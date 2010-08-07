@@ -26,7 +26,7 @@ using System.Reflection;
 
 namespace helpmebot6
 {
-    public class Configuration
+    internal class Configuration
     {
         private readonly DAL _dbal = DAL.singleton();
 
@@ -39,62 +39,77 @@ namespace helpmebot6
 
         protected Configuration()
         {
-            this._configurationCache = new ArrayList();
+            this._configurationCache = new Dictionary<string, ConfigurationSetting>();
         }
 
-
-        private readonly ArrayList _configurationCache;
+        private readonly Dictionary<string, ConfigurationSetting> _configurationCache;
 
         public string this[string globalOption]
         {
-            get { return retrieveGlobalStringOption(globalOption); }
-            set { setGlobalOption(globalOption, value); }
+            get { return this.getGlobalSetting(globalOption); }
+            set { this.setGlobalOption(globalOption, value); }
         }
 
+        public string this[string localOption, string locality]
+        {
+            get
+            {
+                return this._dbal.proc_HMB_GET_LOCAL_OPTION(localOption, locality);
+            }
+            set
+            {
+                this.setLocalOption( locality, localOption, value );
+            }
+        }
+
+        [Obsolete("Use indexer property instead.")]
         public string retrieveGlobalStringOption(string optionName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            return getGlobalSetting( optionName );
+        }
 
-
-            foreach (ConfigurationSetting s in this._configurationCache)
+        private string getGlobalSetting( string optionName )
+        {
+            if( this._configurationCache.ContainsKey( optionName ))
             {
-                if ( s.name != optionName ) continue;
-
-                // option found, deal with option
-
-                if (s.isValid())
+                ConfigurationSetting setting;
+                if(this._configurationCache.TryGetValue(optionName,out setting  ))
                 {
-                    //option cache is still valid
-                    return s.value;
-                }
-                //option cache is not valid
-                // fetch new item from database
-                string optionValue1 = this.retrieveOptionFromDatabase(optionName);
+                    if ( setting.isValid( ) )
+                    {
+                        return setting.value;
+                    }
 
-                s.value = optionValue1;
-                return s.value;
+                    //option cache is not valid
+                    // fetch new item from database
+                    string optionValue1 = this.retrieveOptionFromDatabase( optionName );
+
+                    setting.value = optionValue1;
+                    this._configurationCache.Remove( optionName );
+                    this._configurationCache.Add( optionName, setting );
+                    return setting.value;
+                }
+                throw new ArgumentOutOfRangeException();
             }
 
-            // option not found, add entry to cache
-            string optionValue2 = retrieveOptionFromDatabase(optionName);
+            string optionValue2 = this.retrieveOptionFromDatabase(optionName);
 
             if (optionValue2 != string.Empty)
             {
                 ConfigurationSetting cachedSetting = new ConfigurationSetting(optionName, optionValue2);
-                this._configurationCache.Add(cachedSetting);
+                this._configurationCache.Add( optionName, cachedSetting );
             }
             return optionValue2;
         }
 
+        [Obsolete("Use indexer property instead, then cast to string.")]
         public uint retrieveGlobalUintOption(string optionName)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            string optionValue = retrieveGlobalStringOption(optionName);
+            string optionValue = this.getGlobalSetting(optionName);
             uint value;
             try
             {
@@ -107,12 +122,9 @@ namespace helpmebot6
             return value;
         }
 
+        [Obsolete("Use indexer property instead.")]
         public string retrieveLocalStringOption(string optionName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return this._dbal.proc_HMB_GET_LOCAL_OPTION(optionName, channel);
         }
 
@@ -139,12 +151,14 @@ namespace helpmebot6
             return null;
         }
 
-        public void setGlobalOption(string optionName, string newValue)
+        [Obsolete("Use indexer property instead.")]
+        public void oldSetGlobalOption(string optionName, string newValue)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            setGlobalOption( newValue, optionName );
+        }
 
+        private void setGlobalOption( string newValue, string optionName )
+        {
             Dictionary<string, string> vals = new Dictionary<string, string>
                                                   {
                                                       {
@@ -155,21 +169,28 @@ namespace helpmebot6
             this._dbal.update("configuration", vals, 1, new DAL.WhereConds("configuration_name", optionName));
         }
 
-        public void setLocalOption(string optionName, string channel, string newValue)
+        [Obsolete("Use indexer property instead.")]
+        public void oldSetLocalOption(string optionName, string channel, string newValue)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            this.setLocalOption( channel, optionName, newValue );
+        }
 
-            // convert channel to ID
+        private void setLocalOption( string channel, string optionName, string newValue )
+        {
+            string channelId = this.getChannelId(channel);
 
-
-            string channelId = getChannelId(channel);
-
-            string configId = getOptionId(optionName);
+            string configId = this.getOptionId(optionName);
 
             // does setting exist in local table?
             //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
+
+
+            if(newValue == null)
+            {
+                this._dbal.delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ),
+                                   new DAL.WhereConds( "cc_channel", getChannelId( channelId ) ) );
+                return;
+            }
 
             DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("channelconfig");
@@ -185,7 +206,7 @@ namespace helpmebot6
                                                           { "cc_value", newValue }
                                                       };
                 this._dbal.update("channelconfig", vals, 1, new DAL.WhereConds("cc_channel", channelId),
-                            new DAL.WhereConds("cc_config", configId));
+                                  new DAL.WhereConds("cc_config", configId));
             }
             else
             {
@@ -193,7 +214,7 @@ namespace helpmebot6
                 this._dbal.insert("channelconfig", channelId, configId, newValue);
             }
         }
-
+        
         public void setOption(string optionName, string target, string newValue)
         {
             Logger.instance().addToLog(
@@ -202,22 +223,22 @@ namespace helpmebot6
 
             if (target == "global")
             {
-                setGlobalOption(optionName, newValue);
+                this.oldSetGlobalOption(optionName, newValue);
             }
             else
             {
-                setLocalOption(optionName, target, newValue);
+                this.setLocalOption(optionName, target, newValue);
             }
         }
 
+        [Obsolete("Use indexer property instead with null value.")]
         public void deleteLocalOption(string optionName, string target)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            this._dbal.delete("channelconfig", 1, new DAL.WhereConds("cc_config", getOptionId(optionName)),
-                        new DAL.WhereConds("cc_channel", getChannelId(target)));
+            this.setLocalOption( target, optionName, null );
         }
 
         private string getOptionId(string optionName)

@@ -38,14 +38,14 @@ namespace helpmebot6.Commands
                     {
                         return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
                     }
-                    Configuration.singleton().setLocalOption("welcomeNewbie", channel, "true");
+                    Configuration.singleton().oldSetLocalOption("welcomeNewbie", channel, "true");
                     return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "disable":
                     if (Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "false")
                     {
                         return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
                     }
-                    Configuration.singleton().setLocalOption("welcomeNewbie", channel, "false");
+                    Configuration.singleton().oldSetLocalOption("welcomeNewbie", channel, "false");
                     return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
                 case "global":
                     Configuration.singleton().deleteLocalOption("welcomeNewbie", channel);

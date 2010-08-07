@@ -22,7 +22,7 @@ using System;
 
 namespace helpmebot6
 {
-    public class ConfigurationSetting
+    internal class ConfigurationSetting
     {
         private const double CACHE_TIMEOUT = 5;
 

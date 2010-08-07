@@ -71,9 +71,9 @@ namespace helpmebot6.Commands
                                                       CommandResponseDestination.PrivateMessage);
                 }
                 if (!global)
-                    Configuration.singleton().setLocalOption("autoLink", channel, newValue);
+                    Configuration.singleton().oldSetLocalOption("autoLink", channel, newValue);
                 else
-                    Configuration.singleton().setGlobalOption("autoLink", newValue);
+                    Configuration.singleton().oldSetGlobalOption("autoLink", newValue);
                 return new CommandResponseHandler(Configuration.singleton().getMessage("done"),
                                                   CommandResponseDestination.PrivateMessage);
             }
