@@ -31,6 +31,9 @@ namespace helpmebot6
     /// </summary>
     internal class Configuration
     {
+
+        #region config
+
         private readonly DAL _dbal = DAL.singleton();
 
         private static Configuration _singleton;
@@ -312,7 +315,7 @@ namespace helpmebot6
             mySqlSchema = settingsreader.ReadLine();
             settingsreader.Close();
         }
-
+#endregion
         #region messaging
 
         [Obsolete]

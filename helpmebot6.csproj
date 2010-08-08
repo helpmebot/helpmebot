@@ -145,6 +145,7 @@
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
