@@ -287,6 +287,7 @@ namespace helpmebot6
 
         #region messaging
 
+        [Obsolete]
         private ArrayList getMessages(string messageName)
         {
             Logger.instance().addToLog(
@@ -311,6 +312,7 @@ namespace helpmebot6
         }
 
         //returns a random message chosen from the list of possible message names
+        [Obsolete]
         private string chooseRandomMessage(string messageName)
         {
             Logger.instance().addToLog(
@@ -328,7 +330,8 @@ namespace helpmebot6
             return al[rnd.Next(0, al.Count)].ToString();
         }
 
-        private static string parseMessage(string messageFormat, string[] args)
+        [Obsolete]
+        private static string buildMessage(string messageFormat, string[] args)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
@@ -337,6 +340,7 @@ namespace helpmebot6
             return String.Format(messageFormat, args);
         }
 
+        [Obsolete]
         public string getMessage(string messageName)
         {
             Logger.instance().addToLog(
@@ -346,15 +350,17 @@ namespace helpmebot6
             return chooseRandomMessage(messageName);
         }
 
+        [Obsolete]
         public string getMessage(string messageName, string[] args)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
-            return parseMessage(chooseRandomMessage(messageName), args);
+            return buildMessage(chooseRandomMessage(messageName), args);
         }
 
+        [Obsolete]
         public string getMessage(string messageName, string defaultMessageName)
         {
             Logger.instance().addToLog(
@@ -371,6 +377,7 @@ namespace helpmebot6
             return msg;
         }
 
+        [Obsolete]
         public string getMessage(string messageName, string defaultMessageName, string[] args)
         {
             Logger.instance().addToLog(
@@ -387,6 +394,7 @@ namespace helpmebot6
             return msg;
         }
 
+        [Obsolete]
         public void saveMessage(string messageName, string messageDescription, string messageContent)
         {
             Logger.instance().addToLog(
