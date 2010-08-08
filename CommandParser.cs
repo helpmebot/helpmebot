@@ -28,15 +28,32 @@ namespace helpmebot6
 {
     using System.Text.RegularExpressions;
 
+    /// <summary>
+    /// A command parser
+    /// </summary>
     internal class CommandParser
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandParser"/> class.
+        /// </summary>
         public CommandParser()
         {
             overrideBotSilence = false;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [override bot silence].
+        /// </summary>
+        /// <value><c>true</c> if [override bot silence]; otherwise, <c>false</c>.</value>
         public bool overrideBotSilence { get; set; }
 
+        /// <summary>
+        /// Handles the command.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="args">The args.</param>
         public void handleCommand(User source, string destination, string command, string[] args)
         {
             Logger.instance().addToLog(
@@ -137,6 +154,12 @@ namespace helpmebot6
         }
 
 
+        /// <summary>
+        /// Finds the redirection.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="args">The args.</param>
+        /// <returns></returns>
         private static string findRedirection(string destination, ref string[] args)
         {
             Logger.instance().addToLog(
@@ -155,6 +178,13 @@ namespace helpmebot6
             return directedTo;
         }
 
+        /// <summary>
+        /// Handles the command response handler.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="directedTo">The directed to.</param>
+        /// <param name="response">The response.</param>
         private void handleCommandResponseHandler(User source, string destination, string directedTo,
                                                   CommandResponseHandler response)
         {

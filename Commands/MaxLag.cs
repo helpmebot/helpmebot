@@ -28,6 +28,13 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Maxlag : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -40,6 +47,11 @@ namespace helpmebot6.Commands
             return new CommandResponseHandler(message);
         }
 
+        /// <summary>
+        /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the channel.
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         public string getMaxLag(string channel)
         {
             Logger.instance().addToLog(

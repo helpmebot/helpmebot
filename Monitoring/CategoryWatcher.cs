@@ -27,6 +27,9 @@ using helpmebot6.Threading;
 
 namespace helpmebot6.Monitoring
 {
+    /// <summary>
+    /// Category watcher thread
+    /// </summary>
     public class CategoryWatcher : IThreadedSystem
     {
         private readonly string _site;
@@ -42,6 +45,12 @@ namespace helpmebot6.Monitoring
 
         public event CategoryHasItemsEventHook categoryHasItemsEvent;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CategoryWatcher"/> class.
+        /// </summary>
+        /// <param name="category">The category.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="sleepTime">The sleep time.</param>
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             Logger.instance().addToLog(
@@ -114,6 +123,12 @@ namespace helpmebot6.Monitoring
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             Logger.instance().addToLog(
@@ -123,6 +138,10 @@ namespace helpmebot6.Monitoring
             return _key;
         }
 
+        /// <summary>
+        /// Does the category check.
+        /// </summary>
+        /// <returns></returns>
         public ArrayList doCategoryCheck()
         {
             Logger.instance().addToLog(

@@ -22,6 +22,9 @@ using System;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Represents a configuration setting
+    /// </summary>
     internal class ConfigurationSetting
     {
         private const double CACHE_TIMEOUT = 5;
@@ -30,6 +33,11 @@ namespace helpmebot6
         private readonly string _settingName;
         private DateTime _lastRetrieval;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationSetting"/> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
         public ConfigurationSetting(string name, string value)
         {
             _settingName = name;
@@ -37,6 +45,12 @@ namespace helpmebot6
             _lastRetrieval = DateTime.Now;
         }
 
+        /// <summary>
+        /// Determines whether this instance is valid.
+        /// </summary>
+        /// <returns>
+        /// 	<c>true</c> if this instance is valid; otherwise, <c>false</c>.
+        /// </returns>
         public bool isValid()
         {
             try
@@ -51,6 +65,10 @@ namespace helpmebot6
             return false;
         }
 
+        /// <summary>
+        /// Gets or sets the value of this setting.
+        /// </summary>
+        /// <value>The value.</value>
         public string value
         {
             get { return _settingValue; }
@@ -61,11 +79,21 @@ namespace helpmebot6
             }
         }
 
+        /// <summary>
+        /// Gets the name of this setting.
+        /// </summary>
+        /// <value>The name.</value>
         public string name
         {
             get { return _settingName; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return _settingName;

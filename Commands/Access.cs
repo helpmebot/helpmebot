@@ -16,14 +16,27 @@
 //  ****************************************************************************/
 #region Usings
 
+using System;
 using System.Reflection;
 
 #endregion
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Modifies the bot's access list
+    /// </summary>
     internal class Access : GenericCommand
     {
+        /// <summary>
+        /// Access denied to command, decide what to do
+        /// </summary>
+        /// <param name="source">The source of the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns>
+        /// A response to the command if access to the command was denied
+        /// </returns>
         protected override CommandResponseHandler accessDenied(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -35,6 +48,13 @@ namespace helpmebot6.Commands
             return crh;
         }
 
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -89,6 +109,13 @@ namespace helpmebot6.Commands
             return crh;
         }
 
+        /// <summary>
+        /// Adds the access entry.
+        /// </summary>
+        /// <param name="newEntry">The new entry.</param>
+        /// <param name="accessLevel">The access level.</param>
+        /// <returns></returns>
+        [Obsolete("Use User class")]
         private static CommandResponseHandler addAccessEntry(User newEntry, User.UserRights accessLevel)
         {
             Logger.instance().addToLog(
@@ -107,6 +134,12 @@ namespace helpmebot6.Commands
             return new CommandResponseHandler(message);
         }
 
+        /// <summary>
+        /// Dels the access entry.
+        /// </summary>
+        /// <param name="id">The id.</param>
+        /// <returns></returns>
+        [Obsolete("Use the User class")]
         private static CommandResponseHandler delAccessEntry(int id)
         {
             Logger.instance().addToLog(

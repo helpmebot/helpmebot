@@ -27,6 +27,9 @@ using helpmebot6.Threading;
 
 namespace helpmebot6.Monitoring
 {
+    /// <summary>
+    /// Nagios monitoring service
+    /// </summary>
     internal class MonitorService : IThreadedSystem
     {
         private readonly TcpListener _service;
@@ -37,6 +40,11 @@ namespace helpmebot6.Monitoring
 
         private readonly string _message;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonitorService"/> class.
+        /// </summary>
+        /// <param name="port">The port.</param>
+        /// <param name="message">The message.</param>
         public MonitorService(int port, string message)
         {
             this._monitorthread = new Thread(threadMethod);
@@ -82,6 +90,9 @@ namespace helpmebot6.Monitoring
             }
         }
 
+        /// <summary>
+        /// Stop all threads in this instance to allow for a clean shutdown.
+        /// </summary>
         public void stop()
         {
             this._service.Stop();

@@ -22,19 +22,37 @@ using System.Reflection;
 
 namespace helpmebot6.AI
 {
+    /// <summary>
+    /// 
+    /// </summary>
     internal class Intelligence
     {
+        /// <summary>
+        /// Holds the singleton instance of this class.
+        /// </summary>
         private static Intelligence _singleton;
 
+        /// <summary>
+        /// Returns the singleton instance of this class.
+        /// </summary>
+        /// <returns>single instance</returns>
         public static Intelligence singleton()
         {
             return _singleton ?? ( _singleton = new Intelligence( ) );
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Intelligence"/> class.
+        /// </summary>
         protected Intelligence()
         {
         }
 
+        /// <summary>
+        /// Responds to the specified input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <returns></returns>
         public string respond(string input)
         {
             Logger.instance().addToLog(

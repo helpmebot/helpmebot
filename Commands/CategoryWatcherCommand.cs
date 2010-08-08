@@ -24,8 +24,21 @@ using helpmebot6.Monitoring;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Category watcher command. 
+    /// 
+    /// This is a class called explicitly from the command parser, as it's name us the category code,
+    /// so will behave slightly differently to other command classes.
+    /// </summary>
     internal class CategoryWatcher : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(

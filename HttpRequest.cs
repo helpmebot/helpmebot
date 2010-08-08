@@ -26,6 +26,11 @@ namespace helpmebot6
 {
     internal static class HttpRequest
     {
+        /// <summary>
+        /// Gets the specified URI, passing the UserAgent.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <returns></returns>
         public static Stream get(string uri)
         {
             Logger.instance().addToLog(

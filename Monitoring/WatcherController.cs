@@ -32,6 +32,9 @@ namespace helpmebot6.Monitoring
     {
         private readonly Dictionary<string, CategoryWatcher> _watchers;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WatcherController"/> class.
+        /// </summary>
         protected WatcherController()
         {
             Logger.instance().addToLog(
@@ -76,6 +79,13 @@ namespace helpmebot6.Monitoring
 
         private static WatcherController _instance;
 
+        /// <summary>
+        /// Determines whether the specified word is a valid keyword.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified word is a valid keyword; otherwise, <c>false</c>.
+        /// </returns>
         public bool isValidKeyword(string keyword)
         {
             Logger.instance().addToLog(
@@ -85,6 +95,12 @@ namespace helpmebot6.Monitoring
             return this._watchers.ContainsKey(keyword);
         }
 
+        /// <summary>
+        /// Adds the watcher to channel.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         public bool addWatcherToChannel(string keyword, string channel)
         {
             Logger.instance().addToLog(
@@ -108,6 +124,11 @@ namespace helpmebot6.Monitoring
             return false;
         }
 
+        /// <summary>
+        /// Removes the watcher from channel.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="channel">The channel.</param>
         public void removeWatcherFromChannel(string keyword, string channel)
         {
             Logger.instance().addToLog(
@@ -121,6 +142,12 @@ namespace helpmebot6.Monitoring
                                    new DAL.WhereConds("cw_watcher", watcherId));
         }
 
+        /// <summary>
+        /// Forces the update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="destination">The destination.</param>
+        /// <returns></returns>
         public string forceUpdate(string key, string destination)
         {
             Logger.instance().addToLog(
@@ -330,6 +357,10 @@ namespace helpmebot6.Monitoring
             return success ? cw : null;
         }
 
+        /// <summary>
+        /// Gets the keywords.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, CategoryWatcher>.KeyCollection getKeywords()
         {
             Logger.instance().addToLog(
@@ -360,6 +391,12 @@ namespace helpmebot6.Monitoring
             return pageList;
         }
 
+        /// <summary>
+        /// Sets the delay.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="newDelay">The new delay.</param>
+        /// <returns></returns>
         public CommandResponseHandler setDelay(string keyword, int newDelay)
         {
             Logger.instance().addToLog(
@@ -389,6 +426,11 @@ namespace helpmebot6.Monitoring
             return new CommandResponseHandler();
         }
 
+        /// <summary>
+        /// Gets the delay.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns></returns>
         public int getDelay(string keyword)
         {
             Logger.instance().addToLog(
@@ -418,6 +460,14 @@ namespace helpmebot6.Monitoring
         }
 
 
+        /// <summary>
+        /// Determines whether [is watcher in channel] [the specified channel].
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>
+        /// 	<c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
+        /// </returns>
         public bool isWatcherInChannel(string channel, string keyword)
         {
             Logger.instance().addToLog(

@@ -25,6 +25,9 @@ using System.Threading;
 
 namespace helpmebot6.Threading
 {
+    /// <summary>
+    /// Maintains a list of all the available threads the bot is running
+    /// </summary>
     internal class ThreadList
     {
         private static ThreadList _instance;
@@ -41,6 +44,10 @@ namespace helpmebot6.Threading
 
         private readonly ArrayList _threadedObjects;
 
+        /// <summary>
+        /// Registers the specified sender.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
         public void register(IThreadedSystem sender)
         {
             Logger.instance().addToLog(
@@ -50,6 +57,9 @@ namespace helpmebot6.Threading
             this._threadedObjects.Add(sender);
         }
 
+        /// <summary>
+        /// Creates a new thread to start shutting down other threads
+        /// </summary>
         public void stop()
         {
             Logger.instance().addToLog(
@@ -85,6 +95,10 @@ namespace helpmebot6.Threading
             Logger.instance().addToLog("All threaded systems have been shut down.", Logger.LogTypes.General);
         }
 
+        /// <summary>
+        /// Gets all thread status.
+        /// </summary>
+        /// <returns></returns>
         public string[] getAllThreadStatus()
         {
             Logger.instance().addToLog(

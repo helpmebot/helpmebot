@@ -26,6 +26,9 @@ namespace helpmebot6
 {
     using System.Linq;
 
+    /// <summary>
+    /// Class holding globally accessible functions
+    /// </summary>
     internal class GlobalFunctions
     {
         /// <summary>

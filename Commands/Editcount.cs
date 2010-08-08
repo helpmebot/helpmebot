@@ -29,6 +29,13 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Editcount : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -60,6 +67,12 @@ namespace helpmebot6.Commands
             return null;
         }
 
+        /// <summary>
+        /// Gets the edit count.
+        /// </summary>
+        /// <param name="username">The username to retrieve the edit count for.</param>
+        /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
+        /// <returns></returns>
         public int getEditCount(string username, string channel)
         {
             Logger.instance().addToLog(

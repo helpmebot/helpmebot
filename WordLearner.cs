@@ -22,8 +22,17 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Word learner class
+    /// </summary>
     public class WordLearner
     {
+        /// <summary>
+        /// Learns the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="phrase">The phrase.</param>
+        /// <returns></returns>
         public static bool learn(string word, string phrase)
         {
             Logger.instance().addToLog(
@@ -33,6 +42,13 @@ namespace helpmebot6
             return learn(word, phrase, false);
         }
 
+        /// <summary>
+        /// Learns the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="phrase">The phrase.</param>
+        /// <param name="action">if set to <c>true</c> [action].</param>
+        /// <returns></returns>
         public static bool learn(string word, string phrase, bool action)
         {
             Logger.instance().addToLog(
@@ -52,6 +68,11 @@ namespace helpmebot6
             return true;
         }
 
+        /// <summary>
+        /// Remembers the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
         public static RemeberedWord remember(string word)
         {
             Logger.instance().addToLog(
@@ -77,6 +98,11 @@ namespace helpmebot6
             return rW;
         }
 
+        /// <summary>
+        /// Forgets the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
         public static bool forget(string word)
         {
             Logger.instance().addToLog(

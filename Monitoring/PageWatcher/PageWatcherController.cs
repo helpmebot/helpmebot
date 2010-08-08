@@ -24,6 +24,9 @@ using System.Reflection;
 
 namespace helpmebot6.Monitoring.PageWatcher
 {
+    /// <summary>
+    /// Controller class for the pagewatcher
+    /// </summary>
     internal class PageWatcherController
     {
         #region woo singleton
@@ -52,10 +55,19 @@ namespace helpmebot6.Monitoring.PageWatcher
         }
         #endregion
 
+        /// <summary>
+        /// Holds the connection object to browne.
+        /// </summary>
         private readonly IAL _irc;
 
+        /// <summary>
+        /// list of watched pages
+        /// </summary>
         private readonly ArrayList _watchedPageList;
-
+        
+        /// <summary>
+        /// Structure to hold the information about a page change recieved from browne.
+        /// </summary>
         public struct RcPageChange
         {
             public string title;
@@ -66,6 +78,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             public string comment;
         }
 
+
+        /// <summary>
+        /// Setups the events for the browne IRC access layer.
+        /// </summary>
         private void setupEvents()
         {
             Logger.instance().addToLog(
@@ -77,10 +93,15 @@ namespace helpmebot6.Monitoring.PageWatcher
             this.pageWatcherNotificationEvent += pageWatcherControllerPageWatcherNotificationEvent;
         }
 
+        // TODO: what's the point in this function? is it to prevent a nullref on the event calls?
         private static void pageWatcherControllerPageWatcherNotificationEvent(RcPageChange rcItem)
         {
         }
 
+        /// <summary>
+        /// Gets the watched pages.
+        /// </summary>
+        /// <returns></returns>
         public string[] getWatchedPages()
         {
             Logger.instance().addToLog(
@@ -92,6 +113,9 @@ namespace helpmebot6.Monitoring.PageWatcher
             return wp;
         }
 
+        /// <summary>
+        /// Loads all watched pages from the database.
+        /// </summary>
         public void loadAllWatchedPages()
         {
             Logger.instance().addToLog(
@@ -108,6 +132,12 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// browne IRC PRIVMSG event handler
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="message">The message.</param>
         private void irc_PrivmsgEvent(User source, string destination, string message)
         {
             Logger.instance().addToLog(
@@ -129,6 +159,9 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// browne IRC connection registration succeeded event handler
+        /// </summary>
         private void irc_ConnectionRegistrationSucceededEvent()
         {
             Logger.instance().addToLog(
@@ -147,6 +180,11 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// Parses a line from the RC bot.
+        /// </summary>
+        /// <param name="rcItem">The rc item.</param>
+        /// <returns></returns>
         private static RcPageChange rcParser(string rcItem)
         {
             Logger.instance().addToLog(
@@ -190,6 +228,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             return ret;
         }
 
+        /// <summary>
+        /// Watches a page.
+        /// </summary>
+        /// <param name="pageName">Name of the page.</param>
         public void watchPage(string pageName)
         {
             Logger.instance().addToLog(
@@ -202,6 +244,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             this._watchedPageList.Add(pageName);
         }
 
+        /// <summary>
+        /// Unwatches a page.
+        /// </summary>
+        /// <param name="pageName">Name of the page.</param>
         public void unwatchPage(string pageName)
         {
             Logger.instance().addToLog(

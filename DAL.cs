@@ -28,6 +28,9 @@ using MySql.Data.MySqlClient;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Database access class
+    /// </summary>
     public class DAL
     {
         private static DAL _singleton;
@@ -40,11 +43,24 @@ namespace helpmebot6
 
         private MySqlConnection _connection;
 
+        /// <summary>
+        /// Singletons this instance.
+        /// </summary>
+        /// <returns></returns>
         public static DAL singleton()
         {
             return _singleton;
         }
 
+        /// <summary>
+        /// Singletons the specified host.
+        /// </summary>
+        /// <param name="host">The host.</param>
+        /// <param name="port">The port.</param>
+        /// <param name="username">The username.</param>
+        /// <param name="password">The password.</param>
+        /// <param name="schema">The schema.</param>
+        /// <returns></returns>
         public static DAL singleton(string host, uint port, string username, string password, string schema)
         {
             return _singleton ??
@@ -61,6 +77,10 @@ namespace helpmebot6
             _mySqlUsername = username;
         }
 
+        /// <summary>
+        /// Connects this instance to the database.
+        /// </summary>
+        /// <returns></returns>
         public bool connect()
         {
             Logger.instance().addToLog(
@@ -166,6 +186,12 @@ namespace helpmebot6
 
         #endregion
 
+        /// <summary>
+        /// Inserts values the specified table.
+        /// </summary>
+        /// <param name="table">The table.</param>
+        /// <param name="values">The values.</param>
+        /// <returns></returns>
         public long insert(string table, params string[] values)
         {
             Logger.instance().addToLog(
@@ -193,6 +219,13 @@ namespace helpmebot6
             return cmd.LastInsertedId;
         }
 
+
+        /// <summary>
+        /// Deletes from the specified table.
+        /// </summary>
+        /// <param name="table">The table.</param>
+        /// <param name="limit">The limit.</param>
+        /// <param name="conditions">The conditions.</param>
         public void delete(string table, int limit, params WhereConds[] conditions)
         {
             Logger.instance().addToLog(
@@ -218,6 +251,13 @@ namespace helpmebot6
             this.executeNonQuery(ref deleteCommand);
         }
 
+        /// <summary>
+        /// Updates rows in the specified table.
+        /// </summary>
+        /// <param name="table">The table.</param>
+        /// <param name="items">The items.</param>
+        /// <param name="limit">The limit.</param>
+        /// <param name="conditions">The conditions.</param>
         public void update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
         {
             Logger.instance().addToLog(
@@ -255,6 +295,11 @@ namespace helpmebot6
             this.executeNonQuery(ref updateCommand);
         }
 
+        /// <summary>
+        /// Executes the select.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns>Arraylist of arrays. Each array is one row in the dataset.</returns>
         public ArrayList executeSelect(Select query)
         {
             Logger.instance().addToLog(
@@ -277,6 +322,11 @@ namespace helpmebot6
             return resultSet;
         }
 
+        /// <summary>
+        /// Executes the scalar select.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns>A single value as a string</returns>
         public string executeScalarSelect(Select query)
         {
             Logger.instance().addToLog(
@@ -320,6 +370,11 @@ namespace helpmebot6
             }
         }
 
+        /// <summary>
+        /// Executes the stored procedure.
+        /// </summary>
+        /// <param name="name">The procedure name.</param>
+        /// <param name="args">The args.</param>
         public void executeProcedure(string name, params string[] args)
         {
             Logger.instance().addToLog(
@@ -430,6 +485,10 @@ namespace helpmebot6
             private int _limit;
             private int _offset;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Select"/> class.
+            /// </summary>
+            /// <param name="fields">The fields to return.</param>
             public Select(params string[] fields)
             {
                 this._fields = fields;
@@ -442,47 +501,88 @@ namespace helpmebot6
                 this._havings = new LinkedList<WhereConds>();
             }
 
+            /// <summary>
+            /// Escape the selects?
+            /// </summary>
+            /// <param name="escape">if set to <c>true</c> [escape].</param>
             public void escapeSelects(bool escape)
             {
                 this._shallIEscapeSelects = escape;
             }
 
+            /// <summary>
+            /// Sets from.
+            /// </summary>
+            /// <param name="from">From.</param>
             public void setFrom(string from)
             {
                 this._from = from;
             }
 
+            /// <summary>
+            /// Adds a JOIN clause.
+            /// </summary>
+            /// <param name="table">The table.</param>
+            /// <param name="joinType">Type of the join.</param>
+            /// <param name="conditions">The conditions.</param>
             public void addJoin(string table, JoinTypes joinType, WhereConds conditions)
             {
                 this._joins.AddLast(new Join(joinType, table, conditions));
             }
 
+            /// <summary>
+            /// Adds a where clause.
+            /// </summary>
+            /// <param name="conditions">The conditions.</param>
             public void addWhere(WhereConds conditions)
             {
                 this._wheres.AddLast(conditions);
             }
 
+            /// <summary>
+            /// Adds a grouping.
+            /// </summary>
+            /// <param name="field">The field.</param>
             public void addGroup(string field)
             {
                 this._groups.AddLast(field);
             }
 
+            /// <summary>
+            /// Adds the order.
+            /// </summary>
+            /// <param name="order">The order.</param>
             public void addOrder(Order order)
             {
                 this._orders.AddLast(order);
             }
 
+            /// <summary>
+            /// Adds a having clause.
+            /// </summary>
+            /// <param name="conditions">The conditions.</param>
             public void addHaving(WhereConds conditions)
             {
                 this._havings.AddLast(conditions);
             }
 
+            /// <summary>
+            /// Adds a limit.
+            /// </summary>
+            /// <param name="limit">The limit.</param>
+            /// <param name="offset">The offset.</param>
             public void addLimit(int limit, int offset)
             {
                 this._limit = limit;
                 this._offset = offset;
             }
 
+            /// <summary>
+            /// Returns a <see cref="System.String"/> that represents this instance.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String"/> that represents this instance.
+            /// </returns>
             public override string ToString()
             {
                 Logger.instance().addToLog(
@@ -695,6 +795,11 @@ namespace helpmebot6
             }
         }
 
+        /// <summary>
+        /// Sanitises the specified raw data.
+        /// </summary>
+        /// <param name="rawData">The raw data.</param>
+        /// <returns></returns>
         private static string sanitise(string rawData)
         {
             return MySqlHelper.EscapeString(rawData);

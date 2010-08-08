@@ -27,6 +27,13 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Sayhi : GenericCommand
     {
+        /// <summary>
+        /// Executes the specified to user.
+        /// </summary>
+        /// <param name="toUser">To user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <param name="args">The args.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User toUser, string channel, string[] args)
         {
             Logger.instance().addToLog(

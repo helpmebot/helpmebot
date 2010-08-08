@@ -31,6 +31,9 @@ using helpmebot6.UdpListener;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Helpmebot main class
+    /// </summary>
     public class Helpmebot6
     {
         public static IAL irc;

@@ -27,6 +27,9 @@ using System.Text.RegularExpressions;
 
 namespace helpmebot6.Monitoring
 {
+    /// <summary>
+    /// Newbie welcomer subsystem
+    /// </summary>
     internal class NewbieWelcomer
     {
         private static NewbieWelcomer _instance;
@@ -64,6 +67,11 @@ namespace helpmebot6.Monitoring
 
         private readonly SerializableArrayList _hostNames;
 
+        /// <summary>
+        /// Executes the newbie.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
             Logger.instance().addToLog(
@@ -93,6 +101,10 @@ namespace helpmebot6.Monitoring
             }
         }
 
+        /// <summary>
+        /// Adds a host to the list of detected newbie hosts.
+        /// </summary>
+        /// <param name="host">The host.</param>
         public void addHost(string host)
         {
             Logger.instance().addToLog(

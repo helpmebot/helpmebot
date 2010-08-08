@@ -22,8 +22,18 @@ using System.Xml.XPath;
 
 namespace helpmebot6.Commands
 {
-    class Afccount : GenericCommand
+    /// <summary>
+    /// Returns the number of articles currently waiting at Articles for Creation
+    /// </summary>
+    internal class Afccount : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
         {
             //  api + ?format=xml&action=query&prop=categoryinfo&titles=Category:Pending%20AfC%20submissions

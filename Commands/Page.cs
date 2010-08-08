@@ -25,10 +25,22 @@ using System.Xml;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Retrieves information on a specific page
+    /// </summary>
     internal class Page : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+
+            // TODO: link to basewiki
             Stream rawDataStream =
                 HttpRequest.get(
                     "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles=" +
@@ -111,6 +123,9 @@ namespace helpmebot6.Commands
             return crh;
         }
 
+        /// <summary>
+        /// Structure to hold page protection information
+        /// </summary>
         private struct PageProtection
         {
             public PageProtection(string type, string level, DateTime expiry)

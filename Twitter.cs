@@ -23,11 +23,17 @@ namespace helpmebot6
 {
     using System;
 
+    /// <summary>
+    /// Twitterizer wrapper class
+    /// </summary>
     internal class Twitter
     {
         private readonly string _consumerKey;
         private readonly string _consumerSecret;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Twitter"/> class.
+        /// </summary>
         public Twitter()
         {
             _consumerKey = Configuration.singleton( )[ "twitterConsumerKey" ];
@@ -64,6 +70,10 @@ namespace helpmebot6
         private string _accessToken;
         private string _accessTokenSecret;
 
+        /// <summary>
+        /// Authorises the specified pin code.
+        /// </summary>
+        /// <param name="pinCode">The pin code.</param>
         public void authorise( string pinCode )
         {
             OAuthTokenResponse accessToken = OAuthUtility.GetAccessToken(_consumerKey, _consumerSecret, Configuration.singleton()["twitterRequestToken"], pinCode);
@@ -74,6 +84,9 @@ namespace helpmebot6
             Configuration.singleton( )[ "twitterRequestToken" ] = "";
         }
 
+        /// <summary>
+        /// Deauthorises this instance.
+        /// </summary>
         public void deauth( )
         {
             Configuration.singleton()["twitterAccessToken"] = "";

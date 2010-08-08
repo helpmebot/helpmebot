@@ -25,13 +25,29 @@ using System.Text;
 
 namespace helpmebot6.UdpListener
 {
+    /// <summary>
+    /// Represents a UDP communication message
+    /// </summary>
     [Serializable]
     public class UdpMessage : ISerializable
     {
+        /// <summary>
+        /// Gets the hash of the message.
+        /// </summary>
+        /// <value>The hash.</value>
         public string hash { get; private set; }
 
+        /// <summary>
+        /// Gets the message.
+        /// </summary>
+        /// <value>The message.</value>
         public string message { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UdpMessage"/> class.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="key">The key.</param>
         public UdpMessage(string message, string key)
         {
             this.message = message;

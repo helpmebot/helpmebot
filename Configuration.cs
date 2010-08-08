@@ -26,17 +26,27 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Handles all configuration settings of the bot
+    /// </summary>
     internal class Configuration
     {
         private readonly DAL _dbal = DAL.singleton();
 
         private static Configuration _singleton;
 
+        /// <summary>
+        /// Singletons this instance.
+        /// </summary>
+        /// <returns></returns>
         public static Configuration singleton()
         {
             return _singleton ?? ( _singleton = new Configuration( ) );
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
         protected Configuration()
         {
             this._configurationCache = new Dictionary<string, ConfigurationSetting>();
@@ -44,12 +54,20 @@ namespace helpmebot6
 
         private readonly Dictionary<string, ConfigurationSetting> _configurationCache;
 
+        /// <summary>
+        /// Gets or sets the <see cref="System.String"/> with the specified global option.
+        /// </summary>
+        /// <value></value>
         public string this[string globalOption]
         {
             get { return this.getGlobalSetting(globalOption); }
             set { this.setGlobalOption(globalOption, value); }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="System.String"/> with the specified local option.
+        /// </summary>
+        /// <value></value>
         public string this[string localOption, string locality]
         {
             get
@@ -215,6 +233,7 @@ namespace helpmebot6
             }
         }
         
+        [Obsolete("Use indexer propery instead")]
         public void setOption(string optionName, string target, string newValue)
         {
             Logger.instance().addToLog(
@@ -267,6 +286,15 @@ namespace helpmebot6
             return this._dbal.executeScalarSelect(q);
         }
 
+        /// <summary>
+        /// Reads the hmbot config file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="mySqlServerHostname">MySQL server hostname.</param>
+        /// <param name="mySqlUsername">MySQL username.</param>
+        /// <param name="mySqlPassword">MySQL password.</param>
+        /// <param name="mySqlServerPort">MySQL server port.</param>
+        /// <param name="mySqlSchema">My SQL schema.</param>
         public static void readHmbotConfigFile(string filename,
                                                ref string mySqlServerHostname, ref string mySqlUsername,
                                                ref string mySqlPassword, ref uint mySqlServerPort,

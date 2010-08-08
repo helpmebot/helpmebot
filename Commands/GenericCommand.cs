@@ -23,11 +23,15 @@ using System.Reflection;
 
 namespace helpmebot6.Commands
 {
-    internal abstract class GenericCommand
+    /// <summary>
+    /// Generic bot command abstract class
+    /// </summary>
+    public abstract class GenericCommand
     {
         /// <summary>
-        ///   Access level of the command
+        /// Access level of the command
         /// </summary>
+        /// <value>The access level.</value>
         public User.UserRights accessLevel
         {
             get
@@ -54,11 +58,11 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///   Trigger an exectution of the command
+        /// Trigger an execution of the command
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "channel"></param>
-        /// <param name = "args"></param>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">Arguments to the command.</param>
         /// <returns></returns>
         public CommandResponseHandler run(User source, string channel, string[] args)
         {
@@ -70,11 +74,11 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///   Check the access level and then decide what to do.
+        /// Check the access level and then decide what to do.
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "channel"></param>
-        /// <returns></returns>
+        /// <param name="source">The source of the command</param>
+        /// <param name="channel">The channel the command was triggered in</param>
+        /// <returns>True if the command is allowed to execute</returns>
         protected virtual bool accessTest(User source, string channel)
         {
             // check the access level
@@ -82,12 +86,12 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///   Access granted to command, decide what to do
+        /// Access granted to command, decide what to do
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "channel"></param>
-        /// <param name = "args"></param>
-        /// <returns></returns>
+        /// <param name="source">The source of the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">Arguments to the command</param>
+        /// <returns>The response to the comand</returns>
         protected virtual CommandResponseHandler reallyRun(User source, string channel, string[] args)
         {
             AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true));
@@ -107,12 +111,12 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///   Access denied to command, decide what to do
+        /// Access denied to command, decide what to do
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "channel"></param>
-        /// <param name = "args"></param>
-        /// <returns></returns>
+        /// <param name="source">The source of the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns>A response to the command if access to the command was denied</returns>
         protected virtual CommandResponseHandler accessDenied(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -129,14 +133,18 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///   Actual command logic
+        /// Actual command logic
         /// </summary>
-        /// <param name = "source"></param>
-        /// <param name = "channel"></param>
-        /// <param name = "args"></param>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
         /// <returns></returns>
         protected abstract CommandResponseHandler execute(User source, string channel, string[] args);
 
+        /// <summary>
+        /// Logs the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         protected void log(string message)
         {
             Logger.instance( ).addToLog( MethodBase.GetCurrentMethod( ).DeclaringType.Name + ": " + message,

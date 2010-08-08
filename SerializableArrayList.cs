@@ -24,6 +24,9 @@ using System.Runtime.Serialization;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Serializable arraylist
+    /// </summary>
     [Serializable]
     internal sealed class SerializableArrayList : ArrayList, ISerializable
     {

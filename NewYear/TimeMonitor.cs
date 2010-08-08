@@ -29,6 +29,9 @@ using MySql.Data.MySqlClient;
 
 namespace helpmebot6.NewYear
 {
+    /// <summary>
+    /// Time monitor class for new year greetings
+    /// </summary>
     internal class TimeMonitor : IThreadedSystem
     {
         public static TimeMonitor instance()

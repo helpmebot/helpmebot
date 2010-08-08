@@ -28,6 +28,13 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Age : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -61,12 +68,14 @@ namespace helpmebot6.Commands
             return null;
         }
 
+        /// <summary>
+        /// Gets the wikipedian age.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel the command is requested in. (Retrieves the relevant base wiki)</param>
+        /// <returns></returns>
         public TimeSpan getWikipedianAge(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Registration regCommand = new Registration();
             DateTime regdate = regCommand.getRegistrationDate(userName, channel);
             TimeSpan age = DateTime.Now.Subtract(regdate);

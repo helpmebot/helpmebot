@@ -23,8 +23,18 @@ using helpmebot6.Monitoring.PageWatcher;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Controls the page watcher thread
+    /// </summary>
     internal class Pagewatcher : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -51,6 +61,12 @@ namespace helpmebot6.Commands
             return new CommandResponseHandler();
         }
 
+        /// <summary>
+        /// Adds a page watcher to a channel.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static CommandResponseHandler addPageWatcher(string page, string channel)
         {
             DAL.Select q = new DAL.Select("COUNT(*)");
@@ -82,6 +98,12 @@ namespace helpmebot6.Commands
             return null;
         }
 
+        /// <summary>
+        /// Removes a page watcher from a channel.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static CommandResponseHandler removePageWatcher(string page, string channel)
         {
             // get id of watchedpage

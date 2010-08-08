@@ -23,20 +23,33 @@ using System.Reflection;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Returns the accesslevel of the command specified
+    /// </summary>
     internal class Commandaccess : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
 
+            // find the command
+            Type cmd = Type.GetType(
+                "helpmebot6.Commands." + args[0].Substring(0, 1).ToUpper() + args[0].Substring(1).ToLower()
+                );
 
-            Type cmd =
-                Type.GetType("helpmebot6.Commands." + args[0].Substring(0, 1).ToUpper() + args[0].Substring(1).ToLower());
-            if ( cmd == null )
+            // check it exists
+            if ( cmd == null ) //TODO: return an error message instead
                 return null;
-            return
+            return // instantiate a new instance of the command, and get it's access level
                 new CommandResponseHandler(
                     ( (GenericCommand)Activator.CreateInstance( cmd ) ).
                         accessLevel.ToString( ) );

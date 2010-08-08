@@ -26,6 +26,9 @@ namespace helpmebot6
 {
     using System.Collections;
 
+    /// <summary>
+    /// Linker and link parser
+    /// </summary>
     public class Linker
     {
         private readonly Dictionary<string, string> _lastLink;
@@ -57,6 +60,11 @@ namespace helpmebot6
             return _singleton ?? ( _singleton = new Linker( ) );
         }
 
+        /// <summary>
+        /// Parses the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="channel">The channel.</param>
         public void parseMessage(string message, string channel)
         {
             Logger.instance().addToLog(
@@ -74,6 +82,11 @@ namespace helpmebot6
             this.sendLink(channel, (string)newLink[0]);
         }
 
+        /// <summary>
+        /// Really parses the message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns></returns>
         public ArrayList reallyParseMessage(string message)
         {
             Logger.instance().addToLog(
@@ -97,6 +110,11 @@ namespace helpmebot6
             return newLinks;
         }
 
+        /// <summary>
+        /// Gets the link.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <returns></returns>
         public string getLink(string destination)
         {
             Logger.instance().addToLog(
@@ -106,6 +124,12 @@ namespace helpmebot6
             return this.getLink(destination, false);
         }
 
+        /// <summary>
+        /// Gets the link.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="useSecureServer">if set to <c>true</c> [use secure server].</param>
+        /// <returns></returns>
         public string getLink(string destination, bool useSecureServer)
         {
             Logger.instance().addToLog(
@@ -117,6 +141,13 @@ namespace helpmebot6
             return success ? getRealLink( destination, link, useSecureServer ) : "";
         }
 
+        /// <summary>
+        /// Gets the real link.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="link">The link.</param>
+        /// <param name="useSecureServer">if set to <c>true</c> [use secure server].</param>
+        /// <returns></returns>
         public static string getRealLink( string destination, string link, bool useSecureServer )
         {
             string iwprefix = link.Split(':')[0];

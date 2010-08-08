@@ -25,10 +25,17 @@ using System.Xml;
 namespace helpmebot6.Commands
 {
     /// <summary>
-    ///   Returns the block information of a wikipedian
+    /// Returns the block information of a wikipedian
     /// </summary>
     internal class Blockinfo : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -38,6 +45,12 @@ namespace helpmebot6.Commands
             return new CommandResponseHandler(getBlockInformation(string.Join(" ", args), channel).ToString());
         }
 
+        /// <summary>
+        /// Gets the block information for a user or IP address on a wiki.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel the command was requested in.</param>
+        /// <returns></returns>
         public BlockInformation getBlockInformation(string userName, string channel)
         {
             Logger.instance().addToLog(
@@ -113,6 +126,9 @@ namespace helpmebot6.Commands
             return bi;
         }
 
+        /// <summary>
+        /// Holds the block information of a specific user
+        /// </summary>
         public struct BlockInformation
         {
             public string id;
@@ -126,6 +142,12 @@ namespace helpmebot6.Commands
             public bool noemail;
             public bool allowusertalk;
 
+            /// <summary>
+            /// Returns a <see cref="System.String"/> that represents this block.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String"/> that represents this block.
+            /// </returns>
             public override string ToString()
             {
                 Logger.instance().addToLog(

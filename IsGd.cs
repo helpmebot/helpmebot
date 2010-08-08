@@ -25,8 +25,16 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// is.gd wrapper class
+    /// </summary>
     internal class IsGd
     {
+        /// <summary>
+        /// Shortens the specified long URL.
+        /// </summary>
+        /// <param name="longUrl">The long URL.</param>
+        /// <returns></returns>
         public static Uri shorten(Uri longUrl)
         {
             Logger.instance().addToLog(

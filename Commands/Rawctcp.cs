@@ -22,8 +22,18 @@ using System.Reflection;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Sends a raw client-to-client protocol command
+    /// </summary>
     internal class Rawctcp : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(

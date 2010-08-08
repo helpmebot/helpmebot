@@ -47,6 +47,13 @@ namespace helpmebot6.Commands
     {
         private readonly CommandResponseHandler _crh = new CommandResponseHandler();
 
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -110,6 +117,12 @@ namespace helpmebot6.Commands
             return this._crh;
         }
 
+        /// <summary>
+        /// Gets the user page URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserPageUrl(string userName, string channel)
         {
             Logger.instance().addToLog(
@@ -154,6 +167,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "User:" + userName);
         }
 
+        /// <summary>
+        /// Gets the user talk page URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserTalkPageUrl(string userName, string channel)
         {
             Logger.instance().addToLog(
@@ -197,6 +216,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "User_talk:" + userName);
         }
 
+        /// <summary>
+        /// Gets the user contributions URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserContributionsUrl(string userName, string channel)
         {
             Logger.instance().addToLog(
@@ -240,6 +265,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
         }
 
+        /// <summary>
+        /// Gets the block log URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getBlockLogUrl(string userName, string channel)
         {
             Logger.instance().addToLog(
@@ -285,6 +316,13 @@ namespace helpmebot6.Commands
 
         //TODO: tidy up! why return a value when it's passed by ref anyway?
 // ReSharper disable UnusedMethodReturnValue.Local
+        /// <summary>
+        /// Retrieves the user information.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="initial">The initial.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
@@ -328,6 +366,10 @@ namespace helpmebot6.Commands
             }
         }
 
+        /// <summary>
+        /// Sends the short user info.
+        /// </summary>
+        /// <param name="userInformation">The user information.</param>
         private void sendShortUserInfo(UserInformation userInformation)
         {
             Logger.instance().addToLog(
@@ -361,6 +403,10 @@ namespace helpmebot6.Commands
             this._crh.respond(message);
         }
 
+        /// <summary>
+        /// Sends the long user info.
+        /// </summary>
+        /// <param name="userInformation">The user information.</param>
         private void sendLongUserInfo(UserInformation userInformation)
         {
             Logger.instance().addToLog(
@@ -402,6 +448,9 @@ namespace helpmebot6.Commands
             this._crh.respond(message);
         }
 
+        /// <summary>
+        /// Structure to hold the userinfo retrieved.
+        /// </summary>
         private struct UserInformation
         {
             public string userName;

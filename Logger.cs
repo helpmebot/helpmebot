@@ -23,6 +23,9 @@ using System.IO;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Logger
+    /// </summary>
     internal class Logger
     {
         private static Logger _instance;
@@ -59,26 +62,70 @@ namespace helpmebot6
         private readonly StreamWriter _ircLogger;
         private readonly StreamWriter _errorLogger;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [log DAL].
+        /// </summary>
+        /// <value><c>true</c> if [log DAL]; otherwise, <c>false</c>.</value>
         public bool logDAL { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [log irc].
+        /// </summary>
+        /// <value><c>true</c> if [log irc]; otherwise, <c>false</c>.</value>
         public bool logIrc { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [log dal lock].
+        /// </summary>
+        /// <value><c>true</c> if [log dal lock]; otherwise, <c>false</c>.</value>
         public bool logDalLock { get; set; }
 
+        /// <summary>
+        /// Log types
+        /// </summary>
         public enum LogTypes
         {
-            DNWB, // dotnetwikibot, GREY, no choice
-            DAL, // Database stuff, MAGENTA
-            IAL, // IRC stuff YELLOW
-            Command, // command log events, BLUE
-            General, // general log events, WHITE
-            Error, // error events, RED
-            IRC, // raw IRC events, 
+            /// <summary>
+            /// dotnetwikibot, GREY, no choice
+            /// </summary>
+            DNWB, // 
+            /// <summary>
+            /// Database stuff, MAGENTA
+            /// </summary>
+            DAL, // 
+            /// <summary>
+            /// IRC stuff YELLOW
+            /// </summary>
+            IAL, // 
+            /// <summary>
+            /// command log events, BLUE
+            /// </summary>
+            Command, // 
+            /// <summary>
+            /// general log events, WHITE
+            /// </summary>
+            General, // 
+            /// <summary>
+            /// error events, RED
+            /// </summary>
+            Error, // 
+            /// <summary>
+            /// raw IRC events,
+            /// </summary>
+            IRC, //  
+            /// <summary>
+            /// ?
+            /// </summary>
             DalLock
         }
 
         // DATE: GREEN
 
+        /// <summary>
+        /// Adds to log.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="type">The type.</param>
         public void addToLog(string message, LogTypes type)
         {
             lock (this)

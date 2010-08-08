@@ -24,10 +24,17 @@ using helpmebot6.Commands;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Represents the bot access log.
+    /// </summary>
     internal class AccessLog
     {
         private static AccessLog _instance;
 
+        /// <summary>
+        /// Returns the instance.
+        /// </summary>
+        /// <returns></returns>
         public static AccessLog instance()
         {
             return _instance ?? ( _instance = new AccessLog( ) );
@@ -37,6 +44,10 @@ namespace helpmebot6
         {
         }
 
+        /// <summary>
+        /// Saves the specified log entry.
+        /// </summary>
+        /// <param name="logEntry">The log entry.</param>
         public void save(AccessLogEntry logEntry)
         {
             Logger.instance().addToLog(
@@ -48,8 +59,17 @@ namespace helpmebot6
                                    (logEntry.alAllowed ? "1" : "0"));
         }
 
+        /// <summary>
+        /// Represents an access log entry
+        /// </summary>
         public struct AccessLogEntry
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="AccessLogEntry"/> struct.
+            /// </summary>
+            /// <param name="source">The source.</param>
+            /// <param name="command">The command.</param>
+            /// <param name="success">if set to <c>true</c> [success].</param>
             public AccessLogEntry(User source, Type command, bool success)
             {
                 this._alId = 0;
@@ -67,37 +87,66 @@ namespace helpmebot6
             private readonly DateTime _alDate;
             private readonly bool _alAllowed;
 
+            /// <summary>
+            /// Gets the access log id.
+            /// </summary>
+            /// <value>The al id.</value>
             public int alId
             {
                 get { return this._alId; }
             }
 
+            /// <summary>
+            /// Gets the access log user.
+            /// </summary>
+            /// <value>The al user.</value>
             public User alUser
             {
                 get { return this._alUser; }
             }
 
+            /// <summary>
+            /// Gets the access log required access level.
+            /// </summary>
+            /// <value>The al reqaccesslevel.</value>
             public User.UserRights alReqaccesslevel
             {
                 get { return this._alReqaccesslevel; }
             }
 
+            /// <summary>
+            /// Gets the access log command class.
+            /// </summary>
+            /// <value>The al class.</value>
             public Type alClass
             {
                 get { return this._alClass; }
             }
 
+            /// <summary>
+            /// Gets the access log date.
+            /// </summary>
+            /// <value>The al date.</value>
             public DateTime alDate
             {
                 get { return this._alDate; }
             }
 
+            /// <summary>
+            /// Gets a value indicating whether this entry was allowed.
+            /// </summary>
+            /// <value><c>true</c> if allowed; otherwise, <c>false</c>.</value>
             public bool alAllowed
             {
                 get { return this._alAllowed; }
             }
         }
 
+        /// <summary>
+        /// Does the flood check.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns><c>true</c> if the user is flooding; otherwise <c>false</c></returns>
         public bool doFloodCheck(User source)
         {
             //TODO: Implement

@@ -25,8 +25,18 @@ using System.Xml;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Geolocates an IP address
+    /// </summary>
     internal class Geolocate : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Logger.instance().addToLog(
@@ -38,6 +48,11 @@ namespace helpmebot6.Commands
             return new CommandResponseHandler(Configuration.singleton().getMessage("locationMessage", messageArgs));
         }
 
+        /// <summary>
+        /// Gets the location of the IP address.
+        /// </summary>
+        /// <param name="ip">The ip.</param>
+        /// <returns></returns>
         public static GeolocateResult getLocation(IPAddress ip)
         {
             Logger.instance().addToLog(
@@ -85,6 +100,9 @@ namespace helpmebot6.Commands
             return result;
         }
 
+        /// <summary>
+        /// Structure to hold the result of a geolocation.
+        /// </summary>
         public struct GeolocateResult
         {
             public string status;
@@ -97,6 +115,12 @@ namespace helpmebot6.Commands
             public float latitude;
             public float longitude;
 
+            /// <summary>
+            /// Returns a <see cref="System.String"/> that represents this geolocate result.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String"/> that represents this geolocate result.
+            /// </returns>
             public override string ToString()
             {
                 Logger.instance().addToLog(
