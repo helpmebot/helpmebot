@@ -51,10 +51,6 @@ namespace helpmebot6
 
         public static User newFromString(string source, uint network)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string user, host;
             string nick = user = host = null;
             try
@@ -100,10 +96,6 @@ namespace helpmebot6
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
         public override string ToString()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string endResult = this.nickname;
 
             if (this.username != null)

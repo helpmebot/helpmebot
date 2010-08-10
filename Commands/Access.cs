@@ -10,10 +10,6 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler accessDenied(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             CommandResponseHandler crh = new Myaccess().run(source, channel, args);
             crh.append(base.accessDenied(source, channel, args));
             return crh;
@@ -21,9 +17,6 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             CommandResponseHandler crh = new CommandResponseHandler();
             if (args.Length > 1)

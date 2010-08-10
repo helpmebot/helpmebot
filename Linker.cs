@@ -25,28 +25,16 @@ namespace helpmebot6
 
         private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this.parseMessage(message, destination);
         }
 
         public static Linker instance()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return _singleton ?? ( _singleton = new Linker( ) );
         }
 
         public void parseMessage(string message, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             ArrayList newLink = reallyParseMessage(message);
             if (newLink.Count == 0)
                 return;
@@ -60,10 +48,6 @@ namespace helpmebot6
 
         public ArrayList reallyParseMessage(string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             ArrayList newLinks = new ArrayList();
 
             Regex linkRegex = new Regex(@"\[\[([^\[\]]*)\]\]|{{([^{}]*)}}");
@@ -83,19 +67,11 @@ namespace helpmebot6
 
         public string getLink(string destination)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return this.getLink(destination, false);
         }
 
         public string getLink(string destination, bool useSecureServer)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string link;
             bool success = this._lastLink.TryGetValue(destination, out link);
             return success ? getRealLink( destination, link, useSecureServer ) : "";
@@ -122,10 +98,6 @@ namespace helpmebot6
 
         private static string antispace(string source)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             int currloc = 0;
             string result = "";
             while (currloc < source.Length)
@@ -145,10 +117,6 @@ namespace helpmebot6
 
         private void sendLink(string channel, string link)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (Configuration.singleton().retrieveLocalStringOption("autoLink", channel) == "true")
                 Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
         }

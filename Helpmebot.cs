@@ -138,10 +138,6 @@ namespace helpmebot6
 
         private static void setupEvents()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             irc.connectionRegistrationSucceededEvent += joinChannels;
 
             irc.joinEvent += welcomeNewbieOnJoinEvent;
@@ -157,20 +153,11 @@ namespace helpmebot6
 
         private static void irc_ThreadFatalError(object sender, EventArgs e)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             stop();
         }
 
         private static void pageWatcherNotificationEvent(PageWatcherController.RcPageChange rcItem)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-
             string[] messageParams = {
                                          rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff,
                                          rcItem.flags
@@ -197,30 +184,17 @@ namespace helpmebot6
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-
             string[] args = {channel};
             new Join().run(source, channel, args);
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             NewbieWelcomer.instance().execute(source, channel);
         }
 
         private static void receivedMessage(User source, string destination, string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             CommandParser cmd = new CommandParser();
             try
             {
@@ -250,10 +224,6 @@ namespace helpmebot6
 
         private static void joinChannels()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             irc.ircJoin(debugChannel);
 
             DAL.Select q = new DAL.Select("channel_name");
@@ -283,10 +253,6 @@ namespace helpmebot6
         /// </remarks>
         private static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string[] words = message.Split(' ');
 
             if (words[0].StartsWith(_trigger))
@@ -339,10 +305,6 @@ namespace helpmebot6
 
         public static void stop()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             ThreadList.instance().stop();
         }
     }

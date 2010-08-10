@@ -42,10 +42,6 @@ namespace helpmebot6
 
         public string fetchFaqText(int id)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 XmlTextReader xtr =
@@ -94,10 +90,6 @@ namespace helpmebot6
 
         public string searchFaq(string searchTerm)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 XmlTextReader xtr =
@@ -145,10 +137,6 @@ namespace helpmebot6
 
         public string viewLink(int id)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return _apiUri.ToString().Replace("api.php", "index.php?id=" + id);
         }
     }

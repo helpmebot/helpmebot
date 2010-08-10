@@ -27,19 +27,11 @@ namespace helpmebot6.Threading
 
         public void register(IThreadedSystem sender)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._threadedObjects.Add(sender);
         }
 
         public void stop()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Thread shutdownControllerThread
                 = new Thread(this.shutdownMethod);
 
@@ -48,9 +40,6 @@ namespace helpmebot6.Threading
 
         private void shutdownMethod()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             foreach (object obj in this._threadedObjects)
             {
@@ -71,10 +60,6 @@ namespace helpmebot6.Threading
 
         public string[] getAllThreadStatus()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             ArrayList responses = new ArrayList();
             foreach (IThreadedSystem item in this._threadedObjects)
             {

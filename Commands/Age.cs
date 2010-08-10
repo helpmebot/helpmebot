@@ -14,10 +14,6 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (args.Length > 0)
             {
                 string username = string.Join(" ", args);
@@ -47,10 +43,6 @@ namespace helpmebot6.Commands
 
         public TimeSpan getWikipedianAge(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Registration regCommand = new Registration();
             DateTime regdate = regCommand.getRegistrationDate(userName, channel);
             TimeSpan age = DateTime.Now.Subtract(regdate);

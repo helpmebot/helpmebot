@@ -16,10 +16,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         protected PageWatcherController()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._watchedPageList = new ArrayList();
             if ( !Helpmebot6.pagewatcherEnabled ) return;
             this.loadAllWatchedPages();
@@ -52,9 +48,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void setupEvents()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             this._irc.connectionRegistrationSucceededEvent += irc_ConnectionRegistrationSucceededEvent;
             this._irc.privmsgEvent += irc_PrivmsgEvent;
@@ -67,10 +60,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public string[] getWatchedPages()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string[] wp = new string[this._watchedPageList.Count];
             this._watchedPageList.CopyTo(wp);
             return wp;
@@ -78,10 +67,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void loadAllWatchedPages()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._watchedPageList.Clear();
             DAL.Select q = new DAL.Select("pw_title");
             q.setFrom("watchedpages");
@@ -94,10 +79,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (source.ToString() == Configuration.singleton().retrieveGlobalStringOption("wikimediaRcBot"))
             {
                 RcPageChange rcItem = rcParser(message);
@@ -115,10 +96,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private void irc_ConnectionRegistrationSucceededEvent()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             uint network = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
 
             DAL.Select q = new DAL.Select("channel_name");
@@ -133,10 +110,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         private static RcPageChange rcParser(string rcItem)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             const string colorCodeControlChar = "\x03";
             string[] colorCodes = {
                                       colorCodeControlChar + "4",
@@ -176,10 +149,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void watchPage(string pageName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             // addOrder to database
             DAL.singleton().insert("watchedpages", "", pageName);
             // addOrder to arraylist
@@ -188,10 +157,6 @@ namespace helpmebot6.Monitoring.PageWatcher
 
         public void unwatchPage(string pageName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             //remove from database
             DAL.singleton().delete("watchedpages", 0, new DAL.WhereConds("pw_title", pageName));
             // remove from arraylist

@@ -15,18 +15,12 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             return new CommandResponseHandler(getBlockInformation(string.Join(" ", args), channel).ToString());
         }
 
         public BlockInformation getBlockInformation(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             IPAddress ip;
 
@@ -112,9 +106,6 @@ namespace helpmebot6.Commands
 
             public override string ToString()
             {
-                Logger.instance().addToLog(
-                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                    Logger.LogTypes.DNWB);
 
                 string[] emptyMessageParams = {"", "", "", "", "", "", ""};
                 string emptyMessage = Configuration.singleton().getMessage("blockInfoShort", emptyMessageParams);

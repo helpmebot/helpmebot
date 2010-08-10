@@ -29,10 +29,6 @@ namespace helpmebot6.NewYear
 
         protected TimeMonitor()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._targetDate = Configuration.singleton()["newYearDateMonitoringTarget"];
 
             this._monitorThread = new Thread(monitorThreadMethod);
@@ -65,10 +61,6 @@ namespace helpmebot6.NewYear
 
         private void monitorThreadMethod()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 while (this._timezoneList.Count > 0)
@@ -95,10 +87,6 @@ namespace helpmebot6.NewYear
 
         private static void sendNewYearMessage(string places)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("channel_name");
             q.setFrom("channel");
             q.addWhere(new DAL.WhereConds("channel_enabled", "1"));
