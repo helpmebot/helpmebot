@@ -56,10 +56,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             bool useLongInfo =
                 bool.Parse(Configuration.singleton().retrieveLocalStringOption("useLongUserInfo", channel));
 
@@ -125,10 +121,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         private static string getUserPageUrl(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
@@ -175,10 +167,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         private static string getUserTalkPageUrl(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
@@ -224,10 +212,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         private static string getUserContributionsUrl(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
@@ -273,10 +257,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         private static string getBlockLogUrl(string userName, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
@@ -326,10 +306,6 @@ namespace helpmebot6.Commands
         private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try{
                 initial.userName = userName;
 
@@ -372,10 +348,6 @@ namespace helpmebot6.Commands
         /// <param name="userInformation">The user information.</param>
         private void sendShortUserInfo(UserInformation userInformation)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             const string regex = "^http://en.wikipedia.org/wiki/";
             const string shortUrlAlias = "http://enwp.org/";
             Regex r = new Regex(regex);
@@ -409,11 +381,6 @@ namespace helpmebot6.Commands
         /// <param name="userInformation">The user information.</param>
         private void sendLongUserInfo(UserInformation userInformation)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-
             this._crh.respond(userInformation.userPage);
             this._crh.respond(userInformation.talkPage);
             this._crh.respond(userInformation.userContribs);

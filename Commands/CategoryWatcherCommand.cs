@@ -41,10 +41,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             CommandResponseHandler crh = new CommandResponseHandler();
 
             if (args.Length == 1)

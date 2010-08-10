@@ -37,10 +37,6 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (args.Length > 2)
             {
                 // 2 or more args

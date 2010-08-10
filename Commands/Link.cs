@@ -39,10 +39,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                string.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
-                              MethodBase.GetCurrentMethod().Name), Logger.LogTypes.DNWB);
-
             bool secure = bool.Parse(Configuration.singleton().retrieveLocalStringOption("useSecureWikiServer", channel));
             if (args.Length > 0)
             {

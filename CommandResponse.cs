@@ -93,10 +93,6 @@ namespace helpmebot6
         /// <param name="message">The message.</param>
         public void respond(string message)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             CommandResponse cr;
             cr.destination = CommandResponseDestination.Default;
             cr.message = message;
@@ -111,9 +107,6 @@ namespace helpmebot6
         /// <param name="destination">The destination.</param>
         public void respond(string message, CommandResponseDestination destination)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             CommandResponse cr;
             cr.destination = destination;
@@ -128,10 +121,6 @@ namespace helpmebot6
         /// <param name="moreResponses">The more responses.</param>
         public void append(CommandResponseHandler moreResponses)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             foreach (object item in moreResponses.getResponses())
             {
                 this._responses.Add(item);

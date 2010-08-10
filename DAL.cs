@@ -83,10 +83,6 @@ namespace helpmebot6
         /// <returns></returns>
         public bool connect()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
@@ -121,10 +117,6 @@ namespace helpmebot6
 
         private void executeNonQuery(ref MySqlCommand cmd)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Logger.instance().addToLog("Locking access to DAL...", Logger.LogTypes.DalLock);
             lock (this)
             {
@@ -152,9 +144,6 @@ namespace helpmebot6
 
         private MySqlDataReader executeReaderQuery(string query)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             MySqlDataReader result = null;
 
@@ -194,10 +183,6 @@ namespace helpmebot6
         /// <returns></returns>
         public long insert(string table, params string[] values)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string query = "INSERT INTO `" + sanitise(table) + "` VALUES (";
             foreach (string item in values)
             {
@@ -228,9 +213,6 @@ namespace helpmebot6
         /// <param name="conditions">The conditions.</param>
         public void delete(string table, int limit, params WhereConds[] conditions)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             string query = "DELETE FROM `" + sanitise(table) + "`";
             for (int i = 0; i < conditions.Length; i++)
@@ -260,10 +242,6 @@ namespace helpmebot6
         /// <param name="conditions">The conditions.</param>
         public void update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (items.Count < 1)
                 return;
 
@@ -302,10 +280,6 @@ namespace helpmebot6
         /// <returns>Arraylist of arrays. Each array is one row in the dataset.</returns>
         public ArrayList executeSelect(Select query)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             MySqlDataReader dr = this.executeReaderQuery(query.ToString());
 
             ArrayList resultSet = new ArrayList();
@@ -329,20 +303,12 @@ namespace helpmebot6
         /// <returns>A single value as a string</returns>
         public string executeScalarSelect(Select query)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             ArrayList al = executeSelect(query);
             return al.Count > 0 ? (((object[]) al[0])[0]).ToString() : "";
         }
 
         private void runConnectionTest()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             // ok, first let's assume the connection is dead.
             bool connectionOk = false;
 
@@ -377,10 +343,6 @@ namespace helpmebot6
         /// <param name="args">The args.</param>
         public void executeProcedure(string name, params string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             MySqlCommand cmd = new MySqlCommand
                                    {
                                        CommandType = CommandType.StoredProcedure,
@@ -403,10 +365,6 @@ namespace helpmebot6
         public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
 // ReSharper restore InconsistentNaming
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             lock (this)
             {
                 runConnectionTest();
@@ -430,10 +388,6 @@ namespace helpmebot6
         public string proc_HMB_GET_LOCAL_OPTION(string option, string channel)
 // ReSharper restore InconsistentNaming
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 MySqlCommand cmd = new MySqlCommand
@@ -585,10 +539,6 @@ namespace helpmebot6
             /// </returns>
             public override string ToString()
             {
-                Logger.instance().addToLog(
-                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                    Logger.LogTypes.DNWB);
-
                 string query = "SELECT ";
                 bool firstField = true;
                 foreach (string  f in this._fields)

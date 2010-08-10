@@ -119,10 +119,6 @@ namespace helpmebot6.Commands
         /// <returns>A response to the command if access to the command was denied</returns>
         protected virtual CommandResponseHandler accessDenied(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             CommandResponseHandler response = new CommandResponseHandler();
 
             response.respond(Configuration.singleton().getMessage("accessDenied", ""),

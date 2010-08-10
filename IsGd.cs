@@ -37,10 +37,6 @@ namespace helpmebot6
         /// <returns></returns>
         public static Uri shorten(Uri longUrl)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("suc_shorturl");
             q.setFrom("shorturlcache");
             q.addWhere(new DAL.WhereConds("suc_fullurl", longUrl.ToString()));

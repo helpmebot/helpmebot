@@ -35,10 +35,6 @@ namespace helpmebot6
         /// <returns></returns>
         public static bool learn(string word, string phrase)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return learn(word, phrase, false);
         }
 
@@ -51,10 +47,6 @@ namespace helpmebot6
         /// <returns></returns>
         public static bool learn(string word, string phrase, bool action)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("keywords");
             q.addLimit(1, 0);
@@ -75,10 +67,6 @@ namespace helpmebot6
         /// <returns></returns>
         public static RemeberedWord remember(string word)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("keyword_action");
             q.setFrom("keywords");
             q.addWhere(new DAL.WhereConds("keyword_name", word));
@@ -105,10 +93,6 @@ namespace helpmebot6
         /// <returns></returns>
         public static bool forget(string word)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("keywords");
             q.addWhere(new DAL.WhereConds("keyword_name", word));

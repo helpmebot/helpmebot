@@ -53,10 +53,6 @@ namespace helpmebot6.Monitoring
         /// <param name="sleepTime">The sleep time.</param>
         public CategoryWatcher(string category, string key, int sleepTime)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             // look up site id
             string baseWiki = Configuration.singleton().retrieveGlobalStringOption("baseWiki");
 
@@ -77,10 +73,6 @@ namespace helpmebot6.Monitoring
 
         private void watcherThreadMethod()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Logger.instance().addToLog("Starting category watcher for '" + _key + "'...", Logger.LogTypes.General);
             try
             {
@@ -131,10 +123,6 @@ namespace helpmebot6.Monitoring
         /// </returns>
         public override string ToString()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return _key;
         }
 
@@ -144,10 +132,6 @@ namespace helpmebot6.Monitoring
         /// <returns></returns>
         public ArrayList doCategoryCheck()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Logger.instance().addToLog("Getting items in category " + _key, Logger.LogTypes.General);
             ArrayList pages = new ArrayList();
             try
@@ -202,10 +186,6 @@ namespace helpmebot6.Monitoring
 
         private static ArrayList removeBlacklistedItems(ArrayList pageList)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("ip_title");
             q.setFrom("ignoredpages");
             ArrayList blacklist = DAL.singleton().executeSelect(q);

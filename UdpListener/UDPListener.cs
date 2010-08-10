@@ -49,10 +49,6 @@ namespace helpmebot6.UdpListener
 
         private void threadMethod()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 while (true)

@@ -36,10 +36,6 @@ namespace helpmebot6.Monitoring
 
         protected NewbieWelcomer()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("bin_blob");
             q.setFrom("binary_store");
             q.addWhere(new DAL.WhereConds("bin_desc", "newbie_hostnames"));
@@ -74,10 +70,6 @@ namespace helpmebot6.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false" &&
                 Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
             {
@@ -107,10 +99,6 @@ namespace helpmebot6.Monitoring
         /// <param name="host">The host.</param>
         public void addHost(string host)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._hostNames.Add(host);
 
             saveHostnames();
@@ -118,10 +106,6 @@ namespace helpmebot6.Monitoring
 
         public void delHost(string host)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this._hostNames.Remove(host);
 
             saveHostnames();
@@ -136,10 +120,6 @@ namespace helpmebot6.Monitoring
 
         private void saveHostnames()
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             BinaryFormatter bf = new BinaryFormatter();
             MemoryStream ms = new MemoryStream();
             bf.Serialize(ms, this._hostNames);

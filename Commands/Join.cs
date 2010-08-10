@@ -37,10 +37,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("count(*)");
             q.addWhere(new DAL.WhereConds("channel_name", args[0]));
             q.addWhere(new DAL.WhereConds("channel_network", source.network.ToString()));

@@ -126,9 +126,6 @@ namespace helpmebot6
         [Obsolete("Use indexer property instead, then cast to string.")]
         public uint retrieveGlobalUintOption(string optionName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             string optionValue = this.getGlobalSetting(optionName);
             uint value;
@@ -151,10 +148,6 @@ namespace helpmebot6
 
         private string retrieveOptionFromDatabase(string optionName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             try
             {
                 DAL.Select q = new DAL.Select("configuration_value");
@@ -239,9 +232,6 @@ namespace helpmebot6
         [Obsolete("Use indexer propery instead")]
         public void setOption(string optionName, string target, string newValue)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             if (target == "global")
             {
@@ -256,19 +246,11 @@ namespace helpmebot6
         [Obsolete("Use indexer property instead with null value.")]
         public void deleteLocalOption(string optionName, string target)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             this.setLocalOption( target, optionName, null );
         }
 
         private string getOptionId(string optionName)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.Select q = new DAL.Select("configuration_id");
             q.setFrom("configuration");
             q.addWhere(new DAL.WhereConds("configuration_name", optionName));
@@ -278,9 +260,6 @@ namespace helpmebot6
 
         public string getChannelId(string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             DAL.Select q = new DAL.Select("channel_id");
             q.setFrom("channel");
@@ -303,9 +282,6 @@ namespace helpmebot6
                                                ref string mySqlPassword, ref uint mySqlServerPort,
                                                ref string mySqlSchema)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
 
             StreamReader settingsreader = new StreamReader(filename);
             mySqlServerHostname = settingsreader.ReadLine();

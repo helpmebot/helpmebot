@@ -37,11 +37,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-
             string[] messageParameters = {source.nickname, getMaxLag(channel)};
             string message = Configuration.singleton().getMessage("cmdMaxLag", messageParameters);
             return new CommandResponseHandler(message);
@@ -54,10 +49,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         public string getMaxLag(string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             // look up site id
             string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
             // get api

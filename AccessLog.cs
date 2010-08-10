@@ -50,10 +50,6 @@ namespace helpmebot6
         /// <param name="logEntry">The log entry.</param>
         public void save(AccessLogEntry logEntry)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
                                    logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
                                    (logEntry.alAllowed ? "1" : "0"));

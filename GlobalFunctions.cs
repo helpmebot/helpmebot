@@ -39,10 +39,6 @@ namespace helpmebot6
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
         public static int isInArray(string needle, string[] haystack)
         {
-            Logger.instance().addToLog(
-                string.Format("Method:{0}{1}", MethodBase.GetCurrentMethod().DeclaringType.Name,
-                              MethodBase.GetCurrentMethod().Name), Logger.LogTypes.DNWB);
-
             int id = 0;
             foreach (string straw in haystack)
             {
@@ -62,10 +58,6 @@ namespace helpmebot6
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
         public static int prefixIsInArray(string needlehead, string[] haystack)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             int id = 0;
             foreach (string straw in haystack)
             {
@@ -87,10 +79,6 @@ namespace helpmebot6
         /// <returns>The first item from the array</returns>
         public static string popFromFront(ref string[] list)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             string firstItem = list[0];
             list = string.Join(" ", list, 1, list.Length - 1).Split(' ');
             return firstItem;
@@ -102,10 +90,6 @@ namespace helpmebot6
         /// <param name = "ex">The exception thrown</param>
         public static void errorLog(Exception ex)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             Logger.instance().addToLog(ex + ex.StackTrace, Logger.LogTypes.Error);
 
             StackTrace stack = new StackTrace();
@@ -117,12 +101,9 @@ namespace helpmebot6
             }
         }
 
+
         public static void removeItemFromArray(string item, ref string[] array)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             int count = array.Count( i => i == item );
 
             string[] newArray = new string[array.Length - count];
@@ -140,12 +121,7 @@ namespace helpmebot6
 
         public static int realArrayLength(string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             return args.Count( arg => !string.IsNullOrEmpty( arg ) );
         }
-
     }
 }
