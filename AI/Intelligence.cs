@@ -1,11 +1,14 @@
 ﻿#region Usings
 
+using System;
 using System.Reflection;
 
 #endregion
 
 namespace helpmebot6.AI
 {
+
+
     internal class Intelligence
     {
         private static Intelligence _singleton;
@@ -19,7 +22,20 @@ namespace helpmebot6.AI
         {
         }
 
+        private DateTime lastAiResponse = DateTime.MinValue;
+
         public string respond(string input)
+        {
+            if(DateTime.Now.AddMinutes(-1  ) > lastAiResponse)
+            {
+                lastAiResponse = DateTime.Now;
+                return getResponse( input );
+
+            }
+            return "";
+        }
+
+        private string getResponse( string input )
         {
             string[] tokens = input.Split(' ');
 
@@ -78,10 +94,6 @@ namespace helpmebot6.AI
                 return "aynrand";
 
             return "";
-
-
-
-
         }
     }
 }
