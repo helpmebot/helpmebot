@@ -83,10 +83,5 @@ namespace helpmebot6
 
             return buildMessage(chooseRandomMessage(messageName), args);
         }
-        
-        public void save(string messageName, string messageDescription, string messageContent)
-        {
-            this._dbal.insert("message", "", messageName, messageDescription, messageContent, "1");
-        }
     }
 }
