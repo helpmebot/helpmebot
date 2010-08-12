@@ -75,6 +75,11 @@ namespace helpmebot6.AI
             }
 
             return "";
+
+            if (input.Contains("Ayn Rand"))
+                return "Ayn Rand? The eminent 20th-century Russian-American philosopher?";
+
+
         }
     }
 }
