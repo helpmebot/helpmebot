@@ -121,7 +121,7 @@ namespace helpmebot6.Commands
         {
             CommandResponseHandler response = new CommandResponseHandler();
 
-            response.respond(Configuration.singleton().getMessage("accessDenied", ""),
+            response.respond(new Message().get("accessDenied", ""),
                              CommandResponseDestination.PrivateMessage);
             this.log("Access denied to command.");
             AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false));

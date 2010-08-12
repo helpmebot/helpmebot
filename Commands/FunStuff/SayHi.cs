@@ -37,7 +37,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User toUser, string channel, string[] args)
         {
             string[] commandParams = {toUser.nickname};
-            return new CommandResponseHandler(Configuration.singleton().getMessage("cmdSayHi1", commandParams));
+            return new CommandResponseHandler(new Message().get("cmdSayHi1", commandParams));
         }
     }
 }

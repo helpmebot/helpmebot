@@ -102,11 +102,11 @@ namespace helpmebot6
 
             _config = Configuration.singleton();
 
-            debugChannel = _config["channelDebug"];
+            debugChannel = Configuration.singleton()["channelDebug"];
 
-            _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
+            _ircNetwork = uint.Parse(Configuration.singleton()["ircNetwork"]);
 
-            _trigger = _config["commandTrigger"];
+            _trigger = Configuration.singleton()["commandTrigger"];
 
             irc = new IAL(_ircNetwork);
 
@@ -129,7 +129,7 @@ namespace helpmebot6
             string[] twparms = {server, schema, irc.ircServer};
             try
             {
-                new Twitter( ).updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
+                new Twitter().updateStatus(new Message().get("tweetStartup", twparms));
             }
             catch(Twitterizer.TwitterizerException ex)
             {
@@ -164,7 +164,7 @@ namespace helpmebot6
                                          rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff,
                                          rcItem.flags
                                      };
-            string message = Configuration.singleton().getMessage("pageWatcherEventNotification", messageParams);
+            string message = new Message().get("pageWatcherEventNotification", messageParams);
 
             DAL.Select q = new DAL.Select("channel_name");
             q.addJoin("channel", DAL.Select.JoinTypes.Inner,
@@ -179,7 +179,7 @@ namespace helpmebot6
             foreach (object[] item in channels)
             {
                 string channel = (string) item[0];
-                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                if (Configuration.singleton()["silence",channel] == "false")
                     irc.ircPrivmsg(channel, message);
             }
         }
@@ -211,11 +211,11 @@ namespace helpmebot6
                     cmd.handleCommand(source, destination, command, commandArgs);
                 }
                 string aiResponse = Intelligence.singleton().respond(message);
-                if (Configuration.singleton().retrieveLocalStringOption("silence", destination) == "false" &&
+                if (Configuration.singleton()["silence",destination] == "false" &&
                     aiResponse != string.Empty)
                 {
                     string[] aiParameters = {source.nickname};
-                    irc.ircPrivmsg(destination, _config.getMessage(aiResponse, aiParameters));
+                    irc.ircPrivmsg(destination, new Message().get(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)

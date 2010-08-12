@@ -59,12 +59,12 @@ namespace helpmebot6.Commands
                 }
                 string[] messageargs = {args[0], ipList};
 
-                return new CommandResponseHandler(Configuration.singleton().getMessage("resolve", messageargs));
+                return new CommandResponseHandler(new Message().get("resolve", messageargs));
             }
             else
             {
                 string[] messageargs = {args[0]};
-                return new CommandResponseHandler(Configuration.singleton().getMessage("resolveFail", messageargs));
+                return new CommandResponseHandler(new Message().get("resolveFail", messageargs));
             }
         }
     }

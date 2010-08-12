@@ -40,28 +40,28 @@ namespace helpmebot6.Commands
             switch (args[0].ToLower())
             {
                 case "enable":
-                    if (Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
+                    if (Configuration.singleton()["welcomeNewbie",channel] == "true")
                     {
-                        return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
+                        return new CommandResponseHandler(new Message().get("no-change"));
                     }
-                    Configuration.singleton().oldSetLocalOption("welcomeNewbie", channel, "true");
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                    Configuration.singleton()["welcomeNewbie", channel]= "true";
+                    return new CommandResponseHandler(new Message().get("done"));
                 case "disable":
-                    if (Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "false")
+                    if (Configuration.singleton()["welcomeNewbie",channel] == "false")
                     {
-                        return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
+                        return new CommandResponseHandler(new Message().get("no-change"));
                     }
-                    Configuration.singleton().oldSetLocalOption("welcomeNewbie", channel, "false");
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                    Configuration.singleton()["welcomeNewbie", channel]= "false";
+                    return new CommandResponseHandler(new Message().get("done"));
                 case "global":
-                    Configuration.singleton().deleteLocalOption("welcomeNewbie", channel);
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("defaultSetting"));
+                    Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
+                    return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "addOrder":
                     NewbieWelcomer.instance().addHost(args[1]);
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                    return new CommandResponseHandler(new Message().get("done"));
                 case "del":
                     NewbieWelcomer.instance().delHost(args[1]);
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                    return new CommandResponseHandler(new Message().get("done"));
                 case "list":
                     CommandResponseHandler crh = new CommandResponseHandler();
                     string[] list = NewbieWelcomer.instance().getHosts();

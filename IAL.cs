@@ -684,6 +684,7 @@ namespace helpmebot6
 
         public delegate void NameReplyEventHandler(string channel, string[] names);
 
+        // TODO: invoke this event somewhere
         public event NameReplyEventHandler nameReplyEvent;
 
 

@@ -39,7 +39,7 @@ namespace helpmebot6.Commands
                 if (registrationDate == new DateTime(0))
                 {
                     string[] messageParams = {userName};
-                    string message = Configuration.singleton().getMessage("noSuchUser", messageParams);
+                    string message = new Message().get("noSuchUser", messageParams);
                     crh.respond(message);
                 }
                 else
@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
                                                      userName, registrationDate.ToString("hh:mm:ss t"),
                                                      registrationDate.ToString("d MMMM yyyy")
                                                  };
-                    string message = Configuration.singleton().getMessage("registrationDate", messageParameters);
+                    string message = new Message().get("registrationDate", messageParameters);
                     crh.respond(message);
                 }
             }
@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = {"registration", "1", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return crh;
         }
@@ -67,7 +67,7 @@ namespace helpmebot6.Commands
             {
                 throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

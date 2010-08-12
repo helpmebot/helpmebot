@@ -46,7 +46,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
             {
                 int delay = WatcherController.instance().getDelay(args[0]);
                 string[] messageParams = {args[0], delay.ToString()};
-                string message = Configuration.singleton().getMessage("catWatcherCurrentDelay", messageParams);
+                string message = new Message().get("catWatcherCurrentDelay", messageParams);
                 return new CommandResponseHandler(message);
             }
             // TODO: fix

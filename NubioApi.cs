@@ -78,7 +78,7 @@ namespace helpmebot6
                 {
                     return title + ": " + text;
                 }
-                return Configuration.singleton().getMessage("fetchFaqTextNotFound", id.ToString());
+                return new Message().get("fetchFaqTextNotFound", id.ToString());
             }
             catch (Exception ex)
             {
@@ -125,7 +125,7 @@ namespace helpmebot6
                 {
                     return title + ": " + text;
                 }
-                return Configuration.singleton().getMessage("fetchFaqTextNotFound", searchTerm);
+                return new Message().get("fetchFaqTextNotFound", searchTerm);
             }
             catch (Exception ex)
             {

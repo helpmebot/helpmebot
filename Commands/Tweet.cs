@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
             string status = string.Join(" ", args);
 
             new Twitter().updateStatus(status);
-            return new CommandResponseHandler( Configuration.singleton( ).getMessage( "done" ) );
+            return new CommandResponseHandler(new Message().get("done"));
         }
     }
 }

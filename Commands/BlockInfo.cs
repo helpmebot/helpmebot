@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
 
             IPAddress ip;
 
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -146,7 +146,7 @@ namespace helpmebot6.Commands
             {
 
                 string[] emptyMessageParams = {"", "", "", "", "", "", ""};
-                string emptyMessage = Configuration.singleton().getMessage("blockInfoShort", emptyMessageParams);
+                string emptyMessage = new Message().get("blockInfoShort", emptyMessageParams);
 
                 string info = "";
                 if (nocreate)
@@ -158,11 +158,11 @@ namespace helpmebot6.Commands
                 if (allowusertalk)
                     info += "ALLOWUSERTALK ";
                 string[] messageParams = {id, target, blockedBy, expiry, start, blockReason, info};
-                string message = Configuration.singleton().getMessage("blockInfoShort", messageParams);
+                string message = new Message().get("blockInfoShort", messageParams);
 
                 if (message == emptyMessage)
                 {
-                    message = Configuration.singleton().getMessage("noBlocks");
+                    message = new Message().get("noBlocks");
                 }
 
                 return message;

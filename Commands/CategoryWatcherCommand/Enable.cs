@@ -38,8 +38,8 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             if (WatcherController.instance().addWatcherToChannel(args[0], channel))
-                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
-            return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"));
+                return new CommandResponseHandler(new Message().get("done"));
+            return new CommandResponseHandler(new Message().get("no-change"));
         }
     }
 }

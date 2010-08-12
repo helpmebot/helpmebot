@@ -39,15 +39,15 @@ namespace helpmebot6.Commands
             if (args.Length >= 1)
             {
                 if (WordLearner.forget(args[0]))
-                    Helpmebot6.irc.ircNotice(source.nickname, Configuration.singleton().getMessage("cmdForgetDone"));
+                    Helpmebot6.irc.ircNotice(source.nickname, new Message().get("cmdForgetDone"));
                 else
-                    Helpmebot6.irc.ircNotice(source.nickname, Configuration.singleton().getMessage("cmdForgetError"));
+                    Helpmebot6.irc.ircNotice(source.nickname, new Message().get("cmdForgetError"));
             }
             else
             {
                 string[] messageParameters = {"forget", "1", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return null;
         }

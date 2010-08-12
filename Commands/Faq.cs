@@ -40,7 +40,7 @@ namespace helpmebot6.Commands
             string command = GlobalFunctions.popFromFront(ref args).ToLower();
             CommandResponseHandler crh = new CommandResponseHandler();
 
-            NubioApi faqRepo = new NubioApi(new Uri(Configuration.singleton().retrieveGlobalStringOption("faqApiUri")));
+            NubioApi faqRepo = new NubioApi(new Uri(Configuration.singleton()["faqApiUri"]));
             string result;
             switch (command)
             {

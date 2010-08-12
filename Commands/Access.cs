@@ -108,7 +108,7 @@ namespace helpmebot6.Commands
         /// <param name="newEntry">The new entry.</param>
         /// <param name="accessLevel">The access level.</param>
         /// <returns></returns>
-        [Obsolete("Use User class")]
+        //[Obsolete("Use User class")]
         private static CommandResponseHandler addAccessEntry(User newEntry, User.UserRights accessLevel)
         {
             Logger.instance().addToLog(
@@ -116,7 +116,7 @@ namespace helpmebot6.Commands
                 Logger.LogTypes.DNWB);
 
             string[] messageParams = {newEntry.ToString(), accessLevel.ToString()};
-            string message = Configuration.singleton().getMessage("addAccessEntry", messageParams);
+            string message = new Message().get("addAccessEntry", messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + accessLevel.ToString( )"
             Logger.instance().addToLog("Adding access entry for " + newEntry + " at level " + accessLevel,
@@ -132,7 +132,7 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="id">The id.</param>
         /// <returns></returns>
-        [Obsolete("Use the User class")]
+        //[Obsolete("Use the User class")]
         private static CommandResponseHandler delAccessEntry(int id)
         {
             Logger.instance().addToLog(
@@ -140,7 +140,7 @@ namespace helpmebot6.Commands
                 Logger.LogTypes.DNWB);
 
             string[] messageParams = {id.ToString()};
-            string message = Configuration.singleton().getMessage("removeAccessEntry", messageParams);
+            string message = new Message().get("removeAccessEntry", messageParams);
 
             Logger.instance().addToLog("Removing access entry #" + id, Logger.LogTypes.Command);
             DAL.singleton().delete("user", 1, new DAL.WhereConds("user_id", id.ToString()));

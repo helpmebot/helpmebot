@@ -49,7 +49,7 @@ namespace helpmebot6.Commands
                 new Twitter( );
             }
 
-            return new CommandResponseHandler( Configuration.singleton( ).getMessage( "done" ) );
+            return new CommandResponseHandler(new Message().get("done"));
         }
     }
 }

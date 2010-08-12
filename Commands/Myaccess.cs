@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         {
             CommandResponseHandler crh = new CommandResponseHandler();
             string[] cmdArgs = {source.ToString(), source.accessLevel.ToString()};
-            crh.respond(Configuration.singleton().getMessage("cmdAccess", cmdArgs));
+            crh.respond(new Message().get("cmdAccess", cmdArgs));
             return crh;
         }
     }

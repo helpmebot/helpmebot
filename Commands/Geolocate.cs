@@ -41,7 +41,7 @@ namespace helpmebot6.Commands
         {
             GeolocateResult location = getLocation(IPAddress.Parse(args[0]));
             string[] messageArgs = {location.ToString()};
-            return new CommandResponseHandler(Configuration.singleton().getMessage("locationMessage", messageArgs));
+            return new CommandResponseHandler(new Message().get("locationMessage", messageArgs));
         }
 
         /// <summary>

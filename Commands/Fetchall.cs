@@ -43,8 +43,8 @@ namespace helpmebot6.Commands
             if (GlobalFunctions.isInArray("@cats", args) != -1)
             {
                 GlobalFunctions.removeItemFromArray("@cats", ref args);
-                string listSep = Configuration.singleton().getMessage("listSeparator");
-                string list = Configuration.singleton().getMessage("allCategoryCodes");
+                string listSep = new Message().get("listSeparator");
+                string list = new Message().get("allCategoryCodes");
                 foreach (string item in kc)
                 {
                     list += item;

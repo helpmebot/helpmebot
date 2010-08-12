@@ -136,8 +136,8 @@ namespace helpmebot6
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
                 url =
-                    Configuration.singleton( ).retrieveLocalStringOption(
-                        ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination );
+                    Configuration.singleton( )[
+                        ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination ];
                 return url + antispace( link );
             }
             return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
@@ -164,7 +164,7 @@ namespace helpmebot6
 
         private void sendLink(string channel, string link)
         {
-            if (Configuration.singleton().retrieveLocalStringOption("autoLink", channel) == "true")
+            if (Configuration.singleton()["autoLink",channel] == "true")
                 Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
         }
     }

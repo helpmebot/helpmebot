@@ -36,7 +36,15 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Configuration.singleton().setOption(args[1], args[0], args[2]);
+            if (args[0] == "global")
+            {
+                Configuration.singleton( )[ args[ 1 ] ] = args[ 2 ];
+            }
+            else
+            {
+                Configuration.singleton( )[ args[ 1 ], args[ 0 ] ] = args[ 2 ];
+            }
+
             return null;
         }
     }

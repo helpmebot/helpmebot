@@ -38,7 +38,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             WatcherController.instance().removeWatcherFromChannel(args[0], channel);
-            return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+            return new CommandResponseHandler(new Message().get("done"));
         }
     }
 }

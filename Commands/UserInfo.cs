@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             bool useLongInfo =
-                bool.Parse(Configuration.singleton().retrieveLocalStringOption("useLongUserInfo", channel));
+                bool.Parse(Configuration.singleton()["useLongUserInfo",channel]);
 
             if (args.Length > 0)
             {
@@ -85,7 +85,7 @@ namespace helpmebot6.Commands
                 if (uInfo.editCount == -1)
                 {
                     string[] mparams = {userName};
-                    this._crh.respond(Configuration.singleton().getMessage("noSuchUser", mparams));
+                    this._crh.respond(new Message().get("noSuchUser", mparams));
                     return this._crh;
                 }
 
@@ -108,7 +108,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = {"userinfo", "1", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return this._crh;
         }
@@ -126,7 +126,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -172,7 +172,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -217,7 +217,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -262,7 +262,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -370,7 +370,7 @@ namespace helpmebot6.Commands
                                              userInformation.editCount.ToString()
                                          };
 
-            string message = Configuration.singleton().getMessage("cmdUserInfoShort", messageParameters);
+            string message = new Message().get("cmdUserInfoShort", messageParameters);
 
             this._crh.respond(message);
         }
@@ -390,17 +390,17 @@ namespace helpmebot6.Commands
             if (userInformation.userGroups != "")
             {
                 string[] messageParameters = {userInformation.userName, userInformation.userGroups};
-                message = Configuration.singleton().getMessage("cmdRightsList", messageParameters);
+                message = new Message().get("cmdRightsList", messageParameters);
             }
             else
             {
                 string[] messageParameters = {userInformation.userName};
-                message = Configuration.singleton().getMessage("cmdRightsNone", messageParameters);
+                message = new Message().get("cmdRightsNone", messageParameters);
             }
             this._crh.respond(message);
 
             string[] messageParameters2 = {userInformation.editCount.ToString(), userInformation.userName};
-            message = Configuration.singleton().getMessage("editCount", messageParameters2);
+            message = new Message().get("editCount", messageParameters2);
             this._crh.respond(message);
 
             string[] messageParameters3 = {
@@ -408,10 +408,10 @@ namespace helpmebot6.Commands
                                               userInformation.registrationDate.ToString("hh:mm:ss t"),
                                               userInformation.registrationDate.ToString("d MMMM yyyy")
                                           };
-            message = Configuration.singleton().getMessage("registrationDate", messageParameters3);
+            message = new Message().get("registrationDate", messageParameters3);
             this._crh.respond(message);
             string[] messageParameters4 = {userInformation.userName, userInformation.editRate.ToString()};
-            message = Configuration.singleton().getMessage("editRate", messageParameters4);
+            message = new Message().get("editRate", messageParameters4);
             this._crh.respond(message);
         }
 

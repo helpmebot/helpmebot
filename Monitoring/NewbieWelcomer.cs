@@ -70,8 +70,8 @@ namespace helpmebot6.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false" &&
-                Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
+            if (Configuration.singleton()["silence",channel] == "false" &&
+                Configuration.singleton()["welcomeNewbie",channel] == "true")
             {
                 bool match = false;
                 foreach (object item in this._hostNames)
@@ -88,7 +88,7 @@ namespace helpmebot6.Monitoring
                 if (match)
                 {
                     string[] cmdArgs = {source.nickname, channel};
-                    Helpmebot6.irc.ircPrivmsg(channel, Configuration.singleton().getMessage("welcomeMessage", cmdArgs));
+                    Helpmebot6.irc.ircPrivmsg(channel, new Message().get("welcomeMessage", cmdArgs));
                 }
             }
         }

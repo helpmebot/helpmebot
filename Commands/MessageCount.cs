@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         {
             string[] messageParameters = {Helpmebot6.irc.messageCount.ToString()};
             return
-                new CommandResponseHandler(Configuration.singleton().getMessage("messageCountReport", messageParameters));
+                new CommandResponseHandler(new Message().get("messageCountReport", messageParameters));
         }
     }
 }

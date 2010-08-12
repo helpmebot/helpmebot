@@ -163,7 +163,7 @@ namespace helpmebot6.Monitoring
                 string channel = (string) item[0];
 
                 string message = compileMessage(items, keyword, channel, false);
-                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                if (Configuration.singleton()["silence",channel] == "false")
                     Helpmebot6.irc.ircPrivmsg(channel, message);
             }
 
@@ -221,27 +221,26 @@ namespace helpmebot6.Monitoring
 
             bool showWaitTime = (fakedestination == ""
                                      ? false
-                                     : (Configuration.singleton().retrieveLocalStringOption("showWaitTime", destination) ==
+                                     : (Configuration.singleton()["showWaitTime",destination] ==
                                         "true"
                                             ? true
                                             : false));
 
             TimeSpan minimumWaitTime;
             if (
-                !TimeSpan.TryParse(Configuration.singleton().retrieveLocalStringOption("minimumWaitTime", destination),
+                !TimeSpan.TryParse(Configuration.singleton()["minimumWaitTime",destination],
                                    out minimumWaitTime))
                 minimumWaitTime = new TimeSpan(0);
 
             bool shortenUrls = (fakedestination == ""
                                     ? false
-                                    : (Configuration.singleton().retrieveLocalStringOption(
-                                        "useShortUrlsInsteadOfWikilinks", destination) == "true"
+                                    : (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"
                                            ? true
                                            : false));
             bool showDelta = (fakedestination == ""
                                   ? false
-                                  : (Configuration.singleton().retrieveLocalStringOption("catWatcherShowDelta",
-                                                                                         destination) == "true"
+                                  : (Configuration.singleton()["catWatcherShowDelta",
+                                                                                         destination] == "true"
                                          ? true
                                          : false));
 
@@ -268,7 +267,7 @@ namespace helpmebot6.Monitoring
                     else
                     {
                         listString +=
-                            IsGd.shorten(new Uri(Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item))
+                            IsGd.shorten(new Uri(Configuration.singleton()["wikiUrl"] + item))
                                 .ToString();
                     }
 
@@ -293,23 +292,22 @@ namespace helpmebot6.Monitoring
                                                          ts.Minutes.ToString().PadLeft(2, '0'),
                                                          ts.Seconds.ToString().PadLeft(2, '0')
                                                      };
-                            listString += Configuration.singleton().getMessage("catWatcherWaiting", messageparams);
+                            listString += new Message().get("catWatcherWaiting", messageparams);
                         }
                     }
 
-                    listString += Configuration.singleton().getMessage("listSeparator");
+                    listString += new Message().get("listSeparator");
                 }
                 listString = listString.TrimEnd(' ', ',');
-                string pluralString = items.Count == 1 ? Configuration.singleton().getMessage(keyword + "Singular", "keywordSingularDefault") : Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault");
+                string pluralString = items.Count == 1 ? new Message().get(keyword + "Singular", "keywordSingularDefault") : new Message().get(keyword + "Plural", "keywordPluralDefault");
                 string[] messageParams = {items.Count.ToString(), pluralString, listString};
-                message = Configuration.singleton().getMessage(keyword + (showDelta ? "New" : "") + "HasItems",
-                                                               "keyword" + (showDelta ? "New" : "") + "HasItemsDefault",
+                message = new Message().get(keyword + (showDelta ? "New" : "") + "HasItems",
                                                                messageParams);
             }
             else
             {
-                string[] mp = {Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault")};
-                message = Configuration.singleton().getMessage(keyword + "NoItems", "keywordNoItemsDefault", mp);
+                string[] mp = {new Message().get(keyword + "Plural", "keywordPluralDefault")};
+                message = new Message().get(keyword + "NoItems", mp);
             }
             return message;
         }
@@ -357,7 +355,7 @@ namespace helpmebot6.Monitoring
         {
             if (newDelay < 1)
             {
-                string message = Configuration.singleton().getMessage("delayTooShort");
+                string message = new Message().get("delayTooShort");
                 return new CommandResponseHandler(message);
             }
 
@@ -373,7 +371,7 @@ namespace helpmebot6.Monitoring
                                                       };
                 DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
                 cw.sleepTime = newDelay;
-                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                return new CommandResponseHandler(new Message().get("done"));
             }
             return new CommandResponseHandler();
         }

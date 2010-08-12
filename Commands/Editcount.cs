@@ -49,21 +49,21 @@ namespace helpmebot6.Commands
                 if (editCount == -1)
                 {
                     string[] messageParams = {userName};
-                    string message = Configuration.singleton().getMessage("noSuchUser", messageParams);
+                    string message = new Message().get("noSuchUser", messageParams);
                     return new CommandResponseHandler(message);
                 }
                 else
                 {
                     string[] messageParameters = {editCount.ToString(), userName};
 
-                    string message = Configuration.singleton().getMessage("editCount", messageParameters);
+                    string message = new Message().get("editCount", messageParameters);
 
                     return new CommandResponseHandler(message);
                 }
             }
             string[] messageParameters2 = {"count", "1", args.Length.ToString()};
             Helpmebot6.irc.ircNotice(source.nickname,
-                                     Configuration.singleton().getMessage("notEnoughParameters", messageParameters2));
+                                     new Message().get("notEnoughParameters", messageParameters2));
             return null;
         }
 
@@ -84,7 +84,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

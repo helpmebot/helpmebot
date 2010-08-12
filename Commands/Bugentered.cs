@@ -18,7 +18,7 @@ namespace helpmebot6.Commands
                                        args[ 1 ] );
 
             return new CommandResponseHandler(
-                Configuration.singleton().getMessage( "done" ),CommandResponseDestination.PrivateMessage  )
+                new Message().get( "done" ),CommandResponseDestination.PrivateMessage  )
                 ;
         }
     }

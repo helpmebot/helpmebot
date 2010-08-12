@@ -124,10 +124,10 @@ namespace helpmebot6
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(Configuration.singleton().getMessage("accessDenied"),
+                        crh.respond(new Message().get("accessDenied"),
                                     CommandResponseDestination.PrivateMessage);
                         string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.respond(Configuration.singleton().getMessage("accessDeniedDebug", aDArgs),
+                        crh.respond(new Message().get("accessDeniedDebug", aDArgs),
                                     CommandResponseDestination.ChannelDebug);
                     }
                     else
@@ -195,7 +195,7 @@ namespace helpmebot6
                     {
                         case CommandResponseDestination.Default:
                             if (overrideBotSilence ||
-                                Configuration.singleton().retrieveLocalStringOption("silence", destination) != "true")
+                                Configuration.singleton()["silence",destination] != "true")
                             {
                                 Helpmebot6.irc.ircPrivmsg(destination, message);
                             }

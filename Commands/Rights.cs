@@ -49,12 +49,12 @@ namespace helpmebot6.Commands
                 if (rights != "")
                 {
                     string[] messageParameters = {username, rights};
-                    message = Configuration.singleton().getMessage("cmdRightsList", messageParameters);
+                    message = new Message().get("cmdRightsList", messageParameters);
                 }
                 else
                 {
                     string[] messageParameters = {username};
-                    message = Configuration.singleton().getMessage("cmdRightsNone", messageParameters);
+                    message = new Message().get("cmdRightsNone", messageParameters);
                 }
 
                 crh.respond(message);
@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = {"rights", "1", args.Length.ToString()};
 
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return crh;
         }
@@ -82,7 +82,7 @@ namespace helpmebot6.Commands
             {
                 throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

@@ -54,16 +54,14 @@ namespace helpmebot6.Commands
                                                                               Length -
                                                                           1 ),
                                                              action )
-                                              ? Configuration.singleton( ).
-                                                    getMessage( "cmdLearnDone" )
-                                              : Configuration.singleton( ).
-                                                    getMessage( "cmdLearnError" ) );
+                                              ? new Message().get("cmdLearnDone")
+                                              : new Message().get("cmdLearnError"));
             }
             else
             {
                 string[] messageParameters = {"learn", "2", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return null;
         }

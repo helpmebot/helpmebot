@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         {
             string name = string.Join(" ", args);
 
-            string url = Configuration.singleton().retrieveLocalStringOption("wikiUrl", channel);
+            string url = Configuration.singleton()["wikiUrl",channel];
 
             return new CommandResponseHandler(url + "Special:BlockIP/" + name);
         }

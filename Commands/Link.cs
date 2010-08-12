@@ -39,7 +39,7 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            bool secure = bool.Parse(Configuration.singleton().retrieveLocalStringOption("useSecureWikiServer", channel));
+            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer",channel]);
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")

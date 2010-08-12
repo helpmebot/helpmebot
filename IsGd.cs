@@ -45,7 +45,7 @@ namespace helpmebot6
             if (cachelookup == "")
             {
                 HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
-                wrq.UserAgent = Configuration.singleton().retrieveGlobalStringOption("useragent");
+                wrq.UserAgent = Configuration.singleton()["useragent"];
                 HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
                 if (wrs.StatusCode == HttpStatusCode.OK)
                 {

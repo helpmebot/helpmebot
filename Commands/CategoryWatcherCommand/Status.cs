@@ -40,12 +40,12 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
             string[] messageParams = {
                                          args[0],
                                          WatcherController.instance().isWatcherInChannel(channel, args[0])
-                                             ? Configuration.singleton().getMessage("enabled")
-                                             : Configuration.singleton().getMessage("disabled"),
+                                             ? new Message().get("enabled")
+                                             : new Message().get("disabled"),
                                          WatcherController.instance().getDelay(args[0]).ToString()
                                      };
 
-            return new CommandResponseHandler(Configuration.singleton().getMessage("keywordStatus", messageParams));
+            return new CommandResponseHandler(new Message().get("keywordStatus", messageParams));
         }
     }
 }

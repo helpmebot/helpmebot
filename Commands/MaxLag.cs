@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             string[] messageParameters = {source.nickname, getMaxLag(channel)};
-            string message = Configuration.singleton().getMessage("cmdMaxLag", messageParameters);
+            string message = new Message().get("cmdMaxLag", messageParameters);
             return new CommandResponseHandler(message);
         }
 
@@ -50,7 +50,7 @@ namespace helpmebot6.Commands
         public string getMaxLag(string channel)
         {
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
             // get api
 
             DAL.Select q = new DAL.Select("site_api");

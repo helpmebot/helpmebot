@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         {
             //  api + ?format=xml&action=query&prop=categoryinfo&titles=Category:Pending%20AfC%20submissions
 
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
            // DAL.Select q = new DAL.Select("site_api");
            // q.setFrom("site");

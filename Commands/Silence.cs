@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
                 }
             }
 
-            bool oldValue = bool.Parse( !global ? Configuration.singleton().retrieveLocalStringOption("silence", channel) : Configuration.singleton().retrieveGlobalStringOption("silence") );
+            bool oldValue = bool.Parse( !global ? Configuration.singleton()["silence",channel] : Configuration.singleton()["silence"] );
 
             if (args.Length > 0)
             {
@@ -67,27 +67,27 @@ namespace helpmebot6.Commands
                 }
                 if (newValue == oldValue.ToString().ToLower())
                 {
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("no-change"),
+                    return new CommandResponseHandler(new Message().get("no-change"),
                                                       CommandResponseDestination.PrivateMessage);
                 }
                 if (newValue == "global")
                 {
-                    Configuration.singleton().deleteLocalOption("silence", channel);
-                    return new CommandResponseHandler(Configuration.singleton().getMessage("defaultConfig"),
+                    Configuration.singleton( )[ "silence", channel ] = null;
+                    return new CommandResponseHandler(new Message().get("defaultConfig"),
                                                       CommandResponseDestination.PrivateMessage);
                 }
                 if (!global)
-                    Configuration.singleton().oldSetLocalOption("silence", channel, newValue);
+                    Configuration.singleton()["silence", channel]= newValue;
                 else
                 {
                     if (source.accessLevel >= User.UserRights.Superuser)
-                        Configuration.singleton().oldSetGlobalOption("silence", newValue);
+                        Configuration.singleton( )[ "silence" ] = newValue;
                 }
-                return new CommandResponseHandler(Configuration.singleton().getMessage("done"),
+                return new CommandResponseHandler(new Message().get("done"),
                                                   CommandResponseDestination.PrivateMessage);
             }
             string[] mP = {"silence", 1.ToString(), args.Length.ToString()};
-            return new CommandResponseHandler(Configuration.singleton().getMessage("notEnoughParameters", mP),
+            return new CommandResponseHandler(new Message().get("notEnoughParameters", mP),
                                               CommandResponseDestination.PrivateMessage);
         }
     }

@@ -73,7 +73,7 @@ namespace helpmebot6.Commands
                         case "page":
                             if (xtr.GetAttribute("missing") != null)
                             {
-                                return new CommandResponseHandler(Configuration.singleton().getMessage("pageMissing"));
+                                return new CommandResponseHandler(new Message().get("pageMissing"));
                             }
                             // title, touched
                             // <page pageid="78056" ns="0" title="Sausage" touched="2010-05-23T17:46:16Z" lastrevid="363765722" counter="252" length="43232">
@@ -105,11 +105,11 @@ namespace helpmebot6.Commands
             if (redirects != null)
             {
                 string[] redirArgs = {redirects, title};
-                crh.respond(Configuration.singleton().getMessage("pageRedirect", redirArgs));
+                crh.respond(new Message().get("pageRedirect", redirArgs));
             }
 
             string[] margs = {title, user, touched.ToString(), comment, size};
-            crh.respond(Configuration.singleton().getMessage("pageMainResponse", margs));
+            crh.respond(new Message().get("pageMainResponse", margs));
 
             foreach (PageProtection p in protection)
             {
@@ -117,7 +117,7 @@ namespace helpmebot6.Commands
                                      title, p.type, p.level,
                                      p.expiry == DateTime.MaxValue ? "infinity" : p.expiry.ToString()
                                  };
-                crh.respond(Configuration.singleton().getMessage("pageProtected", pargs));
+                crh.respond(new Message().get("pageProtected", pargs));
             }
 
             return crh;

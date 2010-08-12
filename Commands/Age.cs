@@ -45,7 +45,7 @@ namespace helpmebot6.Commands
                 if (time.Equals(new TimeSpan(0)))
                 {
                     string[] messageParameters = {username};
-                    message = Configuration.singleton().getMessage("noSuchUser", messageParameters);
+                    message = new Message().get("noSuchUser", messageParameters);
                 }
                 else
                 {
@@ -54,13 +54,13 @@ namespace helpmebot6.Commands
                                                      time.Hours.ToString(), time.Minutes.ToString(),
                                                      time.Seconds.ToString()
                                                  };
-                    message = Configuration.singleton().getMessage("cmdAge", messageParameters);
+                    message = new Message().get("cmdAge", messageParameters);
                 }
                 return new CommandResponseHandler(message);
             }
             string[] messageParameters2 = {"age", "1", args.Length.ToString()};
             Helpmebot6.irc.ircNotice(source.nickname,
-                                     Configuration.singleton().getMessage("notEnoughParameters", messageParameters2));
+                                     new Message().get("notEnoughParameters", messageParameters2));
             return null;
         }
 

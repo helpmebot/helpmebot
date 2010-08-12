@@ -34,7 +34,7 @@ namespace helpmebot6
         public static Stream get(string uri)
         {
             HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
-            hwr.UserAgent = Configuration.singleton().retrieveGlobalStringOption("useragent");
+            hwr.UserAgent = Configuration.singleton()["useragent"];
             HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
 
             return resp.GetResponseStream();

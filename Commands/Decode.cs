@@ -61,13 +61,13 @@ namespace helpmebot6.Commands
             if (hostname != string.Empty)
             {
                 string[] messageargs = {args[0], ipAddr.ToString(), hostname};
-                return new CommandResponseHandler(Configuration.singleton().getMessage("hexDecodeResult", messageargs));
+                return new CommandResponseHandler(new Message().get("hexDecodeResult", messageargs));
             }
             else
             {
                 string[] messageargs = {args[0], ipAddr.ToString()};
                 return
-                    new CommandResponseHandler(Configuration.singleton().getMessage("hexDecodeResultNoResolve",
+                    new CommandResponseHandler(new Message().get("hexDecodeResultNoResolve",
                                                                                     messageargs));
             }
         }

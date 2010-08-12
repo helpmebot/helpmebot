@@ -38,7 +38,7 @@ namespace helpmebot6.Monitoring.PageWatcher
             this._watchedPageList = new ArrayList();
             if ( !Helpmebot6.pagewatcherEnabled ) return;
             this.loadAllWatchedPages();
-            uint wikiRCIrc = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
+            uint wikiRCIrc = uint.Parse( Configuration.singleton( )[ "wikimediaRcNetwork" ] );
             if ( wikiRCIrc == 0 ) return;
             this._irc = new IAL(wikiRCIrc);
             this.setupEvents();
@@ -125,7 +125,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         /// <param name="message">The message.</param>
         private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            if (source.ToString() == Configuration.singleton().retrieveGlobalStringOption("wikimediaRcBot"))
+            if (source.ToString() == Configuration.singleton()["wikimediaRcBot"])
             {
                 RcPageChange rcItem = rcParser(message);
 
@@ -145,7 +145,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         /// </summary>
         private void irc_ConnectionRegistrationSucceededEvent()
         {
-            uint network = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
+            uint network = uint.Parse( Configuration.singleton( )[ "wikimediaRcNetwork" ] );
 
             DAL.Select q = new DAL.Select("channel_name");
             q.setFrom("channel");

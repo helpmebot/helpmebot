@@ -31,9 +31,6 @@ namespace helpmebot6
     /// </summary>
     internal class Configuration
     {
-
-        #region config
-
         private readonly DAL _dbal = DAL.singleton();
 
         private static Configuration _singleton;
@@ -83,12 +80,6 @@ namespace helpmebot6
             }
         }
 
-        [Obsolete("Use indexer property instead.")]
-        public string retrieveGlobalStringOption(string optionName)
-        {
-            return getGlobalSetting( optionName );
-        }
-
         private string getGlobalSetting( string optionName )
         {
             if( this._configurationCache.ContainsKey( optionName ))
@@ -123,29 +114,6 @@ namespace helpmebot6
             return optionValue2;
         }
 
-        [Obsolete("Use indexer property instead, then cast to string.")]
-        public uint retrieveGlobalUintOption(string optionName)
-        {
-
-            string optionValue = this.getGlobalSetting(optionName);
-            uint value;
-            try
-            {
-                value = uint.Parse(optionValue);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-            return value;
-        }
-
-        [Obsolete("Use indexer property instead.")]
-        public string retrieveLocalStringOption(string optionName, string channel)
-        {
-            return this._dbal.proc_HMB_GET_LOCAL_OPTION(optionName, channel);
-        }
-
         private string retrieveOptionFromDatabase(string optionName)
         {
             try
@@ -165,12 +133,6 @@ namespace helpmebot6
             return null;
         }
 
-        [Obsolete("Use indexer property instead.")]
-        public void oldSetGlobalOption(string optionName, string newValue)
-        {
-            setGlobalOption( newValue, optionName );
-        }
-
         private void setGlobalOption( string newValue, string optionName )
         {
             Dictionary<string, string> vals = new Dictionary<string, string>
@@ -181,12 +143,6 @@ namespace helpmebot6
                                                           }
                                                   };
             this._dbal.update("configuration", vals, 1, new DAL.WhereConds("configuration_name", optionName));
-        }
-
-        [Obsolete("Use indexer property instead.")]
-        public void oldSetLocalOption(string optionName, string channel, string newValue)
-        {
-            this.setLocalOption( channel, optionName, newValue );
         }
 
         private void setLocalOption( string channel, string optionName, string newValue )
@@ -227,26 +183,6 @@ namespace helpmebot6
                 // no: insert
                 this._dbal.insert("channelconfig", channelId, configId, newValue);
             }
-        }
-        
-        [Obsolete("Use indexer propery instead")]
-        public void setOption(string optionName, string target, string newValue)
-        {
-
-            if (target == "global")
-            {
-                this.oldSetGlobalOption(optionName, newValue);
-            }
-            else
-            {
-                this.setLocalOption(optionName, target, newValue);
-            }
-        }
-
-        [Obsolete("Use indexer property instead with null value.")]
-        public void deleteLocalOption(string optionName, string target)
-        {
-            this.setLocalOption( target, optionName, null );
         }
 
         private string getOptionId(string optionName)
@@ -291,126 +227,5 @@ namespace helpmebot6
             mySqlSchema = settingsreader.ReadLine();
             settingsreader.Close();
         }
-#endregion
-        #region messaging
-
-        [Obsolete]
-        private ArrayList getMessages(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
-
-            DAL.Select q = new DAL.Select("message_text");
-            q.setFrom("message");
-            q.addWhere(new DAL.WhereConds("message_name", messageName));
-
-            ArrayList resultset = this._dbal.executeSelect(q);
-
-            ArrayList al = new ArrayList();
-
-            foreach (object[] item in resultset)
-            {
-                al.Add((item)[0]);
-            }
-            return al;
-        }
-
-        //returns a random message chosen from the list of possible message names
-        [Obsolete]
-        private string chooseRandomMessage(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            Random rnd = new Random();
-            ArrayList al = getMessages(messageName);
-            if (al.Count == 0)
-            {
-                Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
-                                          "***ERROR*** Message '" + messageName + "' not found in message table");
-                return "";
-            }
-            return al[rnd.Next(0, al.Count)].ToString();
-        }
-
-        [Obsolete]
-        private static string buildMessage(string messageFormat, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return String.Format(messageFormat, args);
-        }
-
-        [Obsolete]
-        public string getMessage(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return chooseRandomMessage(messageName);
-        }
-
-        [Obsolete]
-        public string getMessage(string messageName, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return buildMessage(chooseRandomMessage(messageName), args);
-        }
-
-        [Obsolete]
-        public string getMessage(string messageName, string defaultMessageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            string msg = this.getMessage(messageName);
-            if (msg == string.Empty)
-            {
-                msg = this.getMessage(defaultMessageName);
-                this.saveMessage(messageName, "", msg);
-            }
-            msg = this.getMessage(messageName);
-            return msg;
-        }
-
-        [Obsolete]
-        public string getMessage(string messageName, string defaultMessageName, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            string msg = this.getMessage(messageName, args);
-            if (msg == string.Empty)
-            {
-                msg = this.getMessage(defaultMessageName);
-                this.saveMessage(messageName, "", msg);
-            }
-            msg = this.getMessage(messageName, args);
-            return msg;
-        }
-
-        [Obsolete]
-        public void saveMessage(string messageName, string messageDescription, string messageContent)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            this._dbal.insert("message", "", messageName, messageDescription, messageContent, "1");
-        }
-
-        #endregion
     }
 }

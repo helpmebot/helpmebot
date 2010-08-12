@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
                                          DateTime.Now.Minute.ToString("00"),
                                          DateTime.Now.Second.ToString("00")
                                      };
-            string message = Configuration.singleton().getMessage("cmdTime", messageParams);
+            string message = new Message().get("cmdTime", messageParams);
             return new CommandResponseHandler(message);
         }
     }

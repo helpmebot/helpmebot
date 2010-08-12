@@ -54,7 +54,7 @@ namespace helpmebot6.Monitoring
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveGlobalStringOption("baseWiki");
+            string baseWiki = Configuration.singleton()["baseWiki"];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
