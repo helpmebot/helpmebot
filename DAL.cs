@@ -367,6 +367,45 @@ namespace helpmebot6
             }
         }
 
+// ReSharper disable InconsistentNaming
+        public string proc_HMB_GET_IW_URL(string prefix)
+        // ReSharper restore InconsistentNaming
+        {
+
+
+            MySqlCommand cmd = new MySqlCommand
+                                   {
+                                       Connection = this._connection,
+                                       CommandType =
+                                           CommandType.StoredProcedure,
+                                       CommandText =
+                                           "HMB_GET_IW_URL"
+                                   };
+
+            byte[ ] bprefix = new byte[32];
+            System.Text.Encoding.ASCII.GetBytes( prefix, 0, prefix.Length, bprefix, 0 );
+
+            cmd.Parameters.Add( "@prefix", MySqlDbType.Binary ).Value = prefix;
+            cmd.Parameters[ "@prefix" ].Direction = ParameterDirection.Input;
+
+
+            byte[ ] url = new byte[0];
+            cmd.Parameters.Add( "@url", MySqlDbType.VarChar ).Value = url;
+            cmd.Parameters[ "@url" ].Direction = ParameterDirection.Output;
+
+
+
+            lock ( this )
+            {
+                runConnectionTest( );
+                cmd.ExecuteNonQuery( );
+            }
+
+            string surl = (string)cmd.Parameters[ "@url" ].Value;
+            //string surl = new string(System.Text.Encoding.ASCII.GetChars(url));
+
+            return surl;
+        }
 
         /// <summary>
         ///   Class encapsulating a SELECT statement
