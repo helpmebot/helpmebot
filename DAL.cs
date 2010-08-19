@@ -114,6 +114,10 @@ namespace helpmebot6
                 {
                     GlobalFunctions.errorLog(ex);
                 }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
                 catch (Exception ex)
                 {
                     GlobalFunctions.errorLog(ex);
@@ -309,24 +313,31 @@ namespace helpmebot6
 
 // ReSharper disable InconsistentNaming
         public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
-// ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
         {
+
+
+            MySqlCommand cmd = new MySqlCommand
+                                   {
+                                       Connection = this._connection,
+                                       CommandType =
+                                           CommandType.StoredProcedure,
+                                       CommandText =
+                                           "HMB_UPDATE_BINARYSTORE"
+                                   };
+            cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
+            cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
             lock (this)
             {
-                runConnectionTest();
-
-                MySqlCommand cmd = new MySqlCommand
-                                       {
-                                           Connection = this._connection,
-                                           CommandType =
-                                               CommandType.StoredProcedure,
-                                           CommandText =
-                                               "HMB_UPDATE_BINARYSTORE"
-                                       };
-                cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
-                cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
-
-                cmd.ExecuteNonQuery();
+                try
+                {
+                    runConnectionTest();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
             }
         }
 
@@ -365,6 +376,12 @@ namespace helpmebot6
                 Logger.instance().addToLog(option + "@" + channel, Logger.LogTypes.Error);
                 throw;
             }
+            catch (InvalidOperationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+
+            return null;
         }
 
 // ReSharper disable InconsistentNaming
@@ -395,10 +412,17 @@ namespace helpmebot6
 
 
 
-            lock ( this )
+            lock (this)
             {
-                runConnectionTest( );
-                cmd.ExecuteNonQuery( );
+                try
+                {
+                    runConnectionTest();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
             }
 
             string surl = (string)cmd.Parameters[ "@url" ].Value;
