@@ -425,8 +425,7 @@ namespace helpmebot6
                 }
             }
 
-            string surl = (string)cmd.Parameters[ "@url" ].Value;
-            //string surl = new string(System.Text.Encoding.ASCII.GetChars(url));
+            string surl = (string)(cmd.Parameters["@url"].Value is System.DBNull ? string.Empty : cmd.Parameters["@url"].Value);
 
             return surl;
         }
