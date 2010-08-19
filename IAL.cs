@@ -189,8 +189,8 @@ namespace helpmebot6
                 _tcpClient = new TcpClient(_ircServer, (int) _ircPort);
 
                 Stream ircStream = _tcpClient.GetStream();
-                _ircReader = new StreamReader(ircStream);
-                _ircWriter = new StreamWriter(ircStream);
+                _ircReader = new StreamReader(ircStream, Encoding.UTF8);
+                _ircWriter = new StreamWriter(ircStream, Encoding.UTF8);
 
 
                 _sendQ = new Queue(100);
