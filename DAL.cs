@@ -21,6 +21,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using MySql.Data.MySqlClient;
 
@@ -33,8 +34,7 @@ namespace helpmebot6
     /// </summary>
     public class DAL
     {
-        private static DAL _singleton;
-
+       
         private readonly string _mySqlServer;
         private readonly string _mySqlUsername;
         private readonly string _mySqlPassword;
@@ -42,6 +42,10 @@ namespace helpmebot6
         private readonly uint _mySqlPort;
 
         private MySqlConnection _connection;
+
+        #region singleton
+
+        private static DAL _singleton;
 
         /// <summary>
         /// Singletons this instance.
@@ -76,6 +80,7 @@ namespace helpmebot6
             _mySqlServer = host;
             _mySqlUsername = username;
         }
+        #endregion
 
         /// <summary>
         /// Connects this instance to the database.
@@ -174,7 +179,8 @@ namespace helpmebot6
         }
 
         #endregion
-
+       
+        #region sql statements
         /// <summary>
         /// Inserts values the specified table.
         /// </summary>
@@ -306,6 +312,7 @@ namespace helpmebot6
             ArrayList al = executeSelect(query);
             return al.Count > 0 ? (((object[]) al[0])[0]).ToString() : "";
         }
+#endregion
 
         private void runConnectionTest()
         {
@@ -421,6 +428,52 @@ namespace helpmebot6
             }
         }
 
+// ReSharper disable InconsistentNaming
+        public string proc_HMB_GET_MESSAGE_CONTENT(string title)
+        // ReSharper restore InconsistentNaming
+        {
+
+            MySqlCommand cmd = new MySqlCommand
+                                   {
+                                       Connection = this._connection,
+                                       CommandType =
+                                           CommandType.StoredProcedure,
+                                       CommandText =
+                                           "HMB_GET_MESSAGE_CONTENT"
+                                   };
+
+            byte[] titlebytes = new byte[255];
+            System.Text.Encoding.ASCII.GetBytes(title, 0, title.Length, titlebytes, 0);
+
+            cmd.Parameters.Add("@title", MySqlDbType.VarBinary).Value = title;
+            cmd.Parameters["@title"].Direction = ParameterDirection.Input;
+
+
+            byte[] messagebytes = new byte[0];
+            cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = messagebytes;
+            cmd.Parameters["@message"].Direction = ParameterDirection.Output;
+
+            lock (this)
+            {
+                try
+                {
+                    runConnectionTest();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
+            }
+
+            byte[] binarymessage = (byte[])(cmd.Parameters["@message"].Value is System.DBNull ? string.Empty : cmd.Parameters["@message"].Value);
+
+
+
+            return Encoding.UTF8.GetString(binarymessage);
+        }
+
+        #region data structures
 
         /// <summary>
         ///   Class encapsulating a SELECT statement
@@ -744,6 +797,8 @@ namespace helpmebot6
                 return actualA + " " + actualComp + " " + actualB;
             }
         }
+
+        #endregion
 
         /// <summary>
         /// Sanitises the specified raw data.

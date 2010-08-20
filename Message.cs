@@ -32,17 +32,20 @@ namespace helpmebot6
             _dbal = DAL.singleton( );
         }
         
-        private ArrayList getMessages(string messageName)
+        private string[] getMessages(string messageName)
         {
             // normalise message name to account for old messages
+            if (messageName.Substring(0, 1).ToUpper() != messageName.Substring(0, 1))
+            {
+                messageName = messageName.Substring(0, 1).ToUpper() + messageName.Substring(1);
+            }
 
+            //get message text from database
+            string messageText = _dbal.proc_HMB_GET_MESSAGE_CONTENT(messageName);
 
-            // get page text from wiki db ( or alternative message table with same name)
+            // split up lines and pass back arraylist
 
-            // split up lines
-
-            // pass back arraylist
-            
+            return messageText.Split('\n');
         }
 
         //returns a random message chosen from the list of possible message names
@@ -50,14 +53,14 @@ namespace helpmebot6
         private string chooseRandomMessage(string messageName)
         {
             Random rnd = new Random();
-            ArrayList al = getMessages(messageName);
-            if (al.Count == 0)
+            string[] al = getMessages(messageName);
+            if (al.Length == 0)
             {
                 Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
                                           "***ERROR*** Message '" + messageName + "' not found in message table");
                 return "";
             }
-            return al[rnd.Next(0, al.Count)].ToString();
+            return al[rnd.Next(0, al.Length)].ToString();
         }
 
 
