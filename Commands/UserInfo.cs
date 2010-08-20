@@ -331,7 +331,7 @@ namespace helpmebot6.Commands
 
                 initial.editRate = initial.editCount/initial.userAge.TotalDays;
 
-                initial.blockInformation = new Blockinfo().getBlockInformation(userName, channel).ToString();
+                initial.blockInformation = new Blockinfo().getBlockInformation(userName, channel).id.ToString();
 
                 return initial;
             }
@@ -367,7 +367,8 @@ namespace helpmebot6.Commands
                                              userInformation.userAge.ToString(),
                                              userInformation.registrationDate.ToString(),
                                              userInformation.editRate.ToString(),
-                                             userInformation.editCount.ToString()
+                                             userInformation.editCount.ToString(),
+                                             userInformation.blockInformation == "" ? "" : "BLOCKED"
                                          };
 
             string message = new Message().get("cmdUserInfoShort", messageParameters);

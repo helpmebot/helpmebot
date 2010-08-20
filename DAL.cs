@@ -138,6 +138,10 @@ namespace helpmebot6
                 {
                     GlobalFunctions.errorLog(ex);
                 }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
                 catch (Exception ex)
                 {
                     GlobalFunctions.errorLog(ex);
@@ -370,24 +374,31 @@ namespace helpmebot6
 
 // ReSharper disable InconsistentNaming
         public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
-// ReSharper restore InconsistentNaming
+        // ReSharper restore InconsistentNaming
         {
+
+
+            MySqlCommand cmd = new MySqlCommand
+                                   {
+                                       Connection = this._connection,
+                                       CommandType =
+                                           CommandType.StoredProcedure,
+                                       CommandText =
+                                           "HMB_UPDATE_BINARYSTORE"
+                                   };
+            cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
+            cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
             lock (this)
             {
-                runConnectionTest();
-
-                MySqlCommand cmd = new MySqlCommand
-                                       {
-                                           Connection = this._connection,
-                                           CommandType =
-                                               CommandType.StoredProcedure,
-                                           CommandText =
-                                               "HMB_UPDATE_BINARYSTORE"
-                                       };
-                cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
-                cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
-
-                cmd.ExecuteNonQuery();
+                try
+                {
+                    runConnectionTest();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
             }
         }
 
@@ -426,13 +437,18 @@ namespace helpmebot6
                 Logger.instance().addToLog(option + "@" + channel, Logger.LogTypes.Error);
                 throw;
             }
+            catch (InvalidOperationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+
+            return null;
         }
 
 // ReSharper disable InconsistentNaming
         public string proc_HMB_GET_MESSAGE_CONTENT(string title)
         // ReSharper restore InconsistentNaming
         {
-
             MySqlCommand cmd = new MySqlCommand
                                    {
                                        Connection = this._connection,
@@ -473,8 +489,54 @@ namespace helpmebot6
             return Encoding.UTF8.GetString(binarymessage);
         }
 
-        #region data structures
 
+
+
+        // ReSharper disable InconsistentNaming
+        public string proc_HMB_GET_IW_URL(string prefix)
+        // ReSharper restore InconsistentNaming
+        {
+            MySqlCommand cmd = new MySqlCommand
+                                   {
+                                       Connection = this._connection,
+                                       CommandType =
+                                           CommandType.StoredProcedure,
+                                       CommandText =
+                                           "HMB_GET_IW_URL"
+                                   };
+
+            byte[ ] bprefix = new byte[32];
+            System.Text.Encoding.ASCII.GetBytes( prefix, 0, prefix.Length, bprefix, 0 );
+
+            cmd.Parameters.Add( "@prefix", MySqlDbType.Binary ).Value = prefix;
+            cmd.Parameters[ "@prefix" ].Direction = ParameterDirection.Input;
+
+
+            byte[ ] url = new byte[0];
+            cmd.Parameters.Add( "@url", MySqlDbType.VarChar ).Value = url;
+            cmd.Parameters[ "@url" ].Direction = ParameterDirection.Output;
+
+
+
+            lock (this)
+            {
+                try
+                {
+                    runConnectionTest();
+                    cmd.ExecuteNonQuery();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
+            }
+
+            string surl = (string)(cmd.Parameters["@url"].Value is System.DBNull ? string.Empty : cmd.Parameters["@url"].Value);
+
+            return surl;
+        }
+
+        #region data structures
         /// <summary>
         ///   Class encapsulating a SELECT statement
         /// </summary>

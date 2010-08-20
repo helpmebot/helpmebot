@@ -25,6 +25,8 @@ using System.Text.RegularExpressions;
 namespace helpmebot6
 {
     using System.Collections;
+    using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Linker and link parser
@@ -128,10 +130,9 @@ namespace helpmebot6
         {
             string iwprefix = link.Split(':')[0];
 
-            DAL.Select q = new DAL.Select("iw_url");
-            q.setFrom("interwikis");
-            q.addWhere(new DAL.WhereConds("iw_prefix", iwprefix));
-            string url = DAL.singleton().executeScalarSelect(q);
+            
+           string url = DAL.singleton().proc_HMB_GET_IW_URL(iwprefix);
+
 
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
