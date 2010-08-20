@@ -231,7 +231,7 @@ namespace helpmebot6.Monitoring
                         }
                         catch (UriFormatException ex)
                         {
-                            listString+= Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item
+                            listString += Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item;
                             GlobalFunctions.errorLog(ex);
                         }
 
