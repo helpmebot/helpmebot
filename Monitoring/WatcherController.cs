@@ -224,9 +224,18 @@ namespace helpmebot6.Monitoring
                     }
                     else
                     {
-                        listString +=
-                            IsGd.shorten(new Uri(Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item))
-                                .ToString();
+                        try
+                        {
+                            Uri uri = new Uri(Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item);
+                            listString += IsGd.shorten(uri).ToString();
+                        }
+                        catch (UriFormatException ex)
+                        {
+                            listString+= Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item
+                            GlobalFunctions.errorLog(ex);
+                        }
+
+                        
                     }
 
                     if (showWaitTime)
