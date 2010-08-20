@@ -34,21 +34,15 @@ namespace helpmebot6
         
         private ArrayList getMessages(string messageName)
         {
-            //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
+            // normalise message name to account for old messages
 
-            DAL.Select q = new DAL.Select("message_text");
-            q.setFrom("message");
-            q.addWhere(new DAL.WhereConds("message_name", messageName));
 
-            ArrayList resultset = this._dbal.executeSelect(q);
+            // get page text from wiki db ( or alternative message table with same name)
 
-            ArrayList al = new ArrayList();
+            // split up lines
 
-            foreach (object[] item in resultset)
-            {
-                al.Add(( item )[0]);
-            }
-            return al;
+            // pass back arraylist
+            
         }
 
         //returns a random message chosen from the list of possible message names
