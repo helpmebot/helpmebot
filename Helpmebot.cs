@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
@@ -32,6 +31,9 @@ using helpmebot6.UdpListener;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Helpmebot main class
+    /// </summary>
     public class Helpmebot6
     {
         public static IAL irc;
@@ -100,11 +102,11 @@ namespace helpmebot6
 
             _config = Configuration.singleton();
 
-            debugChannel = _config.retrieveGlobalStringOption("channelDebug");
+            debugChannel = Configuration.singleton()["channelDebug"];
 
-            _ircNetwork = _config.retrieveGlobalUintOption("ircNetwork");
+            _ircNetwork = uint.Parse(Configuration.singleton()["ircNetwork"]);
 
-            _trigger = _config.retrieveGlobalStringOption("commandTrigger");
+            _trigger = Configuration.singleton()["commandTrigger"];
 
             irc = new IAL(_ircNetwork);
 
@@ -127,7 +129,7 @@ namespace helpmebot6
             string[] twparms = {server, schema, irc.ircServer};
             try
             {
-                new Twitter( ).updateStatus( Configuration.singleton( ).getMessage( "tweetStartup", twparms ) );
+                new Twitter().updateStatus(new Message().get("tweetStartup", twparms));
             }
             catch(Twitterizer.TwitterizerException ex)
             {
@@ -162,7 +164,7 @@ namespace helpmebot6
                                          rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff,
                                          rcItem.flags
                                      };
-            string message = Configuration.singleton().getMessage("pageWatcherEventNotification", messageParams);
+            string message = new Message().get("pageWatcherEventNotification", messageParams);
 
             DAL.Select q = new DAL.Select("channel_name");
             q.addJoin("channel", DAL.Select.JoinTypes.Inner,
@@ -177,7 +179,7 @@ namespace helpmebot6
             foreach (object[] item in channels)
             {
                 string channel = (string) item[0];
-                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                if (Configuration.singleton()["silence",channel] == "false")
                     irc.ircPrivmsg(channel, message);
             }
         }
@@ -199,7 +201,7 @@ namespace helpmebot6
             try
             {
                 bool overrideSilence = cmd.overrideBotSilence;
-                if (isRecognisedMessage(ref message, ref overrideSilence))
+                if (CommandParser.isRecognisedMessage(ref message, ref overrideSilence))
                 {
                     cmd.overrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
@@ -209,11 +211,11 @@ namespace helpmebot6
                     cmd.handleCommand(source, destination, command, commandArgs);
                 }
                 string aiResponse = Intelligence.singleton().respond(message);
-                if (Configuration.singleton().retrieveLocalStringOption("silence", destination) == "false" &&
+                if (Configuration.singleton()["silence",destination] == "false" &&
                     aiResponse != string.Empty)
                 {
                     string[] aiParameters = {source.nickname};
-                    irc.ircPrivmsg(destination, _config.getMessage(aiResponse, aiParameters));
+                    irc.ircPrivmsg(destination, new Message().get(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)
@@ -236,76 +238,21 @@ namespace helpmebot6
             }
         }
 
-        /// <summary>
-        ///   Tests against recognised message formats
-        /// </summary>
-        /// <param name = "message">the message recieved</param>
-        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
-        /// <returns>true if the message is in a recognised format</returns>
-        /// <remarks>
-        ///   Allowed formats:
-        ///   !command
-        ///   !helpmebot command
-        ///   Helpmebot: command
-        ///   Helpmebot command
-        ///   Helpmebot, command
-        ///   Helpmebot> command
-        /// </remarks>
-        private static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
-        {
-            string[] words = message.Split(' ');
-
-            if (words[0].StartsWith(_trigger))
-            {
-                // !
-
-                if (message.Length == _trigger.Length)
-                    return false;
-
-                // !command
-                // !helpmebot command
-
-
-                if (words[0].ToLower() == (_trigger + irc.ircNickname.ToLower()))
-                {
-                    overrideSilence = true;
-                    message = string.Join(" ", words, 1, words.Length - 1);
-                    return true;
-                }
-                message = message.Substring(1);
-                overrideSilence = false;
-                return true;
-            }
-            if (words[0].ToLower() == irc.ircNickname.ToLower()) // Helpmebot command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ":")) // Helpmebot: command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ">")) // Helpmebot> command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            if (words[0].ToLower() == (irc.ircNickname.ToLower() + ",")) // Helpmebot, command
-            {
-                message = string.Join(" ", words, 1, words.Length - 1);
-                overrideSilence = true;
-                return true;
-            }
-            return false;
-        }
-
         public static void stop()
         {
             ThreadList.instance().stop();
+        }
+
+        public static string trigger
+        {
+            get
+            {
+                return _trigger;
+            }
+            set
+            {
+                _trigger = value;
+            }
         }
     }
 }

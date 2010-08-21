@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System;
 using System.Collections;
@@ -9,10 +25,22 @@ using System.Xml;
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// Retrieves information on a specific page
+    /// </summary>
     internal class Page : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+
+            // TODO: link to basewiki
             Stream rawDataStream =
                 HttpRequest.get(
                     "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles=" +
@@ -45,7 +73,7 @@ namespace helpmebot6.Commands
                         case "page":
                             if (xtr.GetAttribute("missing") != null)
                             {
-                                return new CommandResponseHandler(Configuration.singleton().getMessage("pageMissing"));
+                                return new CommandResponseHandler(new Message().get("pageMissing"));
                             }
                             // title, touched
                             // <page pageid="78056" ns="0" title="Sausage" touched="2010-05-23T17:46:16Z" lastrevid="363765722" counter="252" length="43232">
@@ -77,11 +105,11 @@ namespace helpmebot6.Commands
             if (redirects != null)
             {
                 string[] redirArgs = {redirects, title};
-                crh.respond(Configuration.singleton().getMessage("pageRedirect", redirArgs));
+                crh.respond(new Message().get("pageRedirect", redirArgs));
             }
 
             string[] margs = {title, user, touched.ToString(), comment, size};
-            crh.respond(Configuration.singleton().getMessage("pageMainResponse", margs));
+            crh.respond(new Message().get("pageMainResponse", margs));
 
             foreach (PageProtection p in protection)
             {
@@ -89,12 +117,15 @@ namespace helpmebot6.Commands
                                      title, p.type, p.level,
                                      p.expiry == DateTime.MaxValue ? "infinity" : p.expiry.ToString()
                                  };
-                crh.respond(Configuration.singleton().getMessage("pageProtected", pargs));
+                crh.respond(new Message().get("pageProtected", pargs));
             }
 
             return crh;
         }
 
+        /// <summary>
+        /// Structure to hold page protection information
+        /// </summary>
         private struct PageProtection
         {
             public PageProtection(string type, string level, DateTime expiry)

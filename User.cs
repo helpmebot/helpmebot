@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
@@ -24,6 +23,9 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class User
     {
         private readonly DAL _db;
@@ -36,19 +38,46 @@ namespace helpmebot6
             this._db = DAL.singleton();
         }
 
+        /// <summary>
+        /// Gets or sets the nickname.
+        /// </summary>
+        /// <value>The nickname.</value>
         public string nickname { get; set; }
 
+        /// <summary>
+        /// Gets or sets the username.
+        /// </summary>
+        /// <value>The username.</value>
         public string username { get; set; }
 
+        /// <summary>
+        /// Gets or sets the hostname.
+        /// </summary>
+        /// <value>The hostname.</value>
         public string hostname { get; set; }
 
+        /// <summary>
+        /// Gets or sets the network.
+        /// </summary>
+        /// <value>The network.</value>
         public uint network { get; private set; }
 
+        /// <summary>
+        /// News from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
         public static User newFromString(string source)
         {
             return newFromString(source, 0);
         }
 
+        /// <summary>
+        /// New user from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="network">The network.</param>
+        /// <returns></returns>
         public static User newFromString(string source, uint network)
         {
             string user, host;
@@ -110,6 +139,10 @@ namespace helpmebot6
             return endResult;
         }
 
+        /// <summary>
+        /// Gets or sets the access level.
+        /// </summary>
+        /// <value>The access level.</value>
         public UserRights accessLevel
         {
             get
@@ -128,32 +161,8 @@ namespace helpmebot6
                         string accesslevel = this._db.executeScalarSelect(q) ??
                                              "Normal";
 
-                        UserRights ret;
-
-                        switch (accesslevel)
-                        {
-                            case "Developer":
-                                ret = UserRights.Developer;
-                                break;
-                            case "Superuser":
-                                ret = UserRights.Superuser;
-                                break;
-                            case "Advanced":
-                                ret = UserRights.Advanced;
-                                break;
-                            case "Normal":
-                                ret = UserRights.Normal;
-                                break;
-                            case "Semi-ignored":
-                                ret = UserRights.Semiignored;
-                                break;
-                            case "Ignored":
-                                ret = UserRights.Ignored;
-                                break;
-                            default:
-                                ret = UserRights.Normal;
-                                break;
-                        }
+                        UserRights ret =
+                            (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
 
                         _accessLevel = ret;
                         this._retrievedAccessLevel = true;

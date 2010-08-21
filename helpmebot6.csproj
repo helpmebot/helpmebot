@@ -146,6 +146,7 @@
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Message.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
     <Compile Include="Configuration.cs" />
@@ -207,6 +208,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="bin\Debug\.hmbot" />
+    <None Include="bin\x86\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
     <None Include="helpmebot.sh" />
     <None Include="helpmebot6.sql" />

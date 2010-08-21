@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
@@ -27,15 +26,34 @@ using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
 namespace helpmebot6
 {
-    public class CommandParser
+    using System.Text.RegularExpressions;
+
+    /// <summary>
+    /// A command parser
+    /// </summary>
+    internal class CommandParser
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandParser"/> class.
+        /// </summary>
         public CommandParser()
         {
             overrideBotSilence = false;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [override bot silence].
+        /// </summary>
+        /// <value><c>true</c> if [override bot silence]; otherwise, <c>false</c>.</value>
         public bool overrideBotSilence { get; set; }
 
+        /// <summary>
+        /// Handles the command.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="command">The command.</param>
+        /// <param name="args">The args.</param>
         public void handleCommand(User source, string destination, string command, string[] args)
         {
             Logger.instance().addToLog("Handling recieved message...", Logger.LogTypes.General);
@@ -60,7 +78,7 @@ namespace helpmebot6
                 int newArrayPos = 1;
                 for (int i = 0; i < args.Length; i++)
                 {
-                    if (!string.IsNullOrEmpty(args[i]))
+                    if (!String.IsNullOrEmpty(args[i]))
                         newArgs[newArrayPos] = args[i];
                     newArrayPos++;
                 }
@@ -102,19 +120,19 @@ namespace helpmebot6
                 CommandResponseHandler crh = new CommandResponseHandler();
                 string wordResponse = rW.phrase;
                 string directedTo = "";
-                if (wordResponse != string.Empty)
+                if (wordResponse != String.Empty)
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(Configuration.singleton().getMessage("accessDenied"),
+                        crh.respond(new Message().get("accessDenied"),
                                     CommandResponseDestination.PrivateMessage);
                         string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.respond(Configuration.singleton().getMessage("accessDeniedDebug", aDArgs),
+                        crh.respond(new Message().get("accessDeniedDebug", aDArgs),
                                     CommandResponseDestination.ChannelDebug);
                     }
                     else
                     {
-                        wordResponse = string.Format(wordResponse, args);
+                        wordResponse = String.Format(wordResponse, args);
                         if (rW.action)
                         {
                             crh.respond(IAL.wrapCTCP("ACTION", wordResponse));
@@ -132,6 +150,12 @@ namespace helpmebot6
         }
 
 
+        /// <summary>
+        /// Finds the redirection.
+        /// </summary>
+        /// <param name="destination">The destination.</param>
+        /// <param name="args">The args.</param>
+        /// <returns></returns>
         private static string findRedirection(string destination, ref string[] args)
         {
             string directedTo = "";
@@ -146,6 +170,13 @@ namespace helpmebot6
             return directedTo;
         }
 
+        /// <summary>
+        /// Handles the command response handler.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="directedTo">The directed to.</param>
+        /// <param name="response">The response.</param>
         private void handleCommandResponseHandler(User source, string destination, string directedTo,
                                                   CommandResponseHandler response)
         {
@@ -155,7 +186,7 @@ namespace helpmebot6
                 {
                     string message = item.message;
 
-                    if (directedTo != string.Empty)
+                    if (directedTo != String.Empty)
                     {
                         message = directedTo + ": " + message;
                     }
@@ -164,7 +195,7 @@ namespace helpmebot6
                     {
                         case CommandResponseDestination.Default:
                             if (overrideBotSilence ||
-                                Configuration.singleton().retrieveLocalStringOption("silence", destination) != "true")
+                                Configuration.singleton()["silence",destination] != "true")
                             {
                                 Helpmebot6.irc.ircPrivmsg(destination, message);
                             }
@@ -178,6 +209,54 @@ namespace helpmebot6
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///   Tests against recognised message formats
+        /// </summary>
+        /// <param name = "message">the message recieved</param>
+        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
+        /// <returns>true if the message is in a recognised format</returns>
+        /// <remarks>
+        ///   Allowed formats:
+        ///   !command
+        ///   !helpmebot command
+        ///   Helpmebot: command
+        ///   Helpmebot command
+        ///   Helpmebot, command
+        ///   Helpmebot> command
+        /// </remarks>
+        public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
+        {
+            Logger.instance().addToLog(
+                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                Logger.LogTypes.DNWB);
+
+           
+
+            Regex validCommand =
+                new Regex(
+                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
+                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
+                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$" );
+
+            /*
+            new Regex(
+                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
+                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
+                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$");
+             */
+
+            Match m = validCommand.Match(message);
+
+            if( m.Length > 0 )
+            {
+                message = m.Groups[ "cmd" ].Value +
+                          ( m.Groups[ "args" ].Length > 0 ? " " + m.Groups[ "args" ].Value : "" );
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System;
 using System.Reflection;
@@ -31,10 +47,17 @@ namespace helpmebot6.Commands
     {
         private readonly CommandResponseHandler _crh = new CommandResponseHandler();
 
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             bool useLongInfo =
-                bool.Parse(Configuration.singleton().retrieveLocalStringOption("useLongUserInfo", channel));
+                bool.Parse(Configuration.singleton()["useLongUserInfo",channel]);
 
             if (args.Length > 0)
             {
@@ -62,7 +85,7 @@ namespace helpmebot6.Commands
                 if (uInfo.editCount == -1)
                 {
                     string[] mparams = {userName};
-                    this._crh.respond(Configuration.singleton().getMessage("noSuchUser", mparams));
+                    this._crh.respond(new Message().get("noSuchUser", mparams));
                     return this._crh;
                 }
 
@@ -85,11 +108,17 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = {"userinfo", "1", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return this._crh;
         }
 
+        /// <summary>
+        /// Gets the user page URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -97,7 +126,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -130,6 +159,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "User:" + userName);
         }
 
+        /// <summary>
+        /// Gets the user talk page URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserTalkPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -137,7 +172,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -169,6 +204,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "User_talk:" + userName);
         }
 
+        /// <summary>
+        /// Gets the user contributions URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getUserContributionsUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -176,7 +217,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -208,6 +249,12 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
         }
 
+        /// <summary>
+        /// Gets the block log URL.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static string getBlockLogUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -215,7 +262,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -249,6 +296,13 @@ namespace helpmebot6.Commands
 
         //TODO: tidy up! why return a value when it's passed by ref anyway?
 // ReSharper disable UnusedMethodReturnValue.Local
+        /// <summary>
+        /// Retrieves the user information.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="initial">The initial.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
@@ -288,6 +342,10 @@ namespace helpmebot6.Commands
             }
         }
 
+        /// <summary>
+        /// Sends the short user info.
+        /// </summary>
+        /// <param name="userInformation">The user information.</param>
         private void sendShortUserInfo(UserInformation userInformation)
         {
             const string regex = "^http://en.wikipedia.org/wiki/";
@@ -313,11 +371,15 @@ namespace helpmebot6.Commands
                                              userInformation.blockInformation == "" ? "" : "BLOCKED"
                                          };
 
-            string message = Configuration.singleton().getMessage("cmdUserInfoShort", messageParameters);
+            string message = new Message().get("cmdUserInfoShort", messageParameters);
 
             this._crh.respond(message);
         }
 
+        /// <summary>
+        /// Sends the long user info.
+        /// </summary>
+        /// <param name="userInformation">The user information.</param>
         private void sendLongUserInfo(UserInformation userInformation)
         {
             this._crh.respond(userInformation.userPage);
@@ -329,17 +391,17 @@ namespace helpmebot6.Commands
             if (userInformation.userGroups != "")
             {
                 string[] messageParameters = {userInformation.userName, userInformation.userGroups};
-                message = Configuration.singleton().getMessage("cmdRightsList", messageParameters);
+                message = new Message().get("cmdRightsList", messageParameters);
             }
             else
             {
                 string[] messageParameters = {userInformation.userName};
-                message = Configuration.singleton().getMessage("cmdRightsNone", messageParameters);
+                message = new Message().get("cmdRightsNone", messageParameters);
             }
             this._crh.respond(message);
 
             string[] messageParameters2 = {userInformation.editCount.ToString(), userInformation.userName};
-            message = Configuration.singleton().getMessage("editCount", messageParameters2);
+            message = new Message().get("editCount", messageParameters2);
             this._crh.respond(message);
 
             string[] messageParameters3 = {
@@ -347,13 +409,16 @@ namespace helpmebot6.Commands
                                               userInformation.registrationDate.ToString("hh:mm:ss t"),
                                               userInformation.registrationDate.ToString("d MMMM yyyy")
                                           };
-            message = Configuration.singleton().getMessage("registrationDate", messageParameters3);
+            message = new Message().get("registrationDate", messageParameters3);
             this._crh.respond(message);
             string[] messageParameters4 = {userInformation.userName, userInformation.editRate.ToString()};
-            message = Configuration.singleton().getMessage("editRate", messageParameters4);
+            message = new Message().get("editRate", messageParameters4);
             this._crh.respond(message);
         }
 
+        /// <summary>
+        /// Structure to hold the userinfo retrieved.
+        /// </summary>
         private struct UserInformation
         {
             public string userName;

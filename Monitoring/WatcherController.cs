@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System;
 using System.Collections;
@@ -16,6 +32,9 @@ namespace helpmebot6.Monitoring
     {
         private readonly Dictionary<string, CategoryWatcher> _watchers;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WatcherController"/> class.
+        /// </summary>
         protected WatcherController()
         {
             this._watchers = new Dictionary<string, CategoryWatcher>();
@@ -56,11 +75,24 @@ namespace helpmebot6.Monitoring
 
         private static WatcherController _instance;
 
+        /// <summary>
+        /// Determines whether the specified word is a valid keyword.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified word is a valid keyword; otherwise, <c>false</c>.
+        /// </returns>
         public bool isValidKeyword(string keyword)
         {
             return this._watchers.ContainsKey(keyword);
         }
 
+        /// <summary>
+        /// Adds the watcher to channel.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="channel">The channel.</param>
+        /// <returns></returns>
         public bool addWatcherToChannel(string keyword, string channel)
         {
             string channelId = Configuration.singleton().getChannelId(channel);
@@ -80,6 +112,11 @@ namespace helpmebot6.Monitoring
             return false;
         }
 
+        /// <summary>
+        /// Removes the watcher from channel.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="channel">The channel.</param>
         public void removeWatcherFromChannel(string keyword, string channel)
         {
             string channelId = Configuration.singleton().getChannelId(channel);
@@ -89,6 +126,12 @@ namespace helpmebot6.Monitoring
                                    new DAL.WhereConds("cw_watcher", watcherId));
         }
 
+        /// <summary>
+        /// Forces the update.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="destination">The destination.</param>
+        /// <returns></returns>
         public string forceUpdate(string key, string destination)
         {
             CategoryWatcher cw;
@@ -120,7 +163,7 @@ namespace helpmebot6.Monitoring
                 string channel = (string) item[0];
 
                 string message = compileMessage(items, keyword, channel, false);
-                if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false")
+                if (Configuration.singleton()["silence",channel] == "false")
                     Helpmebot6.irc.ircPrivmsg(channel, message);
             }
 
@@ -178,27 +221,26 @@ namespace helpmebot6.Monitoring
 
             bool showWaitTime = (fakedestination == ""
                                      ? false
-                                     : (Configuration.singleton().retrieveLocalStringOption("showWaitTime", destination) ==
+                                     : (Configuration.singleton()["showWaitTime",destination] ==
                                         "true"
                                             ? true
                                             : false));
 
             TimeSpan minimumWaitTime;
             if (
-                !TimeSpan.TryParse(Configuration.singleton().retrieveLocalStringOption("minimumWaitTime", destination),
+                !TimeSpan.TryParse(Configuration.singleton()["minimumWaitTime",destination],
                                    out minimumWaitTime))
                 minimumWaitTime = new TimeSpan(0);
 
             bool shortenUrls = (fakedestination == ""
                                     ? false
-                                    : (Configuration.singleton().retrieveLocalStringOption(
-                                        "useShortUrlsInsteadOfWikilinks", destination) == "true"
+                                    : (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"
                                            ? true
                                            : false));
             bool showDelta = (fakedestination == ""
                                   ? false
-                                  : (Configuration.singleton().retrieveLocalStringOption("catWatcherShowDelta",
-                                                                                         destination) == "true"
+                                  : (Configuration.singleton()["catWatcherShowDelta",
+                                                                                         destination] == "true"
                                          ? true
                                          : false));
 
@@ -226,16 +268,14 @@ namespace helpmebot6.Monitoring
                     {
                         try
                         {
-                            Uri uri = new Uri(Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item);
+                            Uri uri = new Uri(Configuration.singleton()["wikiUrl"] + item);
                             listString += IsGd.shorten(uri).ToString();
                         }
                         catch (UriFormatException ex)
                         {
-                            listString += Configuration.singleton().retrieveGlobalStringOption("wikiUrl") + item;
+                            listString += Configuration.singleton()["wikiUrl"] + item;
                             GlobalFunctions.errorLog(ex);
                         }
-
-                        
                     }
 
                     if (showWaitTime)
@@ -259,23 +299,22 @@ namespace helpmebot6.Monitoring
                                                          ts.Minutes.ToString().PadLeft(2, '0'),
                                                          ts.Seconds.ToString().PadLeft(2, '0')
                                                      };
-                            listString += Configuration.singleton().getMessage("catWatcherWaiting", messageparams);
+                            listString += new Message().get("catWatcherWaiting", messageparams);
                         }
                     }
 
-                    listString += Configuration.singleton().getMessage("listSeparator");
+                    listString += new Message().get("listSeparator");
                 }
                 listString = listString.TrimEnd(' ', ',');
-                string pluralString = items.Count == 1 ? Configuration.singleton().getMessage(keyword + "Singular", "keywordSingularDefault") : Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault");
+                string pluralString = items.Count == 1 ? new Message().get(keyword + "Singular", "keywordSingularDefault") : new Message().get(keyword + "Plural", "keywordPluralDefault");
                 string[] messageParams = {items.Count.ToString(), pluralString, listString};
-                message = Configuration.singleton().getMessage(keyword + (showDelta ? "New" : "") + "HasItems",
-                                                               "keyword" + (showDelta ? "New" : "") + "HasItemsDefault",
+                message = new Message().get(keyword + (showDelta ? "New" : "") + "HasItems",
                                                                messageParams);
             }
             else
             {
-                string[] mp = {Configuration.singleton().getMessage(keyword + "Plural", "keywordPluralDefault")};
-                message = Configuration.singleton().getMessage(keyword + "NoItems", "keywordNoItemsDefault", mp);
+                string[] mp = {new Message().get(keyword + "Plural", "keywordPluralDefault")};
+                message = new Message().get(keyword + "NoItems", mp);
             }
             return message;
         }
@@ -287,6 +326,10 @@ namespace helpmebot6.Monitoring
             return success ? cw : null;
         }
 
+        /// <summary>
+        /// Gets the keywords.
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, CategoryWatcher>.KeyCollection getKeywords()
         {
             return this._watchers.Keys;
@@ -309,11 +352,17 @@ namespace helpmebot6.Monitoring
             return pageList;
         }
 
+        /// <summary>
+        /// Sets the delay.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <param name="newDelay">The new delay.</param>
+        /// <returns></returns>
         public CommandResponseHandler setDelay(string keyword, int newDelay)
         {
             if (newDelay < 1)
             {
-                string message = Configuration.singleton().getMessage("delayTooShort");
+                string message = new Message().get("delayTooShort");
                 return new CommandResponseHandler(message);
             }
 
@@ -329,11 +378,16 @@ namespace helpmebot6.Monitoring
                                                       };
                 DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
                 cw.sleepTime = newDelay;
-                return new CommandResponseHandler(Configuration.singleton().getMessage("done"));
+                return new CommandResponseHandler(new Message().get("done"));
             }
             return new CommandResponseHandler();
         }
 
+        /// <summary>
+        /// Gets the delay.
+        /// </summary>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns></returns>
         public int getDelay(string keyword)
         {
             CategoryWatcher cw = getWatcher(keyword);
@@ -355,6 +409,14 @@ namespace helpmebot6.Monitoring
         }
 
 
+        /// <summary>
+        /// Determines whether [is watcher in channel] [the specified channel].
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>
+        /// 	<c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
+        /// </returns>
         public bool isWatcherInChannel(string channel, string keyword)
         {
             DAL.Select q = new DAL.Select("COUNT(*)");

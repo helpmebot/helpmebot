@@ -1,32 +1,35 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using MySql.Data.MySqlClient;
 
 #endregion
-
+ 
 namespace helpmebot6
 {
-    public class GlobalFunctions
+    using System.Linq;
+
+    /// <summary>
+    /// Class holding globally accessible functions
+    /// </summary>
+    internal class GlobalFunctions
     {
         /// <summary>
         ///   Searches the array haystack for needle
@@ -98,70 +101,17 @@ namespace helpmebot6
             }
         }
 
-        public static string escape(string str)
-        {
-            return MySqlHelper.EscapeString(str);
-        }
-
-        //public static void Log(string message) { Console.WriteLine("# " + message); }
-
-        public static User.UserRights commandAccessLevel()
-        {
-            StackTrace foo = new StackTrace();
-            string typename = foo.GetFrame(1).GetMethod().DeclaringType.FullName;
-
-            User.UserRights accessLevel;
-            DAL.Select q = new DAL.Select("accesslevel");
-            q.setFrom("command");
-
-            q.addWhere(new DAL.WhereConds("typename", typename));
-            q.addLimit(1, 0);
-
-            string al = DAL.singleton().executeScalarSelect(q);
-            switch (al)
-            {
-                case "Developer":
-                    accessLevel = User.UserRights.Developer;
-                    break;
-                case "Superuser":
-                    accessLevel = User.UserRights.Superuser;
-                    break;
-                case "Advanced":
-                    accessLevel = User.UserRights.Advanced;
-                    break;
-                case "Normal":
-                    accessLevel = User.UserRights.Normal;
-                    break;
-                case "Semi-ignored":
-                    accessLevel = User.UserRights.Semiignored;
-                    break;
-                case "Ignored":
-                    accessLevel = User.UserRights.Ignored;
-                    break;
-                default:
-                    accessLevel = User.UserRights.Developer;
-                    errorLog(new ArgumentOutOfRangeException("command", typename, "not found in commandlist"));
-                    break;
-            }
-            return accessLevel;
-        }
 
         public static void removeItemFromArray(string item, ref string[] array)
         {
-            int count = 0;
-            foreach (string i in array)
-            {
-                if (i == item)
-                    count++;
-            }
+            int count = array.Count( i => i == item );
 
             string[] newArray = new string[array.Length - count];
 
             int nextAddition = 0;
 
-            foreach (string  i in array)
+            foreach ( string i in array.Where( i => i != item ) )
             {
-                if (i == item) continue;
                 newArray[nextAddition] = i;
                 nextAddition++;
             }
@@ -171,21 +121,7 @@ namespace helpmebot6
 
         public static int realArrayLength(string[] args)
         {
-            int argsLength = 0;
-            foreach (string arg in args)
-            {
-                if (!string.IsNullOrEmpty(arg))
-                    argsLength++;
-            }
-            return argsLength;
-        }
-
-        public static void silentPrivmsg(IAL irc, string channel, string message)
-        {
-            if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "true")
-                return;
-
-            irc.ircPrivmsg(channel, message);
+            return args.Count( arg => !string.IsNullOrEmpty( arg ) );
         }
     }
 }

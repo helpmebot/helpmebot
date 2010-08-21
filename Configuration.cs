@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
@@ -27,83 +26,92 @@ using System.Reflection;
 
 namespace helpmebot6
 {
-    public class Configuration
+    /// <summary>
+    /// Handles all configuration settings of the bot
+    /// </summary>
+    internal class Configuration
     {
         private readonly DAL _dbal = DAL.singleton();
 
         private static Configuration _singleton;
 
+        /// <summary>
+        /// Singletons this instance.
+        /// </summary>
+        /// <returns></returns>
         public static Configuration singleton()
         {
             return _singleton ?? ( _singleton = new Configuration( ) );
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
         protected Configuration()
         {
-            this._configurationCache = new ArrayList();
+            this._configurationCache = new Dictionary<string, ConfigurationSetting>();
         }
 
+        private readonly Dictionary<string, ConfigurationSetting> _configurationCache;
 
-        private readonly ArrayList _configurationCache;
-
+        /// <summary>
+        /// Gets or sets the <see cref="System.String"/> with the specified global option.
+        /// </summary>
+        /// <value></value>
         public string this[string globalOption]
         {
-            get { return retrieveGlobalStringOption(globalOption); }
-            set { setGlobalOption(globalOption, value); }
+            get { return this.getGlobalSetting(globalOption); }
+            set { this.setGlobalOption(globalOption, value); }
         }
 
-        public string retrieveGlobalStringOption(string optionName)
+        /// <summary>
+        /// Gets or sets the <see cref="System.String"/> with the specified local option.
+        /// </summary>
+        /// <value></value>
+        public string this[string localOption, string locality]
         {
-            foreach (ConfigurationSetting s in this._configurationCache)
+            get
             {
-                if ( s.name != optionName ) continue;
+                return this._dbal.proc_HMB_GET_LOCAL_OPTION(localOption, locality);
+            }
+            set
+            {
+                this.setLocalOption( locality, localOption, value );
+            }
+        }
 
-                // option found, deal with option
-
-                if (s.isValid())
+        private string getGlobalSetting( string optionName )
+        {
+            if( this._configurationCache.ContainsKey( optionName ))
+            {
+                ConfigurationSetting setting;
+                if(this._configurationCache.TryGetValue(optionName,out setting  ))
                 {
-                    //option cache is still valid
-                    return s.value;
-                }
-                //option cache is not valid
-                // fetch new item from database
-                string optionValue1 = this.retrieveOptionFromDatabase(optionName);
+                    if ( setting.isValid( ) )
+                    {
+                        return setting.value;
+                    }
 
-                s.value = optionValue1;
-                return s.value;
+                    //option cache is not valid
+                    // fetch new item from database
+                    string optionValue1 = this.retrieveOptionFromDatabase( optionName );
+
+                    setting.value = optionValue1;
+                    this._configurationCache.Remove( optionName );
+                    this._configurationCache.Add( optionName, setting );
+                    return setting.value;
+                }
+                throw new ArgumentOutOfRangeException();
             }
 
-            // option not found, add entry to cache
-            string optionValue2 = retrieveOptionFromDatabase(optionName);
+            string optionValue2 = this.retrieveOptionFromDatabase(optionName);
 
             if (optionValue2 != string.Empty)
             {
                 ConfigurationSetting cachedSetting = new ConfigurationSetting(optionName, optionValue2);
-                this._configurationCache.Add(cachedSetting);
+                this._configurationCache.Add( optionName, cachedSetting );
             }
             return optionValue2;
-        }
-
-        public uint retrieveGlobalUintOption(string optionName)
-        {
-
-            string optionValue = retrieveGlobalStringOption(optionName);
-            uint value;
-            try
-            {
-                value = uint.Parse(optionValue);
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-            return value;
-        }
-
-        public string retrieveLocalStringOption(string optionName, string channel)
-        {
-
-            return this._dbal.proc_HMB_GET_LOCAL_OPTION(optionName, channel);
         }
 
         private string retrieveOptionFromDatabase(string optionName)
@@ -125,7 +133,7 @@ namespace helpmebot6
             return null;
         }
 
-        public void setGlobalOption(string optionName, string newValue)
+        private void setGlobalOption( string newValue, string optionName )
         {
             Dictionary<string, string> vals = new Dictionary<string, string>
                                                   {
@@ -137,17 +145,22 @@ namespace helpmebot6
             this._dbal.update("configuration", vals, 1, new DAL.WhereConds("configuration_name", optionName));
         }
 
-        public void setLocalOption(string optionName, string channel, string newValue)
+        private void setLocalOption( string channel, string optionName, string newValue )
         {
-            // convert channel to ID
+            string channelId = this.getChannelId(channel);
 
-
-            string channelId = getChannelId(channel);
-
-            string configId = getOptionId(optionName);
+            string configId = this.getOptionId(optionName);
 
             // does setting exist in local table?
             //  INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
+
+
+            if(newValue == null)
+            {
+                this._dbal.delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ),
+                                   new DAL.WhereConds( "cc_channel", getChannelId( channelId ) ) );
+                return;
+            }
 
             DAL.Select q = new DAL.Select("COUNT(*)");
             q.setFrom("channelconfig");
@@ -163,32 +176,13 @@ namespace helpmebot6
                                                           { "cc_value", newValue }
                                                       };
                 this._dbal.update("channelconfig", vals, 1, new DAL.WhereConds("cc_channel", channelId),
-                            new DAL.WhereConds("cc_config", configId));
+                                  new DAL.WhereConds("cc_config", configId));
             }
             else
             {
                 // no: insert
                 this._dbal.insert("channelconfig", channelId, configId, newValue);
             }
-        }
-
-        public void setOption(string optionName, string target, string newValue)
-        {
-
-            if (target == "global")
-            {
-                setGlobalOption(optionName, newValue);
-            }
-            else
-            {
-                setLocalOption(optionName, target, newValue);
-            }
-        }
-
-        public void deleteLocalOption(string optionName, string target)
-        {
-            this._dbal.delete("channelconfig", 1, new DAL.WhereConds("cc_config", getOptionId(optionName)),
-                        new DAL.WhereConds("cc_channel", getChannelId(target)));
         }
 
         private string getOptionId(string optionName)
@@ -210,6 +204,15 @@ namespace helpmebot6
             return this._dbal.executeScalarSelect(q);
         }
 
+        /// <summary>
+        /// Reads the hmbot config file.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="mySqlServerHostname">MySQL server hostname.</param>
+        /// <param name="mySqlUsername">MySQL username.</param>
+        /// <param name="mySqlPassword">MySQL password.</param>
+        /// <param name="mySqlServerPort">MySQL server port.</param>
+        /// <param name="mySqlSchema">My SQL schema.</param>
         public static void readHmbotConfigFile(string filename,
                                                ref string mySqlServerHostname, ref string mySqlUsername,
                                                ref string mySqlPassword, ref uint mySqlServerPort,
@@ -224,118 +227,5 @@ namespace helpmebot6
             mySqlSchema = settingsreader.ReadLine();
             settingsreader.Close();
         }
-
-        #region messaging
-
-        private ArrayList getMessages(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            //"SELECT m.`message_text` FROM message m WHERE m.`message_name` = '"+messageName+"';" );
-
-            DAL.Select q = new DAL.Select("message_text");
-            q.setFrom("message");
-            q.addWhere(new DAL.WhereConds("message_name", messageName));
-
-            ArrayList resultset = this._dbal.executeSelect(q);
-
-            ArrayList al = new ArrayList();
-
-            foreach (object[] item in resultset)
-            {
-                al.Add((item)[0]);
-            }
-            return al;
-        }
-
-        //returns a random message chosen from the list of possible message names
-        private string chooseRandomMessage(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            Random rnd = new Random();
-            ArrayList al = getMessages(messageName);
-            if (al.Count == 0)
-            {
-                Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
-                                          "***ERROR*** Message '" + messageName + "' not found in message table");
-                return "";
-            }
-            return al[rnd.Next(0, al.Count)].ToString();
-        }
-
-        private static string parseMessage(string messageFormat, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return String.Format(messageFormat, args);
-        }
-
-        public string getMessage(string messageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return chooseRandomMessage(messageName);
-        }
-
-        public string getMessage(string messageName, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            return parseMessage(chooseRandomMessage(messageName), args);
-        }
-
-        public string getMessage(string messageName, string defaultMessageName)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            string msg = this.getMessage(messageName);
-            if (msg == string.Empty)
-            {
-                msg = this.getMessage(defaultMessageName);
-                this.saveMessage(messageName, "", msg);
-            }
-            msg = this.getMessage(messageName);
-            return msg;
-        }
-
-        public string getMessage(string messageName, string defaultMessageName, string[] args)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            string msg = this.getMessage(messageName, args);
-            if (msg == string.Empty)
-            {
-                msg = this.getMessage(defaultMessageName);
-                this.saveMessage(messageName, "", msg);
-            }
-            msg = this.getMessage(messageName, args);
-            return msg;
-        }
-
-        public void saveMessage(string messageName, string messageDescription, string messageContent)
-        {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
-            this._dbal.insert("message", "", messageName, messageDescription, messageContent, "1");
-        }
-
-        #endregion
     }
 }

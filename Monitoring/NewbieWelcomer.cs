@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System.Collections;
 using System.IO;
@@ -11,6 +27,9 @@ using System.Text.RegularExpressions;
 
 namespace helpmebot6.Monitoring
 {
+    /// <summary>
+    /// Newbie welcomer subsystem
+    /// </summary>
     internal class NewbieWelcomer
     {
         private static NewbieWelcomer _instance;
@@ -44,10 +63,15 @@ namespace helpmebot6.Monitoring
 
         private readonly SerializableArrayList _hostNames;
 
+        /// <summary>
+        /// Executes the newbie.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            if (Configuration.singleton().retrieveLocalStringOption("silence", channel) == "false" &&
-                Configuration.singleton().retrieveLocalStringOption("welcomeNewbie", channel) == "true")
+            if (Configuration.singleton()["silence",channel] == "false" &&
+                Configuration.singleton()["welcomeNewbie",channel] == "true")
             {
                 bool match = false;
                 foreach (object item in this._hostNames)
@@ -64,11 +88,15 @@ namespace helpmebot6.Monitoring
                 if (match)
                 {
                     string[] cmdArgs = {source.nickname, channel};
-                    Helpmebot6.irc.ircPrivmsg(channel, Configuration.singleton().getMessage("welcomeMessage", cmdArgs));
+                    Helpmebot6.irc.ircPrivmsg(channel, new Message().get("welcomeMessage", cmdArgs));
                 }
             }
         }
 
+        /// <summary>
+        /// Adds a host to the list of detected newbie hosts.
+        /// </summary>
+        /// <param name="host">The host.</param>
         public void addHost(string host)
         {
             this._hostNames.Add(host);

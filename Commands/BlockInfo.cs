@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System.Net;
 using System.Reflection;
@@ -9,22 +25,35 @@ using System.Xml;
 namespace helpmebot6.Commands
 {
     /// <summary>
-    ///   Returns the block information of a wikipedian
+    /// Returns the block information of a wikipedian
     /// </summary>
     internal class Blockinfo : GenericCommand
     {
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
 
             return new CommandResponseHandler(getBlockInformation(string.Join(" ", args), channel).ToString());
         }
 
+        /// <summary>
+        /// Gets the block information for a user or IP address on a wiki.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel the command was requested in.</param>
+        /// <returns></returns>
         public BlockInformation getBlockInformation(string userName, string channel)
         {
 
             IPAddress ip;
 
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -91,6 +120,9 @@ namespace helpmebot6.Commands
             return bi;
         }
 
+        /// <summary>
+        /// Holds the block information of a specific user
+        /// </summary>
         public struct BlockInformation
         {
             public string id;
@@ -104,11 +136,17 @@ namespace helpmebot6.Commands
             public bool noemail;
             public bool allowusertalk;
 
+            /// <summary>
+            /// Returns a <see cref="System.String"/> that represents this block.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String"/> that represents this block.
+            /// </returns>
             public override string ToString()
             {
 
                 string[] emptyMessageParams = {"", "", "", "", "", "", ""};
-                string emptyMessage = Configuration.singleton().getMessage("blockInfoShort", emptyMessageParams);
+                string emptyMessage = new Message().get("blockInfoShort", emptyMessageParams);
 
                 string info = "";
                 if (nocreate)
@@ -120,11 +158,11 @@ namespace helpmebot6.Commands
                 if (allowusertalk)
                     info += "ALLOWUSERTALK ";
                 string[] messageParams = {id, target, blockedBy, expiry, start, blockReason, info};
-                string message = Configuration.singleton().getMessage("blockInfoShort", messageParams);
+                string message = new Message().get("blockInfoShort", messageParams);
 
                 if (message == emptyMessage)
                 {
-                    message = Configuration.singleton().getMessage("noBlocks");
+                    message = new Message().get("noBlocks");
                 }
 
                 return message;

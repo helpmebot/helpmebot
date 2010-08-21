@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System;
 using System.Collections;
@@ -8,6 +24,9 @@ using System.Reflection;
 
 namespace helpmebot6.Monitoring.PageWatcher
 {
+    /// <summary>
+    /// Controller class for the pagewatcher
+    /// </summary>
     internal class PageWatcherController
     {
         #region woo singleton
@@ -19,7 +38,7 @@ namespace helpmebot6.Monitoring.PageWatcher
             this._watchedPageList = new ArrayList();
             if ( !Helpmebot6.pagewatcherEnabled ) return;
             this.loadAllWatchedPages();
-            uint wikiRCIrc = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
+            uint wikiRCIrc = uint.Parse( Configuration.singleton( )[ "wikimediaRcNetwork" ] );
             if ( wikiRCIrc == 0 ) return;
             this._irc = new IAL(wikiRCIrc);
             this.setupEvents();
@@ -32,10 +51,19 @@ namespace helpmebot6.Monitoring.PageWatcher
         }
         #endregion
 
+        /// <summary>
+        /// Holds the connection object to browne.
+        /// </summary>
         private readonly IAL _irc;
 
+        /// <summary>
+        /// list of watched pages
+        /// </summary>
         private readonly ArrayList _watchedPageList;
-
+        
+        /// <summary>
+        /// Structure to hold the information about a page change recieved from browne.
+        /// </summary>
         public struct RcPageChange
         {
             public string title;
@@ -46,6 +74,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             public string comment;
         }
 
+
+        /// <summary>
+        /// Setups the events for the browne IRC access layer.
+        /// </summary>
         private void setupEvents()
         {
 
@@ -54,10 +86,15 @@ namespace helpmebot6.Monitoring.PageWatcher
             this.pageWatcherNotificationEvent += pageWatcherControllerPageWatcherNotificationEvent;
         }
 
+        // TODO: what's the point in this function? is it to prevent a nullref on the event calls?
         private static void pageWatcherControllerPageWatcherNotificationEvent(RcPageChange rcItem)
         {
         }
 
+        /// <summary>
+        /// Gets the watched pages.
+        /// </summary>
+        /// <returns></returns>
         public string[] getWatchedPages()
         {
             string[] wp = new string[this._watchedPageList.Count];
@@ -65,6 +102,9 @@ namespace helpmebot6.Monitoring.PageWatcher
             return wp;
         }
 
+        /// <summary>
+        /// Loads all watched pages from the database.
+        /// </summary>
         public void loadAllWatchedPages()
         {
             this._watchedPageList.Clear();
@@ -77,9 +117,15 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// browne IRC PRIVMSG event handler
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="destination">The destination.</param>
+        /// <param name="message">The message.</param>
         private void irc_PrivmsgEvent(User source, string destination, string message)
         {
-            if (source.ToString() == Configuration.singleton().retrieveGlobalStringOption("wikimediaRcBot"))
+            if (source.ToString() == Configuration.singleton()["wikimediaRcBot"])
             {
                 RcPageChange rcItem = rcParser(message);
 
@@ -94,9 +140,12 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// browne IRC connection registration succeeded event handler
+        /// </summary>
         private void irc_ConnectionRegistrationSucceededEvent()
         {
-            uint network = Configuration.singleton().retrieveGlobalUintOption("wikimediaRcNetwork");
+            uint network = uint.Parse( Configuration.singleton( )[ "wikimediaRcNetwork" ] );
 
             DAL.Select q = new DAL.Select("channel_name");
             q.setFrom("channel");
@@ -108,6 +157,11 @@ namespace helpmebot6.Monitoring.PageWatcher
             }
         }
 
+        /// <summary>
+        /// Parses a line from the RC bot.
+        /// </summary>
+        /// <param name="rcItem">The rc item.</param>
+        /// <returns></returns>
         private static RcPageChange rcParser(string rcItem)
         {
             const string colorCodeControlChar = "\x03";
@@ -147,6 +201,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             return ret;
         }
 
+        /// <summary>
+        /// Watches a page.
+        /// </summary>
+        /// <param name="pageName">Name of the page.</param>
         public void watchPage(string pageName)
         {
             // addOrder to database
@@ -155,6 +213,10 @@ namespace helpmebot6.Monitoring.PageWatcher
             this._watchedPageList.Add(pageName);
         }
 
+        /// <summary>
+        /// Unwatches a page.
+        /// </summary>
+        /// <param name="pageName">Name of the page.</param>
         public void unwatchPage(string pageName)
         {
             //remove from database

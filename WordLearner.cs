@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System.Reflection;
@@ -23,13 +22,29 @@ using System.Reflection;
 
 namespace helpmebot6
 {
+    /// <summary>
+    /// Word learner class
+    /// </summary>
     public class WordLearner
     {
+        /// <summary>
+        /// Learns the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="phrase">The phrase.</param>
+        /// <returns></returns>
         public static bool learn(string word, string phrase)
         {
             return learn(word, phrase, false);
         }
 
+        /// <summary>
+        /// Learns the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="phrase">The phrase.</param>
+        /// <param name="action">if set to <c>true</c> [action].</param>
+        /// <returns></returns>
         public static bool learn(string word, string phrase, bool action)
         {
             DAL.Select q = new DAL.Select("COUNT(*)");
@@ -45,6 +60,11 @@ namespace helpmebot6
             return true;
         }
 
+        /// <summary>
+        /// Remembers the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
         public static RemeberedWord remember(string word)
         {
             DAL.Select q = new DAL.Select("keyword_action");
@@ -66,6 +86,11 @@ namespace helpmebot6
             return rW;
         }
 
+        /// <summary>
+        /// Forgets the specified word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
         public static bool forget(string word)
         {
             DAL.Select q = new DAL.Select("COUNT(*)");

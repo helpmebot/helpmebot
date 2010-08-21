@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 using Twitterizer;
 
 #endregion
@@ -7,11 +23,17 @@ namespace helpmebot6
 {
     using System;
 
+    /// <summary>
+    /// Twitterizer wrapper class
+    /// </summary>
     internal class Twitter
     {
         private readonly string _consumerKey;
         private readonly string _consumerSecret;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Twitter"/> class.
+        /// </summary>
         public Twitter()
         {
             _consumerKey = Configuration.singleton( )[ "twitterConsumerKey" ];
@@ -48,6 +70,10 @@ namespace helpmebot6
         private string _accessToken;
         private string _accessTokenSecret;
 
+        /// <summary>
+        /// Authorises the specified pin code.
+        /// </summary>
+        /// <param name="pinCode">The pin code.</param>
         public void authorise( string pinCode )
         {
             OAuthTokenResponse accessToken = OAuthUtility.GetAccessToken(_consumerKey, _consumerSecret, Configuration.singleton()["twitterRequestToken"], pinCode);
@@ -58,6 +84,9 @@ namespace helpmebot6
             Configuration.singleton( )[ "twitterRequestToken" ] = "";
         }
 
+        /// <summary>
+        /// Deauthorises this instance.
+        /// </summary>
         public void deauth( )
         {
             Configuration.singleton()["twitterAccessToken"] = "";

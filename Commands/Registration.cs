@@ -1,4 +1,20 @@
-﻿#region Usings
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
+#region Usings
 
 using System;
 using System.Reflection;
@@ -23,7 +39,7 @@ namespace helpmebot6.Commands
                 if (registrationDate == new DateTime(0))
                 {
                     string[] messageParams = {userName};
-                    string message = Configuration.singleton().getMessage("noSuchUser", messageParams);
+                    string message = new Message().get("noSuchUser", messageParams);
                     crh.respond(message);
                 }
                 else
@@ -32,7 +48,7 @@ namespace helpmebot6.Commands
                                                      userName, registrationDate.ToString("hh:mm:ss t"),
                                                      registrationDate.ToString("d MMMM yyyy")
                                                  };
-                    string message = Configuration.singleton().getMessage("registrationDate", messageParameters);
+                    string message = new Message().get("registrationDate", messageParameters);
                     crh.respond(message);
                 }
             }
@@ -40,7 +56,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = {"registration", "1", args.Length.ToString()};
                 Helpmebot6.irc.ircNotice(source.nickname,
-                                         Configuration.singleton().getMessage("notEnoughParameters", messageParameters));
+                                         new Message().get("notEnoughParameters", messageParameters));
             }
             return crh;
         }
@@ -51,7 +67,7 @@ namespace helpmebot6.Commands
             {
                 throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.singleton().retrieveLocalStringOption("baseWiki", channel);
+            string baseWiki = Configuration.singleton()["baseWiki",channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

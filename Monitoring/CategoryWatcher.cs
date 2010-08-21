@@ -1,20 +1,19 @@
-﻿/****************************************************************************
- *   This file is part of Helpmebot.                                        *
- *                                                                          *
- *   Helpmebot is free software: you can redistribute it and/or modify      *
- *   it under the terms of the GNU General Public License as published by   *
- *   the Free Software Foundation, either version 3 of the License, or      *
- *   (at your option) any later version.                                    *
- *                                                                          *
- *   Helpmebot is distributed in the hope that it will be useful,           *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
- *   GNU General Public License for more details.                           *
- *                                                                          *
- *   You should have received a copy of the GNU General Public License      *
- *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
- ****************************************************************************/
-
+﻿// /****************************************************************************
+//  *   This file is part of Helpmebot.                                        *
+//  *                                                                          *
+//  *   Helpmebot is free software: you can redistribute it and/or modify      *
+//  *   it under the terms of the GNU General Public License as published by   *
+//  *   the Free Software Foundation, either version 3 of the License, or      *
+//  *   (at your option) any later version.                                    *
+//  *                                                                          *
+//  *   Helpmebot is distributed in the hope that it will be useful,           *
+//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
+//  *   GNU General Public License for more details.                           *
+//  *                                                                          *
+//  *   You should have received a copy of the GNU General Public License      *
+//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
+//  ****************************************************************************/
 #region Usings
 
 using System;
@@ -28,6 +27,9 @@ using helpmebot6.Threading;
 
 namespace helpmebot6.Monitoring
 {
+    /// <summary>
+    /// Category watcher thread
+    /// </summary>
     public class CategoryWatcher : IThreadedSystem
     {
         private readonly string _site;
@@ -43,10 +45,16 @@ namespace helpmebot6.Monitoring
 
         public event CategoryHasItemsEventHook categoryHasItemsEvent;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CategoryWatcher"/> class.
+        /// </summary>
+        /// <param name="category">The category.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="sleepTime">The sleep time.</param>
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // look up site id
-            string baseWiki = Configuration.singleton().retrieveGlobalStringOption("baseWiki");
+            string baseWiki = Configuration.singleton()["baseWiki"];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -107,11 +115,21 @@ namespace helpmebot6.Monitoring
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String"/> that represents this instance.
+        /// </returns>
         public override string ToString()
         {
             return _key;
         }
 
+        /// <summary>
+        /// Does the category check.
+        /// </summary>
+        /// <returns></returns>
         public ArrayList doCategoryCheck()
         {
             Logger.instance().addToLog("Getting items in category " + _key, Logger.LogTypes.General);
