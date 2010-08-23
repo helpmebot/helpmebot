@@ -505,8 +505,19 @@ namespace helpmebot6
                                            "HMB_GET_IW_URL"
                                    };
 
-            byte[ ] bprefix = new byte[32];
-            System.Text.Encoding.ASCII.GetBytes( prefix, 0, prefix.Length, bprefix, 0 );
+            if (prefix.Length > 32)
+                return string.Empty;
+
+            try
+            {
+                byte[ ] bprefix = new byte[32];
+                Encoding.UTF8.GetBytes( prefix, 0, prefix.Length, bprefix, 0 );
+            }
+            catch (ArgumentException)
+            {
+                return string.Empty;
+            }
+
 
             cmd.Parameters.Add( "@prefix", MySqlDbType.Binary ).Value = prefix;
             cmd.Parameters[ "@prefix" ].Direction = ParameterDirection.Input;
