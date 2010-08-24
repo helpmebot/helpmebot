@@ -709,6 +709,12 @@ namespace helpmebot6
             this.errNicknameInUseEvent += assumeTakenNickname;
             this.errUnavailResource += this.ialErrUnavailResource;
             this.nameReplyEvent += this.ialNameReplyEvent;
+            this.connectionRegistrationSucceededEvent += ialConnectionRegistrationSucceededEvent;
+        }
+
+        void ialConnectionRegistrationSucceededEvent()
+        {
+            this.ircPrivmsg(_nickserv, "IDENTIFY " + _myNickname + " " + _myPassword);
         }
 
         private void ialErrUnavailResource()
