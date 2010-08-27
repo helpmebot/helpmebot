@@ -106,6 +106,8 @@
     <Compile Include="Commands\Autolink.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
+    <Compile Include="Commands\FunStuff\Vorticough.cs" />
+    <Compile Include="Commands\Nickservlogin.cs" />
     <Compile Include="Commands\Oauth.cs" />
     <Compile Include="Commands\Editcount.cs" />
     <Compile Include="Commands\Decode.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="Monitoring\Nagios.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\PageWatcher\PageWatcherController.cs" />
+    <Compile Include="Monitoring\RSS\RssMonitor.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="NewYear\TimeMonitor.cs" />
     <Compile Include="NubioApi.cs" />
@@ -188,6 +191,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Data.dll</HintPath>
     </Reference>
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Web.dll</HintPath>
@@ -248,4 +252,5 @@
     <Content Include="Twitterizer.Data.dll" />
     <Content Include="Twitterizer2.dll" />
   </ItemGroup>
+  <ItemGroup />
 </Project>
