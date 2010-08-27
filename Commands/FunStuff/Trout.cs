@@ -25,7 +25,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Trouts a user
     /// </summary>
-    internal class Trout : GenericCommand
+    internal class Trout : FunStuff.FunCommand
     {
         /// <summary>
         /// Actual command logic

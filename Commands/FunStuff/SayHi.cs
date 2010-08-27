@@ -25,7 +25,7 @@ namespace helpmebot6.Commands
     /// <summary>
     ///   Says hi to a user
     /// </summary>
-    internal class Sayhi : GenericCommand
+    internal class Sayhi : FunStuff.FunCommand
     {
         /// <summary>
         /// Executes the specified to user.

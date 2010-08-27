@@ -106,6 +106,9 @@
     <Compile Include="Commands\Autolink.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
+    <Compile Include="Commands\FunStuff\Curl.cs" />
+    <Compile Include="Commands\FunStuff\FunCommand.cs" />
+    <Compile Include="Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Commands\Nickservlogin.cs" />
     <Compile Include="Commands\Oauth.cs" />

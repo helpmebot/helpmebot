@@ -5,11 +5,12 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
-    class Vorticough : FunStuff.FunCommand
+    class Curl : FunStuff.FunCommand
     {
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            return new CommandResponseHandler(new Message().get("Vortigaunt"));
+            Configuration.singleton()["hedgehog", channel] = "true";
+            return new CommandResponseHandler(new Message().get("HedgehogCurlup"));
         }
     }
 }

@@ -60,19 +60,24 @@ namespace helpmebot6
                                           "***ERROR*** Message '" + messageName + "' not found in message table");
                 return "";
             }
-            return al[rnd.Next(0, al.Length)].ToString();
+            return al[rnd.Next(0, al.Length)];
         }
 
 
         private static string buildMessage(string messageFormat, params string[] args)
         {
-            return String.Format(messageFormat, args);
+            string builtString = String.Format(messageFormat, args);
+            if(builtString.StartsWith("#ACTION"))
+            {
+                builtString = IAL.wrapCTCP("ACTION", builtString.Substring(8));
+            }
+            return builtString;
         }
 
         
         public string get(string messageName)
         {
-            return chooseRandomMessage(messageName);
+            return get(messageName, new string[0]);
         }
         
         public string get(string messageName, params string[] args)
