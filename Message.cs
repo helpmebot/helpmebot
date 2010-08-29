@@ -82,8 +82,7 @@ namespace helpmebot6
         
         public string get(string messageName, params string[] args)
         {
-
-            return buildMessage(chooseRandomMessage(messageName), args);
+            return buildMessage(chooseRandomMessage(Configuration.singleton()["messagePrefix"] + messageName), args);
         }
     }
 }
