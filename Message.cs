@@ -15,14 +15,9 @@
 //  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
 //  ****************************************************************************/
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace helpmebot6
 {
-    using System.Collections;
-
     internal class Message
     {
         private readonly DAL _dbal;
@@ -53,12 +48,28 @@ namespace helpmebot6
         private string chooseRandomMessage(string messageName)
         {
             Random rnd = new Random();
-            string[] al = getMessages(messageName);
-            if (al.Length == 0)
+            string[] al = getMessages(Configuration.singleton()["messagePrefix"]+ messageName);
+            if (al.Length == 0) // no messages found with prefix
             {
-                Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
-                                          "***ERROR*** Message '" + messageName + "' not found in message table");
-                return "";
+                if (Configuration.singleton()["messagePrefix"] != string.Empty) // check a prefix was added
+                {
+                    Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
+                                              "***ERROR*** Message '" + messageName + "' not found with prefix '" +
+                                              Configuration.singleton()["messagePrefix"] +
+                                              "'. Attempting without prefix...");
+                    // remove prefix and retry
+
+                    al = getMessages(messageName);
+                }
+
+                if (al.Length == 0) // still nothing there
+                {
+
+                    // error out - can't find message
+                    Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
+                                              "***ERROR*** Message '" + messageName + "' not found in message table");
+                    return "";
+                }
             }
             return al[rnd.Next(0, al.Length)];
         }
@@ -82,7 +93,7 @@ namespace helpmebot6
         
         public string get(string messageName, params string[] args)
         {
-            return buildMessage(chooseRandomMessage(Configuration.singleton()["messagePrefix"] + messageName), args);
+            return buildMessage(chooseRandomMessage(messageName), args);
         }
     }
 }
