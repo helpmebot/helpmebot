@@ -449,7 +449,6 @@ namespace helpmebot6
         public string proc_HMB_GET_MESSAGE_CONTENT(string title)
         // ReSharper restore InconsistentNaming
         {
-            Logger.instance().addToLog("Start of getmessgecontent.", Logger.LogTypes.General);
             MySqlCommand cmd = new MySqlCommand
                                    {
                                        Connection = this._connection,
@@ -459,27 +458,19 @@ namespace helpmebot6
                                            "HMB_GET_MESSAGE_CONTENT"
                                    };
 
-            Logger.instance().addToLog("command created", Logger.LogTypes.General);
-
             byte[] titlebytes = new byte[255];
-            System.Text.Encoding.ASCII.GetBytes(title, 0, title.Length, titlebytes, 0);
-
-            Logger.instance().addToLog("converted to byte array", Logger.LogTypes.General);
+            Encoding.ASCII.GetBytes(title, 0, title.Length, titlebytes, 0);
 
             cmd.Parameters.Add("@title", MySqlDbType.VarBinary).Value = title;
             cmd.Parameters["@title"].Direction = ParameterDirection.Input;
 
-            Logger.instance().addToLog("title param added", Logger.LogTypes.General);
 
             byte[] messagebytes = new byte[0];
             cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = messagebytes;
             cmd.Parameters["@message"].Direction = ParameterDirection.Output;
 
-            Logger.instance().addToLog("set up other parameter", Logger.LogTypes.General);
-
             lock (this)
             {
-                Logger.instance().addToLog("locked.", Logger.LogTypes.General);
                 try
                 {
                     runConnectionTest();
@@ -491,9 +482,18 @@ namespace helpmebot6
                 }
             }
 
-            Logger.instance().addToLog("unlocked.", Logger.LogTypes.General);
+            Logger.instance().addToLog("pre-error.", Logger.LogTypes.General);
 
-            byte[] binarymessage = (byte[])(cmd.Parameters["@message"].Value is System.DBNull ? string.Empty : cmd.Parameters["@message"].Value);
+            object foo = cmd.Parameters["@message"].Value is DBNull ? string.Empty : cmd.Parameters["@message"].Value;
+            Logger.instance().addToLog("empty or param value", Logger.LogTypes.General);
+
+            Logger.instance().addToLog(foo.GetType().ToString(), Logger.LogTypes.General);
+
+
+            byte[] binarymessage = (byte[])(foo);
+
+            Logger.instance().addToLog("convert to byte", Logger.LogTypes.General);
+
 
             Logger.instance().addToLog("got binary message, returning.", Logger.LogTypes.General);
 
