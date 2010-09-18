@@ -227,5 +227,10 @@ namespace helpmebot6
             mySqlSchema = settingsreader.ReadLine();
             settingsreader.Close();
         }
+
+        public void clearCache()
+        {
+            this._configurationCache.Clear();
+        }
     }
 }

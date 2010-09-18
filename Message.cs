@@ -29,12 +29,6 @@ namespace helpmebot6
         
         private string[] getMessages(string messageName)
         {
-            // normalise message name to account for old messages
-            if (messageName.Substring(0, 1).ToUpper() != messageName.Substring(0, 1))
-            {
-                messageName = messageName.Substring(0, 1).ToUpper() + messageName.Substring(1);
-            }
-
             //get message text from database
             string messageText = _dbal.proc_HMB_GET_MESSAGE_CONTENT(messageName);
 
@@ -47,6 +41,12 @@ namespace helpmebot6
         
         private string chooseRandomMessage(string messageName)
         {
+            // normalise message name to account for old messages
+            if (messageName.Substring(0, 1).ToUpper() != messageName.Substring(0, 1))
+            {
+                messageName = messageName.Substring(0, 1).ToUpper() + messageName.Substring(1);
+            }
+
             Random rnd = new Random();
             string[] al = getMessages(Configuration.singleton()["messagePrefix"]+ messageName);
             if (al.Length == 0) // no messages found with prefix

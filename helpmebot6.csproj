@@ -105,6 +105,7 @@
     <Compile Include="Commands\CategoryWatcherCommand\Enable.cs" />
     <Compile Include="Commands\Autolink.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
+    <Compile Include="Commands\Configcacheclear.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\FunStuff\Curl.cs" />
     <Compile Include="Commands\FunStuff\FunCommand.cs" />
