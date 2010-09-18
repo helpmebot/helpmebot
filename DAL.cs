@@ -484,7 +484,7 @@ namespace helpmebot6
 
             Logger.instance().addToLog("pre-error.", Logger.LogTypes.General);
 
-            object foo = cmd.Parameters["@message"].Value is DBNull ? string.Empty : cmd.Parameters["@message"].Value;
+            object foo = cmd.Parameters["@message"].Value is DBNull ? new byte[0] : cmd.Parameters["@message"].Value;
             Logger.instance().addToLog("empty or param value", Logger.LogTypes.General);
 
             Logger.instance().addToLog(foo.GetType().ToString(), Logger.LogTypes.General);
