@@ -133,6 +133,7 @@
     <Compile Include="Commands\Page.cs" />
     <Compile Include="Commands\Pagewatcher.cs" />
     <Compile Include="Commands\Part.cs" />
+    <Compile Include="Commands\ProtectedCommand.cs" />
     <Compile Include="Commands\Raw.cs" />
     <Compile Include="Commands\Rawctcp.cs" />
     <Compile Include="Commands\Registration.cs" />

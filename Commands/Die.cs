@@ -16,6 +16,7 @@
 //  ****************************************************************************/
 #region Usings
 
+using System;
 using System.Reflection;
 
 #endregion
@@ -25,7 +26,7 @@ namespace helpmebot6.Commands
     /// <summary>
     ///   Kills the bot.
     /// </summary>
-    internal class Die : GenericCommand
+    internal class Die : ProtectedCommand
     {
         /// <summary>
         /// Actual command logic
@@ -38,6 +39,11 @@ namespace helpmebot6.Commands
         {
             Helpmebot6.stop();
             return null;
+        }
+
+        protected override CommandResponseHandler notConfirmed(User source, string channel, string[] args)
+        {
+            return new CommandResponseHandler(new Message().get("Die-unconfirmed"));
         }
     }
 }
