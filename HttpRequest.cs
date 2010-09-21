@@ -35,6 +35,7 @@ namespace helpmebot6
         {
             HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
             hwr.UserAgent = Configuration.singleton()["useragent"];
+            hwr.Timeout = int.Parse(Configuration.singleton()["httpTimeout"]);
             HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
 
             return resp.GetResponseStream();

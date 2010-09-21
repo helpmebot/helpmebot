@@ -303,7 +303,8 @@ namespace helpmebot6.Monitoring
                         }
                     }
 
-                    listString += new Message().get("listSeparator");
+                    // trailing space added as a hack because MediaWiki doesn't preserve the trailing space :(
+                    listString += new Message().get("listSeparator") + " ";
                 }
                 listString = listString.TrimEnd(' ', ',');
                 string pluralString = items.Count == 1 ? new Message().get(keyword + "Singular", "keywordSingularDefault") : new Message().get(keyword + "Plural", "keywordPluralDefault");
