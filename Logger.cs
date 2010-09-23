@@ -227,8 +227,9 @@ namespace helpmebot6
             if( 1025 <= copyToUdp && copyToUdp <= 65535 )
             {
                 UdpClient udp = new UdpClient("helpmebot.org.uk", copyToUdp);
-                byte[] messageBytes = Encoding.ASCII.GetBytes(message);
+                byte[] messageBytes = Encoding.ASCII.GetBytes(message + "\n");
                 udp.Send(messageBytes, messageBytes.Length);
+                udp.Close();
             }
         }
     }
