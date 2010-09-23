@@ -53,7 +53,7 @@ namespace helpmebot6
 
             addToLog(init, LogTypes.General);
 
-            this.copyToUdp = int.Parse(Configuration.singleton()["udpLogPort"]);
+            this.copyToUdp = 7648;
         }
 
         public static Logger instance()
