@@ -101,6 +101,7 @@ namespace helpmebot6
         /// <see cref = "http://apiwiki.twitter.com/Twitter-REST-API-Method:-statuses%C2%A0update" />
         public TwitterStatus updateStatus(string status)
         {
+            if (status.Length == 0) return null;
             status = (status.Length > 140 ? status.Substring(0, 140) : status);
 
             if (_accessToken == "")
