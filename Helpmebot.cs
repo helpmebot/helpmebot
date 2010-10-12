@@ -186,8 +186,7 @@ namespace helpmebot6
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            string[] args = {channel};
-            new Join().run(source, channel, args);
+            Join.joinChannel(channel, source.network);
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)

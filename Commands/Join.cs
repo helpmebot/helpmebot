@@ -37,9 +37,14 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            return joinChannel(args[0], source.network);
+        }
+
+        public static CommandResponseHandler joinChannel(string args, uint network)
+        {
             DAL.Select q = new DAL.Select("count(*)");
-            q.addWhere(new DAL.WhereConds("channel_name", args[0]));
-            q.addWhere(new DAL.WhereConds("channel_network", source.network.ToString()));
+            q.addWhere(new DAL.WhereConds("channel_name", args));
+            q.addWhere(new DAL.WhereConds("channel_network", network.ToString()));
             q.setFrom("channel");
 
             string count = DAL.singleton().executeScalarSelect(q);
@@ -56,14 +61,14 @@ namespace helpmebot6.Commands
                                                               "1"
                                                               }
                                                       };
-                DAL.singleton().update("channel", vals, 1, new DAL.WhereConds("channel_name", args[0]));
+                DAL.singleton().update("channel", vals, 1, new DAL.WhereConds("channel_name", args));
 
-                Helpmebot6.irc.ircJoin(args[0]);
+                Helpmebot6.irc.ircJoin(args);
             }
             else
             {
-                DAL.singleton().insert("channel", "", args[0], "", "1", source.network.ToString());
-                Helpmebot6.irc.ircJoin(args[0]);
+                DAL.singleton().insert("channel", "", args, "", "1", network.ToString());
+                Helpmebot6.irc.ircJoin(args);
             }
             return null;
         }
