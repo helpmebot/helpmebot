@@ -115,7 +115,7 @@ namespace helpmebot6.Commands
             /// </returns>
             public override string ToString()
             {
-                return this.latitude + ", " + this.longitude + "(" + this.city + ", " + this.region + ", " + this.country );
+                return this.city + ", " + this.region + ", " + this.country + ", " + this.latitude + ", " + this.longitude;
             } 
         }
     }
