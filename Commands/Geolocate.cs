@@ -82,10 +82,10 @@ namespace helpmebot6.Commands
                         result.zipPostalCode = xtr.ReadElementContentAsString();
                         break;
                     case "Latitude":
-                        result.latitude = xtr.ReadElementContentAsString();
+                        result.latitude = xtr.ReadElementContentAsFloat();
                         break;
                     case "Longitude":
-                        result.longitude = xtr.ReadElementContentAsString();
+                        result.longitude = xtr.ReadElementContentAsFloat();
                         break;
                 }
             }
@@ -104,8 +104,8 @@ namespace helpmebot6.Commands
             public string region;
             public string city;
             public string zipPostalCode;
-            public string latitude;
-            public string longitude;
+            public float latitude;
+            public float longitude;
 
             /// <summary>
             /// Returns a <see cref="System.String"/> that represents this geolocate result.
@@ -115,7 +115,7 @@ namespace helpmebot6.Commands
             /// </returns>
             public override string ToString()
             {
-                return this.city + ", " + this.region + ", " + this.country + ", " + this.latitude + ", " + this.longitude;
+                return this.city + ", " + this.region + ", " + this.country;
             }
         }
     }
