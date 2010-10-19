@@ -40,7 +40,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             GeolocateResult location = getLocation(IPAddress.Parse(args[0]));
-            string[] messageArgs = {location.ToString()};
+            string[] messageArgs = { location.ToString() };
             return new CommandResponseHandler(new Message().get("locationMessage", messageArgs));
         }
 
@@ -115,9 +115,31 @@ namespace helpmebot6.Commands
             /// </returns>
             public override string ToString()
             {
-                return this.latitude + ", " + this.longitude + " (Estimated location: " + this.city + ", " + this.region + ", " +
-                       this.country + ") ";
-            } 
+
+
+                return string.Format("Latitude: {0}N, Longitude: {1}E{2}", this.latitude, this.longitude,
+                                     (this.city == string.Empty
+                                          ? (this.region == string.Empty
+                                                 ? (this.country == string.Empty
+                                                        ? ""
+                                                        : " (Estimated location: " + this.country + ")")
+                                                 : (this.country == string.Empty
+                                                        ? " (Estimated location: " + this.region + ")"
+                                                        : " (Estimated location: " + this.region + ", " + this.country +
+                                                          ")"))
+                                          : (this.region == string.Empty
+                                                 ? (this.country == string.Empty
+                                                        ? " (Estimated location: " + this.city + ")"
+                                                        : " (Estimated location: " + this.city + ", " + this.country +
+                                                          ")")
+                                                 : (this.country == string.Empty
+                                                        ? " (Estimated location: " + this.city + ", " + this.region +
+                                                          ")"
+                                                        : " (Estimated location: " + this.city + ", " + this.region +
+                                                          ", " +
+                                                          this.country +
+                                                          ")"))));
+            }
         }
     }
 }
