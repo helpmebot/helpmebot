@@ -209,9 +209,18 @@ namespace helpmebot6
             query = query.TrimEnd(',');
             query += " );";
 
-            MySqlCommand cmd = new MySqlCommand(query);
-            this.executeNonQuery(ref cmd);
-            return cmd.LastInsertedId;
+            long lastInsertedId = -1;
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(query);
+                this.executeNonQuery(ref cmd);
+                lastInsertedId = cmd.LastInsertedId;
+            }
+            catch(MySqlException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+            return lastInsertedId;
         }
 
 
@@ -221,8 +230,9 @@ namespace helpmebot6
         /// <param name="table">The table.</param>
         /// <param name="limit">The limit.</param>
         /// <param name="conditions">The conditions.</param>
-        public void delete(string table, int limit, params WhereConds[] conditions)
+        public bool delete(string table, int limit, params WhereConds[] conditions)
         {
+            bool succeed = false;
 
             string query = "DELETE FROM `" + sanitise(table) + "`";
             for (int i = 0; i < conditions.Length; i++)
@@ -239,8 +249,18 @@ namespace helpmebot6
                 query += " LIMIT " + limit;
 
             query += ";";
-            MySqlCommand deleteCommand = new MySqlCommand(query);
-            this.executeNonQuery(ref deleteCommand);
+            try
+            {
+                MySqlCommand deleteCommand = new MySqlCommand(query);
+                this.executeNonQuery(ref deleteCommand);
+                succeed = true;
+            }
+            catch (MySqlException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+            return succeed;
+
         }
 
         /// <summary>
@@ -250,10 +270,12 @@ namespace helpmebot6
         /// <param name="items">The items.</param>
         /// <param name="limit">The limit.</param>
         /// <param name="conditions">The conditions.</param>
-        public void update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
+        public bool update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
         {
+            bool succeed = false;
+
             if (items.Count < 1)
-                return;
+                return true;
 
             string query = "UPDATE `" + sanitise(table) + "` SET ";
 
@@ -279,8 +301,17 @@ namespace helpmebot6
 
             query += ";";
 
-            MySqlCommand updateCommand = new MySqlCommand(query);
-            this.executeNonQuery(ref updateCommand);
+            try
+            {
+                MySqlCommand updateCommand = new MySqlCommand(query);
+                this.executeNonQuery(ref updateCommand);
+                succeed = true;
+            }
+            catch (MySqlException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
+            return succeed;
         }
 
         /// <summary>
@@ -295,13 +326,21 @@ namespace helpmebot6
             ArrayList resultSet = new ArrayList();
             if (dr != null)
             {
-                while (dr.Read())
+                try
                 {
-                    object[] row = new object[dr.FieldCount];
-                    dr.GetValues(row);
-                    resultSet.Add(row);
+                    while (dr.Read())
+                    {
+                        object[] row = new object[dr.FieldCount];
+                        dr.GetValues(row);
+                        resultSet.Add(row);
+                    }
+                    dr.Close();
                 }
-                dr.Close();
+                catch(MySqlException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                    throw;
+                }
             }
             return resultSet;
         }

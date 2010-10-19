@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using MySql.Data.MySqlClient;
 
 #endregion
 
@@ -180,7 +181,19 @@ namespace helpmebot6.Monitoring
                 q.setFrom("categoryitems");
                 q.addWhere(new DAL.WhereConds("item_name", item));
                 q.addWhere(new DAL.WhereConds("item_keyword", keyword));
-                if (DAL.singleton().executeScalarSelect(q) == "0")
+
+                string dbResult;
+                try
+                {
+                    dbResult = DAL.singleton().executeScalarSelect(q);
+                }
+                catch(MySqlException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                    dbResult = "0";
+                }
+
+                if (dbResult == "0")
                 {
                     DAL.singleton().insert("categoryitems", "", item, "", keyword, "1");
                     newItems.Add(item);
