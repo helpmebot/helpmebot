@@ -447,28 +447,33 @@ namespace helpmebot6
         {
             try
             {
-                MySqlCommand cmd = new MySqlCommand
-                                       {
-                                           Connection = this._connection,
-                                           CommandType =
-                                               CommandType.StoredProcedure,
-                                           CommandText = "HMB_GET_LOCAL_OPTION"
-                                       };
-
-                cmd.Parameters.AddWithValue("@optionName", option);
-                cmd.Parameters["@optionName"].Direction = ParameterDirection.Input;
-
-                cmd.Parameters.AddWithValue("@channel", channel);
-                cmd.Parameters["@channel"].Direction = ParameterDirection.Input;
-
-                cmd.Parameters.AddWithValue("@optionValue", "");
-                cmd.Parameters["@optionValue"].Direction = ParameterDirection.Output;
                 lock (this)
                 {
                     runConnectionTest();
+
+
+                    MySqlCommand cmd = new MySqlCommand
+                                           {
+                                               Connection = this._connection,
+                                               CommandType =
+                                                   CommandType.StoredProcedure,
+                                               CommandText = "HMB_GET_LOCAL_OPTION"
+                                           };
+
+                    cmd.Parameters.AddWithValue("@optionName", option);
+                    cmd.Parameters["@optionName"].Direction = ParameterDirection.Input;
+
+                    cmd.Parameters.AddWithValue("@channel", channel);
+                    cmd.Parameters["@channel"].Direction = ParameterDirection.Input;
+
+                    cmd.Parameters.AddWithValue("@optionValue", "");
+                    cmd.Parameters["@optionValue"].Direction = ParameterDirection.Output;
+
+
                     cmd.ExecuteNonQuery();
+
+                    return (string) cmd.Parameters["@optionValue"].Value;
                 }
-                return (string) cmd.Parameters["@optionValue"].Value;
             }
             catch (FormatException ex)
             {
