@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -367,7 +368,9 @@ namespace helpmebot6
 
             int sleepTime = 1000;
 
-            while (!connectionOk)
+            int totalTimeSlept = 0;
+
+            while (!connectionOk || totalTimeSlept >= 180 /*seconds*/ * 1000 /*transform to milliseconds*/)
             {
                 if (!firstTime)
                 {
@@ -376,14 +379,28 @@ namespace helpmebot6
                     this.connect();
 
                     Thread.Sleep(sleepTime);
+                    totalTimeSlept += sleepTime;
 
                     sleepTime = (int) (sleepTime*1.5) > int.MaxValue ? sleepTime : (int) (sleepTime*1.5);
                 }
 
-                connectionOk = _connection.Ping();
+                while(_connection.State==ConnectionState.Connecting)
+                {
+                    Thread.Sleep(100);
+                    totalTimeSlept += 100;
+                }
+
+                connectionOk = ((_connection.State == ConnectionState.Open) ||
+                                (_connection.State == ConnectionState.Fetching) ||
+                                (_connection.State == ConnectionState.Executing));
+
+                
 
                 firstTime = false;
             }
+
+            if(!connectionOk)
+                throw new SocketException();
         }
 
         /// <summary>
@@ -493,54 +510,58 @@ namespace helpmebot6
         public string proc_HMB_GET_MESSAGE_CONTENT(string title)
         // ReSharper restore InconsistentNaming
         {
-            MySqlCommand cmd = new MySqlCommand
-                                   {
-                                       Connection = this._connection,
-                                       CommandType =
-                                           CommandType.StoredProcedure,
-                                       CommandText =
-                                           "HMB_GET_MESSAGE_CONTENT"
-                                   };
+            byte[] binarymessage = new byte[0];
 
-            byte[] titlebytes = new byte[255];
-            Encoding.ASCII.GetBytes(title, 0, title.Length, titlebytes, 0);
-
-            cmd.Parameters.Add("@title", MySqlDbType.VarBinary).Value = title;
-            cmd.Parameters["@title"].Direction = ParameterDirection.Input;
-
-
-            byte[] messagebytes = new byte[0];
-            cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = messagebytes;
-            cmd.Parameters["@message"].Direction = ParameterDirection.Output;
-
-            lock (this)
+            try
             {
-                try
+                lock (this)
                 {
                     runConnectionTest();
+
+                    MySqlCommand cmd = new MySqlCommand
+                                           {
+                                               Connection = this._connection,
+                                               CommandType =
+                                                   CommandType.StoredProcedure,
+                                               CommandText =
+                                                   "HMB_GET_MESSAGE_CONTENT"
+                                           };
+
+                    byte[] titlebytes = new byte[255];
+                    Encoding.ASCII.GetBytes(title, 0, title.Length, titlebytes, 0);
+
+                    cmd.Parameters.Add("@title", MySqlDbType.VarBinary).Value = title;
+                    cmd.Parameters["@title"].Direction = ParameterDirection.Input;
+
+
+                    byte[] messagebytes = new byte[0];
+                    cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = messagebytes;
+                    cmd.Parameters["@message"].Direction = ParameterDirection.Output;
+
                     cmd.ExecuteNonQuery();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
+
+                    //                Logger.instance().addToLog("pre-error.", Logger.LogTypes.General);
+
+                    object foo = cmd.Parameters["@message"].Value is DBNull
+                                     ? new byte[0]
+                                     : cmd.Parameters["@message"].Value;
+                    //                Logger.instance().addToLog("empty or param value", Logger.LogTypes.General);
+
+                    //                Logger.instance().addToLog(foo.GetType().ToString(), Logger.LogTypes.General);
+
+
+                    binarymessage = (byte[]) (foo);
+
+                    //                Logger.instance().addToLog("convert to byte", Logger.LogTypes.General);
+
+
+                    //               Logger.instance().addToLog("got binary message, returning.", Logger.LogTypes.General);
                 }
             }
-
-            Logger.instance().addToLog("pre-error.", Logger.LogTypes.General);
-
-            object foo = cmd.Parameters["@message"].Value is DBNull ? new byte[0] : cmd.Parameters["@message"].Value;
-            Logger.instance().addToLog("empty or param value", Logger.LogTypes.General);
-
-            Logger.instance().addToLog(foo.GetType().ToString(), Logger.LogTypes.General);
-
-
-            byte[] binarymessage = (byte[])(foo);
-
-            Logger.instance().addToLog("convert to byte", Logger.LogTypes.General);
-
-
-            Logger.instance().addToLog("got binary message, returning.", Logger.LogTypes.General);
-
+            catch (InvalidOperationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
             return Encoding.UTF8.GetString(binarymessage);
         }
 
@@ -551,43 +572,45 @@ namespace helpmebot6
         public string proc_HMB_GET_IW_URL(string prefix)
         // ReSharper restore InconsistentNaming
         {
-            MySqlCommand cmd = new MySqlCommand
-                                   {
-                                       Connection = this._connection,
-                                       CommandType =
-                                           CommandType.StoredProcedure,
-                                       CommandText =
-                                           "HMB_GET_IW_URL"
-                                   };
-
-            if (prefix.Length > 32)
-                return string.Empty;
-
-            cmd.Parameters.Add( "@prefix", MySqlDbType.VarChar ).Value = prefix;
-            cmd.Parameters[ "@prefix" ].Direction = ParameterDirection.Input;
-
-
-            byte[ ] url = new byte[0];
-            cmd.Parameters.Add( "@url", MySqlDbType.VarChar ).Value = url;
-            cmd.Parameters[ "@url" ].Direction = ParameterDirection.Output;
-
-
-
-            lock (this)
+            string surl = string.Empty;
+            try
             {
-                try
+                lock (this)
                 {
                     runConnectionTest();
+
+                    MySqlCommand cmd = new MySqlCommand
+                                           {
+                                               Connection = this._connection,
+                                               CommandType =
+                                                   CommandType.StoredProcedure,
+                                               CommandText =
+                                                   "HMB_GET_IW_URL"
+                                           };
+
+                    if (prefix.Length > 32)
+                        return string.Empty;
+
+                    cmd.Parameters.Add("@prefix", MySqlDbType.VarChar).Value = prefix;
+                    cmd.Parameters["@prefix"].Direction = ParameterDirection.Input;
+
+
+                    byte[] url = new byte[0];
+                    cmd.Parameters.Add("@url", MySqlDbType.VarChar).Value = url;
+                    cmd.Parameters["@url"].Direction = ParameterDirection.Output;
+
+                    
                     cmd.ExecuteNonQuery();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
+
+                    surl =
+                        (string)
+                        (cmd.Parameters["@url"].Value is System.DBNull ? string.Empty : cmd.Parameters["@url"].Value);
                 }
             }
-
-            string surl = (string)(cmd.Parameters["@url"].Value is System.DBNull ? string.Empty : cmd.Parameters["@url"].Value);
-
+            catch (InvalidOperationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+            }
             return surl;
         }
 
