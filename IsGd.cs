@@ -44,19 +44,34 @@ namespace helpmebot6
 
             if (cachelookup == "")
             {
-                HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
-                wrq.UserAgent = Configuration.singleton()["useragent"];
-                HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
-                if (wrs.StatusCode == HttpStatusCode.OK)
+                try
                 {
-                    StreamReader sr = new StreamReader(wrs.GetResponseStream());
-                    string shorturl = sr.ReadLine();
+                    string shorturl = getShortUrl(longUrl);
                     DAL.singleton().insert("shorturlcache", "", longUrl.ToString(), shorturl);
                     return new Uri(shorturl);
                 }
-                return null;
+                catch(WebException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                    return null;
+                }
             }
             return new Uri(cachelookup);
+        }
+
+        private static string getShortUrl(Uri longUrl)
+        {
+            HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
+            wrq.UserAgent = Configuration.singleton()["useragent"];
+            HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
+            if (wrs.StatusCode == HttpStatusCode.OK)
+            {
+                StreamReader sr = new StreamReader(wrs.GetResponseStream());
+                string shorturl = sr.ReadLine();
+                return shorturl;
+            }
+            
+            throw new WebException();
         }
     }
 }

@@ -232,5 +232,14 @@ namespace helpmebot6
         {
             this._configurationCache.Clear();
         }
+
+#if DEBUG
+
+        public void addToConfigCache(string key, ConfigurationSetting value)
+        {
+            _configurationCache.Add(key, value);
+        }
+
+#endif
     }
 }
