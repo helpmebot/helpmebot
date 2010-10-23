@@ -1,0 +1,1 @@
+svn info | grep "Revision"
