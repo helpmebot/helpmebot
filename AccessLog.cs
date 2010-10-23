@@ -52,7 +52,7 @@ namespace helpmebot6
         {
             DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
                                    logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
-                                   (logEntry.alAllowed ? "1" : "0"));
+                                   (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace helpmebot6
             /// <param name="source">The source.</param>
             /// <param name="command">The command.</param>
             /// <param name="success">if set to <c>true</c> [success].</param>
-            public AccessLogEntry(User source, Type command, bool success)
+            public AccessLogEntry(User source, Type command, bool success, string channel)
             {
                 this._alId = 0;
                 this._alDate = new DateTime(0);
@@ -74,6 +74,7 @@ namespace helpmebot6
                 this._alClass = command;
                 this._alAllowed = success;
                 this._alReqaccesslevel = ((GenericCommand) Activator.CreateInstance(this._alClass)).accessLevel;
+                this._channel = channel;
             }
 
             private readonly int _alId;
@@ -82,6 +83,7 @@ namespace helpmebot6
             private readonly Type _alClass;
             private readonly DateTime _alDate;
             private readonly bool _alAllowed;
+            private readonly string _channel;
 
             /// <summary>
             /// Gets the access log id.
@@ -135,6 +137,11 @@ namespace helpmebot6
             public bool alAllowed
             {
                 get { return this._alAllowed; }
+            }
+
+            public string alChannel
+            {
+                get { return _channel; }
             }
         }
 
