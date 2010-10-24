@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
 
             this.log("Running command: " + command);
 
-            return accessTest(source, channel)? this.reallyRun(source,channel,args  ):this.accessDenied(source,command,args  );
+            return accessTest(source, channel)? this.reallyRun(source,channel,args  ):this.accessDenied(source,channel,args  );
         }
 
         /// <summary>

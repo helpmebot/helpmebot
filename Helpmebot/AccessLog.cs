@@ -67,6 +67,7 @@ namespace helpmebot6
             /// <param name="command">The command.</param>
             /// <param name="success">if set to <c>true</c> [success].</param>
             /// <param name="channel">The channel the command was launched from</param>
+            /// <param name="parameters"></param>
             public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters)
             {
                 this._alId = 0;
@@ -76,7 +77,7 @@ namespace helpmebot6
                 this._alAllowed = success;
                 this._alReqaccesslevel = ((GenericCommand) Activator.CreateInstance(this._alClass)).accessLevel;
                 this._channel = channel;
-                this._params = string.Join(" ", parameters);
+                this._params = string.Join(" ", parameters) ?? string.Empty;
             }
 
             private readonly int _alId;
