@@ -52,7 +52,7 @@ namespace helpmebot6
         {
             DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
                                    logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
-                                   (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel);
+                                   (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel, logEntry.alParams);
         }
 
         /// <summary>
@@ -66,7 +66,8 @@ namespace helpmebot6
             /// <param name="source">The source.</param>
             /// <param name="command">The command.</param>
             /// <param name="success">if set to <c>true</c> [success].</param>
-            public AccessLogEntry(User source, Type command, bool success, string channel)
+            /// <param name="channel">The channel the command was launched from</param>
+            public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters)
             {
                 this._alId = 0;
                 this._alDate = new DateTime(0);
@@ -75,6 +76,7 @@ namespace helpmebot6
                 this._alAllowed = success;
                 this._alReqaccesslevel = ((GenericCommand) Activator.CreateInstance(this._alClass)).accessLevel;
                 this._channel = channel;
+                this._params = string.Join(" ", parameters);
             }
 
             private readonly int _alId;
@@ -84,6 +86,7 @@ namespace helpmebot6
             private readonly DateTime _alDate;
             private readonly bool _alAllowed;
             private readonly string _channel;
+            private readonly string _params;
 
             /// <summary>
             /// Gets the access log id.
@@ -142,6 +145,11 @@ namespace helpmebot6
             public string alChannel
             {
                 get { return _channel; }
+            }
+
+            public string alParams
+            {
+                get { return _params; }
             }
         }
 

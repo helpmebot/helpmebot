@@ -94,7 +94,7 @@ namespace helpmebot6.Commands
         /// <returns>The response to the comand</returns>
         protected virtual CommandResponseHandler reallyRun(User source, string channel, string[] args)
         {
-            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true, channel));
+            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true, channel, args));
             this.log("Starting command execution...");
             CommandResponseHandler crh;
             try
@@ -124,7 +124,7 @@ namespace helpmebot6.Commands
             response.respond(new Message().get("accessDenied", ""),
                              CommandResponseDestination.PrivateMessage);
             this.log("Access denied to command.");
-            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false,channel));
+            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false, channel, args));
             return response;
         }
 

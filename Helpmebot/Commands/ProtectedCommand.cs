@@ -9,7 +9,7 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler reallyRun(User source, string channel, string[] args)
         {
-            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true,channel));
+            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true,channel, args));
             this.log("Starting command execution...");
             CommandResponseHandler crh;
 
