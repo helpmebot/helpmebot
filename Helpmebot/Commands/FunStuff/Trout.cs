@@ -39,7 +39,7 @@ namespace helpmebot6.Commands
             string name = string.Join(" ", args);
 
             string[] forbiddenTargets = {
-                                            "stwalkerster", "chzz", "itself", "himself", "herself",
+                                            "stwalkerster", "chzz", "itself", "himself", "herself", "themself", "accbot",
                                             Helpmebot6.irc.ircNickname.ToLower()
                                         };
 
