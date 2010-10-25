@@ -83,7 +83,7 @@ namespace helpmebot6.Commands
                     if (source.accessLevel >= User.UserRights.Superuser)
                         Configuration.singleton( )[ "silence" ] = newValue;
                 }
-                return new CommandResponseHandler(new Message().get("done, to undo this action please trpe !sinence again."),
+                return new CommandResponseHandler(new Message().get("done"),
                                                   CommandResponseDestination.PrivateMessage);
             }
             string[] mP = {"silence", 1.ToString(), args.Length.ToString()};
