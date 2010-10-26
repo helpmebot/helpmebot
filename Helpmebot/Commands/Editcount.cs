@@ -42,7 +42,7 @@ namespace helpmebot6.Commands
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
             string userName;
-            if (args.Length > 0)
+            if (args.Length > 0 && args[0] != "")
             {
                 userName = string.Join(" ", args);
             }
