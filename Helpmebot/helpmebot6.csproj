@@ -108,7 +108,9 @@
     <Compile Include="Commands\Configcacheclear.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\FunStuff\Curl.cs" />
+    <Compile Include="Commands\FunStuff\Electrocute.cs" />
     <Compile Include="Commands\FunStuff\FunCommand.cs" />
+    <Compile Include="Commands\FunStuff\Salmon.cs" />
     <Compile Include="Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Commands\Nickservlogin.cs" />

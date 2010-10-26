@@ -27,6 +27,13 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Trout : FunStuff.FunCommand
     {
+        protected readonly string[] forbiddenTargets = {
+                                            "itself", "himself", "herself", "themself", 
+                                            Helpmebot6.irc.ircNickname.ToLower()
+                                        };
+
+        protected string messageName = "CmdTrout";
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -38,18 +45,13 @@ namespace helpmebot6.Commands
         {
             string name = string.Join(" ", args);
 
-            string[] forbiddenTargets = {
-                                            "itself", "himself", "herself", "themself", 
-                                            Helpmebot6.irc.ircNickname.ToLower()
-                                        };
-
             if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
             {
                 name = source.nickname;
             }
 
             string[] messageparams = {name};
-            string message = IAL.wrapCTCP("ACTION", new Message().get("cmdTrout", messageparams));
+            string message = IAL.wrapCTCP("ACTION", new Message().get(messageName, messageparams));
 
             return new CommandResponseHandler(message);
         }
