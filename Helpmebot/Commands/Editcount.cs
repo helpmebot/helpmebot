@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                userName = source.nickname;
+                string userName = source.nickname;
 			}
             int editCount = getEditCount(userName, channel);
             if (editCount == -1)
