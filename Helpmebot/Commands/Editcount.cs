@@ -41,14 +41,14 @@ namespace helpmebot6.Commands
             Logger.instance().addToLog(
                 "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
                 Logger.LogTypes.DNWB);
-
+            string userName;
             if (args.Length > 0)
             {
-                string userName = string.Join(" ", args);
+                userName = string.Join(" ", args);
             }
             else
             {
-                string userName = source.nickname;
+                userName = source.nickname;
 			}
             int editCount = getEditCount(userName, channel);
             if (editCount == -1)
