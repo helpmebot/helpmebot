@@ -30,7 +30,7 @@ namespace helpmebot6.Commands
     internal class Editcount : GenericCommand
     {
         /// <summary>
-        /// Actual command logic
+        /// Actual command logic    
         /// </summary>
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
@@ -38,9 +38,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
             string userName;
             if (args.Length > 0 && args[0] != "")
             {
@@ -75,10 +72,6 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         public int getEditCount(string username, string channel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
-
             if (username == string.Empty)
             {
                 throw new ArgumentNullException();
