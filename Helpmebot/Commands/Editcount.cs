@@ -45,26 +45,26 @@ namespace helpmebot6.Commands
             if (args.Length > 0)
             {
                 string userName = string.Join(" ", args);
-                int editCount = getEditCount(userName, channel);
-                if (editCount == -1)
-                {
-                    string[] messageParams = {userName};
-                    string message = new Message().get("noSuchUser", messageParams);
-                    return new CommandResponseHandler(message);
-                }
-                else
-                {
-                    string[] messageParameters = {editCount.ToString(), userName};
-
-                    string message = new Message().get("editCount", messageParameters);
-
-                    return new CommandResponseHandler(message);
-                }
             }
-            string[] messageParameters2 = {"count", "1", args.Length.ToString()};
-            Helpmebot6.irc.ircNotice(source.nickname,
-                                     new Message().get("notEnoughParameters", messageParameters2));
-            return null;
+            else
+            {
+                userName = source.nickname;
+			}
+            int editCount = getEditCount(userName, channel);
+            if (editCount == -1)
+            {
+                string[] messageParams = {userName};
+                string message = new Message().get("noSuchUser", messageParams);
+                return new CommandResponseHandler(message);
+            }
+            else
+            {
+                string[] messageParameters = {editCount.ToString(), userName};
+
+                string message = new Message().get("editCount", messageParameters);
+
+                return new CommandResponseHandler(message);
+            }
         }
 
         /// <summary>
