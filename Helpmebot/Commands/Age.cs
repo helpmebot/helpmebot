@@ -37,31 +37,32 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            if (args.Length > 0)
+            string userName;
+            if (args.Length > 0 && args[0] != "")
             {
-                string username = string.Join(" ", args);
-                TimeSpan time = getWikipedianAge(username, channel);
-                string message;
-                if (time.Equals(new TimeSpan(0)))
-                {
-                    string[] messageParameters = {username};
-                    message = new Message().get("noSuchUser", messageParameters);
-                }
-                else
-                {
-                    string[] messageParameters = {
-                                                     username, (time.Days/365).ToString(), (time.Days%365).ToString(),
-                                                     time.Hours.ToString(), time.Minutes.ToString(),
-                                                     time.Seconds.ToString()
-                                                 };
-                    message = new Message().get("cmdAge", messageParameters);
-                }
-                return new CommandResponseHandler(message);
+                userName = string.Join(" ", args);
             }
-            string[] messageParameters2 = {"age", "1", args.Length.ToString()};
-            Helpmebot6.irc.ircNotice(source.nickname,
-                                     new Message().get("notEnoughParameters", messageParameters2));
-            return null;
+            else
+            {
+                userName = source.nickname;
+			}
+            TimeSpan time = getWikipedianAge(username, channel);
+            string message;
+            if (time.Equals(new TimeSpan(0)))
+            {
+                string[] messageParameters = {username};
+                message = new Message().get("noSuchUser", messageParameters);
+            }
+            else
+            {
+                string[] messageParameters = {
+                                                 username, (time.Days/365).ToString(), (time.Days%365).ToString(),
+                                                 time.Hours.ToString(), time.Minutes.ToString(),
+                                                 time.Seconds.ToString()
+                                             };
+                message = new Message().get("cmdAge", messageParameters);
+            }
+            return new CommandResponseHandler(message);
         }
 
         /// <summary>

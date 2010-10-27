@@ -39,33 +39,31 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             CommandResponseHandler crh = new CommandResponseHandler();
-            if (args.Length > 0)
+            
+            string userName;
+            if (args.Length > 0 && args[0] != "")
             {
-                string username = string.Join(" ", args);
-                string rights = getRights(username, channel);
-
-
-                string message;
-                if (rights != "")
-                {
-                    string[] messageParameters = {username, rights};
-                    message = new Message().get("cmdRightsList", messageParameters);
-                }
-                else
-                {
-                    string[] messageParameters = {username};
-                    message = new Message().get("cmdRightsNone", messageParameters);
-                }
-
-                crh.respond(message);
+                userName = string.Join(" ", args);
             }
             else
             {
-                string[] messageParameters = {"rights", "1", args.Length.ToString()};
-
-                Helpmebot6.irc.ircNotice(source.nickname,
-                                         new Message().get("notEnoughParameters", messageParameters));
+                userName = source.nickname;
+			}
+            string rights = getRights(username, channel);
+            
+            string message;
+            if (rights != "")
+            {
+                string[] messageParameters = {username, rights};
+                message = new Message().get("cmdRightsList", messageParameters);
             }
+            else
+            {
+                string[] messageParameters = {username};
+                message = new Message().get("cmdRightsNone", messageParameters);
+            }
+
+            crh.respond(message);
             return crh;
         }
 
