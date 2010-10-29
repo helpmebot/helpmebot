@@ -111,11 +111,8 @@
     <Compile Include="Commands\FunStuff\Curl.cs" />
     <Compile Include="Commands\FunStuff\Electrocute.cs" />
     <Compile Include="Commands\FunStuff\FunCommand.cs" />
-<<<<<<< .mine
 	<Compile Include="Commands\FunStuff\Cookie.cs" />
-=======
     <Compile Include="Commands\FunStuff\Salmon.cs" />
->>>>>>> .r572
     <Compile Include="Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
 	<Compile Include="Commands\FunStuff\Cookie.cs" />
