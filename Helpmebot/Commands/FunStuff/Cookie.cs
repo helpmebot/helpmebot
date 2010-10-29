@@ -23,7 +23,7 @@ using System.Reflection;
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Gives a User a cookie.
+    /// Gives a user a cookie.
     /// </summary>
     internal class Cookie : FunStuff.FunCommand
     {
