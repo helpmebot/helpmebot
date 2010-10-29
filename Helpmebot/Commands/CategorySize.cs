@@ -96,7 +96,7 @@ namespace helpmebot6.Commands
             {
                 creader.Read();
             } while (creader.Name != "page");
-            if (creader.GetAttribute("missing"))
+            if (creader.GetAttribute("missing") == "")
             {
                 return -2;
             }
