@@ -49,7 +49,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageparams = {name};
-            string message = IAL.wrapCTCP("ACTION", new Message().get("cmdTrout", messageparams));
+            string message = IAL.wrapCTCP("ACTION", new Message().get("cmdCookie", messageparams));
 
             return new CommandResponseHandler(message);
         }
