@@ -46,17 +46,17 @@ namespace helpmebot6.Commands
             {
                 userName = source.nickname;
 			}
-            TimeSpan time = getWikipedianAge(username, channel);
+            TimeSpan time = getWikipedianAge(userName, channel);
             string message;
             if (time.Equals(new TimeSpan(0)))
             {
-                string[] messageParameters = {username};
+                string[] messageParameters = { userName };
                 message = new Message().get("noSuchUser", messageParameters);
             }
             else
             {
                 string[] messageParameters = {
-                                                 username, (time.Days/365).ToString(), (time.Days%365).ToString(),
+                                                 userName, (time.Days/365).ToString(), (time.Days%365).ToString(),
                                                  time.Hours.ToString(), time.Minutes.ToString(),
                                                  time.Seconds.ToString()
                                              };

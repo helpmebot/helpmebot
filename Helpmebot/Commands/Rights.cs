@@ -49,17 +49,17 @@ namespace helpmebot6.Commands
             {
                 userName = source.nickname;
 			}
-            string rights = getRights(username, channel);
+            string rights = getRights(userName, channel);
             
             string message;
             if (rights != "")
             {
-                string[] messageParameters = {username, rights};
+                string[] messageParameters = { userName, rights };
                 message = new Message().get("cmdRightsList", messageParameters);
             }
             else
             {
-                string[] messageParameters = {username};
+                string[] messageParameters = { userName };
                 message = new Message().get("cmdRightsNone", messageParameters);
             }
 
