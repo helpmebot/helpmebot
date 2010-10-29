@@ -25,7 +25,7 @@ using System.Xml;
 namespace helpmebot6.Commands
 {
     /// <summary>
-    ///   Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]])
+    /// Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]]).
     /// </summary>
     internal class Count : GenericCommand
     {
@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
             {
                 categoryName = "Pending AfC submissions";
             }
-            int categorySize = getNumInCategory(categoryName, channel);
+            int categorySize = getCategorySize(categoryName, channel);
             if (categorySize == -2)
             {
                 string[] messageParams = {categoryName};
@@ -69,12 +69,12 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Gets the edit count.
+        /// Gets the size of a category.
         /// </summary>
         /// <param name="categoryName">The category to retrieve the article count for.</param>
         /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
         /// <returns></returns>
-        public int getcategorySize(string categoryName, string channel)
+        public int getCategorySize(string categoryName, string channel)
         {
             if (categoryName == string.Empty)
             {
