@@ -38,16 +38,6 @@ namespace helpmebot6.Commands
         {
             string name = string.Join(" ", args);
 
-            string[] forbiddenTargets = {
-                                            "itself", "himself", "herself", "themself", "accbot"
-                                            Helpmebot6.irc.ircNickname.ToLower()
-                                        };
-
-            if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
-            {
-                name = source.nickname;
-            }
-
             string[] messageparams = {name};
             string message = IAL.wrapCTCP("ACTION", new Message().get("cmdCookie", messageparams));
 
