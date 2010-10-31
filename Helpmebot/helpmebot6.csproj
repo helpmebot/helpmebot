@@ -115,6 +115,7 @@
     <Compile Include="Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Commands\FunStuff\Cookie.cs" />
+    <Compile Include="Commands\Gancount.cs" />
     <Compile Include="Commands\Nickservlogin.cs" />
     <Compile Include="Commands\Oauth.cs" />
     <Compile Include="Commands\Editcount.cs" />
