@@ -25,39 +25,11 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Returns the number of articles currently waiting at Articles for Creation
     /// </summary>
-    internal class Afccount : GenericCommand
+    internal class Afccount : Categorysize
     {
-        /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler execute( User source, string channel, string[ ] args )
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            //  api + ?format=xml&action=query&prop=categoryinfo&titles=Category:Pending%20AfC%20submissions
-
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
-
-           // DAL.Select q = new DAL.Select("site_api");
-           // q.setFrom("site");
-           // q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-           // string api = DAL.singleton().executeScalarSelect(q);
-
-           // XPathDocument d =
-           //     new XPathDocument(
-           //         HttpRequest.get( api +
-           //                          "?format=xml&action=query&prop=categoryinfo&titles=Category:Pending%20AfC%20submissions" ) );
-            
-
-           // XPathNavigator nav = d.CreateNavigator( );
-           // XPathNodeIterator xpni = nav.Select( "//categoryinfo@pages" );
-
-            ;
-
-            return null;
-
+            return getResultOfCommand("Pending AfC submissions", channel);
         }
     }
 }

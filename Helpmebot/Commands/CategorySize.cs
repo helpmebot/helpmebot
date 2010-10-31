@@ -27,7 +27,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]]).
     /// </summary>
-    internal class Count : GenericCommand
+    internal class Categorysize : GenericCommand
     {
         /// <summary>
         /// Actual command logic
@@ -47,6 +47,12 @@ namespace helpmebot6.Commands
             {
                 categoryName = "Pending AfC submissions";
             }
+
+            return getResultOfCommand(categoryName, channel);
+        }
+
+        protected CommandResponseHandler getResultOfCommand(string categoryName, string channel)
+        {
             int categorySize = getCategorySize(categoryName, channel);
             if (categorySize == -2)
             {
