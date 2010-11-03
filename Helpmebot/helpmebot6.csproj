@@ -108,7 +108,8 @@
     <Compile Include="Commands\Configcacheclear.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\CategorySize.cs" />
-    <Compile Include="Commands\FunStuff\Curl.cs" />
+    <Compile Include="Commands\FunStuff\Drink.cs" />
+	<Compile Include="Commands\FunStuff\Curl.cs" />
     <Compile Include="Commands\FunStuff\Electrocute.cs" />
     <Compile Include="Commands\FunStuff\FunCommand.cs" />
     <Compile Include="Commands\FunStuff\Salmon.cs" />
