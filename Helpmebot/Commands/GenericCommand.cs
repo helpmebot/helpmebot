@@ -94,7 +94,13 @@ namespace helpmebot6.Commands
         /// <returns>The response to the comand</returns>
         protected virtual CommandResponseHandler reallyRun(User source, string channel, string[] args)
         {
-            AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true, channel, args));
+            if(!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true,channel, args)))
+			{
+                CommandResponseHandler errorResponse = new CommandResponseHandler();
+                errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
+                errorResponse.respond(new Message().get("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
+                return errorResponse;
+            }
             this.log("Starting command execution...");
             CommandResponseHandler crh;
             try
