@@ -48,11 +48,12 @@ namespace helpmebot6
         /// Saves the specified log entry.
         /// </summary>
         /// <param name="logEntry">The log entry.</param>
-        public void save(AccessLogEntry logEntry)
+        public bool save(AccessLogEntry logEntry)
         {
             DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
                                    logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
                                    (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel, logEntry.alParams);
+								   return true;
         }
 
         /// <summary>
