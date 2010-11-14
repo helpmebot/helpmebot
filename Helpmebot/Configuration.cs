@@ -82,34 +82,37 @@ namespace helpmebot6
 
         private string getGlobalSetting( string optionName )
         {
-            if( this._configurationCache.ContainsKey( optionName ))
-            {
-                ConfigurationSetting setting;
-                if(this._configurationCache.TryGetValue(optionName,out setting  ))
+            lock(_configurationCache)
+                if (this._configurationCache.ContainsKey(optionName))
                 {
-                    if ( setting.isValid( ) )
+                    ConfigurationSetting setting;
+                    if (this._configurationCache.TryGetValue(optionName, out setting))
                     {
+                        if (setting.isValid())
+                        {
+                            return setting.value;
+                        }
+
+                        //option cache is not valid
+                        // fetch new item from database
+                        string optionValue1 = this.retrieveOptionFromDatabase(optionName);
+
+                        setting.value = optionValue1;
+                        this._configurationCache.Remove(optionName);
+                        this._configurationCache.Add(optionName, setting);
                         return setting.value;
                     }
+                    throw new ArgumentOutOfRangeException();
 
-                    //option cache is not valid
-                    // fetch new item from database
-                    string optionValue1 = this.retrieveOptionFromDatabase( optionName );
-
-                    setting.value = optionValue1;
-                    this._configurationCache.Remove( optionName );
-                    this._configurationCache.Add( optionName, setting );
-                    return setting.value;
                 }
-                throw new ArgumentOutOfRangeException();
-            }
 
             string optionValue2 = this.retrieveOptionFromDatabase(optionName);
 
             if (optionValue2 != string.Empty)
             {
                 ConfigurationSetting cachedSetting = new ConfigurationSetting(optionName, optionValue2);
-                this._configurationCache.Add( optionName, cachedSetting );
+                lock (_configurationCache)
+                    this._configurationCache.Add(optionName, cachedSetting);
             }
             return optionValue2;
         }
@@ -230,14 +233,16 @@ namespace helpmebot6
 
         public void clearCache()
         {
-            this._configurationCache.Clear();
+            lock (_configurationCache)
+                this._configurationCache.Clear();
         }
 
 #if DEBUG
 
         public void addToConfigCache(string key, ConfigurationSetting value)
         {
-            _configurationCache.Add(key, value);
+            lock (_configurationCache)
+                _configurationCache.Add(key, value);
         }
 
 #endif
