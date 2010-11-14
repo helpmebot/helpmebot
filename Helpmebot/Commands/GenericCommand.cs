@@ -130,14 +130,10 @@ namespace helpmebot6.Commands
             response.respond(new Message().get("accessDenied", ""),
                              CommandResponseDestination.PrivateMessage);
             this.log("Access denied to command.");
-            if(!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false,channel, args)))
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false, channel, args)))
             {
-                CommandResponseHandler errorResponse = new CommandResponseHandler();
-                errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(new Message().get("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
-                return errorResponse;
+                response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }
-
             return response;
         }
 
