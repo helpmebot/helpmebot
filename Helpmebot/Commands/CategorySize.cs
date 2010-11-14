@@ -17,7 +17,6 @@
 #region Usings
 
 using System;
-using System.Reflection;
 using System.Xml;
 
 #endregion
@@ -54,23 +53,27 @@ namespace helpmebot6.Commands
         protected CommandResponseHandler getResultOfCommand(string categoryName, string channel)
         {
             int categorySize = getCategorySize(categoryName, channel);
-            if (categorySize == -2)
+
+            switch (categorySize)
             {
-                string[] messageParams = {categoryName};
-                string message = new Message().get("categoryMissing", messageParams);
-                return new CommandResponseHandler(message);
-            }
-            else if (categorySize == -1)
-            {
-                string[] messageParams = {categoryName};
-                string message = new Message().get("categoryEmpty", messageParams);
-                return new CommandResponseHandler(message);
-            }
-            else
-            {
-                string[] messageParameters = {categorySize.ToString(), categoryName};
-                string message = new Message().get("categorySize", messageParameters);
-                return new CommandResponseHandler(message);
+                case -2:
+                    {
+                        string[] messageParams = { categoryName };
+                        string message = new Message().get("categoryMissing", messageParams);
+                        return new CommandResponseHandler(message);
+                    }
+                case -1:
+                    {
+                        string[] messageParams = {categoryName};
+                        string message = new Message().get("categoryEmpty", messageParams);
+                        return new CommandResponseHandler(message);
+                    }
+                default:
+                    {
+                        string[] messageParameters = {categorySize.ToString(), categoryName};
+                        string message = new Message().get("categorySize", messageParameters);
+                        return new CommandResponseHandler(message);
+                    }
             }
         }
 
@@ -112,11 +115,7 @@ namespace helpmebot6.Commands
             {
                 return int.Parse(categorySize);
             }
-            else
-            {
-                return -1;
-            }
-            throw new ArgumentException();
+            return -1;
         }
     }
 }

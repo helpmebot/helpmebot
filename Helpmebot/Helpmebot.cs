@@ -100,7 +100,7 @@ namespace helpmebot6
                 return;
             }
 
-            _config = Configuration.singleton();
+            Configuration.singleton();
 
             debugChannel = Configuration.singleton()["channelDebug"];
 
@@ -122,9 +122,9 @@ namespace helpmebot6
                 return;
             }
 
-            nagMon = new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
+            new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
-            udp = new UDPListener(4357);
+            new UDPListener(4357);
 
             string[] twparms = {server, schema, irc.ircServer};
             try

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 
 namespace helpmebot6
 {
@@ -8,10 +9,27 @@ namespace helpmebot6
         {
             _base = baseIrcAccessLayer;
             _port = port;
+
+            _base.dataRecievedEvent += new IAL.DataRecievedEventHandler(_base_dataRecievedEvent);
         }
+
+
+        private TcpListener listener;
 
         private IAL _base;
         private uint _port;
+        
+
+
+
+
+
+        void _base_dataRecievedEvent(string data)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         #region IThreadedSystem members
 
