@@ -145,7 +145,6 @@
     <Compile Include="Commands\Resolve.cs" />
     <Compile Include="Commands\Rights.cs" />
     <Compile Include="Commands\FunStuff\SayHi.cs" />
-    <Compile Include="Commands\Set.cs" />
     <Compile Include="Commands\Silence.cs" />
     <Compile Include="Commands\ThreadStatus.cs" />
     <Compile Include="Commands\Time.cs" />
