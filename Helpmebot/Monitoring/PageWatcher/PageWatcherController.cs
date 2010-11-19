@@ -52,7 +52,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         #endregion
 
         /// <summary>
-        /// Holds the connection object to browne.
+        /// Holds the connection object to irc.wikimedia.org.
         /// </summary>
         private readonly IAL _irc;
 
@@ -62,7 +62,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         private readonly ArrayList _watchedPageList;
         
         /// <summary>
-        /// Structure to hold the information about a page change recieved from browne.
+        /// Structure to hold the information about a page change recieved from irc.wikimedia.org.
         /// </summary>
         public struct RcPageChange
         {
@@ -76,7 +76,7 @@ namespace helpmebot6.Monitoring.PageWatcher
 
 
         /// <summary>
-        /// Setups the events for the browne IRC access layer.
+        /// Setups the events for the irc.wikimedia.org IRC access layer.
         /// </summary>
         private void setupEvents()
         {
@@ -118,7 +118,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         }
 
         /// <summary>
-        /// browne IRC PRIVMSG event handler
+        /// irc.wikimedia.org IRC PRIVMSG event handler
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="destination">The destination.</param>
@@ -141,7 +141,7 @@ namespace helpmebot6.Monitoring.PageWatcher
         }
 
         /// <summary>
-        /// browne IRC connection registration succeeded event handler
+        /// irc.wikimedia.org IRC connection registration succeeded event handler
         /// </summary>
         private void irc_ConnectionRegistrationSucceededEvent()
         {
