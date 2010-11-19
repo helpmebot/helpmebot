@@ -51,7 +51,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         public static GeolocateResult getLocation(IPAddress ip)
         {
-            Stream s = HttpRequest.get("http://ipinfodb.com/ip_query.php?timezone=false&ip=" + ip);
+
+            Stream s = HttpRequest.get("http://api.ipinfodb.com/v2/ip_query.php?key=" + Configuration.singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&timezone=false");
             XmlTextReader xtr = new XmlTextReader(s);
             GeolocateResult result = new GeolocateResult();
 
