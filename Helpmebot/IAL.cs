@@ -96,6 +96,11 @@ namespace helpmebot6
             get { return _ircPort; }
         }
 
+        public string myIdentity
+        {
+            get { return ircNickname + "!" + ircUsername + "@wikimedia/bot/helpmebot"; }
+        }
+
         public int floodProtectionWaitTime { get; set; }
 
         /// <summary>
@@ -111,6 +116,11 @@ namespace helpmebot6
         }
 
         public bool logEvents { get; private set; }
+
+        public string[] activeChannels { get
+        {
+            return (string[])channelList.ToArray(Type.GetType("String"));
+        } }
         #endregion
 
         #region constructor/destructor
@@ -525,6 +535,7 @@ namespace helpmebot6
 
         private Thread _ircReaderThread;
         private Thread _ircWriterThread;
+        private ArrayList channelList;
 
         private void _ircReaderThreadMethod()
         {
@@ -795,11 +806,13 @@ namespace helpmebot6
         private void ialPartEvent(User source, string channel, string message)
         {
             this.log("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
+            if (source.nickname == ircNickname) this.channelList.Remove(channel);
         }
 
         private void ialJoinEvent(User source, string channel)
         {
             this.log("JOIN EVENT BY " + source + " INTO " + channel);
+            if(source.nickname == ircNickname) this.channelList.Add(channel);
         }
 
         private void ialQuitEvent(User source, string message)

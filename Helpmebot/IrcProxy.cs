@@ -61,6 +61,13 @@ namespace helpmebot6
                 }
 
                 _sw.WriteLine(":irc.helpmebot.org.uk 001 :Welcome to the Helpmebot IRC Gateway.");
+                foreach (var c in _baseIal.activeChannels)
+                {
+                    _sw.WriteLine(":" + _baseIal.myIdentity + " JOIN " + c);
+                }
+                
+
+                
                 _sw.Flush();
                 _baseIal.dataRecievedEvent += baseIalDataRecievedEvent;
 
@@ -73,10 +80,13 @@ namespace helpmebot6
                     IAL.basicParser(line, ref source, ref command, ref parameters);
 
                     if (command == "QUIT")
-                        client.GetStream().Close();
-                    else
-                        _baseIal.sendRawLine(line);
+                    {
+                        _sr.Close();
+                        _baseIal.dataRecievedEvent -= baseIalDataRecievedEvent;
+                        break;
+                    }
 
+                    _baseIal.sendRawLine(line);
                 }
             }
         }
@@ -84,6 +94,7 @@ namespace helpmebot6
         void baseIalDataRecievedEvent(string data)
         {
             _sw.WriteLine(data);
+            _sw.Flush();
         }
 
         #region IThreadedSystem members
