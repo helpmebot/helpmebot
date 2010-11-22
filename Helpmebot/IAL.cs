@@ -60,6 +60,8 @@ namespace helpmebot6
         private readonly DateTime _lastMessage = DateTime.Now;
 
         private readonly uint _networkId;
+
+        private ArrayList channelList = new ArrayList();
         #endregion
 
         #region properties
@@ -535,7 +537,6 @@ namespace helpmebot6
 
         private Thread _ircReaderThread;
         private Thread _ircWriterThread;
-        private ArrayList channelList;
 
         private void _ircReaderThreadMethod()
         {
