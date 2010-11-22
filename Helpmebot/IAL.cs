@@ -932,7 +932,7 @@ namespace helpmebot6
 
         #region parsers
 
-        private static void basicParser(string line, ref string source, ref string command, ref string parameters)
+        public static void basicParser(string line, ref string source, ref string command, ref string parameters)
         {
             char[] stringSplitter = {' '};
             string[] parseBasic;

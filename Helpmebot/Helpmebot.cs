@@ -110,6 +110,8 @@ namespace helpmebot6
 
             irc = new IAL(_ircNetwork);
 
+            new IrcProxy(irc, 60422, "foobar");
+
             PageWatcherController.instance();
 
             setupEvents();
