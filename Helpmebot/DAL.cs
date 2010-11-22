@@ -335,12 +335,15 @@ namespace helpmebot6
                         dr.GetValues(row);
                         resultSet.Add(row);
                     }
-                    dr.Close();
                 }
                 catch(MySqlException ex)
                 {
                     GlobalFunctions.errorLog(ex);
                     throw;
+                }
+                finally
+                {
+                    dr.Close();
                 }
             }
             return resultSet;
