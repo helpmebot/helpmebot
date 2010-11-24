@@ -109,6 +109,7 @@
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\CategorySize.cs" />
     <Compile Include="Commands\FunStuff\Charge.cs" />
+    <Compile Include="Commands\FunStuff\Whale.cs" />
     <Compile Include="Commands\FunStuff\Curl.cs" />
     <Compile Include="Commands\FunStuff\Drink.cs" />
     <Compile Include="Commands\FunStuff\Electrocute.cs" />
