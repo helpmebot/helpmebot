@@ -17,11 +17,11 @@ namespace helpmebot6.Commands
                 {
                     name = source.nickname;
                 }
-                return new CommandResponseHandler(IAL.wrapCTCP("ACTION", new Message().get("cmdChargeParam", name)));
+                return new CommandResponseHandler(new Message().get("cmdChargeParam", name));
 
             }
 
-            return new CommandResponseHandler(IAL.wrapCTCP("ACTION", new Message().get("cmdCharge")));
+            return new CommandResponseHandler(new Message().get("cmdCharge"));
         }
     }
 }

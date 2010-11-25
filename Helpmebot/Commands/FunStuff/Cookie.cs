@@ -39,7 +39,7 @@ namespace helpmebot6.Commands
             string name = string.Join(" ", args);
 
             string[] messageparams = {name};
-            string message = IAL.wrapCTCP("ACTION", new Message().get("cmdCookie", messageparams));
+            string message = new Message().get("cmdCookie", messageparams);
 
             return new CommandResponseHandler(message);
         }

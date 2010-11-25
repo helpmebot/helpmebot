@@ -51,7 +51,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageparams = {name};
-            string message = IAL.wrapCTCP("ACTION", new Message().get(messageName, messageparams));
+            string message = new Message().get(messageName, messageparams);
 
             return new CommandResponseHandler(message);
         }
