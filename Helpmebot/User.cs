@@ -128,8 +128,8 @@ namespace helpmebot6
 
             string endResult = string.Empty;
 
-            if (this.nickname == null)
-                endResult = "";
+            if (this.nickname != null)
+                endResult = this.nickname;
 
             if (this.username != null)
             {

@@ -73,7 +73,7 @@ namespace HelpmebotUnitTests
         {
             Configuration.singleton().addToConfigCache("useragent", new ConfigurationSetting("useragent", "Helpmebot/1.1"));
             Uri longUrl = new Uri("http://en.wikipedia.org/"); // TODO: Initialize to an appropriate value
-            string expected = "http://is.gd/g8Z86"; // TODO: Initialize to an appropriate value
+            string expected = "http://is.gd/hJaDh"; // TODO: Initialize to an appropriate value
             string actual;
             actual = IsGd_Accessor.getShortUrl(longUrl);
             Assert.AreEqual(expected, actual);

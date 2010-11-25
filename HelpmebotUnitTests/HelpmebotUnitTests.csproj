@@ -65,6 +65,7 @@
     <Compile Include="Geolocate_GeolocateResultTest.cs" />
     <Compile Include="IsGdTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Helpmebot\helpmebot6.csproj">
