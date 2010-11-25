@@ -34,7 +34,14 @@ namespace helpmebot6
 
             // split up lines and pass back arraylist
 
-            return messageText.Split('\n');
+            string[] messages = messageText.Split('\n');
+            for (int i = 0; i < messages.Length; i++)
+            {
+                if (messages[i].Split(' ')[0].ToLower() == "@action")
+                    messages[i] = IAL.wrapCTCP("ACTION", messages[i]);
+            }
+
+            return messages;
         }
 
         //returns a random message chosen from the list of possible message names

@@ -125,7 +125,11 @@ namespace helpmebot6
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
         public override string ToString()
         {
-            string endResult = this.nickname;
+
+            string endResult = string.Empty;
+
+            if (this.nickname == null)
+                endResult = "";
 
             if (this.username != null)
             {
