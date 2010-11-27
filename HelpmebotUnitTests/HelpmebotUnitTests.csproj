@@ -62,8 +62,11 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandParserTest.cs" />
     <Compile Include="Geolocate_GeolocateResultTest.cs" />
+    <Compile Include="GlobalFunctionsTest.cs" />
     <Compile Include="IsGdTest.cs" />
+    <Compile Include="LinkerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserTest.cs" />
   </ItemGroup>

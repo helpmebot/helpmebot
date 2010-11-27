@@ -1,6 +1,7 @@
 ﻿using helpmebot6;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using helpmebot6.Commands;
 
 namespace HelpmebotUnitTests
 {
