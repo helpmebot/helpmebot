@@ -5,16 +5,11 @@ using System.Text;
 
 namespace helpmebot6.Commands
 {
-    class Lick : FunStuff.FunCommand
+    class Lick : Trout
     {
-        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        public Lick()
         {
-            string name = string.Join(" ", args);
-
-            string[] messageparams = { name };
-            string message = new Message().get("CmdLick", messageparams);
-
-            return new CommandResponseHandler(message);
-        }
+            this.messageName = "CmdLick";
+        } 
     }
 }
