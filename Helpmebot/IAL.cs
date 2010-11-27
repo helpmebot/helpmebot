@@ -760,7 +760,7 @@ namespace helpmebot6
         private void ialCtcpEvent(User source, string destination, string message)
         {
             this.log("CTCP EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
-            switch (message.Split(' ')[0])
+            switch (message.Split(' ')[0].ToUpper())
             {
                 case "VERSION":
                     this.ctcpReply(source.nickname, "VERSION", this.clientVersion);
