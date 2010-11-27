@@ -40,8 +40,11 @@ namespace helpmebot6
         protected Linker()
         {
             this._lastLink = new Dictionary<string, string>();
-            Helpmebot6.irc.privmsgEvent += irc_PrivmsgEvent;
-            Helpmebot6.irc.noticeEvent += irc_PrivmsgEvent;
+            if (Helpmebot6.irc != null)
+            {
+                Helpmebot6.irc.privmsgEvent += irc_PrivmsgEvent;
+                Helpmebot6.irc.noticeEvent += irc_PrivmsgEvent;
+            }
         }
 
         private void irc_PrivmsgEvent(User source, string destination, string message)
@@ -167,6 +170,11 @@ namespace helpmebot6
         {
             if (Configuration.singleton()["autoLink",channel] == "true")
                 Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
+        }
+    
+        private string encode(string url)
+        {
+            return url;
         }
     }
 }

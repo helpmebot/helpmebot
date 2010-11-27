@@ -228,24 +228,16 @@ namespace helpmebot6
         /// </remarks>
         public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            return parseRawLineForMessage(ref message, Helpmebot6.irc.ircNickname, Helpmebot6.trigger);
+        }
 
-           
-
+        private static bool parseRawLineForMessage(ref string message, string nickname, string trigger)
+        {
             Regex validCommand =
                 new Regex(
-                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
-                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower( ) +
+                    @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() +
+                    @") )?(?<cmd>[a-z]+)|(?<botname>" + nickname.ToLower( ) +
                     @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$" );
-
-            /*
-            new Regex(
-                    @"^(?:" + Helpmebot6.trigger + @"(?:(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
-                    @") )?(?<cmd>[a-z]+)|(?<botname>" + Helpmebot6.irc.ircNickname.ToLower() +
-                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$");
-             */
 
             Match m = validCommand.Match(message);
 
