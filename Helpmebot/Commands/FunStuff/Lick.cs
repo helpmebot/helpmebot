@@ -12,7 +12,7 @@ namespace helpmebot6.Commands
             string name = string.Join(" ", args);
 
             string[] messageparams = { name };
-            string message = new Message().get("CmdLink", messageparams);
+            string message = new Message().get("CmdLick", messageparams);
 
             return new CommandResponseHandler(message);
         }
