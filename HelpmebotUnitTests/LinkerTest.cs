@@ -150,9 +150,6 @@ namespace HelpmebotUnitTests
         {
             Linker_Accessor target = new Linker_Accessor();
             string message = "this [[is [[a test]] [[of foo]]";
-            ArrayList expected = new ArrayList();
-            expected.Add("a test");
-            expected.Add("of foo");
             ArrayList actual;
             actual = target.reallyParseMessage(message);
             Assert.AreEqual("a test", actual[0]);
@@ -168,8 +165,6 @@ namespace HelpmebotUnitTests
         {
             Linker_Accessor target = new Linker_Accessor();
             string message = "this {{is}} a test";
-            ArrayList expected = new ArrayList();
-            expected.Add("Template:is");
             ArrayList actual;
             actual = target.reallyParseMessage(message);
             Assert.AreEqual("Template:is", actual[0]);
@@ -184,11 +179,24 @@ namespace HelpmebotUnitTests
         {
             Linker_Accessor target = new Linker_Accessor();
             string message = "this {{is|params=foo}} a test";
-            ArrayList expected = new ArrayList();
-            expected.Add("Template:is");
             ArrayList actual;
             actual = target.reallyParseMessage(message);
             Assert.AreEqual("Template:is", actual[0]);
+            Assert.AreEqual(1, actual.Count);
+        }
+
+        /// <summary>
+        ///A test for reallyParseMessage
+        ///</summary>
+        [TestMethod()]
+        public void reallyParseMessagePipedLink()
+        {
+            Linker_Accessor target = new Linker_Accessor();
+            string message = "this [[is|foo]] a test";
+
+            ArrayList actual;
+            actual = target.reallyParseMessage(message);
+            Assert.AreEqual("is", actual[0]);
             Assert.AreEqual(1, actual.Count);
         }
     }
