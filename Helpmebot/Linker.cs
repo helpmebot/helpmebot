@@ -84,7 +84,7 @@ namespace helpmebot6
         {
             ArrayList newLinks = new ArrayList();
 
-            Regex linkRegex = new Regex(@"\[\[([^\[\]]*)\]\]|{{([^{}]*)}}");
+            Regex linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{([^{}\|]*)(?:}}|\|)");
             Match m = linkRegex.Match( message );
             while (m.Length > 0)
             {
