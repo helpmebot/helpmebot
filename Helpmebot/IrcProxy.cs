@@ -92,7 +92,7 @@ namespace helpmebot6
                     }
                 }
             }
-            catch (ThreadAbortException ex)
+            catch (ThreadAbortException)
             {}
             catch (Exception ex)
             {
