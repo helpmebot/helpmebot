@@ -145,28 +145,33 @@ namespace helpmebot6
                         ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination ];
                 return url + antispace( link );
             }
-            return url.Replace("$1", HttpUtility.UrlEncode(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
+            return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
         }
 
         private static string antispace(string source)
         {
-            int currloc = 0;
-            string result = "";
-            while (currloc < source.Length)
-            {
-                if (source.Substring(currloc, 1) == " ")
-                {
-                    result += "_";
-                }
-                else
-                {
-                    result += source.Substring(currloc, 1);
-                }
-                currloc += 1;
-            }
+            return source.Replace(' ', '_')
+                .Replace("!", "%21")
+                .Replace("*", "%2A")
+                .Replace("'", "%27")
+                .Replace("(", "%28")
+                .Replace(")", "%29")
+                .Replace(";", "%3B")
+                .Replace(":", "%3A")
+                .Replace("@", "%40")
+                .Replace("&", "%26")
+                .Replace("=", "%3D")
+                .Replace("+", "%2B")
+                .Replace("$", "%24")
+                .Replace(",", "%2C")
+                .Replace("/", "%2F")
+                .Replace("?", "%3F")
+                .Replace("%", "%25")
+                .Replace("#", "%23")
+                .Replace("[", "%5B")
+                .Replace("]", "%5D")
+                ;
 
-
-            return result;
         }
 
         private void sendLink(string channel, string link)
