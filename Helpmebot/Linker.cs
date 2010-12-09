@@ -151,6 +151,7 @@ namespace helpmebot6
         private static string antispace(string source)
         {
             return source.Replace(' ', '_')
+                .Replace("%", "%25")
                 .Replace("!", "%21")
                 .Replace("*", "%2A")
                 .Replace("'", "%27")
@@ -166,7 +167,6 @@ namespace helpmebot6
                 .Replace(",", "%2C")
                 .Replace("/", "%2F")
                 .Replace("?", "%3F")
-                .Replace("%", "%25")
                 .Replace("#", "%23")
                 .Replace("[", "%5B")
                 .Replace("]", "%5D")
@@ -180,9 +180,6 @@ namespace helpmebot6
                 Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
         }
     
-        private string encode(string url)
-        {
-            return url;
-        }
+
     }
 }
