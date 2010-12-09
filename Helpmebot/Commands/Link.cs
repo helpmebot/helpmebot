@@ -53,6 +53,9 @@ namespace helpmebot6.Commands
             {
                ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
 
+               if (links.Count == 0)
+                   links = Linker.instance().reallyParseMessage("[[" + string.Join(" ", args) + "]]");
+
                 string message = links.Cast<string>( ).Aggregate( "", ( current, link ) => current + " "+ Linker.getRealLink( channel, link, secure ) );
 
                 return new CommandResponseHandler(message);
