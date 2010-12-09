@@ -91,25 +91,28 @@ namespace helpmebot6
         {
             try
             {
-                Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
-                MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder
-                                                       {
-                                                           Database =
-                                                               this._mySqlSchema,
-                                                           Password =
-                                                               this.
-                                                               _mySqlPassword,
-                                                           Server =
-                                                               this._mySqlServer,
-                                                           UserID =
-                                                               this.
-                                                               _mySqlUsername,
-                                                           Port =
-                                                               this._mySqlPort
-                                                       };
+                lock (this)
+                {
+                    Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
+                    MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder
+                                                           {
+                                                               Database =
+                                                                   this._mySqlSchema,
+                                                               Password =
+                                                                   this.
+                                                                   _mySqlPassword,
+                                                               Server =
+                                                                   this._mySqlServer,
+                                                               UserID =
+                                                                   this.
+                                                                   _mySqlUsername,
+                                                               Port =
+                                                                   this._mySqlPort
+                                                           };
 
-                _connection = new MySqlConnection(csb.ConnectionString);
-                _connection.Open();
+                    _connection = new MySqlConnection(csb.ConnectionString);
+                    _connection.Open();
+                }
                 return true;
             }
             catch (MySqlException ex)
@@ -152,34 +155,35 @@ namespace helpmebot6
             Logger.instance().addToLog("DAL Lock released.", Logger.LogTypes.DalLock);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        /// <remarks>Needs Lock!</remarks>
         private MySqlDataReader executeReaderQuery(string query)
         {
 
             MySqlDataReader result = null;
 
-            Logger.instance().addToLog("Locking access to DAL...", Logger.LogTypes.DalLock);
-            lock (this)
+            Logger.instance().addToLog("Executing (reader)query: " + query, Logger.LogTypes.DAL);
+
+            try
             {
-                Logger.instance().addToLog("Executing (reader)query: " + query, Logger.LogTypes.DAL);
+                runConnectionTest();
 
-                try
-                {
-                    runConnectionTest();
+                MySqlCommand cmd = new MySqlCommand(query) {Connection = this._connection};
+                result = cmd.ExecuteReader();
+                Logger.instance().addToLog("Done executing (reader)query: " + query, Logger.LogTypes.DAL);
 
-                    MySqlCommand cmd = new MySqlCommand(query)
-                                           { Connection = this._connection };
-                    result = cmd.ExecuteReader();
-                    Logger.instance().addToLog("Done executing (reader)query: " + query, Logger.LogTypes.DAL);
-
-                    return result;
-                }
-                catch (Exception ex)
-                {
-                    Logger.instance().addToLog("Problem executing (reader)query: " + query, Logger.LogTypes.DAL);
-                    GlobalFunctions.errorLog(ex);
-                }
+                return result;
             }
-            Logger.instance().addToLog("DAL Lock released.", Logger.LogTypes.DalLock);
+            catch (Exception ex)
+            {
+                Logger.instance().addToLog("Problem executing (reader)query: " + query, Logger.LogTypes.DAL);
+                GlobalFunctions.errorLog(ex);
+            }
+
             return result;
         }
 
@@ -322,28 +326,51 @@ namespace helpmebot6
         /// <returns>Arraylist of arrays. Each array is one row in the dataset.</returns>
         public ArrayList executeSelect(Select query)
         {
-            MySqlDataReader dr = this.executeReaderQuery(query.ToString());
+            List<string> cols;
+            return executeSelect(query, out cols);
+        }
 
+        /// <summary>
+        /// Executes the select.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="columns">A list of column names</param>
+        /// <returns>Arraylist of arrays. Each array is one row in the dataset.</returns>
+        public ArrayList executeSelect(Select query, out List<string> columns)
+        {
+            columns = new List<string>();
             ArrayList resultSet = new ArrayList();
-            if (dr != null)
+            lock (this)
             {
-                try
+                MySqlDataReader dr = this.executeReaderQuery(query.ToString());
+                if (dr != null)
                 {
-                    while (dr.Read())
+                    try
                     {
-                        object[] row = new object[dr.FieldCount];
-                        dr.GetValues(row);
-                        resultSet.Add(row);
+
+                        DataTableReader cols = dr.GetSchemaTable().CreateDataReader();
+                        while (cols.Read())
+                        {
+                            columns.Add((string) cols.GetValue(0));
+                        }
+                        cols.Close();
+
+                        while (dr.Read())
+                        {
+                            object[] row = new object[dr.FieldCount];
+                            dr.GetValues(row);
+                            resultSet.Add(row);
+                        }
                     }
-                }
-                catch(MySqlException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
-                    throw;
-                }
-                finally
-                {
-                    dr.Close();
+                    catch (MySqlException ex)
+                    {
+                        GlobalFunctions.errorLog(ex);
+                        throw;
+                    }
+                    finally
+                    {
+                        dr.Close();
+                    }
                 }
             }
             return resultSet;
@@ -684,9 +711,12 @@ namespace helpmebot6
             /// Adds a where clause.
             /// </summary>
             /// <param name="conditions">The conditions.</param>
-            public void addWhere(WhereConds conditions)
+            public void addWhere(params WhereConds[] conditions)
             {
-                this._wheres.AddLast(conditions);
+                foreach (WhereConds condition in conditions)
+                {
+                    this._wheres.AddLast(condition);    
+                }
             }
 
             /// <summary>

@@ -17,6 +17,8 @@
 #region Usings
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using helpmebot6.Commands;
 
@@ -75,19 +77,19 @@ namespace helpmebot6
                 this._alUser = source;
                 this._alClass = command;
                 this._alAllowed = success;
-                this._alReqaccesslevel = ((GenericCommand) Activator.CreateInstance(this._alClass)).accessLevel;
+                this._alReqaccesslevel = ((GenericCommand)Activator.CreateInstance(this._alClass)).accessLevel;
                 this._channel = channel;
                 this._params = string.Join(" ", parameters) ?? string.Empty;
             }
 
-            private readonly int _alId;
-            private readonly User _alUser;
-            private readonly User.UserRights _alReqaccesslevel;
-            private readonly Type _alClass;
-            private readonly DateTime _alDate;
-            private readonly bool _alAllowed;
-            private readonly string _channel;
-            private readonly string _params;
+            private  int _alId;
+            private  User _alUser;
+            private  User.UserRights _alReqaccesslevel;
+            private  Type _alClass;
+            private  DateTime _alDate;
+            private  bool _alAllowed;
+            private  string _channel;
+            private  string _params;
 
             /// <summary>
             /// Gets the access log id.
@@ -152,9 +154,86 @@ namespace helpmebot6
             {
                 get { return _params; }
             }
+
+            public static AccessLogEntry[] get(params DAL.WhereConds[] conditions)
+            {
+                DAL.Select q = new DAL.Select("*");
+                q.addWhere(conditions);
+                q.setFrom("accesslog");
+
+                List<string> columns;
+                ArrayList al = DAL.singleton().executeSelect(q, out columns);
+
+                AccessLogEntry[] entries = new AccessLogEntry[al.Count];
+
+                for (int j = 0; j < al.Count; j++)
+                {
+
+
+                    string[] row = (string[]) al[j];
+
+                    AccessLogEntry entry = new AccessLogEntry();
+
+                    string usermask = string.Empty;
+                    User.UserRights useraccess = User.UserRights.Normal;
+                    #region parse
+                    for (int i = 0; i < row.Length; i++)
+                    {
+
+                        switch (columns[i])
+                        {
+                            case ACCESSLOG_ID:
+                                entry._alId = int.Parse(row[i]);
+                                break;
+                            case ACCESSLOG_USER:
+                                usermask = row[i];
+                                break;
+                            case ACCESSLOG_USER_ACCESS:
+                                useraccess = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                break;
+                            case ACCESSLOG_COMMAND_ACCESS:
+                                entry._alReqaccesslevel = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                break;
+                            case ACCESSLOG_DATE:
+                                entry._alDate = DateTime.Parse(row[i]);
+                                break;
+                            case ACCESSLOG_COMMAND_CLASS:
+                                entry._alClass = Type.GetType(row[i]);
+                                break;
+                            case ACCESSLOG_ALLOWED:
+                                entry._alAllowed = row[i] == "0" ? false : true;
+                                break;
+                            case ACCESSLOG_CHANNEL:
+                                entry._channel = row[i];
+                                break;
+                            case ACCESSLOG_ARGS:
+                                entry._params = row[i];
+                                break;
+                        }
+
+                        entry._alUser = User.newFromStringWithAccessLevel(usermask, useraccess);
+
+                    }
+                    #endregion
+
+                    entries[j] = entry;
+
+                }
+                return entries;
+            }
+
+            private const string ACCESSLOG_ID = "al_id";
+            private const string ACCESSLOG_USER = "al_nuh";
+            private const string ACCESSLOG_USER_ACCESS = "al_accesslevel";
+            private const string ACCESSLOG_COMMAND_ACCESS = "al_reqaccesslevel";
+            private const string ACCESSLOG_DATE = "al_date";
+            private const string ACCESSLOG_COMMAND_CLASS = "al_class";
+            private const string ACCESSLOG_ALLOWED = "al_allowed";
+            private const string ACCESSLOG_CHANNEL = "al_channel";
+            private const string ACCESSLOG_ARGS = "al_args";
         }
 
-        /// <summary>
+            /// <summary>
         /// Does the flood check.
         /// </summary>
         /// <param name="source">The source.</param>
@@ -163,6 +242,13 @@ namespace helpmebot6
         {
             //TODO: Implement
             return false;
+        }
+
+
+
+        public AccessLogEntry[] get(params DAL.WhereConds[] conditions)
+        {
+            return AccessLogEntry.get(conditions);
         }
     }
 }

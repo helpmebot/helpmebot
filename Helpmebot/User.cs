@@ -119,6 +119,18 @@ namespace helpmebot6
             return ret;
         }
 
+        public static User newFromStringWithAccessLevel(string source, UserRights accessLevel)
+        {
+            return newFromStringWithAccessLevel(source, 0, accessLevel);
+        }
+
+        public static User newFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
+        {
+            User u = newFromString(source, network);
+            u._accessLevel = accessLevel;
+            return u;
+        }
+
         /// <summary>
         ///   Recompiles the source string
         /// </summary>
