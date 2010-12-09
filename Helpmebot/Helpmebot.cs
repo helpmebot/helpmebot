@@ -38,9 +38,6 @@ namespace helpmebot6
     {
         public static IAL irc;
         private static DAL _dbal;
-        private static Configuration _config;
-        private static UDPListener udp;
-        private static MonitorService nagMon;
 
         private static string _trigger;
 
@@ -124,7 +121,6 @@ namespace helpmebot6
                 return;
             }
 
-            new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
             new UDPListener(4357);
 

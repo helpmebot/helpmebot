@@ -170,7 +170,6 @@
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
     <Compile Include="IAL.cs" />
-    <Compile Include="Monitoring\Nagios.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\PageWatcher\PageWatcherController.cs" />
     <Compile Include="Monitoring\RSS\RssMonitor.cs" />
