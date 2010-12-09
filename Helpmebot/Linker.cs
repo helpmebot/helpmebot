@@ -145,7 +145,7 @@ namespace helpmebot6
                         ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination ];
                 return url + antispace( link );
             }
-            return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
+            return url.Replace("$1", HttpUtility.UrlEncode(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
         }
 
         private static string antispace(string source)
@@ -166,7 +166,7 @@ namespace helpmebot6
             }
 
 
-            return HttpUtility.UrlEncode(result);
+            return result;
         }
 
         private void sendLink(string channel, string link)
