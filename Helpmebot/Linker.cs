@@ -19,6 +19,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web;
 
 #endregion
 
@@ -163,7 +164,9 @@ namespace helpmebot6
                 }
                 currloc += 1;
             }
-            return result;
+
+
+            return HttpUtility.UrlEncode(result);
         }
 
         private void sendLink(string channel, string link)
