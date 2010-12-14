@@ -158,7 +158,7 @@ namespace helpmebot6
                 .Replace("(", "%28")
                 .Replace(")", "%29")
                 .Replace(";", "%3B")
-                .Replace(":", "%3A")
+            //    .Replace(":", "%3A")
                 .Replace("@", "%40")
                 .Replace("&", "%26")
                 .Replace("=", "%3D")
