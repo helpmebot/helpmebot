@@ -165,7 +165,7 @@ namespace helpmebot6
                 .Replace("+", "%2B")
                 .Replace("$", "%24")
                 .Replace(",", "%2C")
-                .Replace("/", "%2F")
+            //    .Replace("/", "%2F")
                 .Replace("?", "%3F")
                 .Replace("#", "%23")
                 .Replace("[", "%5B")
