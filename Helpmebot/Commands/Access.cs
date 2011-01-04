@@ -121,7 +121,7 @@ namespace helpmebot6.Commands
             Logger.instance().addToLog("Adding access entry for " + newEntry + " at level " + accessLevel,
                                        Logger.LogTypes.Command);
             DAL.singleton().insert("user", "", newEntry.nickname, newEntry.username, newEntry.hostname,
-                                   accessLevel.ToString());
+                                   accessLevel.ToString(), "");
 
             return new CommandResponseHandler(message);
         }
