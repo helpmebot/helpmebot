@@ -77,6 +77,9 @@ namespace helpmebot6.Commands
                                 case "semi-ignored":
                                     aL = User.UserRights.Semiignored;
                                     break;
+                                case "semiignored":
+                                    aL = User.UserRights.Semiignored;
+                                    break;
                                 case "ignored":
                                     aL = User.UserRights.Ignored;
                                     break;
