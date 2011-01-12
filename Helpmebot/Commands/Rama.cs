@@ -16,7 +16,17 @@ namespace helpmebot6.Commands
             string sKey = Configuration.singleton()["awsSecretKey"];
 
             AmazonSimpleNotificationService snsClient = AWSClientFactory.CreateAmazonSNSClient(uKey, sKey);
-            snsClient.Publish(new PublishRequest {Message = string.Join(" ", args), Subject = "test", TopicArn = Configuration.singleton()["awsSnsTopicArn"]});
+
+            RemoteDataParcel parcel = new RemoteDataParcel()
+                                          {
+                                              colourIndex = int.Parse(args[0]),
+                                              colourParameter = int.Parse(args[1]),
+                                              motionIndex = int.Parse(args[2]),
+                                              motionParameter = int.Parse(args[3]),
+                                              timerInterval = int.Parse(args[4])
+                                          };
+
+            snsClient.Publish(new PublishRequest { Message = RemoteDataParcel.Serialize(parcel), Subject = source.ToString(), TopicArn = Configuration.singleton()["awsSnsTopicArn"] });
 
             return null;
         }
