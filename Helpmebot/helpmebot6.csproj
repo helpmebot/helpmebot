@@ -193,8 +193,7 @@
   <ItemGroup>
     <Reference Include="AWSSDK, Version=1.2.0.2, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\AWS SDK for .NET\bin\AWSSDK.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>.\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
       <SpecificVersion>False</SpecificVersion>
