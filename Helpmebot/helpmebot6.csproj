@@ -271,7 +271,9 @@
     <Content Include="AWSSDK.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Newtonsoft.Json.dll" />
+    <Content Include="Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Twitterizer.Data.dll" />
     <Content Include="Twitterizer2.dll" />
   </ItemGroup>
