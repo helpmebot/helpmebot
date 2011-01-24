@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
                 case "global":
                     Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
-                case "addOrder":
+                case "add":
                     NewbieWelcomer.instance().addHost(args[1]);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "del":
