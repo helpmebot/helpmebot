@@ -88,7 +88,7 @@ namespace helpmebot6.Monitoring
                 if (match)
                 {
                     string[] cmdArgs = {source.nickname, channel};
-                    Helpmebot6.irc.ircPrivmsg(channel, new Message().get("welcomeMessage", cmdArgs));
+                    Helpmebot6.irc.ircPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#",""), cmdArgs));
                 }
             }
         }
