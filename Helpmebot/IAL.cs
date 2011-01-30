@@ -948,6 +948,7 @@ namespace helpmebot6
                     this.errUnavailResource();
                     break;
                 default:
+                    this.unrecognisedDataRecievedEvent(data);
                     break;
             }
         }
