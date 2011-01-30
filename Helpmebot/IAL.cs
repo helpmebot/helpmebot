@@ -641,6 +641,7 @@ namespace helpmebot6
         public delegate void DataRecievedEventHandler(string data);
 
         public event DataRecievedEventHandler dataRecievedEvent;
+        public event DataRecievedEventHandler unrecognisedDataRecievedEvent;
 
         public delegate void ConnectionRegistrationEventHandler();
 
@@ -705,6 +706,7 @@ namespace helpmebot6
         private void initialiseEventHandlers()
         {
             this.dataRecievedEvent += this.ialDataRecievedEvent;
+            this.unrecognisedDataRecievedEvent += IAL_unrecognisedDataRecievedEvent;
             this.connectionRegistrationRequiredEvent += registerConnection;
             this.pingEvent += this.ircPong;
             this.nicknameChangeEvent += this.ialNicknameChangeEvent;
@@ -722,6 +724,11 @@ namespace helpmebot6
             this.errUnavailResource += this.ialErrUnavailResource;
             this.nameReplyEvent += this.ialNameReplyEvent;
             this.connectionRegistrationSucceededEvent += ialConnectionRegistrationSucceededEvent;
+        }
+
+        void IAL_unrecognisedDataRecievedEvent(string data)
+        {
+            this.log("DATA RECIEVED EVENT WITH DATA " + data);
         }
 
         void ialConnectionRegistrationSucceededEvent()
