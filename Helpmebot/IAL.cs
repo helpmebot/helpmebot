@@ -727,6 +727,7 @@ namespace helpmebot6
         void ialConnectionRegistrationSucceededEvent()
         {
             this.ircPrivmsg(_nickserv, "IDENTIFY " + _myNickname + " " + _myPassword);
+            this.ircMode(_myNickname, "+Q");
         }
 
         private void ialErrUnavailResource()
