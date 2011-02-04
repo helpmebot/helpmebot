@@ -11,7 +11,7 @@ namespace helpmebot6.Commands.FunStuff
         {
             return Configuration.singleton()["hedgehog", channel] == "false" ? 
                 base.accessDenied(source, channel, args) : 
-                new CommandResponseHandler(new Message().get("HedgehogAccessDenied"));
+                new CommandResponseHandler(new Message().get("HedgehogAccessDenied"),CommandResponseDestination.PrivateMessage);
         }
 
         protected override bool accessTest(User source, string channel)
