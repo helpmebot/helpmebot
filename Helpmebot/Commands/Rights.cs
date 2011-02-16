@@ -101,7 +101,7 @@ namespace helpmebot6.Commands
                 {
                     creader.Read();
                     string rightsList = (creader.ReadString());
-                    if (rightsList != "")
+                    if (!(rightsList == "" || rightsList=="*"))
                         returnStr = returnStr + rightsList + ", ";
                     rightsCount = rightsCount + 1;
                 } while (creader.Name == "g"); //each group should be added
