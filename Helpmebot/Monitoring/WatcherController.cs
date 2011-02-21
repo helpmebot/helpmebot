@@ -310,7 +310,8 @@ namespace helpmebot6.Monitoring
                             string[] messageparams = {
                                                          ts.Hours.ToString().PadLeft(2, '0'),
                                                          ts.Minutes.ToString().PadLeft(2, '0'),
-                                                         ts.Seconds.ToString().PadLeft(2, '0')
+                                                         ts.Seconds.ToString().PadLeft(2, '0'),
+                                                         ts.TotalDays >= 1 ? ((int)Math.Floor(ts.TotalDays)) + "d " : ""
                                                      };
                             listString += new Message().get("catWatcherWaiting", messageparams);
                         }
