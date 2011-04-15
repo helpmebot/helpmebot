@@ -17,8 +17,8 @@
 #region Usings
 
 using System;
-using System.Reflection;
-using System.Xml;
+using System.Web;
+using System.Xml.XPath;
 
 #endregion
 
@@ -84,23 +84,25 @@ namespace helpmebot6.Commands
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
             string api = DAL.singleton().executeScalarSelect(q);
 
-            XmlTextReader creader =
-                new XmlTextReader(
+            username = HttpUtility.UrlEncode(username);
+   
+            XPathDocument xpd =
+                new XPathDocument(
                     HttpRequest.get(api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers=" +
                                     username));
-            do
+
+            XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
+
+
+            if (xpni.MoveNext())
             {
-                creader.Read();
-            } while (creader.Name != "user");
-            string editCount = creader.GetAttribute("editcount");
-            if (editCount != null)
-            {
-                return int.Parse(editCount);
+                string editcount = xpni.Current.GetAttribute("editcount", "");
+                if(editcount!= "") return int.Parse(editcount);
+
+                if (xpni.Current.GetAttribute("missing", "") == "")
+                    return -1;
             }
-            if (creader.GetAttribute("missing") == "")
-            {
-                return -1;
-            }
+            
             throw new ArgumentException();
         }
     }
