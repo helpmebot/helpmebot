@@ -66,7 +66,7 @@ namespace helpmebot6.Commands
                             switch (args[2].ToLower())
                             {
                                 case "developer":
-                                    aL = User.UserRights.Developer;
+                                    aL = source.accessLevel == User.UserRights.Developer ? User.UserRights.Developer : User.UserRights.Superuser;
                                     break;
                                 case "superuser":
                                     aL = User.UserRights.Superuser;
