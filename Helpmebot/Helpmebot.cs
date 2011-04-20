@@ -137,6 +137,9 @@ namespace helpmebot6
             {
                 GlobalFunctions.errorLog( ex );
             }
+
+            // ciavc hook
+            irc.privmsgEvent+=AccAi.checkCiaVcCommits;
         }
 
 
