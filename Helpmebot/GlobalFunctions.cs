@@ -29,7 +29,7 @@ namespace helpmebot6
     /// <summary>
     /// Class holding globally accessible functions
     /// </summary>
-    internal class GlobalFunctions
+    public class GlobalFunctions
     {
         /// <summary>
         ///   Searches the array haystack for needle
