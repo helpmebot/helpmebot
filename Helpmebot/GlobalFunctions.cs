@@ -19,9 +19,10 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using MySql.Data.MySqlClient;
 
 #endregion
- 
+
 namespace helpmebot6
 {
     using System.Linq;
@@ -102,16 +103,23 @@ namespace helpmebot6
         }
 
 
+
         public static void removeItemFromArray(string item, ref string[] array)
         {
-            int count = array.Count( i => i == item );
+            int count = 0;
+            foreach (string i in array)
+            {
+                if (i == item)
+                    count++;
+            }
 
             string[] newArray = new string[array.Length - count];
 
             int nextAddition = 0;
 
-            foreach ( string i in array.Where( i => i != item ) )
+            foreach (string  i in array)
             {
+                if (i == item) continue;
                 newArray[nextAddition] = i;
                 nextAddition++;
             }
@@ -121,7 +129,13 @@ namespace helpmebot6
 
         public static int realArrayLength(string[] args)
         {
-            return args.Count( arg => !string.IsNullOrEmpty( arg ) );
+            int argsLength = 0;
+            foreach (string arg in args)
+            {
+                if (!string.IsNullOrEmpty(arg))
+                    argsLength++;
+            }
+            return argsLength;
         }
     }
 }
