@@ -139,7 +139,7 @@ namespace helpmebot6.Monitoring
                 //Create the XML Reader
                 XmlTextReader xmlreader =
                     new XmlTextReader(
-                        HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmprop=title&cmtitle=" +
+                        HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
                                         _category))
                         {
                             WhitespaceHandling = WhitespaceHandling.None
