@@ -237,7 +237,9 @@
     <None Include="bin\Debug\.hmbot" />
     <None Include="bin\x86\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
+    <None Include="CREDITS" />
     <None Include="helpmebot6.sql" />
+    <None Include="LICENCE" />
     <None Include="svn-revision.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
