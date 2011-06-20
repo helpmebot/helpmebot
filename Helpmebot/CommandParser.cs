@@ -236,8 +236,8 @@ namespace helpmebot6
             Regex validCommand =
                 new Regex(
                     @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() +
-                    @") )?(?<cmd>[a-z]+)|(?<botname>" + nickname.ToLower( ) +
-                    @")[ ,>:](?: )?(?<cmd>[a-z]+))(?: )?(?<args>.*?)(?:\r)?$" );
+                    @") )?(?<cmd>[a-z-_]+)|(?<botname>" + nickname.ToLower( ) +
+                    @")[ ,>:](?: )?(?<cmd>[a-z-_]+))(?: )?(?<args>.*?)(?:\r)?$" );
 
             Match m = validCommand.Match(message);
 
