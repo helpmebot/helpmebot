@@ -17,8 +17,6 @@
 #region Usings
 
 using System;
-using System.Collections;
-using System.Reflection;
 using helpmebot6.AI;
 using helpmebot6.Commands;
 using helpmebot6.Monitoring;
@@ -37,9 +35,6 @@ namespace helpmebot6
     {
         public static IAL irc;
         private static DAL _dbal;
-        private static Configuration _config;
-        private static UDPListener udp;
-        private static MonitorService nagMon;
 
         private static string _trigger;
 
