@@ -33,6 +33,8 @@ namespace helpmebot6
     /// </summary>
     internal class CommandParser
     {
+        private const string allowedCommandNameChars = "a-z-_";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandParser"/> class.
         /// </summary>
@@ -236,8 +238,8 @@ namespace helpmebot6
             Regex validCommand =
                 new Regex(
                     @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() +
-                    @") )?(?<cmd>[a-z-_]+)|(?<botname>" + nickname.ToLower( ) +
-                    @")[ ,>:](?: )?(?<cmd>[a-z-_]+))(?: )?(?<args>.*?)(?:\r)?$" );
+                    @") )?(?<cmd>[" + allowedCommandNameChars + "]+)|(?<botname>" + nickname.ToLower() +
+                    @")[ ,>:](?: )?(?<cmd>[" + allowedCommandNameChars + "]+))(?: )?(?<args>.*?)(?:\r)?$");
 
             Match m = validCommand.Match(message);
 
