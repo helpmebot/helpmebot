@@ -105,5 +105,69 @@ namespace HelpmebotUnitTests
             Assert.AreEqual(messageExpected, message);
             Assert.AreEqual(true, actual);
         }
+
+        /// <summary>
+        ///A test for parseRawLineForMessage
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("helpmebot6.exe")]
+        public void parseRawLineForMessageTest1()
+        {
+            string message = "!foo bar"; 
+            string messageExpected = "foo bar";
+            string nickname = "Helpmebot"; 
+            string trigger = "!";
+            bool actual = CommandParser_Accessor.parseRawLineForMessage(ref message, nickname, trigger);
+            Assert.AreEqual(messageExpected, message);
+            Assert.AreEqual(true, actual);
+        }
+
+        /// <summary>
+        ///A test for parseRawLineForMessage
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("helpmebot6.exe")]
+        public void parseRawLineForMessageTest4()
+        {
+            string message = "!foobar";
+            string messageExpected = "foobar";
+            string nickname = "Helpmebot";
+            string trigger = "!";
+            bool actual = CommandParser_Accessor.parseRawLineForMessage(ref message, nickname, trigger);
+            Assert.AreEqual(messageExpected, message);
+            Assert.AreEqual(true, actual);
+        }
+
+        /// <summary>
+        ///A test for parseRawLineForMessage
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("helpmebot6.exe")]
+        public void parseRawLineForMessageTest5()
+        {
+            string message = "!foo-bar";
+            string messageExpected = "foo-bar";
+            string nickname = "Helpmebot";
+            string trigger = "!";
+            bool actual = CommandParser_Accessor.parseRawLineForMessage(ref message, nickname, trigger);
+            Assert.AreEqual(messageExpected, message);
+            Assert.AreEqual(true, actual);
+        }
+
+        /// <summary>
+        ///A test for parseRawLineForMessage
+        ///</summary>
+        [TestMethod()]
+        [DeploymentItem("helpmebot6.exe")]
+        public void parseRawLineForMessageTest6()
+        {
+            string message = "!foo-bar baz";
+            string messageExpected = "foo-bar baz";
+            string nickname = "Helpmebot";
+            string trigger = "!";
+            bool actual = CommandParser_Accessor.parseRawLineForMessage(ref message, nickname, trigger);
+            Assert.AreEqual(messageExpected, message);
+            Assert.AreEqual(true, actual);
+        }
     }
 }
