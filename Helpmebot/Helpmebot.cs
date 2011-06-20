@@ -22,7 +22,6 @@ using System.Reflection;
 using helpmebot6.AI;
 using helpmebot6.Commands;
 using helpmebot6.Monitoring;
-using helpmebot6.Monitoring.PageWatcher;
 using helpmebot6.NewYear;
 using helpmebot6.Threading;
 using helpmebot6.UdpListener;
@@ -112,8 +111,6 @@ namespace helpmebot6
 
             new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
-            PageWatcherController.instance();
-
             setupEvents();
 
             TimeMonitor.instance();
@@ -154,39 +151,11 @@ namespace helpmebot6
             irc.inviteEvent += irc_InviteEvent;
 
             irc.threadFatalError += irc_ThreadFatalError;
-
-            PageWatcherController.instance().pageWatcherNotificationEvent += pageWatcherNotificationEvent;
         }
 
         private static void irc_ThreadFatalError(object sender, EventArgs e)
         {
             stop();
-        }
-
-        private static void pageWatcherNotificationEvent(PageWatcherController.RcPageChange rcItem)
-        {
-            string[] messageParams = {
-                                         rcItem.title, rcItem.user, rcItem.comment, rcItem.diffUrl, rcItem.byteDiff,
-                                         rcItem.flags
-                                     };
-            string message = new Message().get("pageWatcherEventNotification", messageParams);
-
-            DAL.Select q = new DAL.Select("channel_name");
-            q.addJoin("channel", DAL.Select.JoinTypes.Inner,
-                      new DAL.WhereConds(false, "pwc_channel", "=", false, "channel_id"));
-            q.addJoin("watchedpages", DAL.Select.JoinTypes.Inner,
-                      new DAL.WhereConds(false, "pw_id", "=", false, "pwc_pagewatcher"));
-            q.addWhere(new DAL.WhereConds("pw_title", rcItem.title));
-            q.setFrom("pagewatcherchannels");
-
-            ArrayList channels = DAL.singleton().executeSelect(q);
-
-            foreach (object[] item in channels)
-            {
-                string channel = (string) item[0];
-                if (Configuration.singleton()["silence",channel] == "false")
-                    irc.ircPrivmsg(channel, message);
-            }
         }
 
         private static void irc_InviteEvent(User source, string nickname, string channel)

@@ -143,7 +143,6 @@
     <Compile Include="Commands\MessageCount.cs" />
     <Compile Include="Commands\Myaccess.cs" />
     <Compile Include="Commands\Page.cs" />
-    <Compile Include="Commands\Pagewatcher.cs" />
     <Compile Include="Commands\Part.cs" />
     <Compile Include="Commands\ProtectedCommand.cs" />
     <Compile Include="Commands\Rama.cs" />
@@ -177,7 +176,6 @@
     <Compile Include="IAL.cs" />
     <Compile Include="Monitoring\Nagios.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
-    <Compile Include="Monitoring\PageWatcher\PageWatcherController.cs" />
     <Compile Include="Monitoring\RSS\RssMonitor.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="NewYear\TimeMonitor.cs" />
