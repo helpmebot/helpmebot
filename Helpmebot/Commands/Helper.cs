@@ -33,7 +33,7 @@ namespace helpmebot6.Commands
             // FIXME: this needs putting into its own subsystem, messageifying, configifying, etc.
             if (channel == "#wikipedia-en-help")
             {
-                string message = "[HELP]: " + source + " needs help in #wikipedia-en-help!";
+                string message = "[HELP]: " + source + " needs help in #wikipedia-en-help !";
                 if (args.Length > 0)
                     message += " (message: \"" + string.Join(" ", args) + "\")";
 
