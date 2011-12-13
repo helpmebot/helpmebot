@@ -70,7 +70,7 @@ namespace helpmebot6.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            Logger.instance( ).addToLog("Executing newbie welcomer...",Logger.LogTypes.Command);
+            Logger.instance( ).addToLog("Executing newbie welcomer: " + channel,Logger.LogTypes.Command);
             
             if (Configuration.singleton()["silence",channel] == "false" &&
                 Configuration.singleton()["welcomeNewbie",channel] == "true")
