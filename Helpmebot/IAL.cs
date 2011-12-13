@@ -887,7 +887,7 @@ namespace helpmebot6
                     this.quitEvent(source, parameters);
                     break;
                 case "JOIN":
-                    this.joinEvent(source, parameters.Substring(1));
+                    this.joinEvent(source, parameters);
                     break;
                 case "PART":
                     this.partEvent(source, parameters.Split(' ')[0],
