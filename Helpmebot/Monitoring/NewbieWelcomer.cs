@@ -70,16 +70,22 @@ namespace helpmebot6.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
+            Logger.instance( ).addToLog("Executing newbie welcomer...",Logger.LogTypes.Command);
+            
             if (Configuration.singleton()["silence",channel] == "false" &&
                 Configuration.singleton()["welcomeNewbie",channel] == "true")
             {
+                Logger.instance( ).addToLog("NW: config OK",Logger.LogTypes.Command);
+                
                 bool match = false;
                 foreach (object item in this._hostNames)
                 {
                     string pattern = (string) item;
+                    Logger.instance( ).addToLog("Checking: " + pattern + " == " + source.hostname,Logger.LogTypes.Command);
                     Regex rX = new Regex(pattern);
                     if (rX.IsMatch(source.hostname))
                     {
+                        Logger.instance( ).addToLog("Matched pattern",Logger.LogTypes.Command);
                         match = true;
                         break;
                     }
