@@ -36,6 +36,8 @@ namespace helpmebot6
         public static IAL irc;
         private static DAL _dbal;
 
+        private static AccNotifications accMonitor;
+
         private static string _trigger;
 
         public static string debugChannel;
@@ -132,6 +134,9 @@ namespace helpmebot6
 
             // ciavc hook
             irc.privmsgEvent+=AccAi.checkCiaVcCommits;
+
+            // ACC notification monitor
+            accMonitor = new AccNotifications();
         }
 
 
