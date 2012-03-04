@@ -26,7 +26,7 @@ namespace helpmebot6.Monitoring
             try
             {
                 DAL.Select query = new DAL.Select("notif_id", "notif_text");
-                query.setFrom("acc_notifications.notification");
+                query.setFrom("acc_notifications");
                 query.addLimit(1, 0);
                 query.addOrder(new DAL.Select.Order("notif_id", true));
 
@@ -47,7 +47,7 @@ namespace helpmebot6.Monitoring
                         int id = (int) d[0];
                         string text = (string) d[1];
 
-                        DAL.singleton().delete("acc_notifications.notification", 1, new DAL.WhereConds("notif_id", id));
+                        DAL.singleton().delete("acc_notifications", 1, new DAL.WhereConds("notif_id", id));
                         Helpmebot6.irc.ircPrivmsg("#wikipedia-en-accounts", text);
                     }
 
