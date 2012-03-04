@@ -12,9 +12,15 @@ namespace helpmebot6.Monitoring
     {
         private Thread _watcherThread;
 
+        private static AccNotifications instance;
+
+        public static AccNotifications getInstance()
+        {
+            return (instance ?? (instance = new AccNotifications()));
+        }
 
 
-        public AccNotifications()
+        private AccNotifications()
         {
             _watcherThread = new Thread(threadBody);
             _watcherThread.Start();
@@ -62,6 +68,7 @@ namespace helpmebot6.Monitoring
                     temp(this, new EventArgs());
                 }
             }
+            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher died");
             Logger.instance().addToLog("ACC Notifications watcher died.", Logger.LogTypes.Error);
         }
 

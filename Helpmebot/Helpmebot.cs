@@ -136,7 +136,7 @@ namespace helpmebot6
             irc.privmsgEvent+=AccAi.checkCiaVcCommits;
 
             // ACC notification monitor
-            accMonitor = new AccNotifications();
+            AccNotifications.getInstance();
         }
 
 
