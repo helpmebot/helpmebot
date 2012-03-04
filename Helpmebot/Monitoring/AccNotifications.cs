@@ -18,6 +18,7 @@ namespace helpmebot6.Monitoring
         {
             _watcherThread = new Thread(threadBody);
             _watcherThread.Start();
+	    this.registerInstance();
         }
 
         private void threadBody()
