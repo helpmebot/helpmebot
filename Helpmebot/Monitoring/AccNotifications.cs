@@ -16,19 +16,26 @@ namespace helpmebot6.Monitoring
 
         public static AccNotifications getInstance()
         {
-            return (instance ?? (instance = new AccNotifications()));
+            if(instance == null)
+            {
+                instance = new AccNotifications();
+
+            }
+            return instance;
         }
 
 
         private AccNotifications()
         {
+            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher initialising");
             _watcherThread = new Thread(threadBody);
             _watcherThread.Start();
-	    this.registerInstance();
+	        this.registerInstance();
         }
 
         private void threadBody()
         {
+            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher starting");
             Logger.instance().addToLog("Starting ACC Notifications watcher", Logger.LogTypes.General);
             try
             {

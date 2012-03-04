@@ -35,9 +35,7 @@ namespace helpmebot6
     {
         public static IAL irc;
         private static DAL _dbal;
-
-        private static AccNotifications accMonitor;
-
+        
         private static string _trigger;
 
         public static string debugChannel;
