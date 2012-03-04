@@ -95,6 +95,7 @@
     <Compile Include="AI\Intelligence.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\Access.cs" />
+    <Compile Include="Commands\Accmon.cs" />
     <Compile Include="Commands\Afccount.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
