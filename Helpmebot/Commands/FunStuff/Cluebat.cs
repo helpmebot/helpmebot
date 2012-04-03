@@ -36,10 +36,12 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            string name = string.Join(" ", args);
+            string name;
+
+            name = args.Length == 0 ? source.nickname : string.Join(" ", args);
 
             string[] messageparams = {name};
-            string message = IAL.wrapCTCP("ACTION", new Message().get("cmdCluebat", messageparams));
+            string message = new Message().get("cmdCluebat", name);
 
             return new CommandResponseHandler(message);
         }
