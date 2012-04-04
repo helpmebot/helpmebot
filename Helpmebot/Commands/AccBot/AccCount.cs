@@ -7,7 +7,7 @@ using System.Xml.XPath;
 
 namespace helpmebot6.Commands
 {
-    class AccCount : GenericCommand
+    class Acccount : GenericCommand
     {
         #region Overrides of GenericCommand
 
