@@ -96,6 +96,7 @@
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\AccBot\AccCount.cs" />
     <Compile Include="Commands\AccBot\AccStats.cs" />
+    <Compile Include="Commands\AccBot\AccStatus.cs" />
     <Compile Include="Commands\Access.cs" />
     <Compile Include="Commands\Accmon.cs" />
     <Compile Include="Commands\Afccount.cs" />
