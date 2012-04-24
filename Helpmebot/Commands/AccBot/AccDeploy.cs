@@ -37,9 +37,9 @@ namespace helpmebot6.Commands
 
             string key = md5(md5(revision) + apiDeployPassword);
 
-            HttpRequest.get("http://toolserver.org/~acc/api.php?action=deploy&r=" + revision + "&k=" + key);
+            HttpRequest.get("http://toolserver.org/~acc/sand/api.php?action=deploy&r=" + revision + "&k=" + key);
 
-  
+            return new CommandResponseHandler();
             
         }
 
