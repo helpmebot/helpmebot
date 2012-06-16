@@ -70,7 +70,7 @@ namespace helpmebot6.NewYear
 
             foreach (object[] row in al)
             {
-                this._timezoneList.Add((DateTime.Parse(new String(Encoding.UTF8.GetChars(((byte[]) (row)[1]))))),
+                this._timezoneList.Add((DateTime.Parse((string)(row[1]))),
                                  (string) (row[0]));
             }
 
