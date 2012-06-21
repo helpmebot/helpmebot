@@ -113,13 +113,20 @@ namespace helpmebot6.NewYear
 
             foreach (object[] res in DAL.singleton().executeSelect(q))
             {
-                string channel = res[ 0 ].ToString( );
-                if ( Configuration.singleton()["newYearDateAlerting",channel] != "true" )
+                string channel = res[0].ToString();
+                if (Configuration.singleton()["newYearDateAlerting", channel] != "true")
                     continue;
-                string[ ] args = { places };
-                string message = new Message().get( "newYearMessage", args );
-                Helpmebot6.irc.ircPrivmsg( channel, message );
-                new Twitter().updateStatus( message );
+                string[] args = {places};
+                string message = new Message().get("newYearMessage", args);
+                Helpmebot6.irc.ircPrivmsg(channel, message);
+                try
+                {
+                    new Twitter().updateStatus(message);
+                }
+                catch (System.Net.WebException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
             }
         }
 

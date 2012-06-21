@@ -37,8 +37,17 @@ namespace helpmebot6.Commands
         {
             string status = string.Join(" ", args);
 
-            new Twitter().updateStatus(status);
-            return new CommandResponseHandler(new Message().get("done"));
+            try
+            {
+                new Twitter().updateStatus(status);
+                return new CommandResponseHandler(new Message().get("done"));
+            }
+           catch ( System.Net.WebException ex)
+           {
+               GlobalFunctions.errorLog(ex);
+
+               return new CommandResponseHandler(ex.Message);
+           }
         }
     }
 }

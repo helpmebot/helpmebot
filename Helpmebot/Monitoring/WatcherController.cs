@@ -169,7 +169,17 @@ namespace helpmebot6.Monitoring
             }
 
             if (newItems.Count > 0)
-              new Twitter(  ).updateStatus(compileMessage(newItems, keyword, ">TWITTER<", false));
+            {
+                var message = compileMessage(newItems, keyword, ">TWITTER<", false);
+                try
+                {
+                    new Twitter().updateStatus(message);
+                }
+                catch (System.Net.WebException ex)
+                {
+                    GlobalFunctions.errorLog(ex);
+                }
+            }
         }
 
         private static ArrayList updateDatabaseTable(ArrayList items, string keyword)
