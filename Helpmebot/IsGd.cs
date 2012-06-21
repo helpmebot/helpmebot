@@ -53,9 +53,10 @@ namespace helpmebot6
                 catch(WebException ex)
                 {
                     GlobalFunctions.errorLog(ex);
-                    return null;
+                    return longUrl;
                 }
             }
+
             return new Uri(cachelookup);
         }
 

@@ -242,12 +242,7 @@ namespace helpmebot6.Monitoring
 
             string fakedestination = destination == ">TWITTER<" ? "" : destination;
 
-            bool showWaitTime = (fakedestination == ""
-                                     ? false
-                                     : (Configuration.singleton()["showWaitTime",destination] ==
-                                        "true"
-                                            ? true
-                                            : false));
+            bool showWaitTime = (fakedestination != "" && (Configuration.singleton()["showWaitTime",destination] == "true"));
 
             TimeSpan minimumWaitTime;
             if (
@@ -255,17 +250,8 @@ namespace helpmebot6.Monitoring
                                    out minimumWaitTime))
                 minimumWaitTime = new TimeSpan(0);
 
-            bool shortenUrls = (fakedestination == ""
-                                    ? false
-                                    : (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"
-                                           ? true
-                                           : false));
-            bool showDelta = (fakedestination == ""
-                                  ? false
-                                  : (Configuration.singleton()["catWatcherShowDelta",
-                                                                                         destination] == "true"
-                                         ? true
-                                         : false));
+            bool shortenUrls = (fakedestination != "" && (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"));
+            bool showDelta = (fakedestination != "" && (Configuration.singleton()["catWatcherShowDelta", destination] == "true"));
 
             if (destination == ">TWITTER<")
             {
@@ -278,7 +264,8 @@ namespace helpmebot6.Monitoring
 
             string message;
 
-            if (items.Count > 0)
+            
+            if (items != null && items.Count > 0)
             {
                 string listString = "";
                 foreach (string item in items)
