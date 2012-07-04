@@ -10,6 +10,8 @@ namespace helpmebot6
     {
         public IrcProxy(IAL baseIrcAccessLayer, int port, string password)
         {
+            if (Configuration.singleton()["enableProxy"] != "true") return;
+
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
 
             _baseIal = baseIrcAccessLayer;
