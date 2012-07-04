@@ -74,8 +74,17 @@ namespace helpmebot6.NewYear
                                  (string) (row[0]));
             }
 
-            this.registerInstance();
-            this._monitorThread.Start();
+
+            initialise();
+        }
+
+        public void initialise()
+        {
+            if (((DateTime.Parse(_targetDate) - DateTime.Now).TotalDays < 14) && !_monitorThread.IsAlive)
+            {
+                this.registerInstance();
+                this._monitorThread.Start();
+            }
         }
 
         private void monitorThreadMethod()
