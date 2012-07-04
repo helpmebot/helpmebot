@@ -35,6 +35,7 @@ namespace helpmebot6.UdpListener
     {
         public UDPListener(int port)
         {
+            if (Configuration.singleton()["enableUdpListener"] != "true") return;
             this._key = Configuration.singleton()["udpKey"];
             this._udpClient = new UdpClient(port);
             this._listenerThread = new Thread(threadMethod);
