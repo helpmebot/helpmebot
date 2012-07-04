@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -37,10 +38,14 @@ namespace helpmebot6.Commands
 
             string key = md5(md5(revision) + apiDeployPassword);
 
-            HttpRequest.get("http://toolserver.org/~acc/sand/api.php?action=deploy&r=" + revision + "&k=" + key);
+            var r = new StreamReader(
+                    HttpRequest.get("http://toolserver.org/~acc/sand/api.php?action=deploy&r=" + revision + "&k=" + key));
 
-            return new CommandResponseHandler();
             
+
+            var crh = new CommandResponseHandler();
+            foreach(var x in r.ReadToEnd().Split('\n', '\r')) crh.respond(x);
+            return crh;
         }
 
         #endregion
