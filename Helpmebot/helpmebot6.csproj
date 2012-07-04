@@ -200,10 +200,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.dll</HintPath>
@@ -212,7 +208,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Data.dll</HintPath>
     </Reference>
-    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Web.dll</HintPath>
@@ -220,10 +215,6 @@
     <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="Twitterizer.Data, Version=1.0.3813.28009, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Twitterizer.Data.dll</HintPath>
     </Reference>
     <Reference Include="Twitterizer2, Version=2.1.1.28009, Culture=neutral, PublicKeyToken=69d1469eac671567, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
