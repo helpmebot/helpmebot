@@ -80,11 +80,15 @@ namespace helpmebot6.NewYear
 
         public void initialise()
         {
-            if (((DateTime.Parse(_targetDate) - DateTime.Now).TotalDays < 14) && !_monitorThread.IsAlive)
-            {
-                this.registerInstance();
-                this._monitorThread.Start();
-            }
+            var span = (DateTime.Parse(_targetDate) - DateTime.Now);
+
+            if ((span.TotalDays >= 14)) return;
+            if ((span.TotalDays <-1)) return;
+            if (_monitorThread.IsAlive) return;
+
+
+            registerInstance();
+            _monitorThread.Start();
         }
 
         private void monitorThreadMethod()
