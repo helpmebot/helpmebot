@@ -39,7 +39,7 @@ namespace helpmebot6.Monitoring
             Logger.instance().addToLog("Starting ACC Notifications watcher", Logger.LogTypes.General);
             try
             {
-                DAL.Select query = new DAL.Select("notif_id", "notif_text");
+                DAL.Select query = new DAL.Select("notif_id", "notif_text", "notif_type");
                 query.setFrom("acc_notifications");
                 query.addLimit(1, 0);
                 query.addOrder(new DAL.Select.Order("notif_id", true));
@@ -57,12 +57,26 @@ namespace helpmebot6.Monitoring
 
                     foreach (object raw in data)
                     {
-                        object[] d = (object[]) raw;
-                        int id = (int) d[0];
-                        string text = (string) d[1];
+                        var d = (object[]) raw;
+                        var id = (int) d[0];
+                        var text = (string) d[1];
+                        var type = (int)d[2];
+
+                        var destination = "##helpmebot";
+
+                        switch (type)
+                        {
+                            case 1:
+                                destination = "#wikipedia-en-accounts";
+                                break;
+
+                            case 2:
+                                destination = "#wikipedia-en-accounts-devs";
+                                break;
+                        }
 
                         DAL.singleton().delete("acc_notifications", 1, new DAL.WhereConds("notif_id", id));
-                        Helpmebot6.irc.ircPrivmsg("#wikipedia-en-accounts", text);
+                        Helpmebot6.irc.ircPrivmsg(destination, text);
                     }
 
                 }
