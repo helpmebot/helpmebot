@@ -16,7 +16,6 @@
 //  ****************************************************************************/
 #region Usings
 
-using System.Reflection;
 using helpmebot6.Monitoring;
 
 #endregion
@@ -37,6 +36,7 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            var ignore = false;
             switch (args[0].ToLower())
             {
                 case "enable":
@@ -57,14 +57,32 @@ namespace helpmebot6.Commands
                     Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "add":
-                    NewbieWelcomer.instance().addHost(args[1]);
+                    if (args[1] == "@ignore")
+                    {
+                        ignore = true;
+                        GlobalFunctions.popFromFront(ref args);
+                    }
+
+                    NewbieWelcomer.instance().addHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "del":
-                    NewbieWelcomer.instance().delHost(args[1]);
+                    if (args[1] == "@ignore")
+                    {
+                        ignore = true;
+                        GlobalFunctions.popFromFront(ref args);
+                    }
+
+                    NewbieWelcomer.instance().delHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "list":
-                    CommandResponseHandler crh = new CommandResponseHandler();
-                    string[] list = NewbieWelcomer.instance().getHosts();
+                    if (args[1] == "@ignore")
+                    {
+                        ignore = true;
+                        GlobalFunctions.popFromFront(ref args);
+                    }
+
+                    var crh = new CommandResponseHandler();
+                    string[] list = NewbieWelcomer.instance().getHosts(ignore);
                     foreach (string item in list)
                     {
                         crh.respond(item);

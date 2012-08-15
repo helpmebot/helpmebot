@@ -16,11 +16,8 @@
 //  ****************************************************************************/
 #region Usings
 
-using System.Collections;
-using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 
 #endregion
@@ -36,32 +33,34 @@ namespace helpmebot6.Monitoring
 
         protected NewbieWelcomer()
         {
-            DAL.Select q = new DAL.Select("bin_blob");
-            q.setFrom("binary_store");
-            q.addWhere(new DAL.WhereConds("bin_desc", "newbie_hostnames"));
-            ArrayList result = DAL.singleton().executeSelect(q);
-
-            byte[] list = ((byte[]) (((object[]) (result[0]))[0]));
-
-
-            BinaryFormatter bf = new BinaryFormatter();
             try
             {
-                this._hostNames = (SerializableArrayList) bf.Deserialize(new MemoryStream(list));
+                _hostNames = BinaryStore.retrieve("newbie_hostnames");
             }
             catch (SerializationException ex)
             {
                 GlobalFunctions.errorLog(ex);
-                this._hostNames = new SerializableArrayList();
+                _hostNames = new SerializableArrayList();
+            }
+
+            try
+            {
+                _ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
+            }
+            catch (SerializationException ex)
+            {
+                GlobalFunctions.errorLog(ex);
+                _ignoredNicknames = new SerializableArrayList();
             }
         }
 
         public static NewbieWelcomer instance()
         {
-            return _instance ?? ( _instance = new NewbieWelcomer( ) );
+            return _instance ?? (_instance = new NewbieWelcomer());
         }
 
-        private readonly SerializableArrayList _hostNames;
+        private readonly SerializableArrayList _hostNames; 
+        private readonly SerializableArrayList _ignoredNicknames;
 
         /// <summary>
         /// Executes the newbie.
@@ -70,69 +69,105 @@ namespace helpmebot6.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            Logger.instance( ).addToLog("Executing newbie welcomer: " + channel,Logger.LogTypes.Command);
-            
-            if (Configuration.singleton()["silence",channel] == "false" &&
-                Configuration.singleton()["welcomeNewbie",channel] == "true")
+            Logger.instance().addToLog("Executing newbie welcomer: " + channel, Logger.LogTypes.Command);
+
+            if (Configuration.singleton()["silence", channel] != "false" ||
+                Configuration.singleton()["welcomeNewbie", channel] != "true") return;
+
+            Logger.instance().addToLog("NW: config OK", Logger.LogTypes.Command);
+
             {
-                Logger.instance( ).addToLog("NW: config OK",Logger.LogTypes.Command);
-                
-                bool match = false;
-                foreach (object item in this._hostNames)
+                var match = false;
+                foreach (var pattern in _hostNames.Cast<string>())
                 {
-                    string pattern = (string) item;
-                    Logger.instance( ).addToLog("Checking: " + pattern + " == " + source.hostname,Logger.LogTypes.Command);
-                    Regex rX = new Regex(pattern);
-                    if (rX.IsMatch(source.hostname))
-                    {
-                        Logger.instance( ).addToLog("Matched pattern",Logger.LogTypes.Command);
-                        match = true;
-                        break;
-                    }
+                    Logger.instance().addToLog("Checking: " + pattern + " == " + source.hostname, Logger.LogTypes.Command);
+                
+                    var rX = new Regex(pattern);
+
+                    if (!rX.IsMatch(source.hostname)) continue;
+
+                    Logger.instance().addToLog("Matched pattern", Logger.LogTypes.Command);
+                    match = true;
+                    break;
                 }
 
-                if (match)
-                {
-                    string[] cmdArgs = {source.nickname, channel};
-                    Helpmebot6.irc.ircPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#",""), cmdArgs));
-                }
+                if (!match) return;
             }
+
+            {
+                var match = false;
+                Logger.instance().addToLog("Checking ignored nicks...", Logger.LogTypes.Command);
+
+                foreach (var pattern in _ignoredNicknames.Cast<string>())
+                {
+                    Logger.instance().addToLog("Checking: " + pattern + " == " + source.nickname, Logger.LogTypes.Command);
+                    var rX = new Regex(pattern);
+
+                    if (!rX.IsMatch(source.nickname)) continue;
+
+                    Logger.instance().addToLog("Matched pattern", Logger.LogTypes.Command);
+                    match = true;
+                    break;
+                }
+
+                if (match) return;
+            }
+
+            string[] cmdArgs = {source.nickname, channel};
+            Helpmebot6.irc.ircPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#", ""), cmdArgs));
         }
 
         /// <summary>
         /// Adds a host to the list of detected newbie hosts.
         /// </summary>
         /// <param name="host">The host.</param>
-        public void addHost(string host)
+        /// <param name="except">Add to exemption list instead </param>
+        public void addHost(string host, bool except = false)
         {
-            this._hostNames.Add(host);
+            if (except)
+            {
+                _ignoredNicknames.Add(host);
+            }
+            else
+            {
+                _hostNames.Add(host);
+            }
 
             saveHostnames();
         }
 
-        public void delHost(string host)
+
+        /// <param name="host"> The host.</param>
+        /// <param name="except">Add to exemption list instead </param>
+        public void delHost(string host, bool except = false)
         {
-            this._hostNames.Remove(host);
+            if (except)
+            {
+                _ignoredNicknames.Remove(host);
+            }
+            else
+            {
+                _hostNames.Remove(host);
+            }
 
             saveHostnames();
         }
 
-        public string[] getHosts()
+        public string[] getHosts(bool except = false)
         {
-            string[] list = new string[this._hostNames.Count];
-            this._hostNames.CopyTo(list);
+            var data = except ? _ignoredNicknames : _hostNames;
+
+            var list = new string[data.Count];
+            data.CopyTo(list);
             return list;
         }
 
         private void saveHostnames()
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
-            bf.Serialize(ms, this._hostNames);
-
-            byte[] buf = ms.GetBuffer();
-
-            DAL.singleton().proc_HMB_UPDATE_BINARYSTORE(buf, "newbie_hostnames");
+            BinaryStore.storeValue("newbie_hostnames", _hostNames);
+            BinaryStore.storeValue("newbie_ignorednicks", _ignoredNicknames);
         }
+
+
     }
 }
