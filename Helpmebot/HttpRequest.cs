@@ -30,12 +30,13 @@ namespace helpmebot6
         /// Gets the specified URI, passing the UserAgent.
         /// </summary>
         /// <param name="uri">The URI.</param>
+        /// <param name="timeout">optional. will default to httpTimeout config option </param>
         /// <returns></returns>
-        public static Stream get(string uri)
+        public static Stream get(string uri, int timeout = -1)
         {
             HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
             hwr.UserAgent = Configuration.singleton()["useragent"];
-            hwr.Timeout = int.Parse(Configuration.singleton()["httpTimeout"]);
+            hwr.Timeout = timeout == -1 ? int.Parse(Configuration.singleton()["httpTimeout"]) : timeout;
             HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
 
             return resp.GetResponseStream();
