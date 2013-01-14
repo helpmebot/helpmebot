@@ -76,7 +76,11 @@ namespace helpmebot6.Monitoring
                         }
 
                         DAL.singleton().delete("acc_notifications", 1, new DAL.WhereConds("notif_id", id));
-                        Helpmebot6.irc.ircPrivmsg(destination, text);
+
+                        if (Configuration.singleton()["silence", destination] == "false")
+                        {
+                            Helpmebot6.irc.ircPrivmsg(destination, text);
+                        }
                     }
 
                 }
