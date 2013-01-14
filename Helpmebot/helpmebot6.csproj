@@ -228,7 +228,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="bin\Debug\.hmbot" />
-    <None Include="bin\x86\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
     <None Include="CREDITS" />
     <None Include="helpmebot6.sql" />

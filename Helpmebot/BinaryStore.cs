@@ -15,6 +15,7 @@ namespace helpmebot6
             q.setFrom("binary_store");
             q.addWhere(new DAL.WhereConds("bin_desc", blobName));
             var result = DAL.singleton().executeSelect(q);
+// TODO: test memstream isn't empty or catch exception
 
             return (SerializableArrayList)new BinaryFormatter().Deserialize(new MemoryStream(((byte[])(((object[])(result[0]))[0]))));
         }
