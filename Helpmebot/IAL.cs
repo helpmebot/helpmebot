@@ -465,6 +465,16 @@ namespace helpmebot6
             _sendLine("TIME");
         }
 
+        public void ircTopic(string channel)
+        {
+            _sendLine("TOPIC " + channel);
+        }
+
+        public void ircTopic(string channel,string content)
+        {
+            _sendLine("TOPIC " + channel + " :" + content);
+        }
+
         public void ircAdmin()
         {
             _sendLine("ADMIN");

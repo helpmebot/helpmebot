@@ -66,7 +66,12 @@ namespace helpmebot6
                 foreach (var c in _baseIal.activeChannels)
                 {
                     _sw.WriteLine(":" + _baseIal.myIdentity + " JOIN " + c);
+                    _sw.Flush();
+                    _baseIal.ircNames(c);
+                    _baseIal.ircTopic(c);
                 }
+
+                
 
 
 
