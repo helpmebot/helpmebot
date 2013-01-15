@@ -62,9 +62,13 @@ namespace helpmebot6
         private readonly uint _networkId;
 
         private ArrayList channelList = new ArrayList();
+
+        private string _rpl_myinfo;
         #endregion
 
         #region properties
+        public string ServerInfo { get { return _rpl_myinfo; } }
+
         public string clientVersion { get; set; }
 
         public bool connected
@@ -119,10 +123,14 @@ namespace helpmebot6
 
         public bool logEvents { get; private set; }
 
-        public string[] activeChannels { get
+        public string[] activeChannels
         {
-            return (string[])channelList.ToArray(Type.GetType("String"));
-        } }
+            get
+            {
+                Type t = Type.GetType("System.String");
+                return (string[])channelList.ToArray(t);
+            }
+        }
         #endregion
 
         #region constructor/destructor
@@ -748,6 +756,21 @@ namespace helpmebot6
 
         #region event handlers
 
+        private void RPL_MyInfoEvent(string parameters)
+        {
+            _rpl_myinfo = parameters;
+        }
+
+        private void RPL_CreatedEvent(string parameters)
+        {
+
+        }
+
+        private void RPL_YourHostEvent(string parameters)
+        {
+
+        }
+
         private void ialNameReplyEvent(string channel, IEnumerable<string> names)
         {
             if ( !this._namesList.ContainsKey( channel ) ) return;
@@ -941,6 +964,15 @@ namespace helpmebot6
                 case "001":
                     this.connectionRegistrationSucceededEvent();
                     break;
+                case "002":
+                    this.RPL_YourHostEvent(parameters);
+                    break;
+                case "003":
+                    this.RPL_CreatedEvent(parameters);
+                    break;
+                case "004":
+                    this.RPL_MyInfoEvent(parameters);
+                    break;
                 case "433":
                     this.errNicknameInUseEvent();
                     break;
@@ -952,6 +984,8 @@ namespace helpmebot6
                     break;
             }
         }
+
+
 
         #region parsers
 

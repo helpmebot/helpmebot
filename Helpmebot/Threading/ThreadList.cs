@@ -43,6 +43,7 @@ namespace helpmebot6.Threading
         }
 
         private readonly ArrayList _threadedObjects;
+        public ArrayList ThreadedObjects { get { return _threadedObjects; } }
 
         /// <summary>
         /// Registers the specified sender.

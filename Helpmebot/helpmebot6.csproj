@@ -170,6 +170,7 @@
     <Compile Include="Commands\Welcomer.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="IrcProxy.cs" />
+    <Compile Include="IrcProxyInstance.cs" />
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Logger.cs" />
