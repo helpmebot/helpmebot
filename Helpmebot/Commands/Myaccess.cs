@@ -36,9 +36,22 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            CommandResponseHandler crh = new CommandResponseHandler();
-            string[] cmdArgs = {source.ToString(), source.accessLevel.ToString()};
-            crh.respond(new Message().get("cmdAccess", cmdArgs));
+            var crh = new CommandResponseHandler();
+
+            if (args.Length > 0)
+            {
+                foreach (string s in args)
+                {
+                    string[] cmdArgs = {s, User.newFromString(s).accessLevel.ToString()};
+                    crh.respond(new Message().get("cmdAccess", cmdArgs));
+                }
+            }
+
+            else
+            {
+                string[] cmdArgs = {source.ToString(), source.accessLevel.ToString()};
+                crh.respond(new Message().get("cmdAccess", cmdArgs));
+            }
             return crh;
         }
     }
