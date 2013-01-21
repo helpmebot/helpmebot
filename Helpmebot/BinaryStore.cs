@@ -17,7 +17,12 @@ namespace helpmebot6
             var result = DAL.singleton().executeSelect(q);
 // TODO: test memstream isn't empty or catch exception
 
-            return (SerializableArrayList)new BinaryFormatter().Deserialize(new MemoryStream(((byte[])(((object[])(result[0]))[0]))));
+            MemoryStream serializationStream = new MemoryStream(((byte[]) (((object[]) (result[0]))[0])));
+            if (serializationStream.Length != 0)
+            {
+                return (SerializableArrayList) new BinaryFormatter().Deserialize(serializationStream);
+            }
+            return new SerializableArrayList();
         }
 
         public static void storeValue(string hostnames, SerializableArrayList toStore)
