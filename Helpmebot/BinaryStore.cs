@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 
 namespace helpmebot6
 {
@@ -15,9 +11,8 @@ namespace helpmebot6
             q.setFrom("binary_store");
             q.addWhere(new DAL.WhereConds("bin_desc", blobName));
             var result = DAL.singleton().executeSelect(q);
-// TODO: test memstream isn't empty or catch exception
 
-            MemoryStream serializationStream = new MemoryStream(((byte[]) (((object[]) (result[0]))[0])));
+            var serializationStream = new MemoryStream(((byte[]) (((object[]) (result[0]))[0])));
             if (serializationStream.Length != 0)
             {
                 return (SerializableArrayList) new BinaryFormatter().Deserialize(serializationStream);
@@ -27,10 +22,10 @@ namespace helpmebot6
 
         public static void storeValue(string hostnames, SerializableArrayList toStore)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            MemoryStream ms = new MemoryStream();
+            var bf = new BinaryFormatter();
+            var ms = new MemoryStream();
             bf.Serialize(ms, toStore);
-            byte[] buf = ms.GetBuffer();
+            var buf = ms.GetBuffer();
 
             DAL.singleton().proc_HMB_UPDATE_BINARYSTORE(buf, hostnames);
         }
