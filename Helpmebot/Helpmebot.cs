@@ -22,7 +22,6 @@ using helpmebot6.Commands;
 using helpmebot6.Monitoring;
 using helpmebot6.NewYear;
 using helpmebot6.Threading;
-using helpmebot6.UdpListener;
 
 #endregion
 
@@ -117,9 +116,7 @@ namespace helpmebot6
             }
 
             new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
-
-            new UDPListener(4357);
-
+            
             string[] twparms = {server, schema, irc.ircServer};
             try
             {
