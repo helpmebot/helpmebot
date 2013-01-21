@@ -20,7 +20,6 @@ using System;
 using helpmebot6.AI;
 using helpmebot6.Commands;
 using helpmebot6.Monitoring;
-using helpmebot6.NewYear;
 using helpmebot6.Threading;
 
 #endregion
@@ -106,8 +105,6 @@ namespace helpmebot6
             new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
             setupEvents();
-
-            TimeMonitor.instance();
 
             if (!irc.connect())
             {
