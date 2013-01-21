@@ -27,7 +27,6 @@ namespace helpmebot6.Monitoring
 
         private AccNotifications()
         {
-            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher initialising");
             _watcherThread = new Thread(threadBody);
             _watcherThread.Start();
 	        this.registerInstance();
@@ -35,7 +34,6 @@ namespace helpmebot6.Monitoring
 
         private void threadBody()
         {
-            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher starting");
             Logger.instance().addToLog("Starting ACC Notifications watcher", Logger.LogTypes.General);
             try
             {
