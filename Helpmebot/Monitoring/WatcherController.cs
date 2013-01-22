@@ -171,14 +171,9 @@ namespace helpmebot6.Monitoring
             if (newItems.Count > 0)
             {
                 var message = compileMessage(newItems, keyword, ">TWITTER<", false);
-                try
-                {
+       
                     new Twitter().updateStatus(message);
-                }
-                catch (System.Net.WebException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
-                }
+              
             }
         }
 

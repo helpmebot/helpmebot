@@ -39,8 +39,7 @@ namespace helpmebot6.Commands
 
             try
             {
-                new Twitter().updateStatus(status);
-                return new CommandResponseHandler(new Message().get("done"));
+                return new Twitter().updateStatus(status) == null ? new CommandResponseHandler(new Message().get("error")) : new CommandResponseHandler(new Message().get("done"));
             }
            catch ( System.Net.WebException ex)
            {

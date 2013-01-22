@@ -113,16 +113,6 @@ namespace helpmebot6
             }
 
             new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
-            
-            string[] twparms = {server, schema, irc.ircServer};
-            try
-            {
-                new Twitter().updateStatus(new Message().get("tweetStartup", twparms));
-            }
-            catch(Twitterizer.TwitterizerException ex)
-            {
-                GlobalFunctions.errorLog( ex );
-            }
 
             // ACC notification monitor
             AccNotifications.getInstance();
