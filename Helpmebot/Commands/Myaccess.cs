@@ -38,7 +38,7 @@ namespace helpmebot6.Commands
         {
             var crh = new CommandResponseHandler();
 
-            if (args.Length > 0)
+            if (args.Length > 0 && args[0] != string.Empty)
             {
                 foreach (string s in args)
                 {
