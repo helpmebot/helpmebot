@@ -31,12 +31,12 @@ namespace helpmebot6.Commands
             {
                 throw new ArgumentException();
             }
-
-            revision = HttpUtility.UrlEncode(revision);
-
+            
             string apiDeployPassword = Configuration.singleton()["accDeployPassword"];
 
             string key = md5(md5(revision) + apiDeployPassword);
+
+            revision = HttpUtility.UrlEncode(revision);
 
             var r = new StreamReader(
                     HttpRequest.get("http://toolserver.org/~acc/deploy/deploy.php?r=" + revision + "&k=" + key,
