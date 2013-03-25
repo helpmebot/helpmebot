@@ -39,6 +39,13 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            if(args.Length == 0)
+            {
+                string[] messageParameters = { "decode", "1", args.Length.ToString() };
+                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+            }
+
+
             if (args[0].Length != 8)
                 return null;
 

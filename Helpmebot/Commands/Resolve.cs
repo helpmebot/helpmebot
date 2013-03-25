@@ -38,6 +38,12 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            if (args.Length == 0)
+            {
+                string[] messageParameters = { "resolve", "1", args.Length.ToString() };
+                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+            }
+
             IPAddress[] addresses = new IPAddress[0];
             try
             {

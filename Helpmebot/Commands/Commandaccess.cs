@@ -37,17 +37,27 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            // find the command
-            Type cmd = Type.GetType(
-                "helpmebot6.Commands." + args[0].Substring(0, 1).ToUpper() + args[0].Substring(1).ToLower()
-                );
-            // check it exists
-            if ( cmd == null ) //TODO: return an error message instead
-                return null;
-            return // instantiate a new instance of the command, and get it's access level
-                new CommandResponseHandler(
-                    ( (GenericCommand)Activator.CreateInstance( cmd ) ).
-                        accessLevel.ToString( ) );
+
+            if (args.Length > 0)
+            {
+                // find the command
+                Type cmd = Type.GetType(
+                    "helpmebot6.Commands." + args[0].Substring(0, 1).ToUpper() + args[0].Substring(1).ToLower()
+                    );
+                // check it exists
+                if (cmd == null) //TODO: return an error message instead
+                    return null;
+                return // instantiate a new instance of the command, and get it's access level
+                    new CommandResponseHandler(
+                        ((GenericCommand) Activator.CreateInstance(cmd)).
+                            accessLevel.ToString());
+            }
+            else
+            {
+                string[] messageParameters = {"commandaccess", "1", args.Length.ToString()};
+                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+
+            }
         }
     }
 }

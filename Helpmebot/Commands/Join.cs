@@ -37,7 +37,10 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            if(args.Length >= 1) {
+            if(args.Length >= 1)
+            {
+                if (args[0] == "0") return accessDenied(source, channel, args);
+
                 return joinChannel(args[0], source.network);
             }
             else
