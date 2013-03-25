@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
 
-            CommandResponseHandler crh = new CommandResponseHandler();
+            var crh = new CommandResponseHandler();
             if (args.Length > 1)
             {
                 switch (args[0].ToLower())
@@ -61,12 +61,14 @@ namespace helpmebot6.Commands
                     case "add":
                         if (args.Length > 2)
                         {
-                            User.UserRights aL = User.UserRights.Normal;
+                            var aL = User.UserRights.Normal;
 
                             switch (args[2].ToLower())
                             {
                                 case "developer":
-                                    aL = source.accessLevel == User.UserRights.Developer ? User.UserRights.Developer : User.UserRights.Superuser;
+                                    aL = source.accessLevel == User.UserRights.Developer
+                                             ? User.UserRights.Developer
+                                             : User.UserRights.Superuser;
                                     break;
                                 case "superuser":
                                     aL = User.UserRights.Superuser;
@@ -92,6 +94,12 @@ namespace helpmebot6.Commands
 
                             crh = addAccessEntry(User.newFromString(args[1]), aL);
                         }
+                        else
+                        {
+                            string[] messageParameters = { "access add", "3", args.Length.ToString() };
+                            return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+
+                        }
                         break;
                     case "del":
                         crh = delAccessEntry(int.Parse(args[1]));
@@ -100,6 +108,12 @@ namespace helpmebot6.Commands
                 // add <source> <level>
 
                 // del <id>
+            }
+            else
+            {
+                string[] messageParameters = { "access", "2", args.Length.ToString() };
+                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                
             }
             return crh;
         }

@@ -37,7 +37,15 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            return joinChannel(args[0], source.network);
+            if(args.Length >= 1) {
+                return joinChannel(args[0], source.network);
+            }
+            else
+            {
+                string[] messageParameters = { "join", "1", args.Length.ToString() };
+                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+
+            }
         }
 
         public static CommandResponseHandler joinChannel(string args, uint network)
