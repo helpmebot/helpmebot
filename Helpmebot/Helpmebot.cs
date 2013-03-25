@@ -158,7 +158,8 @@ namespace helpmebot6
                     cmd.overrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
                     string command = messageWords[0];
-                    string[] commandArgs = string.Join(" ", messageWords, 1, messageWords.Length - 1).Split(' ');
+                    string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
+                    string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
                     cmd.handleCommand(source, destination, command, commandArgs);
                 }
