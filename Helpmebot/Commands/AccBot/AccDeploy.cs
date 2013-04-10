@@ -23,6 +23,14 @@ namespace helpmebot6.Commands
         {
             string revision;
 
+            bool showUrl = false;
+
+            if (args[0].ToLower() == "@url")
+            {
+                showUrl = true;
+                GlobalFunctions.popFromFront(ref args);
+            }
+
             if (args.Length > 0 && args[0] != "")
             {
                 revision = string.Join(" ", args);
@@ -38,14 +46,16 @@ namespace helpmebot6.Commands
 
             revision = HttpUtility.UrlEncode(revision);
 
-            var r = new StreamReader(
-                    HttpRequest.get("http://toolserver.org/~acc/deploy/deploy.php?r=" + revision + "&k=" + key,
-                    1000 * 30 // 30 sec timeout
-                    ));
+            string requestUri = "http://toolserver.org/~acc/deploy/deploy.php?r=" + revision + "&k=" + key;
 
-            
+            var r = new StreamReader(HttpRequest.get(requestUri, 1000*30 /* 30 sec timeout */));
 
             var crh = new CommandResponseHandler();
+            if (showUrl)
+            {
+                crh.respond(requestUri, CommandResponseDestination.PrivateMessage);
+            }
+
             foreach(var x in r.ReadToEnd().Split('\n', '\r')) crh.respond(x);
             return crh;
         }
