@@ -57,8 +57,8 @@ namespace helpmebot6.Commands
                 string origname = name;
 
                 string[] parts = name.Split(new[] {':'}, 2);
-                name = parts[0];
-                prefix = parts[1];
+                name = parts[1];
+                prefix = parts[0];
 
                 if (DAL.singleton().proc_HMB_GET_IW_URL(prefix) == string.Empty)
                 {
@@ -73,7 +73,7 @@ namespace helpmebot6.Commands
                 
             }
 
-            string url = Linker.getRealLink(channel, prefix + page + name, secure);
+            string url = Linker.getRealLink(channel, prefix + page + name, secure).Replace("\0","");
 
             return new CommandResponseHandler(url);
         }
