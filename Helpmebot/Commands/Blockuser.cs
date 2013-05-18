@@ -36,11 +36,46 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer",channel]);
+            if (args.Length > 0)
+            {
+                if (args[0] == "@secure")
+                {
+                    secure = true;
+                    GlobalFunctions.popFromFront(ref args);
+                }
+            }
+
             string name = string.Join(" ", args);
 
-            string url = Configuration.singleton()["wikiUrl",channel];
+            string prefix = "";
 
-            return new CommandResponseHandler(url + "Special:BlockIP/" + name);
+            string page = "Special:Block/";
+
+            if (name.Contains(":"))
+            {
+                string origname = name;
+
+                string[] parts = name.Split(new[] {':'}, 2);
+                name = parts[0];
+                prefix = parts[1];
+
+                if (DAL.singleton().proc_HMB_GET_IW_URL(prefix) == string.Empty)
+                {
+                    name = origname;
+                    prefix = "";
+                }
+                else
+                {
+                    prefix += ":";
+                }
+
+                
+            }
+
+            string url = Linker.getRealLink(channel, prefix + page + name, secure);
+
+            return new CommandResponseHandler(url);
         }
     }
 }
