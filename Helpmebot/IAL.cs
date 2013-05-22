@@ -822,7 +822,8 @@ namespace helpmebot6
 
         private void ialPrivmsgEvent(User source, string destination, string message)
         {
-            this.log("PRIVMSG EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
+            // Don't re-enable.
+            // this.log("PRIVMSG EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
         }
 
         private void ialKickEvent(User source, string channel, string nick, string message)
