@@ -115,6 +115,7 @@
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\CategorySize.cs" />
     <Compile Include="Commands\FunStuff\Charge.cs" />
+    <Compile Include="Commands\FunStuff\Nuke.cs" />
     <Compile Include="Commands\FunStuff\Stab.cs" />
     <Compile Include="Commands\FunStuff\Friday.cs" />
     <Compile Include="Commands\FunStuff\Lick.cs" />
