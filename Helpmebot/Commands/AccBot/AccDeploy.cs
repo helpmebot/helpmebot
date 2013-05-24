@@ -21,6 +21,8 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
+            Helpmebot6.irc.ircPrivmsg(channel, new Message().get("DeployInProgress"));
+
             string revision;
 
             bool showUrl = false;
