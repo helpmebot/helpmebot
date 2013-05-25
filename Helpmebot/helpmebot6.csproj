@@ -114,11 +114,17 @@
     <Compile Include="Commands\Configcacheclear.cs" />
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\CategorySize.cs" />
+    <Compile Include="Commands\FunStuff\Beer.cs" />
     <Compile Include="Commands\FunStuff\Charge.cs" />
+    <Compile Include="Commands\FunStuff\Exorcise.cs" />
     <Compile Include="Commands\FunStuff\Nuke.cs" />
+    <Compile Include="Commands\FunStuff\Pat.cs" />
+    <Compile Include="Commands\FunStuff\Pie.cs" />
+    <Compile Include="Commands\FunStuff\Pillow.cs" />
     <Compile Include="Commands\FunStuff\Stab.cs" />
     <Compile Include="Commands\FunStuff\Friday.cs" />
     <Compile Include="Commands\FunStuff\Lick.cs" />
+    <Compile Include="Commands\FunStuff\Tea.cs" />
     <Compile Include="Commands\FunStuff\Whale.cs" />
     <Compile Include="Commands\FunStuff\Curl.cs" />
     <Compile Include="Commands\FunStuff\Drink.cs" />
