@@ -17,6 +17,7 @@
 #region Usings
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -72,8 +73,8 @@ namespace helpmebot6
             {
                 this._lastLink.Remove(channel);
             }
-            this._lastLink.Add(channel, (string)newLink[0]);
-            this.sendLink(channel, (string)newLink[0]);
+            this._lastLink.Add(channel, message);
+            this.sendLink(channel, message);
         }
 
         /// <summary>
@@ -118,9 +119,14 @@ namespace helpmebot6
         /// <returns></returns>
         public string getLink(string destination, bool useSecureServer)
         {
-            string link;
-            bool success = this._lastLink.TryGetValue(destination, out link);
-            return success ? getRealLink( destination, link, useSecureServer ) : "";
+            string lastLinkedLine;
+            bool success = _lastLink.TryGetValue(destination, out lastLinkedLine);
+            if (!success) return "";
+
+            ArrayList links = reallyParseMessage(lastLinkedLine);
+
+            return links.Cast<string>().Aggregate("", (current, link) => current + " " + getRealLink(destination, link, useSecureServer));
+
         }
 
         /// <summary>
