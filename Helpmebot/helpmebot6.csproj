@@ -117,6 +117,7 @@
     <Compile Include="Commands\FunStuff\Beer.cs" />
     <Compile Include="Commands\FunStuff\Charge.cs" />
     <Compile Include="Commands\FunStuff\Exorcise.cs" />
+    <Compile Include="Commands\FunStuff\Minnow.cs" />
     <Compile Include="Commands\FunStuff\Nuke.cs" />
     <Compile Include="Commands\FunStuff\Pat.cs" />
     <Compile Include="Commands\FunStuff\Pie.cs" />
