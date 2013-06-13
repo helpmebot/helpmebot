@@ -21,6 +21,7 @@ using System.Reflection;
 using helpmebot6.Commands;
 using helpmebot6.Monitoring;
 using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
+using helpmebot6.ExtensionMethods;
 
 #endregion
 
@@ -134,7 +135,7 @@ namespace helpmebot6
                     }
                     else
                     {
-                        wordResponse = String.Format(wordResponse, args);
+                        wordResponse = wordResponse.FormatWith(source, args);
                         if (rW.action)
                         {
                             crh.respond(IAL.wrapCTCP("ACTION", wordResponse));
