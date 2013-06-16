@@ -57,9 +57,10 @@ namespace helpmebot6.Commands
             {
                 foreach (string key in kc)
                 {
-                    crh.respond(WatcherController.instance().forceUpdate(key, channel));
+                    crh.respond(WatcherController.instance().forceUpdate(key, channel), CommandResponseDestination.PrivateMessage);
                 }
             }
+            
             return crh;
         }
     }
