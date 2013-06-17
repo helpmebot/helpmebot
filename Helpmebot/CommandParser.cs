@@ -34,7 +34,7 @@ namespace helpmebot6
     /// </summary>
     internal class CommandParser
     {
-        private const string allowedCommandNameChars = "a-z-_";
+        private const string allowedCommandNameChars = "0-9a-z-_";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandParser"/> class.
