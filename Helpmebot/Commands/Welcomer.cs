@@ -42,44 +42,37 @@ namespace helpmebot6.Commands
                 case "enable":
                     if (Configuration.singleton()["welcomeNewbie",channel] == "true")
                     {
-                        return new CommandResponseHandler(new Message().get("no-change"));
+                        return new CommandResponseHandler(new Message().get("Newbie welcomer is already on"));
                     }
                     Configuration.singleton()["welcomeNewbie", channel]= "true";
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().get("The newbie welcomer has been turned on"));
                 case "disable":
                     if (Configuration.singleton()["welcomeNewbie",channel] == "false")
                     {
-                        return new CommandResponseHandler(new Message().get("no-change"));
+                        return new CommandResponseHandler(new Message().get("Newbie welcomer is already off"));
                     }
                     Configuration.singleton()["welcomeNewbie", channel]= "false";
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().get("The newbie welcomer has been turned off"));
                 case "global":
                     Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "add":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
+                    ignore = true;
+                    GlobalFunctions.popFromFront(ref args);
+///Shouldn't there be a test to see if the name is already on the list?
 
                     NewbieWelcomer.instance().addHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "del":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
+                    ignore = true;
+                    GlobalFunctions.popFromFront(ref args);
+///Shouldn't there be a test to see if the name is actually on the list?
 
                     NewbieWelcomer.instance().delHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "list":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
+                    ignore = true;
+                    GlobalFunctions.popFromFront(ref args);
 
                     var crh = new CommandResponseHandler();
                     string[] list = NewbieWelcomer.instance().getHosts(ignore);
