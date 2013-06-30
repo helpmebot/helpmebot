@@ -10,20 +10,20 @@ namespace helpmebot6.Commands
     internal class NotifyOnJoin : GenericCommand
     {
         private static object dictlock = new object();
-        private static Dictionary<User, List<User>> RequestedNotifications = new Dictionary<User, List<User>>();
+        private static Dictionary<string, List<User>> RequestedNotifications = new Dictionary<string, List<User>>();
 
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             if (args.Length != 1) return new CommandResponseHandler("I actually expected a nickname as single argument");
-            User trigger;
+            string trigger;
             lock (dictlock)
             {
                 User toNotify = source;
-                trigger = User.newFromString(args[0]);
+                trigger = args[0];
                 if (!RequestedNotifications.ContainsKey(trigger)) RequestedNotifications.Add(trigger,new List<User>());
                 RequestedNotifications[trigger].Add(toNotify);
             }
-            return new CommandResponseHandler(String.Format("I'll send you a private message when someone with nickname {0} joins a channel I'm in", trigger.nickname));
+            return new CommandResponseHandler(String.Format("I'll send you a private message when someone with nickname {0} joins a channel I'm in", trigger));
         }
 
         internal void notifyJoin(User source, string channel)
@@ -31,9 +31,9 @@ namespace helpmebot6.Commands
             List<User> toNotify = null;
             lock (dictlock)
             {
-                if (RequestedNotifications.TryGetValue(source, out toNotify))
+                if (RequestedNotifications.TryGetValue(source.nickname, out toNotify))
                 {
-                    RequestedNotifications.Remove(source);
+                    RequestedNotifications.Remove(source.nickname);
                 }
             }
             if (toNotify != null)
