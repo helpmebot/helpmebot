@@ -125,6 +125,8 @@ namespace helpmebot6
 
             irc.joinEvent += welcomeNewbieOnJoinEvent;
 
+            irc.joinEvent += notifyOnJoinEvent;
+
             irc.privmsgEvent += receivedMessage;
 
             irc.inviteEvent += irc_InviteEvent;
@@ -145,6 +147,11 @@ namespace helpmebot6
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
         {
             NewbieWelcomer.instance().execute(source, channel);
+        }
+
+        private static void notifyOnJoinEvent(User source, string channel)
+        {
+            new NotifyOnJoin().notifyJoin(source, channel);
         }
 
         private static void receivedMessage(User source, string destination, string message)
