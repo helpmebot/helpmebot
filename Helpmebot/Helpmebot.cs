@@ -151,7 +151,7 @@ namespace helpmebot6
 
         private static void notifyOnJoinEvent(User source, string channel)
         {
-            new NotifyOnJoin().notifyJoin(source, channel);
+            new Notifyonjoin().notifyJoin(source, channel);
         }
 
         private static void receivedMessage(User source, string destination, string message)
