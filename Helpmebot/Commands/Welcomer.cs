@@ -57,23 +57,30 @@ namespace helpmebot6.Commands
                     Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "add":
-                    ignore = true;
-                    GlobalFunctions.popFromFront(ref args);
-///Shouldn't there be a test to see if the name is already on the list?
+                    if (args[1] == "@ignore") 
+                    {
+                        ignore = true;
+                        GlobalFunctions.popFromFront(ref args);
+                    }
 
                     NewbieWelcomer.instance().addHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "del":
-                    ignore = true;
-                    GlobalFunctions.popFromFront(ref args);
-///Shouldn't there be a test to see if the name is actually on the list?
+                    if (args[1] == "@ignore") 
+                    {       
+                        ignore = true;
+                        GlobalFunctions.popFromFront(ref args);
+                    }
 
                     NewbieWelcomer.instance().delHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().get("done"));
                 case "list":
-                    ignore = true;
-                    GlobalFunctions.popFromFront(ref args);
-
+                    if (args[1] == "@ignore") 
+                    {
+                       ignore = true;
+                       GlobalFunctions.popFromFront(ref args);
+                    }
+                    
                     var crh = new CommandResponseHandler();
                     string[] list = NewbieWelcomer.instance().getHosts(ignore);
                     foreach (string item in list)
