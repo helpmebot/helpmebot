@@ -24,7 +24,7 @@ using helpmebot6.Commands;
 
 namespace helpmebot6.Commands
 {
-    internal class Notifyonjoin : GenericCommand
+    internal class Notify : GenericCommand
     {
         private static object dictlock = new object();
         private static Dictionary<string, List<User>> RequestedNotifications = new Dictionary<string, List<User>>();
