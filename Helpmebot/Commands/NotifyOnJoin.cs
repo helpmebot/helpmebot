@@ -31,7 +31,8 @@ namespace helpmebot6.Commands
 
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            if (args.Length != 1) return new CommandResponseHandler("I actually expected a nickname as single argument");
+            Message msgprovider = new Message();
+            if (args.Length != 1) return new CommandResponseHandler(msgprovider.get("argsExpected1", new String[] {"nickname"}));
             string trigger;
             lock (dictlock)
             {
@@ -40,7 +41,8 @@ namespace helpmebot6.Commands
                 if (!RequestedNotifications.ContainsKey(trigger)) RequestedNotifications.Add(trigger,new List<User>());
                 RequestedNotifications[trigger].Add(toNotify);
             }
-            return new CommandResponseHandler(String.Format("I'll send you a private message when someone with nickname {0} joins a channel I'm in", trigger));
+            return new CommandResponseHandler(msgprovider.get("confirmNotify", new String[] { trigger }));
+            
         }
 
         internal void notifyJoin(User source, string channel)
@@ -55,7 +57,8 @@ namespace helpmebot6.Commands
             }
             if (toNotify != null)
             {
-                string message = String.Format("I just saw {0} enter channel {1}", source.nickname, channel);
+                Message msgprovider = new Message();
+                string message = msgprovider.get("notifyJoin", new String[] { source.nickname, channel });
                 foreach (User user in toNotify)
                 {
                     Helpmebot6.irc.ircPrivmsg(user.nickname, message);
