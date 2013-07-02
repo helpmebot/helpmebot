@@ -32,7 +32,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             Message msgprovider = new Message();
-            if (args.Length != 1) return new CommandResponseHandler(msgprovider.get("argsExpected", new String[] {"nickname"}));
+            if (args.Length != 1) return new CommandResponseHandler(msgprovider.get("argsExpected1", new String[] {"nickname"}));
             string trigger;
             lock (dictlock)
             {
@@ -42,7 +42,7 @@ namespace helpmebot6.Commands
                 RequestedNotifications[trigger].Add(toNotify);
             }
             return new CommandResponseHandler(msgprovider.get("confirmNotify", new String[] { trigger }));
-            //"I'll send you a private message when someone with nickname {0} joins a channel I'm in"
+            
         }
 
         internal void notifyJoin(User source, string channel)
