@@ -38,8 +38,9 @@ namespace helpmebot6.Commands
             {
                 User toNotify = source;
                 trigger = args[0];
-                if (!RequestedNotifications.ContainsKey(trigger)) RequestedNotifications.Add(trigger,new List<User>());
-                RequestedNotifications[trigger].Add(toNotify);
+                string triggerUpper = trigger.ToUpperInvariant();
+                if (!RequestedNotifications.ContainsKey(trigger)) RequestedNotifications.Add(triggerUpper, new List<User>());
+                RequestedNotifications[triggerUpper].Add(toNotify);
             }
             return new CommandResponseHandler(msgprovider.get("confirmNotify", new String[] { trigger }));
             
@@ -50,7 +51,7 @@ namespace helpmebot6.Commands
             List<User> toNotify = null;
             lock (dictlock)
             {
-                if (RequestedNotifications.TryGetValue(source.nickname, out toNotify))
+                if (RequestedNotifications.TryGetValue(source.nickname.ToUpperInvariant(), out toNotify))
                 {
                     RequestedNotifications.Remove(source.nickname);
                 }
