@@ -17,6 +17,7 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using helpmebot6.Commands;
 using helpmebot6.Monitoring;
@@ -135,7 +136,24 @@ namespace helpmebot6
                     }
                     else
                     {
-                        wordResponse = wordResponse.FormatWith(source, args);
+                        IDictionary<string, object> dict = new Dictionary<string, object>();
+
+                        dict.Add("username", source.username);
+                        dict.Add("nickname", source.nickname);
+                        dict.Add("hostname", source.hostname);
+
+                        dict.Add("accessLevel", source.accessLevel);
+
+                        dict.Add("channel", destination);
+
+                        for (int i = 0; i < args.Length; i++)
+                        {
+                            dict.Add(i.ToString(), args[i]);
+                            dict.Add(i.ToString() + "*", string.Join(" ", args, i, args.Length - i));
+                        }
+
+                        wordResponse = wordResponse.FormatWith(dict);
+
                         if (rW.action)
                         {
                             crh.respond(IAL.wrapCTCP("ACTION", wordResponse));

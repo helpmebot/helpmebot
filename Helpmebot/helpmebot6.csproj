@@ -115,6 +115,7 @@
     <Compile Include="Commands\Commandaccess.cs" />
     <Compile Include="Commands\CategorySize.cs" />
     <Compile Include="Commands\FunStuff\Beer.cs" />
+    <Compile Include="Commands\FunStuff\Coffee.cs" />
     <Compile Include="Commands\FunStuff\Charge.cs" />
     <Compile Include="Commands\FunStuff\Exorcise.cs" />
     <Compile Include="Commands\FunStuff\Minnow.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Commands\FunStuff\Cookie.cs" />
     <Compile Include="Commands\Gancount.cs" />
+    <Compile Include="Commands\NotifyOnJoin.cs" />
     <Compile Include="Commands\Oauth.cs" />
     <Compile Include="Commands\Editcount.cs" />
     <Compile Include="Commands\Decode.cs" />
@@ -229,6 +231,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".hmbot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="bin\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
