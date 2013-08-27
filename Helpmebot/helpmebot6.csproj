@@ -158,6 +158,7 @@
     <Compile Include="Commands\Myaccess.cs" />
     <Compile Include="Commands\Page.cs" />
     <Compile Include="Commands\Part.cs" />
+    <Compile Include="Commands\Ping.cs" />
     <Compile Include="Commands\ProtectedCommand.cs" />
     <Compile Include="Commands\Raw.cs" />
     <Compile Include="Commands\Rawctcp.cs" />
