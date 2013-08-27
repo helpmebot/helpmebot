@@ -14,40 +14,40 @@
 // * You should have received a copy of the GNU General Public License *
 // * along with Helpmebot. If not, see <http://www.gnu.org/licenses/>. *
 // ****************************************************************************/
-#region Usings
-
-using System;
-using System.Reflection;
-
-#endregion
 
 namespace helpmebot6.Commands
 {
-  /// <summary>
-  /// !ping
-  /// </summary>
-  internal class Ping : GenericCommand
-  {
     /// <summary>
-    /// Actual command logic
+    /// The ping command
     /// </summary>
-    /// <param name="source">The user who triggered the command.</param>
-    /// <param name="channel">The channel the command was triggered in.</param>
-    /// <param name="args">The arguments to the command.</param>
-    /// <returns></returns>
-    
-    protected override CommandResponseHandler execute(User source, string channel, string[] args)
+    internal class Ping : GenericCommand
     {
-      if (args.Length == 0) {
-        name = source.nickname;
-        string[] messageparams = { name };
-        string message = new Message().get("cmdPing", messageparams);
-      } else {
-        name = string.Join(" ", args);
-        string[] messageparams = { name };
-        string message = new Message().get("cmdPingUser", messageparams);
-      }
-      return new CommandResponseHandler(message);
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <param name="source">The user who triggered the command.</param>
+        /// <param name="channel">The channel the command was triggered in.</param>
+        /// <param name="args">The arguments to the command.</param>
+        /// <returns>Command response</returns>
+        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        {
+            string name;
+            string message;
+
+            if (args.Length == 0)
+            {
+                name = source.nickname;
+                string[] messageparams = { name };
+                message = new Message().get("cmdPing", messageparams);
+            }
+            else
+            {
+                name = string.Join(" ", args);
+                string[] messageparams = { name };
+                message = new Message().get("cmdPingUser", messageparams);
+            }
+
+            return new CommandResponseHandler(message);
         }
     }
 }
