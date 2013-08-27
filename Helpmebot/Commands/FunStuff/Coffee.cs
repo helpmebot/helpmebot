@@ -10,7 +10,12 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
             string name = string.Join(" ", args);
-
+            
+            if (name == null || name == "")
+            {
+                name = source.nickname;
+            }
+            
             string[] messageparams = { name };
             string message = new Message().get("cmdCoffee", messageparams);
 
