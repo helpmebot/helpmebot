@@ -37,7 +37,7 @@ namespace helpmebot6.Commands
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
         /// <returns></returns>
-        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
 
             // TODO: link to basewiki

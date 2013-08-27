@@ -1,31 +1,32 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-using helpmebot6.AI;
-using helpmebot6.Commands;
-using helpmebot6.Monitoring;
-using helpmebot6.Threading;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Helpmebot.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Helpmebot main class
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6
 {
+    using System;
+
+    using helpmebot6.AI;
+    using helpmebot6.Commands;
+    using helpmebot6.Monitoring;
+    using helpmebot6.Threading;
+
     /// <summary>
     /// Helpmebot main class
     /// </summary>
@@ -141,7 +142,7 @@ namespace helpmebot6
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            new Join().run(source, nickname, new[] {channel});
+            new Join().RunCommand(source, nickname, new[] {channel});
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
@@ -151,7 +152,7 @@ namespace helpmebot6
 
         private static void notifyOnJoinEvent(User source, string channel)
         {
-            new Notify().notifyJoin(source, channel);
+            new Notify().NotifyJoin(source, channel);
         }
 
         private static void receivedMessage(User source, string destination, string message)
@@ -159,10 +160,10 @@ namespace helpmebot6
             CommandParser cmd = new CommandParser();
             try
             {
-                bool overrideSilence = cmd.overrideBotSilence;
+                bool overrideSilence = cmd.OverrideBotSilence;
                 if (CommandParser.isRecognisedMessage(ref message, ref overrideSilence))
                 {
-                    cmd.overrideBotSilence = overrideSilence;
+                    cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
                     string command = messageWords[0];
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
@@ -170,7 +171,7 @@ namespace helpmebot6
 
                     cmd.handleCommand(source, destination, command, commandArgs);
                 }
-                string aiResponse = Intelligence.singleton().respond(message);
+                string aiResponse = Intelligence.Singleton().Respond(message);
                 if (Configuration.singleton()["silence",destination] == "false" &&
                     aiResponse != string.Empty)
                 {
