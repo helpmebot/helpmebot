@@ -28,6 +28,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Link : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Link"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Link(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -36,13 +48,11 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>The result</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer",channel]);
+            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer", this.Channel]);
+            string[] args = this.Arguments;
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")
@@ -54,16 +64,20 @@ namespace helpmebot6.Commands
 
             if (GlobalFunctions.realArrayLength(args) > 0)
             {
-               ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
+                ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
 
-               if (links.Count == 0)
-                   links = Linker.instance().reallyParseMessage("[[" + string.Join(" ", args) + "]]");
+                if (links.Count == 0)
+                {
+                    links = Linker.instance().reallyParseMessage("[[" + string.Join(" ", args) + "]]");
+                }
 
-                string message = links.Cast<string>( ).Aggregate( "", ( current, link ) => current + " "+ Linker.getRealLink( channel, link, secure ) );
+                string message = links.Cast<string>()
+                    .Aggregate(string.Empty, (current, link) => current + " " + Linker.getRealLink(this.Channel, link, secure));
 
                 return new CommandResponseHandler(message);
             }
-            return new CommandResponseHandler( Linker.instance( ).getLink( channel, secure ) );
+
+            return new CommandResponseHandler(Linker.instance().getLink(this.Channel, secure));
         }
     }
 }

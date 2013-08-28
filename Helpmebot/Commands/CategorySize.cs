@@ -55,6 +55,7 @@ namespace helpmebot6.Commands
             return getResultOfCommand(categoryName, channel);
         }
 
+        // TODO: rename me!
         protected CommandResponseHandler getResultOfCommand(string categoryName, string channel)
         {
             int categorySize = getCategorySize(categoryName, channel);

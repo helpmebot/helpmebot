@@ -70,18 +70,9 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The not confirmed.
         /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
         /// <returns>
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
-        protected abstract CommandResponseHandler NotConfirmed(User source, string channel, string[] args);
+        protected abstract CommandResponseHandler NotConfirmed();
     }
 }

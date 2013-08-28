@@ -25,21 +25,32 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Messagecount : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Messagecount"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Messagecount(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
         /// <summary>
-        /// Actual command logic
+        /// The execute command.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] messageParameters = {Helpmebot6.irc.messageCount.ToString()};
+            string[] messageParameters = { Helpmebot6.irc.messageCount.ToString() };
             return
                 new CommandResponseHandler(new Message().get("messageCountReport", messageParameters));
         }

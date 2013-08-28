@@ -27,36 +27,34 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Maxlag : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Maxlag"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Maxlag(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
         /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {
-            string[] messageParameters = {source.nickname, getMaxLag(channel)};
-            string message = new Message().get("cmdMaxLag", messageParameters);
-            return new CommandResponseHandler(message);
-        }
-
-        /// <summary>
         /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the channel.
         /// </summary>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        public string getMaxLag(string channel)
+        /// <returns>The maximum replication lag</returns>
+        public static string GetMaxLag(string channel)
         {
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
+             
             // get api
-
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
@@ -67,11 +65,23 @@ namespace helpmebot6.Commands
             do
             {
                 mlreader.Read();
-            } while (mlreader.Name != "db");
+            }
+            while (mlreader.Name != "db");
 
             string lag = mlreader.GetAttribute("lag");
 
             return lag;
+        }
+
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <returns>The response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            string[] messageParameters = { this.Source.nickname, GetMaxLag(this.Channel) };
+            string message = new Message().get("cmdMaxLag", messageParameters);
+            return new CommandResponseHandler(message);
         }
     }
 }

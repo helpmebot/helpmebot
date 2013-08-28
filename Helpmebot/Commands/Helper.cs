@@ -25,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Helper : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Helper"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Helper(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,21 +45,21 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: this needs putting into its own subsystem, messageifying, configifying, etc.
-            if (channel == "#wikipedia-en-help")
+            // TODO: this needs putting into its own subsystem, messageifying, configifying, etc.
+            if (this.Channel == "#wikipedia-en-help")
             {
-                string message = "[HELP]: " + source + " needs help in #wikipedia-en-help !";
-                if (args.Length > 0)
-                    message += " (message: \"" + string.Join(" ", args) + "\")";
+                string message = "[HELP]: " + this.Source + " needs help in #wikipedia-en-help !";
+                if (this.Arguments.Length > 0)
+                {
+                    message += " (message: \"" + string.Join(" ", this.Arguments) + "\")";
+                }
 
                 Helpmebot6.irc.ircNotice("#wikipedia-en-helpers", message);
             }
+
             return null;
         }
     }

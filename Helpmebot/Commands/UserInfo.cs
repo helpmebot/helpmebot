@@ -83,7 +83,7 @@ namespace helpmebot6.Commands
 
                 UserInformation uInfo = new UserInformation();
 
-                uInfo.editCount = Editcount.getEditCount(userName, channel);
+                uInfo.editCount = Editcount.GetEditCount(userName, channel);
 
                 if (uInfo.editCount == -1)
                 {
@@ -315,7 +315,7 @@ namespace helpmebot6.Commands
 
                 if (initial.editCount == 0)
                 {
-                    initial.editCount = Editcount.getEditCount(userName, channel);
+                    initial.editCount = Editcount.GetEditCount(userName, channel);
                 }
 
                 initial.userGroups = Rights.getRights(userName, channel);

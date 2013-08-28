@@ -25,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Die : ProtectedCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Die"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Die(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,17 +45,20 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>null - the bot should be shutting down</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             Helpmebot6.stop();
             return null;
         }
 
-        protected override CommandResponseHandler NotConfirmed(User source, string channel, string[] args)
+        /// <summary>
+        /// The not confirmed.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler NotConfirmed()
         {
             return new CommandResponseHandler(new Message().get("Die-unconfirmed"));
         }

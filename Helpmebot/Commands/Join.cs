@@ -45,29 +45,19 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Actual command logic
+        /// The join channel.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {
-            if(args.Length >= 1)
-            {
-                if (args[0] == "0") return this.OnAccessDenied();
-
-                return joinChannel(args[0], source.network);
-            }
-            else
-            {
-                string[] messageParameters = { "join", "1", args.Length.ToString() };
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
-
-            }
-        }
-
-        public static CommandResponseHandler joinChannel(string args, uint network)
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <param name="network">
+        /// The network.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        /// TODO: this should probably be elsewhere
+        public static CommandResponseHandler JoinChannel(string args, uint network)
         {
             DAL.Select q = new DAL.Select("count(*)");
             q.addWhere(new DAL.WhereConds("channel_name", args));
@@ -76,11 +66,9 @@ namespace helpmebot6.Commands
 
             string count = DAL.singleton().executeScalarSelect(q);
 
-
             if (count == "1")
             {
                 // entry exists
-
                 Dictionary<string, string> vals = new Dictionary<string, string>
                                                       {
                                                           {
@@ -94,10 +82,31 @@ namespace helpmebot6.Commands
             }
             else
             {
-                DAL.singleton().insert("channel", "", args, "", "1", network.ToString());
+                DAL.singleton().insert("channel", string.Empty, args, string.Empty, "1", network.ToString());
                 Helpmebot6.irc.ircJoin(args);
             }
+
             return null;
+        }
+
+        /// <summary>
+        /// Actual command logic
+        /// </summary>
+        /// <returns>The response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            if (this.Arguments.Length >= 1)
+            {
+                if (this.Arguments[0] == "0")
+                {
+                    return this.OnAccessDenied(); // TODO: put this in the access check, not the execution
+                }
+
+                return JoinChannel(this.Arguments[0], this.Source.network);
+            }
+
+            string[] messageParameters = { "join", "1", this.Arguments.Length.ToString() };
+            return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
         }
     }
 }

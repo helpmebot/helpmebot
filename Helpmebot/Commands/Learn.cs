@@ -25,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Learn : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Learn"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Learn(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,13 +45,11 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>The response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             bool action = false;
+            string[] args = this.Arguments;
             if (args[0] == "@action")
             {
                 action = true;
@@ -48,24 +58,20 @@ namespace helpmebot6.Commands
 
             if (args.Length >= 2)
             {
-                Helpmebot6.irc.ircNotice( source.nickname,
-                                          WordLearner.learn( args[ 0 ],
-                                                             string.Join( " ",
-                                                                          args,
-                                                                          1,
-                                                                          args.
-                                                                              Length -
-                                                                          1 ),
-                                                             action )
-                                              ? new Message().get("cmdLearnDone")
-                                              : new Message().get("cmdLearnError"));
+                bool hasLearntWord = WordLearner.learn(args[0], string.Join(" ", args, 1, args.Length - 1), action);
+                
+                string message = hasLearntWord ? new Message().get("cmdLearnDone") : new Message().get("cmdLearnError");
+
+                Helpmebot6.irc.ircNotice(this.Source.nickname, message);
             }
             else
             {
-                string[] messageParameters = {"learn", "2", args.Length.ToString()};
-                Helpmebot6.irc.ircNotice(source.nickname,
-                                         new Message().get("notEnoughParameters", messageParameters));
+                string[] messageParameters = { "learn", "2", args.Length.ToString() };
+                Helpmebot6.irc.ircNotice(
+                    this.Source.nickname,
+                    new Message().get("notEnoughParameters", messageParameters));
             }
+
             return null;
         }
     }

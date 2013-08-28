@@ -18,7 +18,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace helpmebot6.Commands
 {
     using System;
@@ -28,6 +27,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Isgd : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Isgd"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Isgd(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -36,19 +47,16 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>The result</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if (args.Length == 0)
+            if (this.Arguments.Length == 0)
             {
-                string[] messageParameters = { "isgd", "1", args.Length.ToString() };
+                string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString() };
                 return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
             }
 
-            return new CommandResponseHandler(IsGd.shorten(new Uri(args[0])).ToString());
+            return new CommandResponseHandler(IsGd.shorten(new Uri(this.Arguments[0])).ToString());
         }
     }
 }
