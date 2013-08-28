@@ -31,6 +31,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Editcount : GenericCommand
     {
+        public Editcount(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic    
         /// </summary>
@@ -72,7 +77,7 @@ namespace helpmebot6.Commands
         /// <param name="username">The username to retrieve the edit count for.</param>
         /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
         /// <returns></returns>
-        public int getEditCount(string username, string channel)
+        public static int getEditCount(string username, string channel)
         {
             if (username == string.Empty)
             {

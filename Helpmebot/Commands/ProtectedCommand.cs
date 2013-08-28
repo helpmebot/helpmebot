@@ -22,12 +22,27 @@ namespace helpmebot6.Commands
 {
     using System;
 
-    abstract class ProtectedCommand : GenericCommand
+    /// <summary>
+    /// The protected command.
+    /// </summary>
+    public abstract class ProtectedCommand : GenericCommand
     {
-        protected override CommandResponseHandler ReallyRunCommand(User source, string channel, string[] args)
+        protected ProtectedCommand(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
+        }
 
-            if(!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true,channel, args)))
+        /// <summary>
+        /// The really run command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ReallyRunCommand()
+        {
+            if (
+                !AccessLog.instance()
+                     .save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments)))
             {
                 CommandResponseHandler errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
@@ -40,17 +55,33 @@ namespace helpmebot6.Commands
 
             try
             {
-                crh = GlobalFunctions.isInArray("@confirm", args) != -1 ? this.ExecuteCommand(source, channel, args) : notConfirmed(source, channel, args);
+                crh = GlobalFunctions.isInArray("@confirm", this.Arguments) != -1 ? this.ExecuteCommand(this.Source, this.Channel, this.Arguments) : this.NotConfirmed(this.Source, this.Channel, this.Arguments);
             }
             catch (Exception ex)
             {
                 Logger.instance().addToLog(ex.ToString(), Logger.LogTypes.Error);
                 crh = new CommandResponseHandler(ex.Message);
             }
+
             this.LogMessage("Command execution complete.");
             return crh;
         }
 
-        protected abstract CommandResponseHandler notConfirmed(User source, string channel, string[] args);
+        /// <summary>
+        /// The not confirmed.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected abstract CommandResponseHandler NotConfirmed(User source, string channel, string[] args);
     }
 }

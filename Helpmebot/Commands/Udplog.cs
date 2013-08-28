@@ -25,6 +25,11 @@ namespace helpmebot6.Commands
     /// </summary>
     class Udplog : GenericCommand
     {
+        public Udplog(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// The Execute.
         /// </summary>

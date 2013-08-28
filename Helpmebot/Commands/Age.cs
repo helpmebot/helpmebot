@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Age : GenericCommand
     {
+        public Age(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -70,10 +75,9 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel the command is requested in. (Retrieves the relevant base wiki)</param>
         /// <returns></returns>
-        public TimeSpan getWikipedianAge(string userName, string channel)
+        public static TimeSpan getWikipedianAge(string userName, string channel)
         {
-            Registration regCommand = new Registration();
-            DateTime regdate = regCommand.getRegistrationDate(userName, channel);
+            DateTime regdate = Registration.getRegistrationDate(userName, channel);
             TimeSpan age = DateTime.Now.Subtract(regdate);
             if (regdate.Equals(new DateTime(0001, 1, 1)))
             {

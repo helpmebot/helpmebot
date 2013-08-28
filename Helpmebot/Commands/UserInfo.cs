@@ -46,6 +46,11 @@ namespace helpmebot6.Commands
     {
         private readonly CommandResponseHandler _crh = new CommandResponseHandler();
 
+        public Userinfo(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -78,8 +83,7 @@ namespace helpmebot6.Commands
 
                 UserInformation uInfo = new UserInformation();
 
-                Editcount countCommand = new Editcount();
-                uInfo.editCount = countCommand.getEditCount(userName, channel);
+                uInfo.editCount = Editcount.getEditCount(userName, channel);
 
                 if (uInfo.editCount == -1)
                 {
@@ -305,35 +309,32 @@ namespace helpmebot6.Commands
         private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
-            try{
+            try
+            {
                 initial.userName = userName;
 
                 if (initial.editCount == 0)
                 {
-                    Editcount countCommand = new Editcount();
-                    initial.editCount = countCommand.getEditCount(userName, channel);
+                    initial.editCount = Editcount.getEditCount(userName, channel);
                 }
 
-                Rights rightsCommand = new Rights();
-                initial.userGroups = rightsCommand.getRights(userName, channel);
+                initial.userGroups = Rights.getRights(userName, channel);
 
-                Registration registrationCommand = new Registration();
-                initial.registrationDate = registrationCommand.getRegistrationDate(userName, channel);
+                initial.registrationDate = Registration.getRegistrationDate(userName, channel);
 
                 initial.userPage = getUserPageUrl(userName, channel);
                 initial.talkPage = getUserTalkPageUrl(userName, channel);
                 initial.userContribs = getUserContributionsUrl(userName, channel);
                 initial.userBlockLog = getBlockLogUrl(userName, channel);
 
-                Age ageCommand = new Age();
-                initial.userAge = ageCommand.getWikipedianAge(userName, channel);
+                initial.userAge = Age.getWikipedianAge(userName, channel);
 
-                initial.editRate = initial.editCount/initial.userAge.TotalDays;
+                initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
-                Blockinfo.BlockInformation bi = new Blockinfo().getBlockInformation(userName, channel);
+                BlockInformation bi = Blockinfo.getBlockInformation(userName, channel);
                 if (bi.id == null)
                 {
-                    initial.blockInformation = "";
+                    initial.blockInformation = string.Empty;
                 }
                 else
                 {

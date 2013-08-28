@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Notify : GenericCommand
     {
+        public Notify(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// The requested notifications.
         /// </summary>

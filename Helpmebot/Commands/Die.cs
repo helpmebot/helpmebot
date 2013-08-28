@@ -25,6 +25,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Die : ProtectedCommand
     {
+        public Die(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -38,7 +43,7 @@ namespace helpmebot6.Commands
             return null;
         }
 
-        protected override CommandResponseHandler notConfirmed(User source, string channel, string[] args)
+        protected override CommandResponseHandler NotConfirmed(User source, string channel, string[] args)
         {
             return new CommandResponseHandler(new Message().get("Die-unconfirmed"));
         }

@@ -28,18 +28,20 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Access : GenericCommand
     {
+        public Access(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Access denied to command, decide what to do
         /// </summary>
-        /// <param name="source">The source of the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
         /// <returns>
         /// A response to the command if access to the command was denied
         /// </returns>
-        protected override CommandResponseHandler OnAccessDenied(User source, string channel, string[] args)
+        protected override CommandResponseHandler OnAccessDenied()
         {
-            CommandResponseHandler crh = new Myaccess().RunCommand(source, channel, args);
+            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments).RunCommand();
             return crh;
         }
 

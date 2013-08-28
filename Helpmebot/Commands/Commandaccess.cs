@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Commandaccess : GenericCommand
     {
+        public Commandaccess(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -48,8 +53,7 @@ namespace helpmebot6.Commands
                     return null;
                 return // instantiate a new instance of the command, and get it's access level
                     new CommandResponseHandler(
-                        ((GenericCommand) Activator.CreateInstance(cmd)).
-                            AccessLevel.ToString());
+                        ((GenericCommand)Activator.CreateInstance(cmd, source, channel, args)).AccessLevel.ToString());
             }
             else
             {

@@ -29,6 +29,32 @@ namespace helpmebot6.Commands
     public abstract class GenericCommand
     {
         /// <summary>
+        /// Initialises a new instance of the <see cref="GenericCommand"/> class.
+        /// </summary>
+        public GenericCommand()
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="GenericCommand"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public GenericCommand(User source, string channel, string[] args)
+        {
+            this.Source = source;
+            this.Channel = channel;
+            this.Arguments = args;
+        }
+
+        /// <summary>
         /// Gets the access level of the command
         /// </summary>
         /// <value>The access level.</value>
@@ -58,45 +84,71 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
+        public User Source { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel.
+        /// </summary>
+        public string Channel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the arguments.
+        /// </summary>
+        public string[] Arguments { get; set; }
+
+        /// <summary>
         /// Trigger an execution of the command
         /// </summary>
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">Arguments to the command.</param>
         /// <returns>the response container</returns>
+        [Obsolete]
         public CommandResponseHandler RunCommand(User source, string channel, string[] args)
+        {
+            this.Source = source;
+            this.Channel = channel;
+            this.Arguments = args;
+
+            return this.RunCommand();
+        }
+
+        /// <summary>
+        /// The run command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        public CommandResponseHandler RunCommand()
         {
             string command = GetType().ToString();
 
             this.LogMessage("Running command: " + command);
 
-            return this.TestAccess(source, channel)
-                       ? this.ReallyRunCommand(source, channel, args)
-                       : this.OnAccessDenied(source, channel, args);
+            return this.TestAccess()
+                       ? this.ReallyRunCommand()
+                       : this.OnAccessDenied();
         }
 
         /// <summary>
         /// Check the access level and then decide what to do.
         /// </summary>
-        /// <param name="source">The source of the command</param>
-        /// <param name="channel">The channel the command was triggered in</param>
         /// <returns>True if the command is allowed to Execute</returns>
-        protected virtual bool TestAccess(User source, string channel)
+        protected virtual bool TestAccess()
         {
             // check the access level
-            return source.accessLevel >= this.AccessLevel;
+            return this.Source.accessLevel >= this.AccessLevel;
         }
 
         /// <summary>
         /// Access granted to command, decide what to do
         /// </summary>
-        /// <param name="source">The source of the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">Arguments to the command</param>
         /// <returns>The response to the command</returns>
-        protected virtual CommandResponseHandler ReallyRunCommand(User source, string channel, string[] args)
+        protected virtual CommandResponseHandler ReallyRunCommand()
         {
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true, channel, args)))
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments)))
             {
                 CommandResponseHandler errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
@@ -108,7 +160,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh;
             try
             {
-                crh = this.ExecuteCommand(source, channel, args);
+                crh = this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
             }
             catch (Exception ex)
             {
@@ -123,17 +175,14 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Access denied to command, decide what to do
         /// </summary>
-        /// <param name="source">The source of the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
         /// <returns>A response to the command if access to the command was denied</returns>
-        protected virtual CommandResponseHandler OnAccessDenied(User source, string channel, string[] args)
+        protected virtual CommandResponseHandler OnAccessDenied()
         {
             CommandResponseHandler response = new CommandResponseHandler();
 
             response.respond(new Message().get("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
             this.LogMessage("Access denied to command.");
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false, channel, args)))
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments)))
             {
                 response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }

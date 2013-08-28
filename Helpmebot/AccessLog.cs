@@ -77,7 +77,7 @@ namespace helpmebot6
                 this._alUser = source;
                 this._alClass = command;
                 this._alAllowed = success;
-                this._alReqaccesslevel = ((GenericCommand)Activator.CreateInstance(this._alClass)).AccessLevel;
+                this._alReqaccesslevel = ((GenericCommand)Activator.CreateInstance(this._alClass, source, channel, parameters)).AccessLevel;
                 this._channel = channel;
                 this._params = string.Join(" ", parameters) ?? string.Empty;
             }

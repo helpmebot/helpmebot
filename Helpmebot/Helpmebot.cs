@@ -142,7 +142,7 @@ namespace helpmebot6
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            new Join().RunCommand(source, nickname, new[] {channel});
+            new Join(source, nickname, new[] {channel}).RunCommand();
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
@@ -152,7 +152,7 @@ namespace helpmebot6
 
         private static void notifyOnJoinEvent(User source, string channel)
         {
-            new Notify().NotifyJoin(source, channel);
+            new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
         }
 
         private static void receivedMessage(User source, string destination, string message)

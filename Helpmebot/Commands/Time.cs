@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Time : GenericCommand
     {
+        public Time(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -56,5 +61,9 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Date : Time
     {
+        public Date(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
     }
 }

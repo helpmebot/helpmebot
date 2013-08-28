@@ -24,6 +24,11 @@ namespace helpmebot6.Commands
     /// Returns the number of articles currently waiting at Good article nominees awaiting review    /// </summary>
     internal class Gancount : Categorysize
     {
+        public Gancount(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             return getResultOfCommand("Good article nominees awaiting review", channel);

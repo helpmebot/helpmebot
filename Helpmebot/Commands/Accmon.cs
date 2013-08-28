@@ -22,6 +22,11 @@ namespace helpmebot6.Commands
 {
     class Accmon : GenericCommand
     {
+        public Accmon(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         #region Overrides of GenericCommand
 
         /// <summary>

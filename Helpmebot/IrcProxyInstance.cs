@@ -113,7 +113,7 @@ namespace helpmebot6
                     _baseIal.sendRawLine(line);
                 }
             }
-            catch (ThreadAbortException ex)
+            catch (ThreadAbortException)
             {
 
             }

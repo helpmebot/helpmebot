@@ -30,6 +30,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Page : GenericCommand
     {
+        public Page(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>

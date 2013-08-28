@@ -28,6 +28,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Registration : GenericCommand
     {
+        public Registration(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             CommandResponseHandler crh = new CommandResponseHandler();
@@ -60,7 +65,7 @@ namespace helpmebot6.Commands
             return crh;
         }
 
-        public DateTime getRegistrationDate(string username, string channel)
+        public static DateTime getRegistrationDate(string username, string channel)
         {
             if (username == string.Empty)
             {
@@ -98,5 +103,9 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Reg : Registration
     {
+        public Reg(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
     }
 }

@@ -22,16 +22,28 @@ namespace helpmebot6.Commands.FunStuff
 {
     abstract class FunCommand : GenericCommand
     {
-        protected override CommandResponseHandler OnAccessDenied(User source, string channel, string[] args)
+        /// <summary>
+        /// The on access denied.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler OnAccessDenied()
         {
-            return Configuration.singleton()["hedgehog", channel] == "false" ? 
-                base.OnAccessDenied(source, channel, args) : 
+            return Configuration.singleton()["hedgehog", this.Channel] == "false" ? 
+                base.OnAccessDenied() : 
                 new CommandResponseHandler(new Message().get("HedgehogAccessDenied"),CommandResponseDestination.PrivateMessage);
         }
 
-        protected override bool TestAccess(User source, string channel)
+        /// <summary>
+        /// The test access.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        protected override bool TestAccess()
         {
-            return Configuration.singleton()["hedgehog", channel] == "false" && base.TestAccess(source, channel);
+            return Configuration.singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
         }
     }
 }

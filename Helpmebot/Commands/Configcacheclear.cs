@@ -22,6 +22,11 @@ namespace helpmebot6.Commands
 {
     class Configcacheclear : GenericCommand
     {
+        public Configcacheclear(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             Configuration.singleton().clearCache();

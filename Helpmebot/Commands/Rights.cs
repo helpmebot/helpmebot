@@ -28,6 +28,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Rights : GenericCommand
     {
+        public Rights(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -73,7 +78,7 @@ namespace helpmebot6.Commands
         /// <param name="username">The username.</param>
         /// <param name="channel">The channel to get the base wiki for.</param>
         /// <returns></returns>
-        public string getRights(string username, string channel)
+        public static string getRights(string username, string channel)
         {
             if (username == string.Empty)
             {

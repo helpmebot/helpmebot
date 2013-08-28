@@ -25,6 +25,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Afccount : Categorysize
     {
+        public Afccount(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             return getResultOfCommand("Pending AfC submissions", channel);

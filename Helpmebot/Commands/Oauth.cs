@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Oauth : GenericCommand
     {
+        public Oauth(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>

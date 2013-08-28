@@ -35,6 +35,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class CategoryWatcher : GenericCommand
     {
+        public CategoryWatcher(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -59,7 +64,7 @@ namespace helpmebot6.Commands
                                  args[1].Substring(1).ToLower());
                 if (subCmdType != null)
                 {
-                    return ((GenericCommand)Activator.CreateInstance(subCmdType)).RunCommand(source, channel, args);
+                    return ((GenericCommand)Activator.CreateInstance(subCmdType, source, channel, args)).RunCommand();
                 }
             }
 

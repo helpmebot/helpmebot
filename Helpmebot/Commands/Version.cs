@@ -27,6 +27,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Version : GenericCommand
     {
+        public Version(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Gets the version.
         /// </summary>

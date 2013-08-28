@@ -92,7 +92,7 @@ namespace helpmebot6
                 }
                 newArgs[0] = command;
                 string directedTo = findRedirection(destination, ref newArgs);
-                CommandResponseHandler crh = new CategoryWatcher().RunCommand(source, destination, newArgs);
+                CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, crh);
                 return;
             }
@@ -114,8 +114,8 @@ namespace helpmebot6
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
-                CommandResponseHandler response = ((GenericCommand) Activator.CreateInstance(commandHandler)).RunCommand(
-                    source, destination, args);
+                CommandResponseHandler response =
+                    ((GenericCommand)Activator.CreateInstance(commandHandler, source, destination, args)).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, response);
                 return;
             }
@@ -127,8 +127,8 @@ namespace helpmebot6
                 WordLearner.RemeberedWord rW = WordLearner.remember(command);
                 CommandResponseHandler crh = new CommandResponseHandler();
                 string wordResponse = rW.phrase;
-                string directedTo = "";
-                if (wordResponse != String.Empty)
+                string directedTo = string.Empty;
+                if (wordResponse != string.Empty)
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {

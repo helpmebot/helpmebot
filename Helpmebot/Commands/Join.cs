@@ -28,6 +28,23 @@ namespace helpmebot6.Commands
     internal class Join : GenericCommand
     {
         /// <summary>
+        /// Initialises a new instance of the <see cref="Join"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Join(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
         /// Actual command logic
         /// </summary>
         /// <param name="source">The user who triggered the command.</param>
@@ -38,7 +55,7 @@ namespace helpmebot6.Commands
         {
             if(args.Length >= 1)
             {
-                if (args[0] == "0") return this.OnAccessDenied(source, channel, args);
+                if (args[0] == "0") return this.OnAccessDenied();
 
                 return joinChannel(args[0], source.network);
             }
