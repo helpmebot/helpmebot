@@ -21,10 +21,22 @@
 namespace helpmebot6.Commands
 {
     /// <summary>
-    /// Retrieves the bot access lvel of the user who called the command
+    /// Retrieves the bot access level of the user who called the command
     /// </summary>
     internal class Myaccess : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Myaccess"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Myaccess(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,28 +45,25 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             var crh = new CommandResponseHandler();
 
-            if (args.Length > 0 && args[0] != string.Empty)
+            if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
-                foreach (string s in args)
+                foreach (string s in this.Arguments)
                 {
-                    string[] cmdArgs = {s, User.newFromString(s).accessLevel.ToString()};
+                    string[] cmdArgs = { s, User.newFromString(s).accessLevel.ToString() };
                     crh.respond(new Message().get("cmdAccess", cmdArgs));
                 }
             }
-
             else
             {
-                string[] cmdArgs = {source.ToString(), source.accessLevel.ToString()};
+                string[] cmdArgs = { this.Source.ToString(), this.Source.accessLevel.ToString() };
                 crh.respond(new Message().get("cmdAccess", cmdArgs));
             }
+
             return crh;
         }
     }

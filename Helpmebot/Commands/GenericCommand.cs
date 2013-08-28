@@ -160,7 +160,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh;
             try
             {
-                crh = this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
+                crh = this.ExecuteCommand();
             }
             catch (Exception ex)
             {
@@ -197,7 +197,24 @@ namespace helpmebot6.Commands
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
         /// <returns>The response to the command</returns>
-        protected abstract CommandResponseHandler ExecuteCommand(User source, string channel, string[] args);
+        [Obsolete]
+        protected virtual CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        {
+            return new CommandResponseHandler("not implemented");
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected virtual CommandResponseHandler ExecuteCommand()
+        {
+#pragma warning disable 612
+            return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
+#pragma warning restore 612
+        }
 
         /// <summary>
         /// Logs the specified message.
