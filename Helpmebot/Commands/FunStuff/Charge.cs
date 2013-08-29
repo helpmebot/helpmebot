@@ -19,9 +19,12 @@ namespace helpmebot6.Commands
                 }
                 return new CommandResponseHandler(new Message().get("cmdChargeParam", name));
 
+            } else {
+                name = source.nickname;
             }
-
-            return new CommandResponseHandler(new Message().get("cmdCharge"));
+            
+            string[] messageparams = { name };
+            return new CommandResponseHandler(new Message().get("cmdCharge", messageparams));
         }
     }
 }
