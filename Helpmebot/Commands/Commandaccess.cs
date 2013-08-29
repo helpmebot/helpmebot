@@ -23,10 +23,22 @@ namespace helpmebot6.Commands
     using System;
 
     /// <summary>
-    /// Returns the accesslevel of the command specified
+    /// Returns the access level of the command specified
     /// </summary>
     internal class Commandaccess : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Commandaccess"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Commandaccess(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -35,32 +47,31 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-
-            if (args.Length > 0)
+            if (this.Arguments.Length > 0)
             {
                 // find the command
-                Type cmd = Type.GetType(
-                    "helpmebot6.Commands." + args[0].Substring(0, 1).ToUpper() + args[0].Substring(1).ToLower()
-                    );
+                Type cmd =
+                    Type.GetType(
+                        "helpmebot6.Commands." + this.Arguments[0].Substring(0, 1).ToUpper()
+                        + this.Arguments[0].Substring(1).ToLower());
+
                 // check it exists
-                if (cmd == null) //TODO: return an error message instead
-                    return null;
+                if (cmd == null) 
+                {
+                    return null; // TODO: return an error message instead
+                }
+
                 return // instantiate a new instance of the command, and get it's access level
                     new CommandResponseHandler(
-                        ((GenericCommand)Activator.CreateInstance(cmd, source, channel, args)).AccessLevel.ToString());
+                        ((GenericCommand)Activator.CreateInstance(cmd, this.Source, this.Channel, this.Arguments))
+                            .AccessLevel.ToString());
             }
-            else
-            {
-                string[] messageParameters = {"commandaccess", "1", args.Length.ToString()};
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
 
-            }
+            string[] messageParameters = { "commandaccess", "1", this.Arguments.Length.ToString() };
+            return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
         }
     }
 }

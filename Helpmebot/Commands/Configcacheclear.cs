@@ -20,14 +20,35 @@
 
 namespace helpmebot6.Commands
 {
-    class Configcacheclear : GenericCommand
+    /// <summary>
+    /// The configuration cache clear command.
+    /// </summary>
+    internal class Configcacheclear : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Configcacheclear"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Configcacheclear(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             Configuration.singleton().clearCache();
             return new CommandResponseHandler(new Message().get("done"));

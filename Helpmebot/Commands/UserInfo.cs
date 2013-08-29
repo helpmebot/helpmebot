@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Text.RegularExpressions;
     using System.Xml;
 
+    using helpmebot6.Model;
+
     // returns information about a user
     // what                 how                     info    message
 
@@ -331,14 +333,14 @@ namespace helpmebot6.Commands
 
                 initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
-                BlockInformation bi = Blockinfo.getBlockInformation(userName, channel);
-                if (bi.id == null)
+                BlockInformation bi = Blockinfo.GetBlockInformation(userName, channel);
+                if (bi.Id == null)
                 {
                     initial.blockInformation = string.Empty;
                 }
                 else
                 {
-                    initial.blockInformation = bi.id.ToString();
+                    initial.blockInformation = bi.Id.ToString();
                 }
 
                 return initial;

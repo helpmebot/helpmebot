@@ -25,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Blockuser : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Blockuser"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Blockuser(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,13 +45,12 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer",channel]);
+            string[] args = this.Arguments;
+
+            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer", this.Channel]);
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")
@@ -51,7 +62,7 @@ namespace helpmebot6.Commands
 
             string name = string.Join(" ", args);
 
-            string prefix = "";
+            string prefix = string.Empty;
 
             string page = "Special:Block/";
 
@@ -59,24 +70,22 @@ namespace helpmebot6.Commands
             {
                 string origname = name;
 
-                string[] parts = name.Split(new[] {':'}, 2);
+                string[] parts = name.Split(new[] { ':' }, 2);
                 name = parts[1];
                 prefix = parts[0];
 
                 if (DAL.singleton().proc_HMB_GET_IW_URL(prefix) == string.Empty)
                 {
                     name = origname;
-                    prefix = "";
+                    prefix = string.Empty;
                 }
                 else
                 {
                     prefix += ":";
                 }
-
-                
             }
 
-            string url = Linker.getRealLink(channel, prefix + page + name, secure).Replace("\0","");
+            string url = Linker.getRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
 
             return new CommandResponseHandler(url);
         }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CategoryWatcherCommand.cs" company="Helpmebot Development Team">
+// <copyright file="CategoryWatcher.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -35,6 +35,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class CategoryWatcher : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="CategoryWatcher"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public CategoryWatcher(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -43,28 +55,24 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
         /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand()
         {
             CommandResponseHandler crh = new CommandResponseHandler();
-
-            if (args.Length == 1)
+            if (this.Arguments.Length == 1)
             {
                 // just do category check
-                crh.respond(WatcherController.instance().forceUpdate(args[0], channel));
+                crh.respond(WatcherController.instance().forceUpdate(this.Arguments[0], this.Channel));
             }
             else
             {
                 // do something else too.
                 Type subCmdType =
-                    Type.GetType("helpmebot6.Commands.CategoryWatcherCommand." + args[1].Substring(0, 1).ToUpper() +
-                                 args[1].Substring(1).ToLower());
+                    Type.GetType("helpmebot6.Commands.CategoryWatcherCommand." + this.Arguments[1].Substring(0, 1).ToUpper() +
+                                 this.Arguments[1].Substring(1).ToLower());
                 if (subCmdType != null)
                 {
-                    return ((GenericCommand)Activator.CreateInstance(subCmdType, source, channel, args)).RunCommand();
+                    return ((GenericCommand)Activator.CreateInstance(subCmdType, this.Source, this.Channel, this.Arguments)).RunCommand();
                 }
             }
 

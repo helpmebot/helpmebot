@@ -55,7 +55,7 @@ namespace helpmebot6.Commands
 
             try
             {
-                crh = GlobalFunctions.isInArray("@confirm", this.Arguments) != -1 ? this.ExecuteCommand() : this.NotConfirmed(this.Source, this.Channel, this.Arguments);
+                crh = GlobalFunctions.isInArray("@confirm", this.Arguments) != -1 ? this.ExecuteCommand() : this.NotConfirmed();
             }
             catch (Exception ex)
             {

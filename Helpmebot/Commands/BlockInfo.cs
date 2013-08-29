@@ -23,27 +23,28 @@ namespace helpmebot6.Commands
     using System.Net;
     using System.Xml;
 
+    using helpmebot6.Model;
+
     /// <summary>
     /// Returns the block information of a wikipedian
     /// </summary>
     internal class Blockinfo : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Blockinfo"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Blockinfo(User source, string channel, string[] args)
             : base(source, channel, args)
         {
-        }
-
-        /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {
-
-            return new CommandResponseHandler(getBlockInformation(string.Join(" ", args), channel).ToString());
         }
 
         /// <summary>
@@ -51,8 +52,8 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel the command was requested in.</param>
-        /// <returns></returns>
-        public static BlockInformation getBlockInformation(string userName, string channel)
+        /// <returns>the block information</returns>
+        public static BlockInformation GetBlockInformation(string userName, string channel)
         {
             IPAddress ip;
 
@@ -88,7 +89,7 @@ namespace helpmebot6.Commands
 
             BlockInformation bi = new BlockInformation
                                       {
-                                          id = creader.GetAttribute("id"),
+                                          Id = creader.GetAttribute("id"),
                                           target = creader.GetAttribute("user"),
                                           blockedBy = creader.GetAttribute("by"),
                                           start = creader.GetAttribute("timestamp"),
@@ -103,59 +104,14 @@ namespace helpmebot6.Commands
 
             return bi;
         }
-    }
-
-    /// <summary>
-    /// Holds the block information of a specific user
-    /// </summary>
-    public struct BlockInformation
-    {
-        public string id;
-
-        public string target;
-
-        public string blockedBy;
-
-        public string blockReason;
-
-        public string expiry;
-
-        public string start;
-
-        public bool nocreate;
-
-        public bool autoblock;
-
-        public bool noemail;
-
-        public bool allowusertalk;
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this block.
+        /// Actual command logic
         /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this block.
-        /// </returns>
-        public override string ToString()
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-
-            string[] emptyMessageParams = { "", "", "", "", "", "", "" };
-            string emptyMessage = new Message().get("blockInfoShort", emptyMessageParams);
-
-            string info = "";
-            if (nocreate) info += "NOCREATE ";
-            if (autoblock) info += "AUTOBLOCK ";
-            if (noemail) info += "NOEMAIL ";
-            if (allowusertalk) info += "ALLOWUSERTALK ";
-            string[] messageParams = { id, target, blockedBy, expiry, start, blockReason, info };
-            string message = new Message().get("blockInfoShort", messageParams);
-
-            if (message == emptyMessage)
-            {
-                message = new Message().get("noBlocks");
-            }
-
-            return message;
+            return new CommandResponseHandler(GetBlockInformation(string.Join(" ", this.Arguments), this.Channel).ToString());
         }
     }
 }

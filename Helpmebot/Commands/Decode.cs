@@ -29,6 +29,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Decode : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Decode"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Decode(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -37,31 +49,30 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if(args.Length == 0)
+            if (this.Arguments.Length == 0)
             {
-                string[] messageParameters = { "decode", "1", args.Length.ToString() };
+                string[] messageParameters = { "decode", "1", this.Arguments.Length.ToString() };
                 return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
             }
 
-
-            if (args[0].Length != 8)
+            if (this.Arguments[0].Length != 8)
+            {
                 return null;
+            }
 
             byte[] ip = new byte[4];
-            ip[0] = Convert.ToByte(args[0].Substring(0, 2), 16);
-            ip[1] = Convert.ToByte(args[0].Substring(2, 2), 16);
-            ip[2] = Convert.ToByte(args[0].Substring(4, 2), 16);
-            ip[3] = Convert.ToByte(args[0].Substring(6, 2), 16);
+            ip[0] = Convert.ToByte(this.Arguments[0].Substring(0, 2), 16);
+            ip[1] = Convert.ToByte(this.Arguments[0].Substring(2, 2), 16);
+            ip[2] = Convert.ToByte(this.Arguments[0].Substring(4, 2), 16);
+            ip[3] = Convert.ToByte(this.Arguments[0].Substring(6, 2), 16);
 
             IPAddress ipAddr = new IPAddress(ip);
 
-            string hostname = "";
+            string hostname = string.Empty;
+
             try
             {
                 hostname = Dns.GetHostEntry(ipAddr).HostName;
@@ -69,17 +80,16 @@ namespace helpmebot6.Commands
             catch (SocketException)
             {
             }
+
             if (hostname != string.Empty)
             {
-                string[] messageargs = {args[0], ipAddr.ToString(), hostname};
+                string[] messageargs = { this.Arguments[0], ipAddr.ToString(), hostname };
                 return new CommandResponseHandler(new Message().get("hexDecodeResult", messageargs));
             }
             else
             {
-                string[] messageargs = {args[0], ipAddr.ToString()};
-                return
-                    new CommandResponseHandler(new Message().get("hexDecodeResultNoResolve",
-                                                                                    messageargs));
+                string[] messageargs = { this.Arguments[0], ipAddr.ToString() };
+                return new CommandResponseHandler(new Message().get("hexDecodeResultNoResolve", messageargs));
             }
         }
     }
