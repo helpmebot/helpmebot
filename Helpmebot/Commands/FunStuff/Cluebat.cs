@@ -45,7 +45,9 @@ namespace helpmebot6.Commands
                     name = source.nickname;
                 }
 
-            } else {
+            }
+            else
+            {
                 name = source.nickname;
             }
             
