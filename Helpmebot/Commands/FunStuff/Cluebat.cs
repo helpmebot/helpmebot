@@ -36,14 +36,21 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler execute(User source, string channel, string[] args)
         {
-            string name;
+            if (args.Length > 0 && args[0] != string.Empty)
+            {
 
-            name = args.Length == 0 ? source.nickname : string.Join(" ", args);
+                string name = args[0];
+                if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
+                {
+                    name = source.nickname;
+                }
 
-            string[] messageparams = {name};
-            string message = new Message().get("cmdCluebat", name);
-
-            return new CommandResponseHandler(message);
+            } else {
+                name = source.nickname;
+            }
+            
+            string[] messageparams = { name };
+            return new CommandResponseHandler(new Message().get("cmdCluebat", messageparams));
         }
     }
 }
