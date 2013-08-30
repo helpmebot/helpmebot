@@ -105,7 +105,7 @@
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
     <Compile Include="Commands\Blockuser.cs" />
-    <Compile Include="Commands\CategoryWatcherCommand.cs" />
+    <Compile Include="Commands\CategoryWatcher.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Delay.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Disable.cs" />
     <Compile Include="Commands\CategoryWatcherCommand\Enable.cs" />
@@ -139,7 +139,7 @@
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Commands\FunStuff\Cookie.cs" />
     <Compile Include="Commands\Gancount.cs" />
-    <Compile Include="Commands\NotifyOnJoin.cs" />
+    <Compile Include="Commands\Notify.cs" />
     <Compile Include="Commands\Oauth.cs" />
     <Compile Include="Commands\Editcount.cs" />
     <Compile Include="Commands\Decode.cs" />
@@ -194,7 +194,7 @@
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
     <Compile Include="IAL.cs" />
-    <Compile Include="Monitoring\Nagios.cs" />
+    <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\RSS\RssMonitor.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />

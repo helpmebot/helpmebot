@@ -1,55 +1,59 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using helpmebot6.Commands;
-using helpmebot6.Monitoring;
-using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
-using helpmebot6.ExtensionMethods;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CommandParser.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   A command parser
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
     using System.Text.RegularExpressions;
+
+    using helpmebot6.Commands;
+    using helpmebot6.ExtensionMethods;
+    using helpmebot6.Monitoring;
+
+    using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
     /// <summary>
     /// A command parser
     /// </summary>
     internal class CommandParser
     {
-        private const string allowedCommandNameChars = "0-9a-z-_";
+        /// <summary>
+        /// The allowed command name chars.
+        /// </summary>
+        private const string AllowedCommandNameChars = "0-9a-z-_";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandParser"/> class.
+        /// Initialises a new instance of the <see cref="CommandParser"/> class. 
         /// </summary>
         public CommandParser()
         {
-            overrideBotSilence = false;
+            this.OverrideBotSilence = false;
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether [override bot silence].
         /// </summary>
         /// <value><c>true</c> if [override bot silence]; otherwise, <c>false</c>.</value>
-        public bool overrideBotSilence { get; set; }
+        public bool OverrideBotSilence { get; set; }
 
         /// <summary>
         /// Handles the command.
@@ -88,7 +92,7 @@ namespace helpmebot6
                 }
                 newArgs[0] = command;
                 string directedTo = findRedirection(destination, ref newArgs);
-                CommandResponseHandler crh = new CategoryWatcher().run(source, destination, newArgs);
+                CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, crh);
                 return;
             }
@@ -110,8 +114,8 @@ namespace helpmebot6
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
-                CommandResponseHandler response = ((GenericCommand) Activator.CreateInstance(commandHandler)).run(
-                    source, destination, args);
+                CommandResponseHandler response =
+                    ((GenericCommand)Activator.CreateInstance(commandHandler, source, destination, args)).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, response);
                 return;
             }
@@ -123,12 +127,12 @@ namespace helpmebot6
                 WordLearner.RemeberedWord rW = WordLearner.remember(command);
                 CommandResponseHandler crh = new CommandResponseHandler();
                 string wordResponse = rW.phrase;
-                string directedTo = "";
-                if (wordResponse != String.Empty)
+                string directedTo = string.Empty;
+                if (wordResponse != string.Empty)
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(new Message().get("accessDenied"),
+                        crh.respond(new Message().get("OnAccessDenied"),
                                     CommandResponseDestination.PrivateMessage);
                         string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
                         crh.respond(new Message().get("accessDeniedDebug", aDArgs),
@@ -142,7 +146,7 @@ namespace helpmebot6
                         dict.Add("nickname", source.nickname);
                         dict.Add("hostname", source.hostname);
 
-                        dict.Add("accessLevel", source.accessLevel);
+                        dict.Add("AccessLevel", source.accessLevel);
 
                         dict.Add("channel", destination);
 
@@ -215,7 +219,7 @@ namespace helpmebot6
                     switch (item.destination)
                     {
                         case CommandResponseDestination.Default:
-                            if (overrideBotSilence ||
+                            if (this.OverrideBotSilence ||
                                 Configuration.singleton()["silence",destination] != "true")
                             {
                                 Helpmebot6.irc.ircPrivmsg(destination, message);
@@ -257,8 +261,8 @@ namespace helpmebot6
             Regex validCommand =
                 new Regex(
                     @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() +
-                    @") )?(?<cmd>[" + allowedCommandNameChars + "]+)|(?<botname>" + nickname.ToLower() +
-                    @")[ ,>:](?: )?(?<cmd>[" + allowedCommandNameChars + "]+))(?: )?(?<args>.*?)(?:\r)?$");
+                    @") )?(?<cmd>[" + AllowedCommandNameChars + "]+)|(?<botname>" + nickname.ToLower() +
+                    @")[ ,>:](?: )?(?<cmd>[" + AllowedCommandNameChars + "]+))(?: )?(?<args>.*?)(?:\r)?$");
 
             Match m = validCommand.Match(message);
 

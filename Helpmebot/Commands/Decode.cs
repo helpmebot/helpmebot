@@ -1,35 +1,39 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Reflection;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Decode.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Decodes a hex-encoded IP address
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Net;
+    using System.Net.Sockets;
+
     /// <summary>
     /// Decodes a hex-encoded IP address
     /// </summary>
     internal class Decode : GenericCommand
     {
+        public Decode(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -37,7 +41,7 @@ namespace helpmebot6.Commands
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
         /// <returns></returns>
-        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             if(args.Length == 0)
             {

@@ -1,30 +1,29 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Xml;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="UserInfo.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Returns the user information about a specified user
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Text.RegularExpressions;
+    using System.Xml;
+
     // returns information about a user
     // what                 how                     info    message
 
@@ -47,6 +46,11 @@ namespace helpmebot6.Commands
     {
         private readonly CommandResponseHandler _crh = new CommandResponseHandler();
 
+        public Userinfo(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// Actual command logic
         /// </summary>
@@ -54,7 +58,7 @@ namespace helpmebot6.Commands
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
         /// <returns></returns>
-        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
             bool useLongInfo =
                 bool.Parse(Configuration.singleton()["useLongUserInfo",channel]);
@@ -79,8 +83,7 @@ namespace helpmebot6.Commands
 
                 UserInformation uInfo = new UserInformation();
 
-                Editcount countCommand = new Editcount();
-                uInfo.editCount = countCommand.getEditCount(userName, channel);
+                uInfo.editCount = Editcount.GetEditCount(userName, channel);
 
                 if (uInfo.editCount == -1)
                 {
@@ -306,35 +309,32 @@ namespace helpmebot6.Commands
         private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
-            try{
+            try
+            {
                 initial.userName = userName;
 
                 if (initial.editCount == 0)
                 {
-                    Editcount countCommand = new Editcount();
-                    initial.editCount = countCommand.getEditCount(userName, channel);
+                    initial.editCount = Editcount.GetEditCount(userName, channel);
                 }
 
-                Rights rightsCommand = new Rights();
-                initial.userGroups = rightsCommand.getRights(userName, channel);
+                initial.userGroups = Rights.getRights(userName, channel);
 
-                Registration registrationCommand = new Registration();
-                initial.registrationDate = registrationCommand.getRegistrationDate(userName, channel);
+                initial.registrationDate = Registration.getRegistrationDate(userName, channel);
 
                 initial.userPage = getUserPageUrl(userName, channel);
                 initial.talkPage = getUserTalkPageUrl(userName, channel);
                 initial.userContribs = getUserContributionsUrl(userName, channel);
                 initial.userBlockLog = getBlockLogUrl(userName, channel);
 
-                Age ageCommand = new Age();
-                initial.userAge = ageCommand.getWikipedianAge(userName, channel);
+                initial.userAge = Age.getWikipedianAge(userName, channel);
 
-                initial.editRate = initial.editCount/initial.userAge.TotalDays;
+                initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
-                Blockinfo.BlockInformation bi = new Blockinfo().getBlockInformation(userName, channel);
+                BlockInformation bi = Blockinfo.getBlockInformation(userName, channel);
                 if (bi.id == null)
                 {
-                    initial.blockInformation = "";
+                    initial.blockInformation = string.Empty;
                 }
                 else
                 {

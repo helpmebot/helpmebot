@@ -1,38 +1,64 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-using System.Reflection;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GenericCommand.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Generic bot command abstract class
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Reflection;
+
     /// <summary>
     /// Generic bot command abstract class
     /// </summary>
     public abstract class GenericCommand
     {
         /// <summary>
-        /// Access level of the command
+        /// Initialises a new instance of the <see cref="GenericCommand"/> class.
+        /// </summary>
+        public GenericCommand()
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="GenericCommand"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public GenericCommand(User source, string channel, string[] args)
+        {
+            this.Source = source;
+            this.Channel = channel;
+            this.Arguments = args;
+        }
+
+        /// <summary>
+        /// Gets the access level of the command
         /// </summary>
         /// <value>The access level.</value>
-        public User.UserRights accessLevel
+        public User.UserRights AccessLevel
         {
             get
             {
@@ -46,16 +72,31 @@ namespace helpmebot6.Commands
                 string al = DAL.singleton().executeScalarSelect(q);
                 try
                 {
-                    return (User.UserRights) Enum.Parse(typeof (User.UserRights), al, true);
+                    return (User.UserRights)Enum.Parse(typeof(User.UserRights), al, true);
                 }
                 catch (ArgumentException)
                 {
-                    Logger.instance().addToLog("Warning: " + command + " not found in access list.",
-                                               Logger.LogTypes.Error);
+                    Logger.instance()
+                        .addToLog("Warning: " + command + " not found in access list.", Logger.LogTypes.Error);
                     return User.UserRights.Developer;
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
+        public User Source { get; set; }
+
+        /// <summary>
+        /// Gets or sets the channel.
+        /// </summary>
+        public string Channel { get; set; }
+
+        /// <summary>
+        /// Gets or sets the arguments.
+        /// </summary>
+        public string[] Arguments { get; set; }
 
         /// <summary>
         /// Trigger an execution of the command
@@ -63,77 +104,89 @@ namespace helpmebot6.Commands
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">Arguments to the command.</param>
-        /// <returns></returns>
-        public CommandResponseHandler run(User source, string channel, string[] args)
+        /// <returns>the response container</returns>
+        [Obsolete]
+        public CommandResponseHandler RunCommand(User source, string channel, string[] args)
+        {
+            this.Source = source;
+            this.Channel = channel;
+            this.Arguments = args;
+
+            return this.RunCommand();
+        }
+
+        /// <summary>
+        /// The run command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        public CommandResponseHandler RunCommand()
         {
             string command = GetType().ToString();
 
-            this.log("Running command: " + command);
+            this.LogMessage("Running command: " + command);
 
-            return accessTest(source, channel)? this.reallyRun(source,channel,args  ):this.accessDenied(source,channel,args  );
+            return this.TestAccess()
+                       ? this.ReallyRunCommand()
+                       : this.OnAccessDenied();
         }
 
         /// <summary>
         /// Check the access level and then decide what to do.
         /// </summary>
-        /// <param name="source">The source of the command</param>
-        /// <param name="channel">The channel the command was triggered in</param>
-        /// <returns>True if the command is allowed to execute</returns>
-        protected virtual bool accessTest(User source, string channel)
+        /// <returns>True if the command is allowed to Execute</returns>
+        protected virtual bool TestAccess()
         {
             // check the access level
-            return source.accessLevel >= this.accessLevel ? true : false;
+            return this.Source.accessLevel >= this.AccessLevel;
         }
 
         /// <summary>
         /// Access granted to command, decide what to do
         /// </summary>
-        /// <param name="source">The source of the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">Arguments to the command</param>
-        /// <returns>The response to the comand</returns>
-        protected virtual CommandResponseHandler reallyRun(User source, string channel, string[] args)
+        /// <returns>The response to the command</returns>
+        protected virtual CommandResponseHandler ReallyRunCommand()
         {
-            if(!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), true,channel, args)))
-			{
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments)))
+            {
                 CommandResponseHandler errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
                 errorResponse.respond(new Message().get("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
                 return errorResponse;
             }
-            this.log("Starting command execution...");
+
+            this.LogMessage("Starting command execution...");
             CommandResponseHandler crh;
             try
             {
-                crh = execute(source, channel, args);
+                crh = this.ExecuteCommand();
             }
             catch (Exception ex)
             {
                 Logger.instance().addToLog(ex.ToString(), Logger.LogTypes.Error);
                 crh = new CommandResponseHandler(ex.Message);
             }
-            this.log("Command execution complete.");
+
+            this.LogMessage("Command execution complete.");
             return crh;
         }
 
         /// <summary>
         /// Access denied to command, decide what to do
         /// </summary>
-        /// <param name="source">The source of the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
         /// <returns>A response to the command if access to the command was denied</returns>
-        protected virtual CommandResponseHandler accessDenied(User source, string channel, string[] args)
+        protected virtual CommandResponseHandler OnAccessDenied()
         {
             CommandResponseHandler response = new CommandResponseHandler();
 
-            response.respond(new Message().get("accessDenied", ""),
-                             CommandResponseDestination.PrivateMessage);
-            this.log("Access denied to command.");
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(source, GetType(), false, channel, args)))
+            response.respond(new Message().get("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
+            this.LogMessage("Access denied to command.");
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments)))
             {
                 response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }
+
             return response;
         }
 
@@ -143,17 +196,34 @@ namespace helpmebot6.Commands
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected abstract CommandResponseHandler execute(User source, string channel, string[] args);
+        /// <returns>The response to the command</returns>
+        [Obsolete]
+        protected virtual CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        {
+            return new CommandResponseHandler("not implemented");
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected virtual CommandResponseHandler ExecuteCommand()
+        {
+#pragma warning disable 612
+            return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
+#pragma warning restore 612
+        }
 
         /// <summary>
         /// Logs the specified message.
         /// </summary>
         /// <param name="message">The message.</param>
-        protected void log(string message)
+        protected void LogMessage(string message)
         {
-            Logger.instance( ).addToLog( MethodBase.GetCurrentMethod( ).DeclaringType.Name + ": " + message,
-                                         Logger.LogTypes.Command );
+            Logger.instance()
+                .addToLog(MethodBase.GetCurrentMethod().DeclaringType.Name + ": " + message, Logger.LogTypes.Command);
         }
     }
 }
