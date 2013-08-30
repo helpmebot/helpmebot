@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Blockuser.cs" company="Helpmebot Development Team">
+// <copyright file="CategoryWatcherCommand.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,18 +14,28 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Retrieves a link to block a user.
+//   Category watcher command.
+//   This is a class called explicitly from the command parser, as it's name us the category code,
+//   so will behave slightly differently to other command classes.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.Commands
 {
+    using System;
+
+    using helpmebot6.Monitoring;
+
     /// <summary>
-    /// Retrieves a link to block a user.
+    /// Category watcher command.
+    /// <para>
+    /// This is a class called explicitly from the command parser, as it's name us the category code,
+    /// so will behave slightly differently to other command classes.
+    /// </para>
     /// </summary>
-    internal class Blockuser : GenericCommand
+    internal class CategoryWatcher : GenericCommand
     {
-        public Blockuser(User source, string channel, string[] args)
+        public CategoryWatcher(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
@@ -36,49 +46,29 @@ namespace helpmebot6.Commands
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
+        /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer",channel]);
-            if (args.Length > 0)
+            CommandResponseHandler crh = new CommandResponseHandler();
+
+            if (args.Length == 1)
             {
-                if (args[0] == "@secure")
+                // just do category check
+                crh.respond(WatcherController.instance().forceUpdate(args[0], channel));
+            }
+            else
+            {
+                // do something else too.
+                Type subCmdType =
+                    Type.GetType("helpmebot6.Commands.CategoryWatcherCommand." + args[1].Substring(0, 1).ToUpper() +
+                                 args[1].Substring(1).ToLower());
+                if (subCmdType != null)
                 {
-                    secure = true;
-                    GlobalFunctions.popFromFront(ref args);
+                    return ((GenericCommand)Activator.CreateInstance(subCmdType, source, channel, args)).RunCommand();
                 }
             }
 
-            string name = string.Join(" ", args);
-
-            string prefix = "";
-
-            string page = "Special:Block/";
-
-            if (name.Contains(":"))
-            {
-                string origname = name;
-
-                string[] parts = name.Split(new[] {':'}, 2);
-                name = parts[1];
-                prefix = parts[0];
-
-                if (DAL.singleton().proc_HMB_GET_IW_URL(prefix) == string.Empty)
-                {
-                    name = origname;
-                    prefix = "";
-                }
-                else
-                {
-                    prefix += ":";
-                }
-
-                
-            }
-
-            string url = Linker.getRealLink(channel, prefix + page + name, secure).Replace("\0","");
-
-            return new CommandResponseHandler(url);
+            return crh;
         }
     }
 }

@@ -1,29 +1,29 @@
-﻿// /****************************************************************************
-//  *   This file is part of Helpmebot.                                        *
-//  *                                                                          *
-//  *   Helpmebot is free software: you can redistribute it and/or modify      *
-//  *   it under the terms of the GNU General Public License as published by   *
-//  *   the Free Software Foundation, either version 3 of the License, or      *
-//  *   (at your option) any later version.                                    *
-//  *                                                                          *
-//  *   Helpmebot is distributed in the hope that it will be useful,           *
-//  *   but WITHOUT ANY WARRANTY; without even the implied warranty of         *
-//  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          *
-//  *   GNU General Public License for more details.                           *
-//  *                                                                          *
-//  *   You should have received a copy of the GNU General Public License      *
-//  *   along with Helpmebot.  If not, see <http://www.gnu.org/licenses/>.     *
-//  ****************************************************************************/
-#region Usings
-
-using System;
-
-#endregion
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Intelligence.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Defines the Intelligence type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.AI
 {
+    using System;
+
     /// <summary>
-    /// 
+    /// The intelligence.
     /// </summary>
     internal class Intelligence
     {
@@ -36,52 +36,72 @@ namespace helpmebot6.AI
         /// Returns the singleton instance of this class.
         /// </summary>
         /// <returns>single instance</returns>
-        public static Intelligence singleton()
+        public static Intelligence Singleton()
         {
-            return _singleton ?? ( _singleton = new Intelligence( ) );
+            return _singleton ?? (_singleton = new Intelligence());
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Intelligence"/> class.
+        /// Initialises a new instance of the <see cref="Intelligence"/> class.
         /// </summary>
         protected Intelligence()
         {
         }
 
+        /// <summary>
+        /// The last ai response.
+        /// </summary>
         private DateTime lastAiResponse = DateTime.MinValue;
 
-            /// <summary>
-        /// Responds to the specified input.
+        /// <summary>
+        /// The respond.
         /// </summary>
-        /// <param name="input">The input.</param>
-        /// <returns></returns>
-        public string respond(string input)
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string Respond(string input)
         {
-            if(DateTime.Now.AddMinutes(-1  ) > lastAiResponse)
+            if (DateTime.Now.AddMinutes(-1) > this.lastAiResponse)
             {
-                lastAiResponse = DateTime.Now;
-                return getSpecialResponse(input);
-
+                this.lastAiResponse = DateTime.Now;
+                return this.getSpecialResponse(input);
             }
-            return getStandardResponse( input );
+
+            return this.getStandardResponse(input);
         }
 
-        private string getStandardResponse( string input )
+        /// <summary>
+        /// The get standard response.
+        /// </summary>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private string getStandardResponse(string input)
         {
             string[] tokens = input.Split(' ');
 
-            string[] hello = {"hi", "hey", "heya", "hello"};
+            string[] hello = { "hi", "hey", "heya", "hello" };
             const string helloResponses = "cmdSayHi1";
-            string[] morning = {"morning", "good morning"};
+            string[] morning = { "morning", "good morning" };
             const string morningResponses = "cmdSayHiMorning";
-            string[] afternoon = {"afternoon", "good afternoon"};
+            string[] afternoon = { "afternoon", "good afternoon" };
             const string afternoonResponses = "cmdSayHiAfternoon";
-            string[] evening = {"evening", "good evening"};
+            string[] evening = { "evening", "good evening" };
             const string eveningResponses = "cmdSayHiEvening";
 
             foreach (string word in hello)
             {
-                if ( tokens.Length <= 1 ) continue;
+                if (tokens.Length <= 1)
+                {
+                    continue;
+                }
+
                 if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
                 {
                     return helloResponses;
@@ -121,15 +141,26 @@ namespace helpmebot6.AI
                 }
             }
 
-            return "";
+            return string.Empty;
         }
 
+        /// <summary>
+        /// The get special response.
+        /// </summary>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         private string getSpecialResponse(string input)
         {
-            if( input.Contains( "Ayn Rand" ) )
+            if (input.Contains("Ayn Rand"))
+            {
                 return "aynrand";
+            }
 
-            return "";
+            return string.Empty;
         }
     }
 }
