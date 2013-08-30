@@ -233,9 +233,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".hmbot">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include=".hmbot" />
     <None Include="app.config" />
     <None Include="bin\Debug\.hmbot" />
     <None Include="BotInfo.netmodule" />
