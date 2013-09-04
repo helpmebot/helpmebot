@@ -24,8 +24,14 @@ namespace helpmebot6.Commands
     {
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            string name = string.Join(" ", args);
-
+            string name;
+            if( args.Length == 0 ) {
+                name = source.nickname;
+            }
+            else
+            {
+                name = string.Join(" ", args);
+            }
             string[] messageparams = { name };
             string message = new Message().get("cmdBeer", messageparams);
 

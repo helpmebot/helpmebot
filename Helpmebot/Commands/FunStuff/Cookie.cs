@@ -34,12 +34,19 @@ namespace helpmebot6.Commands
         /// <returns></returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            string name = string.Join(" ", args);
-
+            string name;
+            if( args.Length == 0 ) {
+                name = source.nickname;
+            }
+            else
+            {
+                name = string.Join(" ", args);
+            }
+            
             string[] messageparams = {name};
-            string message = new Message().get("cmdCookie", messageparams);
+            string message = new ;
 
-            return new CommandResponseHandler(message);
+            return new CommandResponseHandler(Message().get("cmdCookie", messageparams));
         }
     }
 }

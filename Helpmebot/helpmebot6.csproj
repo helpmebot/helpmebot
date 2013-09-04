@@ -134,6 +134,7 @@
     <Compile Include="Commands\FunStuff\Electrocute.cs" />
     <Compile Include="Commands\FunStuff\Cluebat.cs" />
     <Compile Include="Commands\FunStuff\FunCommand.cs" />
+    <Compile Include="Commands\FunStuff\Soda.cs" />
     <Compile Include="Commands\FunStuff\Salmon.cs" />
     <Compile Include="Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Commands\FunStuff\Vorticough.cs" />
