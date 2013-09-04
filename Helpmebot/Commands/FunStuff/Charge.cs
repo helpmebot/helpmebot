@@ -20,24 +20,43 @@
 
 namespace helpmebot6.Commands
 {
-    class Charge : Trout
+    /// <summary>
+    /// The charge.
+    /// </summary>
+    internal class Charge : Trout
     {
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
+            string name;
             if (args.Length > 0 && args[0] != string.Empty)
             {
 
-                string name = args[0];
-                if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
+                name = args[0];
+                if (GlobalFunctions.isInArray(name.ToLower(), this.forbiddenTargets) != -1)
                 {
                     name = source.nickname;
                 }
-                return new CommandResponseHandler(new Message().get("cmdChargeParam", name));
 
-            } else {
-                name = source.nickname;
+                return new CommandResponseHandler(new Message().get("cmdChargeParam", name));
             }
             
+            name = source.nickname;
+
             string[] messageparams = { name };
             return new CommandResponseHandler(new Message().get("cmdCharge", messageparams));
         }

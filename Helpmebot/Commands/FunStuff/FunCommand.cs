@@ -20,7 +20,10 @@
 
 namespace helpmebot6.Commands.FunStuff
 {
-    abstract class FunCommand : GenericCommand
+    /// <summary>
+    /// The fun command.
+    /// </summary>
+    internal abstract class FunCommand : GenericCommand
     {
         /// <summary>
         /// The on access denied.
@@ -32,7 +35,7 @@ namespace helpmebot6.Commands.FunStuff
         {
             return Configuration.singleton()["hedgehog", this.Channel] == "false" ? 
                 base.OnAccessDenied() : 
-                new CommandResponseHandler(new Message().get("HedgehogAccessDenied"),CommandResponseDestination.PrivateMessage);
+                new CommandResponseHandler(new Message().get("HedgehogAccessDenied"), CommandResponseDestination.PrivateMessage);
         }
 
         /// <summary>

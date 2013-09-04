@@ -23,7 +23,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Cluebats a user.
     /// </summary>
-    internal class Cluebat : FunStuff.FunCommand
+    internal class Cluebat : Trout
     {
         /// <summary>
         /// Actual command logic
@@ -31,18 +31,17 @@ namespace helpmebot6.Commands
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
+        /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
+            string name;
             if (args.Length > 0 && args[0] != string.Empty)
             {
-
-                string name = args[0];
-                if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
+                name = args[0];
+                if (GlobalFunctions.isInArray(name.ToLower(), this.forbiddenTargets) != -1)
                 {
                     name = source.nickname;
                 }
-
             }
             else
             {

@@ -31,22 +31,14 @@ namespace helpmebot6.Commands
         /// <param name="source">The user who triggered the command.</param>
         /// <param name="channel">The channel the command was triggered in.</param>
         /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
+        /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            string name;
-            if( args.Length == 0 ) {
-                name = source.nickname;
-            }
-            else
-            {
-                name = string.Join(" ", args);
-            }
-            
-            string[] messageparams = {name};
-            string message = new ;
+            string name = args.Length == 0 ? source.nickname : string.Join(" ", args);
 
-            return new CommandResponseHandler(Message().get("cmdCookie", messageparams));
+            string[] messageparams = { name };
+
+            return new CommandResponseHandler(new Message().get("cmdCookie", messageparams));
         }
     }
 }

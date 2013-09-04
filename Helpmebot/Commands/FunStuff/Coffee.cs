@@ -23,7 +23,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// The coffee.
     /// </summary>
-    class Coffee : FunStuff.FunCommand
+    internal class Coffee : FunStuff.FunCommand
     {
         /// <summary>
         /// The Execute.
@@ -42,8 +42,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            string name;
-            name = args.Length == 0 ? source.nickname : string.Join(" ", args);
+            string name = args.Length == 0 ? source.nickname : string.Join(" ", args);
             
             string[] messageparams = { name };
             string message = new Message().get("cmdCoffee", messageparams);

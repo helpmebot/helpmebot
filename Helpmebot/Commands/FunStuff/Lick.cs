@@ -20,18 +20,30 @@
 
 namespace helpmebot6.Commands
 {
-    class Lick : Trout
+    /// <summary>
+    /// The lick.
+    /// </summary>
+    internal class Lick : Trout
     {
-        protected override CommandResponseHandler execute(User source, string channel, string[] args)
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
         {
-            string name;
-            if( args.Length == 0 ) {
-                name = Message().get("cmdLickSelf");
-            }
-            else
-            {
-                name = string.Join(" ", args);
-            }
+            string name = args.Length == 0 ? new Message().get("cmdLickSelf") : string.Join(" ", args);
+
             string[] messageparams = { name };
             string message = new Message().get("cmdLick", messageparams);
 
