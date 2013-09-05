@@ -18,49 +18,45 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
-
 namespace helpmebot6.Commands
 {
     using System;
     using System.Xml.XPath;
 
-    class Accstatus : GenericCommand
+    /// <summary>
+    /// The status of ACC.
+    /// </summary>
+    internal class Accstatus : GenericCommand
     {
         #region Overrides of GenericCommand
 
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-
             XPathDocument xpd =
                 new XPathDocument(
                     HttpRequest.get("http://toolserver.org/~acc/api.php?action=status"));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//status");
 
-
             if (xpni.MoveNext())
             {
-                string[] messageParams = {
-                                            xpni.Current.GetAttribute("open", ""), 
-                                            xpni.Current.GetAttribute("admin", ""), 
-                                            xpni.Current.GetAttribute("checkuser", ""), 
-                                            xpni.Current.GetAttribute("bans", ""), 
-                                            xpni.Current.GetAttribute("useradmin", ""), 
-                                            xpni.Current.GetAttribute("user", ""), 
-                                            xpni.Current.GetAttribute("usernew", ""), 
-                                         };
+                string[] messageParams =
+                    {
+                        xpni.Current.GetAttribute("open", string.Empty),
+                        xpni.Current.GetAttribute("admin", string.Empty),
+                        xpni.Current.GetAttribute("checkuser", string.Empty),
+                        xpni.Current.GetAttribute("bans", string.Empty),
+                        xpni.Current.GetAttribute("useradmin", string.Empty),
+                        xpni.Current.GetAttribute("user", string.Empty),
+                        xpni.Current.GetAttribute("usernew", string.Empty)
+                    };
 
                 string message = new Message().get("CmdAccStatus", messageParams);
                 return new CommandResponseHandler(message);
-
             }
 
             throw new ArgumentException();

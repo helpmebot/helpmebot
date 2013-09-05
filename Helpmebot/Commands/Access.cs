@@ -28,6 +28,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Access : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Access"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Access(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -48,27 +60,23 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-
             var crh = new CommandResponseHandler();
-            if (args.Length > 1)
+            if (this.Arguments.Length > 1)
             {
-                switch (args[0].ToLower())
+                switch (this.Arguments[0].ToLower())
                 {
                     case "add":
-                        if (args.Length > 2)
+                        if (this.Arguments.Length > 2)
                         {
                             var aL = User.UserRights.Normal;
 
-                            switch (args[2].ToLower())
+                            switch (this.Arguments[2].ToLower())
                             {
                                 case "developer":
-                                    aL = source.accessLevel == User.UserRights.Developer
+                                    aL = this.Source.accessLevel == User.UserRights.Developer
                                              ? User.UserRights.Developer
                                              : User.UserRights.Superuser;
                                     break;
@@ -90,33 +98,35 @@ namespace helpmebot6.Commands
                                 case "normal":
                                     aL = User.UserRights.Normal;
                                     break;
-                                default:
-                                    break;
                             }
 
-                            crh = addAccessEntry(User.newFromString(args[1]), aL);
+                            crh = AddAccessEntry(User.newFromString(this.Arguments[1]), aL);
                         }
                         else
                         {
-                            string[] messageParameters = { "access add", "3", args.Length.ToString() };
+                            string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString() };
                             return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
 
                         }
+
                         break;
                     case "del":
-                        crh = delAccessEntry(int.Parse(args[1]));
+                        crh = DeleteAccessEntry(int.Parse(this.Arguments[1]));
                         break;
                 }
-                // add <source> <level>
 
-                // del <id>
+                /*
+                 * add <source> <level>
+                 *
+                 * del <id>
+                 */
             }
             else
             {
-                string[] messageParameters = { "access", "2", args.Length.ToString() };
+                string[] messageParameters = { "access", "2", this.Arguments.Length.ToString() };
                 return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
-                
             }
+
             return crh;
         }
 
@@ -125,22 +135,30 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="newEntry">The new entry.</param>
         /// <param name="accessLevel">The access level.</param>
-        /// <returns></returns>
+        /// <returns>a response</returns>
         [Obsolete("Use User class")]
-        private static CommandResponseHandler addAccessEntry(User newEntry, User.UserRights accessLevel)
+        private static CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            Logger.instance()
+                .addToLog(
+                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                    Logger.LogTypes.DNWB);
 
             string[] messageParams = {newEntry.ToString(), accessLevel.ToString()};
             string message = new Message().get("addAccessEntry", messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
-            Logger.instance().addToLog("Adding access entry for " + newEntry + " at level " + accessLevel,
-                                       Logger.LogTypes.Command);
-            DAL.singleton().insert("user", "", newEntry.nickname, newEntry.username, newEntry.hostname,
-                                   accessLevel.ToString(), "");
+            Logger.instance()
+                .addToLog("Adding access entry for " + newEntry + " at level " + accessLevel, Logger.LogTypes.Command);
+            DAL.singleton()
+                .insert(
+                    "user",
+                    string.Empty,
+                    newEntry.nickname,
+                    newEntry.username,
+                    newEntry.hostname,
+                    accessLevel.ToString(),
+                    string.Empty);
 
             return new CommandResponseHandler(message);
         }
@@ -149,15 +167,16 @@ namespace helpmebot6.Commands
         /// Dels the access entry.
         /// </summary>
         /// <param name="id">The id.</param>
-        /// <returns></returns>
+        /// <returns>a response</returns>
         [Obsolete("Use the User class")]
-        private static CommandResponseHandler delAccessEntry(int id)
+        private static CommandResponseHandler DeleteAccessEntry(int id)
         {
-            Logger.instance().addToLog(
-                "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                Logger.LogTypes.DNWB);
+            Logger.instance()
+                .addToLog(
+                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                    Logger.LogTypes.DNWB);
 
-            string[] messageParams = {id.ToString()};
+            string[] messageParams = { id.ToString() };
             string message = new Message().get("removeAccessEntry", messageParams);
 
             Logger.instance().addToLog("Removing access entry #" + id, Logger.LogTypes.Command);

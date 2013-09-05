@@ -27,30 +27,58 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Age : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Age"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Age(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
         /// <summary>
+        /// Gets the wikipedian age.
+        /// </summary>
+        /// <param name="userName">Name of the user.</param>
+        /// <param name="channel">The channel the command is requested in. (Retrieves the relevant base wiki)</param>
+        /// <returns>timespan of the age</returns>
+        public static TimeSpan GetWikipedianAge(string userName, string channel)
+        {
+            DateTime regdate = Registration.getRegistrationDate(userName, channel);
+            TimeSpan age = DateTime.Now.Subtract(regdate);
+            if (regdate.Equals(new DateTime(0001, 1, 1)))
+            {
+                age = new TimeSpan(0);
+            }
+
+            return age;
+        }
+
+        /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             string userName;
-            if (args.Length > 0 && args[0] != "")
+            if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
-                userName = string.Join(" ", args);
+                userName = string.Join(" ", this.Arguments);
             }
             else
             {
-                userName = source.nickname;
-			}
-            TimeSpan time = getWikipedianAge(userName, channel);
+                userName = this.Source.nickname;
+            }
+
+            TimeSpan time = GetWikipedianAge(userName, this.Channel);
             string message;
             if (time.Equals(new TimeSpan(0)))
             {
@@ -59,31 +87,15 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = {
-                                                 userName, (time.Days/365).ToString(), (time.Days%365).ToString(),
-                                                 time.Hours.ToString(), time.Minutes.ToString(),
-                                                 time.Seconds.ToString()
-                                             };
+                string[] messageParameters =
+                    {
+                        userName, (time.Days / 365).ToString(), (time.Days % 365).ToString(),
+                        time.Hours.ToString(), time.Minutes.ToString(), time.Seconds.ToString()
+                    };
                 message = new Message().get("cmdAge", messageParameters);
             }
-            return new CommandResponseHandler(message);
-        }
 
-        /// <summary>
-        /// Gets the wikipedian age.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="channel">The channel the command is requested in. (Retrieves the relevant base wiki)</param>
-        /// <returns></returns>
-        public static TimeSpan getWikipedianAge(string userName, string channel)
-        {
-            DateTime regdate = Registration.getRegistrationDate(userName, channel);
-            TimeSpan age = DateTime.Now.Subtract(regdate);
-            if (regdate.Equals(new DateTime(0001, 1, 1)))
-            {
-                age = new TimeSpan(0);
-            }
-            return age;
+            return new CommandResponseHandler(message);
         }
     }
 }

@@ -18,8 +18,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
-
 namespace helpmebot6.Commands
 {
     using System;
@@ -28,20 +26,22 @@ namespace helpmebot6.Commands
 
     using HttpRequest = helpmebot6.HttpRequest;
 
-    class Accdeploy : GenericCommand
+    /// <summary>
+    /// The deploy ACC command.
+    /// </summary>
+    internal class Accdeploy : GenericCommand
     {
         #region Overrides of GenericCommand
 
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.irc.ircPrivmsg(channel, new Message().get("DeployInProgress"));
+            string[] args = this.Arguments;
+
+            Helpmebot6.irc.ircPrivmsg(this.Channel, new Message().get("DeployInProgress"));
 
             string revision;
 
@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
                 GlobalFunctions.popFromFront(ref args);
             }
 
-            if (args.Length > 0 && args[0] != "")
+            if (args.Length > 0 && args[0] != string.Empty)
             {
                 revision = string.Join(" ", args);
             }
@@ -64,13 +64,13 @@ namespace helpmebot6.Commands
             
             string apiDeployPassword = Configuration.singleton()["accDeployPassword"];
 
-            string key = md5(md5(revision) + apiDeployPassword);
+            string key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
 
             revision = HttpUtility.UrlEncode(revision);
 
             string requestUri = "http://toolserver.org/~acc/deploy/deploy.php?r=" + revision + "&k=" + key;
 
-            var r = new StreamReader(HttpRequest.get(requestUri, 1000*30 /* 30 sec timeout */));
+            var r = new StreamReader(HttpRequest.get(requestUri, 1000 * 30 /* 30 sec timeout */));
 
             var crh = new CommandResponseHandler();
             if (showUrl)
@@ -78,19 +78,32 @@ namespace helpmebot6.Commands
                 crh.respond(requestUri, CommandResponseDestination.PrivateMessage);
             }
 
-            foreach(var x in r.ReadToEnd().Split('\n', '\r')) crh.respond(x);
+            foreach (var x in r.ReadToEnd().Split('\n', '\r'))
+            {
+                crh.respond(x);
+            }
+
             return crh;
         }
 
         #endregion
 
-        string md5(string s)
+        /// <summary>
+        /// The md 5.
+        /// </summary>
+        /// <param name="s">
+        /// The s.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private string EncodeMD5(string s)
         {
-            return BitConverter.ToString(
-                System.Security.Cryptography.MD5.Create().ComputeHash(
-                    new System.Text.UTF8Encoding().GetBytes(s)
-                )
-            ).Replace("-", "").ToLower();
+            return
+                BitConverter.ToString(
+                    System.Security.Cryptography.MD5.Create().ComputeHash(new System.Text.UTF8Encoding().GetBytes(s)))
+                    .Replace("-", string.Empty)
+                    .ToLower();
         }
     }
 }

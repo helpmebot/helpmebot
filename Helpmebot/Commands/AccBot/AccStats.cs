@@ -26,6 +26,9 @@ namespace helpmebot6.Commands
 
     using HttpRequest = helpmebot6.HttpRequest;
 
+    /// <summary>
+    /// The stats of acc.
+    /// </summary>
     internal class Accstats : GenericCommand
     {
         #region Overrides of GenericCommand
@@ -33,21 +36,18 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             string username;
 
-            if (args.Length > 0 && args[0] != string.Empty)
+            if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
-                username = string.Join(" ", args);
+                username = string.Join(" ", this.Arguments);
             }
             else
             {
-                username = source.nickname;
+                username = this.Source.nickname;
             }
 
             username = HttpUtility.UrlEncode(username);
@@ -56,7 +56,6 @@ namespace helpmebot6.Commands
                 new XPathDocument(HttpRequest.get("http://toolserver.org/~acc/api.php?action=stats&user=" + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
-
 
             if (xpni.MoveNext())
             {
@@ -80,7 +79,6 @@ namespace helpmebot6.Commands
 
                 string message = new Message().get("CmdAccStats", messageParams);
                 return new CommandResponseHandler(message);
-
             }
 
             throw new ArgumentException();

@@ -26,28 +26,30 @@ namespace helpmebot6.Commands
 
     using HttpRequest = helpmebot6.HttpRequest;
 
-    class Acccount : GenericCommand
+    /// <summary>
+    /// The ACC count.
+    /// </summary>
+    internal class Acccount : GenericCommand
     {
         #region Overrides of GenericCommand
 
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
+            string[] args = this.Arguments;
+
             string username;
 
-            if (args.Length > 0 && args[0] != "")
+            if (args.Length > 0 && args[0] != string.Empty)
             {
                 username = string.Join(" ", args);
             }
             else
             {
-                username = source.nickname;
+                username = this.Source.nickname;
             }
 
             username = HttpUtility.UrlEncode(username);
@@ -58,40 +60,42 @@ namespace helpmebot6.Commands
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
 
-
             if (xpni.MoveNext())
             {
-                if(xpni.Current.GetAttribute("missing", "") == "true")
+                if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                 {
-                    string[] msgparams = {username};
+                    string[] msgparams = { username };
                     string msg = new Message().get("noSuchUser", msgparams);
                     return new CommandResponseHandler(msg);
                 }
 
-                string[] adminparams = {
-                                            xpni.Current.GetAttribute("suspended", ""), 
-                                            xpni.Current.GetAttribute("promoted", ""), 
-                                            xpni.Current.GetAttribute("approved", ""), 
-                                            xpni.Current.GetAttribute("demoted", ""), 
-                                            xpni.Current.GetAttribute("declined", ""), 
-                                            xpni.Current.GetAttribute("renamed", ""), 
-                                            xpni.Current.GetAttribute("edited", ""), 
-                                            xpni.Current.GetAttribute("prefchange", ""), 
-                                         };
+                string[] adminparams =
+                    {
+                        xpni.Current.GetAttribute("suspended", string.Empty),
+                        xpni.Current.GetAttribute("promoted", string.Empty),
+                        xpni.Current.GetAttribute("approved", string.Empty),
+                        xpni.Current.GetAttribute("demoted", string.Empty),
+                        xpni.Current.GetAttribute("declined", string.Empty),
+                        xpni.Current.GetAttribute("renamed", string.Empty),
+                        xpni.Current.GetAttribute("edited", string.Empty),
+                        xpni.Current.GetAttribute("prefchange", string.Empty)
+                    };
 
                 string adminmessage = new Message().get("CmdAccCountAdmin", adminparams);
 
-                string[] messageParams = {
-                                            username, // username
-                                            xpni.Current.GetAttribute("level", ""), // accesslevel
-                                            xpni.Current.GetAttribute("created", ""), // numclosed
-                                            xpni.Current.GetAttribute("today", ""), // today
-                                            xpni.Current.GetAttribute("level", "") == "Admin" ? adminmessage : ""// admin
-                                         };
+                string[] messageParams =
+                    {
+                        username, // username
+                        xpni.Current.GetAttribute("level", string.Empty), // accesslevel
+                        xpni.Current.GetAttribute("created", string.Empty), // numclosed
+                        xpni.Current.GetAttribute("today", string.Empty), // today
+                        xpni.Current.GetAttribute("level", string.Empty) == "Admin"
+                            ? adminmessage
+                            : string.Empty // admin
+                    };
 
                 string message = new Message().get("CmdAccCount", messageParams);
                 return new CommandResponseHandler(message);
-
             }
 
             throw new ArgumentException();

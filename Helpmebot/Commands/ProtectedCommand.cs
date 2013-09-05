@@ -27,6 +27,18 @@ namespace helpmebot6.Commands
     /// </summary>
     public abstract class ProtectedCommand : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="ProtectedCommand"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         protected ProtectedCommand(User source, string channel, string[] args)
             : base(source, channel, args)
         {

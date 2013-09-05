@@ -329,7 +329,7 @@ namespace helpmebot6.Commands
                 initial.userContribs = getUserContributionsUrl(userName, channel);
                 initial.userBlockLog = getBlockLogUrl(userName, channel);
 
-                initial.userAge = Age.getWikipedianAge(userName, channel);
+                initial.userAge = Age.GetWikipedianAge(userName, channel);
 
                 initial.editRate = initial.editCount / initial.userAge.TotalDays;
 
