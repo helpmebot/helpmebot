@@ -320,7 +320,7 @@ namespace helpmebot6.Commands
                     initial.editCount = Editcount.GetEditCount(userName, channel);
                 }
 
-                initial.userGroups = Rights.getRights(userName, channel);
+                initial.userGroups = Rights.GetRights(userName, channel);
 
                 initial.registrationDate = Registration.GetRegistrationDate(userName, channel);
 

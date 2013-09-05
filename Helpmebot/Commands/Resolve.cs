@@ -18,7 +18,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace helpmebot6.Commands
 {
     using System.Net;
@@ -29,6 +28,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Resolve : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Resolve"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Resolve(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -37,44 +48,46 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if (args.Length == 0)
+            if (this.Arguments.Length == 0)
             {
-                string[] messageParameters = { "resolve", "1", args.Length.ToString() };
+                string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString() };
                 return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
             }
 
             IPAddress[] addresses = new IPAddress[0];
             try
             {
-                addresses = Dns.GetHostEntry(args[0]).AddressList;
+                addresses = Dns.GetHostEntry(this.Arguments[0]).AddressList;
             }
             catch (SocketException)
             {
             }
+
             if (addresses.Length != 0)
             {
-                string ipList = "";
+                string ipList = string.Empty;
                 bool first = true;
                 foreach (IPAddress item in addresses)
                 {
                     if (!first)
+                    {
                         ipList += ", ";
+                    }
+
                     ipList += item.ToString();
                     first = false;
                 }
-                string[] messageargs = {args[0], ipList};
+
+                string[] messageargs = { this.Arguments[0], ipList };
 
                 return new CommandResponseHandler(new Message().get("resolve", messageargs));
             }
             else
             {
-                string[] messageargs = {args[0]};
+                string[] messageargs = { this.Arguments[0] };
                 return new CommandResponseHandler(new Message().get("resolveFail", messageargs));
             }
         }

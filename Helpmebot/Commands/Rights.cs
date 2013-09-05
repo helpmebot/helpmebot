@@ -28,35 +28,99 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Rights : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Rights"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Rights(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
         /// <summary>
+        /// Gets the rights of a wikipedian.
+        /// </summary>
+        /// <param name="username">The username.</param>
+        /// <param name="channel">The channel to get the base wiki for.</param>
+        /// <returns>the rights</returns>
+        public static string GetRights(string username, string channel)
+        {
+            if (username == string.Empty)
+            {
+                throw new ArgumentNullException();
+            }
+
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
+
+            DAL.Select q = new DAL.Select("site_api");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            string api = DAL.singleton().executeScalarSelect(q);
+
+            string returnStr = string.Empty;
+            int rightsCount = 0;
+            XmlTextReader creader =
+                new XmlTextReader(
+                    HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
+            do
+            {
+                creader.Read();
+            }
+            while (creader.Name != "user");
+
+            creader.Read();
+            if (creader.Name == "groups")
+            {
+                // the start of the group list
+                do
+                {
+                    creader.Read();
+                    string rightsList = creader.ReadString();
+                    if (!(rightsList == string.Empty || rightsList == "*"))
+                    {
+                        returnStr = returnStr + rightsList + ", ";
+                    }
+
+                    rightsCount = rightsCount + 1;
+                }
+                while (creader.Name == "g"); // each group should be added
+            }
+
+            returnStr = rightsCount == 0 ? string.Empty : returnStr.Remove(returnStr.Length - 2);
+
+            return returnStr;
+        }
+        
+        /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             CommandResponseHandler crh = new CommandResponseHandler();
             
             string userName;
-            if (args.Length > 0 && args[0] != "")
+            if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
-                userName = string.Join(" ", args);
+                userName = string.Join(" ", this.Arguments);
             }
             else
             {
-                userName = source.nickname;
-			}
-            string rights = getRights(userName, channel);
+                userName = this.Source.nickname;
+            }
+
+            string rights = GetRights(userName, this.Channel);
             
             string message;
-            if (rights != "")
+            if (rights != string.Empty)
             {
                 string[] messageParameters = { userName, rights };
                 message = new Message().get("cmdRightsList", messageParameters);
@@ -69,51 +133,6 @@ namespace helpmebot6.Commands
 
             crh.respond(message);
             return crh;
-        }
-
-
-        /// <summary>
-        /// Gets the rights of a wikipedian.
-        /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="channel">The channel to get the base wiki for.</param>
-        /// <returns></returns>
-        public static string getRights(string username, string channel)
-        {
-            if (username == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
-
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
-
-            string returnStr = "";
-            int rightsCount = 0;
-            XmlTextReader creader =
-                new XmlTextReader(
-                    HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
-            do
-                creader.Read(); while (creader.Name != "user");
-            creader.Read();
-            if (creader.Name == "groups") //the start of the group list
-            {
-                do
-                {
-                    creader.Read();
-                    string rightsList = (creader.ReadString());
-                    if (!(rightsList == "" || rightsList=="*"))
-                        returnStr = returnStr + rightsList + ", ";
-                    rightsCount = rightsCount + 1;
-                } while (creader.Name == "g"); //each group should be added
-            }
-            returnStr = rightsCount == 0 ? "" : returnStr.Remove(returnStr.Length - 2);
-
-
-            return returnStr;
         }
     }
 }
