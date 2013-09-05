@@ -27,6 +27,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Oauth : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Oauth"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Oauth(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -35,24 +47,22 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            Logger.instance( ).addToLog(
-                "Method:" + MethodBase.GetCurrentMethod( ).DeclaringType.Name + MethodBase.GetCurrentMethod( ).Name,
-                Logger.LogTypes.DNWB );
+            Logger.instance()
+                .addToLog(
+                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
+                    Logger.LogTypes.DNWB);
 
-
-            if ( args.Length == 1  && args[0] != "")
+            if (this.Arguments.Length == 1 && this.Arguments[0] != string.Empty)
             {
-                new Twitter( ).authorise( args[ 0 ] );
+                new Twitter().authorise(this.Arguments[0]);
             }
             else
             {
-                new Twitter( );
+                // TODO: verify this!
+                new Twitter();
             }
 
             return new CommandResponseHandler(new Message().get("done"));

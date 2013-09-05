@@ -27,11 +27,6 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Notify : GenericCommand
     {
-        public Notify(User source, string channel, string[] args)
-            : base(source, channel, args)
-        {
-        }
-
         /// <summary>
         /// The requested notifications.
         /// </summary>
@@ -41,6 +36,23 @@ namespace helpmebot6.Commands
         /// The lock for the requested notifications dictionary.
         /// </summary>
         private static readonly object NotificationsDictionaryLock = new object();
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Notify"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Notify(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
 
         /// <summary>
         /// The notify join.
@@ -76,22 +88,13 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The execute command.
         /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
         /// <returns>
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand()
         {
             Message msgprovider = new Message();
-            if (args.Length != 1)
+            if (this.Arguments.Length != 1)
             {
                 return new CommandResponseHandler(msgprovider.get("argsExpected1", new[] { "nickname" }));
             }
@@ -99,8 +102,8 @@ namespace helpmebot6.Commands
             string trigger;
             lock (NotificationsDictionaryLock)
             {
-                User toNotify = source;
-                trigger = args[0];
+                User toNotify = this.Source;
+                trigger = this.Arguments[0];
                 string triggerUpper = trigger.ToUpperInvariant();
                 if (!RequestedNotifications.ContainsKey(trigger))
                 {
