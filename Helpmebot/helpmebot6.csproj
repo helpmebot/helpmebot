@@ -104,6 +104,7 @@
     <Compile Include="Commands\Afccount.cs" />
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
+    <Compile Include="Commands\Reg.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />
