@@ -322,7 +322,7 @@ namespace helpmebot6.Commands
 
                 initial.userGroups = Rights.getRights(userName, channel);
 
-                initial.registrationDate = Registration.getRegistrationDate(userName, channel);
+                initial.registrationDate = Registration.GetRegistrationDate(userName, channel);
 
                 initial.userPage = getUserPageUrl(userName, channel);
                 initial.talkPage = getUserTalkPageUrl(userName, channel);

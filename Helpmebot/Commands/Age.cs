@@ -52,7 +52,7 @@ namespace helpmebot6.Commands
         /// <returns>timespan of the age</returns>
         public static TimeSpan GetWikipedianAge(string userName, string channel)
         {
-            DateTime regdate = Registration.getRegistrationDate(userName, channel);
+            DateTime regdate = Registration.GetRegistrationDate(userName, channel);
             TimeSpan age = DateTime.Now.Subtract(regdate);
             if (regdate.Equals(new DateTime(0001, 1, 1)))
             {

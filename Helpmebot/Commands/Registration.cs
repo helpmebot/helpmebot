@@ -28,50 +28,46 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Registration : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Registration"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Registration(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {
-            CommandResponseHandler crh = new CommandResponseHandler();
-            if (args.Length > 0)
-            {
-                string userName = string.Join(" ", args);
-                DateTime registrationDate = getRegistrationDate(userName, channel);
-                if (registrationDate == new DateTime(0))
-                {
-                    string[] messageParams = {userName};
-                    string message = new Message().get("noSuchUser", messageParams);
-                    crh.respond(message);
-                }
-                else
-                {
-                    string[] messageParameters = {
-                                                     userName, registrationDate.ToString("hh:mm:ss t"),
-                                                     registrationDate.ToString("d MMMM yyyy")
-                                                 };
-                    string message = new Message().get("registrationDate", messageParameters);
-                    crh.respond(message);
-                }
-            }
-            else
-            {
-                string[] messageParameters = {"registration", "1", args.Length.ToString()};
-                Helpmebot6.irc.ircNotice(source.nickname,
-                                         new Message().get("notEnoughParameters", messageParameters));
-            }
-            return crh;
-        }
-
-        public static DateTime getRegistrationDate(string username, string channel)
+        /// <summary>
+        /// The get registration date.
+        /// </summary>
+        /// <param name="username">
+        /// The username.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The <see cref="DateTime"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// if username is empty;
+        /// </exception>
+        public static DateTime GetRegistrationDate(string username, string channel)
         {
             if (username == string.Empty)
             {
                 throw new ArgumentNullException();
             }
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -83,29 +79,63 @@ namespace helpmebot6.Commands
             do
             {
                 creader.Read();
-            } while (creader.Name != "user");
+            }
+            while (creader.Name != "user");
+
             string apiRegDate = creader.GetAttribute("registration");
             if (apiRegDate != null)
             {
-                if (apiRegDate == "")
+                if (apiRegDate == string.Empty)
                 {
                     return new DateTime(1970, 1, 1, 0, 0, 0);
                 }
+
                 DateTime regDate = DateTime.Parse(apiRegDate);
                 return regDate;
             }
+
             return new DateTime(0);
         }
-    }
 
-    /// <summary>
-    ///   Returns the registration date of a wikipedian. Alias for Registration
-    /// </summary>
-    internal class Reg : Registration
-    {
-        public Reg(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
+            CommandResponseHandler crh = new CommandResponseHandler();
+            if (this.Arguments.Length > 0)
+            {
+                string userName = string.Join(" ", this.Arguments);
+                DateTime registrationDate = GetRegistrationDate(userName, this.Channel);
+                if (registrationDate == new DateTime(0))
+                {
+                    string[] messageParams = { userName };
+                    string message = new Message().get("noSuchUser", messageParams);
+                    crh.respond(message);
+                }
+                else
+                {
+                    string[] messageParameters =
+                        {
+                            userName, registrationDate.ToString("hh:mm:ss t"),
+                            registrationDate.ToString("d MMMM yyyy")
+                        };
+                    string message = new Message().get("registrationDate", messageParameters);
+                    crh.respond(message);
+                }
+            }
+            else
+            {
+                string[] messageParameters = { "registration", "1", this.Arguments.Length.ToString() };
+                Helpmebot6.irc.ircNotice(
+                    this.Source.nickname,
+                    new Message().get("notEnoughParameters", messageParameters));
+            }
+
+            return crh;
         }
     }
 }
