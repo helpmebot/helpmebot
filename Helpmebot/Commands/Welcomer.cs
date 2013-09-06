@@ -27,6 +27,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Welcomer : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Welcomer"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Welcomer(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -35,31 +47,32 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
+            var args = this.Arguments;
+
             var ignore = false;
             switch (args[0].ToLower())
             {
                 case "enable":
-                    if (Configuration.singleton()["welcomeNewbie",channel] == "true")
+                    if (Configuration.singleton()["welcomeNewbie", this.Channel] == "true")
                     {
                         return new CommandResponseHandler(new Message().get("no-change"));
                     }
-                    Configuration.singleton()["welcomeNewbie", channel]= "true";
+
+                    Configuration.singleton()["welcomeNewbie", this.Channel] = "true";
                     return new CommandResponseHandler(new Message().get("done"));
                 case "disable":
-                    if (Configuration.singleton()["welcomeNewbie",channel] == "false")
+                    if (Configuration.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
                         return new CommandResponseHandler(new Message().get("no-change"));
                     }
-                    Configuration.singleton()["welcomeNewbie", channel]= "false";
+
+                    Configuration.singleton()["welcomeNewbie", this.Channel] = "false";
                     return new CommandResponseHandler(new Message().get("done"));
                 case "global":
-                    Configuration.singleton( )[ "welcomeNewbie", channel ] = null;
+                    Configuration.singleton()["welcomeNewbie", this.Channel] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "add":
                     if (args[1] == "@ignore")
@@ -92,8 +105,10 @@ namespace helpmebot6.Commands
                     {
                         crh.respond(item);
                     }
+
                     return crh;
             }
+
             return new CommandResponseHandler();
         }
     }

@@ -30,24 +30,23 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if (args.Length > 2)
+            if (this.Arguments.Length > 2)
             {
                 // 2 or more args
-                return WatcherController.instance().setDelay(args[0], int.Parse(args[2]));
+                return WatcherController.instance().setDelay(this.Arguments[0], int.Parse(this.Arguments[2]));
             }
-            if (args.Length == 2)
+
+            if (this.Arguments.Length == 2)
             {
-                int delay = WatcherController.instance().getDelay(args[0]);
-                string[] messageParams = {args[0], delay.ToString()};
+                int delay = WatcherController.instance().getDelay(this.Arguments[0]);
+                string[] messageParams = { this.Arguments[0], delay.ToString() };
                 string message = new Message().get("catWatcherCurrentDelay", messageParams);
                 return new CommandResponseHandler(message);
             }
+
             // TODO: fix
             return null;
         }

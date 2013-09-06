@@ -23,15 +23,10 @@ namespace helpmebot6.Commands
     /// <summary>
     /// The UDP log.
     /// </summary>
-    class Udplog : GenericCommand
+    internal class Udplog : GenericCommand
     {
-        public Udplog(User source, string channel, string[] args)
-            : base(source, channel, args)
-        {
-        }
-
         /// <summary>
-        /// The Execute.
+        /// Initialises a new instance of the <see cref="Udplog"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -42,18 +37,26 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
+        public Udplog(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
+        /// The Execute.
+        /// </summary>
         /// <returns>
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if (args.Length >= 1)
+            if (this.Arguments.Length >= 1)
             {
                 int port;
-                if (int.TryParse(args[0], out port))
+                if (int.TryParse(this.Arguments[0], out port))
                 {
                     Logger.instance().copyToUdp = port;
-                    return new CommandResponseHandler("Set logger to udp://127.0.0.1:" + args[0]);
+                    return new CommandResponseHandler("Set logger to udp://127.0.0.1:" + this.Arguments[0]);
                 }
 
                 return new CommandResponseHandler("Not an int.");

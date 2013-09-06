@@ -26,7 +26,7 @@ namespace helpmebot6.Commands
 
     using helpmebot6.Model;
 
-    // returns information about a user
+    /* returns information about a user
     // what                 how                     info    message
 
     // contribs link        [calc]                  Done    Done
@@ -39,15 +39,30 @@ namespace helpmebot6.Commands
     // block status
     // user groups          Commands.Rights         Done    Done
     // editrate (edits/days) Commands.Age           Done    Done
-
-
+    */
+      
     /// <summary>
     ///   Returns the user information about a specified user
     /// </summary>
     internal class Userinfo : GenericCommand
     {
-        private readonly CommandResponseHandler _crh = new CommandResponseHandler();
+        /// <summary>
+        /// The response.
+        /// </summary>
+        private readonly CommandResponseHandler response = new CommandResponseHandler();
 
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Userinfo"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Userinfo(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -56,14 +71,12 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>The <see cref="CommandResponseHandler"/>.</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            bool useLongInfo =
-                bool.Parse(Configuration.singleton()["useLongUserInfo",channel]);
+            var args = this.Arguments;
+
+            bool useLongInfo = bool.Parse(Configuration.singleton()["useLongUserInfo", this.Channel]);
 
             if (args.Length > 0)
             {
@@ -72,6 +85,7 @@ namespace helpmebot6.Commands
                     useLongInfo = true;
                     GlobalFunctions.popFromFront(ref args);
                 }
+
                 if (args[0].ToLower() == "@short")
                 {
                     useLongInfo = false;
@@ -83,39 +97,38 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join(" ", args);
 
-                UserInformation uInfo = new UserInformation();
+                UserInformation userInformation = new UserInformation
+                                            {
+                                                EditCount = Editcount.GetEditCount(userName, this.Channel)
+                                            };
 
-                uInfo.editCount = Editcount.GetEditCount(userName, channel);
-
-                if (uInfo.editCount == -1)
+                if (userInformation.EditCount == -1)
                 {
-                    string[] mparams = {userName};
-                    this._crh.respond(new Message().get("noSuchUser", mparams));
-                    return this._crh;
+                    string[] mparams = { userName };
+                    this.response.respond(new Message().get("noSuchUser", mparams));
+                    return this.response;
                 }
 
-                retrieveUserInformation(userName, ref uInfo, channel);
-
-
-                //##################################################
-
+                RetrieveUserInformation(userName, ref userInformation, this.Channel);
 
                 if (useLongInfo)
                 {
-                    sendLongUserInfo(uInfo);
+                    this.SendLongUserInfo(userInformation);
                 }
                 else
                 {
-                    sendShortUserInfo(uInfo);
+                    this.SendShortUserInfo(userInformation);
                 }
             }
             else
             {
-                string[] messageParameters = {"userinfo", "1", args.Length.ToString()};
-                Helpmebot6.irc.ircNotice(source.nickname,
-                                         new Message().get("notEnoughParameters", messageParameters));
+                string[] messageParameters = { "userinfo", "1", args.Length.ToString() };
+                Helpmebot6.irc.ircNotice(
+                    this.Source.nickname,
+                    new Message().get("notEnoughParameters", messageParameters));
             }
-            return this._crh;
+
+            return this.response;
         }
 
         /// <summary>
@@ -123,15 +136,17 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        private static string getUserPageUrl(string userName, string channel)
+        /// <returns>the user page url</returns>
+        /// <remarks>TODO: refactor me!</remarks>
+        private static string GetUserPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
+
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -139,14 +154,15 @@ namespace helpmebot6.Commands
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
             string api = DAL.singleton().executeScalarSelect(q);
 
-
             // api-> get mainpage name (Mediawiki:mainpage)
-            const string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiQuery));
+            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
+            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
             do
             {
                 creader.Read();
-            } while (creader.Name != "rev");
+            } 
+            while (creader.Name != "rev");
+            
             string mainpagename = creader.ReadElementContentAsString();
 
             mainpagename = mainpagename.Replace(" ", "_");
@@ -158,7 +174,6 @@ namespace helpmebot6.Commands
             string mainpageurl = DAL.singleton().executeScalarSelect(q);
 
             // replace mainpage in mainpage url with user:<username>
-
             userName = userName.Replace(" ", "_");
 
             return mainpageurl.Replace(mainpagename, "User:" + userName);
@@ -169,15 +184,17 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        private static string getUserTalkPageUrl(string userName, string channel)
+        /// <returns>the user talk page url</returns>
+        /// <remarks>TODO: refactor me!</remarks>
+        private static string GetUserTalkPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
+
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -186,12 +203,14 @@ namespace helpmebot6.Commands
             string api = DAL.singleton().executeScalarSelect(q);
 
             // api-> get mainpage name (Mediawiki:mainpage)
-            const string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiQuery));
+            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
+            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
             do
             {
                 creader.Read();
-            } while (creader.Name != "rev");
+            } 
+            while (creader.Name != "rev");
+            
             string mainpagename = creader.ReadElementContentAsString();
 
             mainpagename = mainpagename.Replace(" ", "_");
@@ -203,7 +222,6 @@ namespace helpmebot6.Commands
             string mainpageurl = DAL.singleton().executeScalarSelect(q);
 
             // replace mainpage in mainpage url with user:<username>
-
             userName = userName.Replace(" ", "_");
 
             return mainpageurl.Replace(mainpagename, "User_talk:" + userName);
@@ -214,15 +232,17 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        private static string getUserContributionsUrl(string userName, string channel)
+        /// <returns>the contributions url</returns>
+        /// <remarks>TODO: refactor me!</remarks>
+        private static string GetUserContributionsUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
+
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -231,12 +251,14 @@ namespace helpmebot6.Commands
             string api = DAL.singleton().executeScalarSelect(q);
 
             // api-> get mainpage name (Mediawiki:mainpage)
-            const string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiQuery));
+            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
+            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
             do
             {
                 creader.Read();
-            } while (creader.Name != "rev");
+            } 
+            while (creader.Name != "rev");
+            
             string mainpagename = creader.ReadElementContentAsString();
 
             mainpagename = mainpagename.Replace(" ", "_");
@@ -248,7 +270,6 @@ namespace helpmebot6.Commands
             string mainpageurl = DAL.singleton().executeScalarSelect(q);
 
             // replace mainpage in mainpage url with user:<username>
-
             userName = userName.Replace(" ", "_");
 
             return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
@@ -259,15 +280,17 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        private static string getBlockLogUrl(string userName, string channel)
+        /// <returns>block log url</returns>
+        /// <remarks>TODO: refactor me!</remarks>
+        private static string GetBlockLogUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
+
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
             DAL.Select q = new DAL.Select("site_api");
@@ -276,12 +299,14 @@ namespace helpmebot6.Commands
             string api = DAL.singleton().executeScalarSelect(q);
 
             // api-> get mainpage name (Mediawiki:mainpage)
-            const string apiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiQuery));
+            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
+            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
             do
             {
                 creader.Read();
-            } while (creader.Name != "rev");
+            } 
+            while (creader.Name != "rev");
+            
             string mainpagename = creader.ReadElementContentAsString();
 
             mainpagename = mainpagename.Replace(" ", "_");
@@ -293,55 +318,49 @@ namespace helpmebot6.Commands
             string mainpageurl = DAL.singleton().executeScalarSelect(q);
 
             // replace mainpage in mainpage url with user:<username>
-
             userName = userName.Replace(" ", "_");
 
             return mainpageurl.Replace(mainpagename, "Special:Log?type=block&page=User:" + userName);
         }
 
-        //TODO: tidy up! why return a value when it's passed by ref anyway?
-// ReSharper disable UnusedMethodReturnValue.Local
+        // TODO: tidy up! why return a value when it's passed by ref anyway?
+
         /// <summary>
         /// Retrieves the user information.
         /// </summary>
         /// <param name="userName">Name of the user.</param>
         /// <param name="initial">The initial.</param>
         /// <param name="channel">The channel.</param>
-        /// <returns></returns>
-        private static UserInformation retrieveUserInformation(string userName, ref UserInformation initial, string channel)
+        /// <returns>the user info</returns>
+// ReSharper disable UnusedMethodReturnValue.Local
+        private static UserInformation RetrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
             try
             {
-                initial.userName = userName;
+                initial.UserName = userName;
 
-                if (initial.editCount == 0)
+                if (initial.EditCount == 0)
                 {
-                    initial.editCount = Editcount.GetEditCount(userName, channel);
+                    initial.EditCount = Editcount.GetEditCount(userName, channel);
                 }
 
-                initial.userGroups = Rights.GetRights(userName, channel);
+                initial.UserGroups = Rights.GetRights(userName, channel);
 
-                initial.registrationDate = Registration.GetRegistrationDate(userName, channel);
+                initial.RegistrationDate = Registration.GetRegistrationDate(userName, channel);
 
-                initial.userPage = getUserPageUrl(userName, channel);
-                initial.talkPage = getUserTalkPageUrl(userName, channel);
-                initial.userContribs = getUserContributionsUrl(userName, channel);
-                initial.userBlockLog = getBlockLogUrl(userName, channel);
+                initial.UserPage = GetUserPageUrl(userName, channel);
+                initial.TalkPage = GetUserTalkPageUrl(userName, channel);
+                initial.UserContributions = GetUserContributionsUrl(userName, channel);
+                initial.UserBlockLog = GetBlockLogUrl(userName, channel);
 
-                initial.userAge = Age.GetWikipedianAge(userName, channel);
+                initial.UserAge = Age.GetWikipedianAge(userName, channel);
 
-                initial.editRate = initial.editCount / initial.userAge.TotalDays;
+                initial.EditRate = initial.EditCount / initial.UserAge.TotalDays;
 
                 BlockInformation bi = Blockinfo.GetBlockInformation(userName, channel);
-                if (bi.Id == null)
-                {
-                    initial.blockInformation = string.Empty;
-                }
-                else
-                {
-                    initial.blockInformation = bi.Id.ToString();
-                }
+
+                initial.BlockInformation = bi.Id ?? string.Empty;
 
                 return initial;
             }
@@ -356,92 +375,133 @@ namespace helpmebot6.Commands
         /// Sends the short user info.
         /// </summary>
         /// <param name="userInformation">The user information.</param>
-        private void sendShortUserInfo(UserInformation userInformation)
+        private void SendShortUserInfo(UserInformation userInformation)
         {
-            const string regex = "^http://en.wikipedia.org/wiki/";
-            const string shortUrlAlias = "http://enwp.org/";
-            Regex r = new Regex(regex);
+            const string Regex = "^http://en.wikipedia.org/wiki/";
+            const string ShortUrlAlias = "http://enwp.org/";
+            Regex r = new Regex(Regex);
 
-            userInformation.userPage = r.Replace(userInformation.userPage, shortUrlAlias);
-            userInformation.talkPage = r.Replace(userInformation.talkPage, shortUrlAlias);
-            userInformation.userBlockLog = r.Replace(userInformation.userBlockLog, shortUrlAlias);
-            userInformation.userContribs = r.Replace(userInformation.userContribs, shortUrlAlias);
+            userInformation.UserPage = r.Replace(userInformation.UserPage, ShortUrlAlias);
+            userInformation.TalkPage = r.Replace(userInformation.TalkPage, ShortUrlAlias);
+            userInformation.UserBlockLog = r.Replace(userInformation.UserBlockLog, ShortUrlAlias);
+            userInformation.UserContributions = r.Replace(userInformation.UserContributions, ShortUrlAlias);
 
-            string[] messageParameters = {
-                                             userInformation.userName,
-                                             userInformation.userPage,
-                                             userInformation.talkPage,
-                                             userInformation.userContribs,
-                                             userInformation.userBlockLog,
-                                             userInformation.userGroups,
-                                             userInformation.userAge.ToString(),
-                                             userInformation.registrationDate.ToString(),
-                                             userInformation.editRate.ToString(),
-                                             userInformation.editCount.ToString(),
-                                             userInformation.blockInformation == "" ? "" : "BLOCKED"
-                                         };
+            string[] messageParameters =
+                {
+                    userInformation.UserName, userInformation.UserPage, userInformation.TalkPage,
+                    userInformation.UserContributions, userInformation.UserBlockLog,
+                    userInformation.UserGroups, userInformation.UserAge.ToString(),
+                    userInformation.RegistrationDate.ToString(),
+                    userInformation.EditRate.ToString(), userInformation.EditCount.ToString(),
+                    userInformation.BlockInformation == string.Empty ? string.Empty : "BLOCKED"
+                };
 
             string message = new Message().get("cmdUserInfoShort", messageParameters);
 
-            this._crh.respond(message);
+            this.response.respond(message);
         }
 
         /// <summary>
         /// Sends the long user info.
         /// </summary>
         /// <param name="userInformation">The user information.</param>
-        private void sendLongUserInfo(UserInformation userInformation)
+        private void SendLongUserInfo(UserInformation userInformation)
         {
-            this._crh.respond(userInformation.userPage);
-            this._crh.respond(userInformation.talkPage);
-            this._crh.respond(userInformation.userContribs);
-            this._crh.respond(userInformation.userBlockLog);
-            this._crh.respond(userInformation.blockInformation);
+            this.response.respond(userInformation.UserPage);
+            this.response.respond(userInformation.TalkPage);
+            this.response.respond(userInformation.UserContributions);
+            this.response.respond(userInformation.UserBlockLog);
+            this.response.respond(userInformation.BlockInformation);
             string message;
-            if (userInformation.userGroups != "")
+            if (userInformation.UserGroups != string.Empty)
             {
-                string[] messageParameters = {userInformation.userName, userInformation.userGroups};
+                string[] messageParameters = { userInformation.UserName, userInformation.UserGroups };
                 message = new Message().get("cmdRightsList", messageParameters);
             }
             else
             {
-                string[] messageParameters = {userInformation.userName};
+                string[] messageParameters = { userInformation.UserName };
                 message = new Message().get("cmdRightsNone", messageParameters);
             }
-            this._crh.respond(message);
 
-            string[] messageParameters2 = {userInformation.editCount.ToString(), userInformation.userName};
+            this.response.respond(message);
+
+            string[] messageParameters2 = { userInformation.EditCount.ToString(), userInformation.UserName };
             message = new Message().get("editCount", messageParameters2);
-            this._crh.respond(message);
+            this.response.respond(message);
 
-            string[] messageParameters3 = {
-                                              userInformation.userName,
-                                              userInformation.registrationDate.ToString("hh:mm:ss t"),
-                                              userInformation.registrationDate.ToString("d MMMM yyyy")
-                                          };
+            string[] messageParameters3 =
+                {
+                    userInformation.UserName,
+                    userInformation.RegistrationDate.ToString("hh:mm:ss t"),
+                    userInformation.RegistrationDate.ToString("d MMMM yyyy")
+                };
             message = new Message().get("registrationDate", messageParameters3);
-            this._crh.respond(message);
-            string[] messageParameters4 = {userInformation.userName, userInformation.editRate.ToString()};
+            this.response.respond(message);
+            string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString() };
             message = new Message().get("editRate", messageParameters4);
-            this._crh.respond(message);
+            this.response.respond(message);
         }
 
         /// <summary>
-        /// Structure to hold the userinfo retrieved.
+        /// Structure to hold the user info retrieved.
         /// </summary>
         private struct UserInformation
         {
-            public string userName;
-            public int editCount;
-            public string userGroups;
-            public DateTime registrationDate;
-            public double editRate;
-            public string userPage;
-            public string talkPage;
-            public string userContribs;
-            public string userBlockLog;
-            public TimeSpan userAge;
-            public string blockInformation;
+            /// <summary>
+            /// The user name.
+            /// </summary>
+            public string UserName;
+
+            /// <summary>
+            /// The edit count.
+            /// </summary>
+            public int EditCount;
+
+            /// <summary>
+            /// The user groups.
+            /// </summary>
+            public string UserGroups;
+
+            /// <summary>
+            /// The registration date.
+            /// </summary>
+            public DateTime RegistrationDate;
+
+            /// <summary>
+            /// The edit rate.
+            /// </summary>
+            public double EditRate;
+
+            /// <summary>
+            /// The user page.
+            /// </summary>
+            public string UserPage;
+
+            /// <summary>
+            /// The talk page.
+            /// </summary>
+            public string TalkPage;
+
+            /// <summary>
+            /// The user contributions.
+            /// </summary>
+            public string UserContributions;
+
+            /// <summary>
+            /// The user block log.
+            /// </summary>
+            public string UserBlockLog;
+
+            /// <summary>
+            /// The user age.
+            /// </summary>
+            public TimeSpan UserAge;
+
+            /// <summary>
+            /// The block information.
+            /// </summary>
+            public string BlockInformation;
         }
     }
 }

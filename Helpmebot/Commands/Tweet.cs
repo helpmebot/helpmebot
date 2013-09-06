@@ -18,7 +18,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace helpmebot6.Commands
 {
     /// <summary>
@@ -26,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Tweet : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Tweet"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Tweet(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -34,24 +45,23 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string status = string.Join(" ", args);
+            string status = string.Join(" ", this.Arguments);
 
             try
             {
-                return new Twitter().updateStatus(status) == null ? new CommandResponseHandler(new Message().get("error")) : new CommandResponseHandler(new Message().get("done"));
+                return new Twitter().updateStatus(status) == null
+                           ? new CommandResponseHandler(new Message().get("error"))
+                           : new CommandResponseHandler(new Message().get("done"));
             }
-           catch ( System.Net.WebException ex)
-           {
-               GlobalFunctions.errorLog(ex);
+            catch (System.Net.WebException ex)
+            {
+                GlobalFunctions.errorLog(ex);
 
-               return new CommandResponseHandler(ex.Message);
-           }
+                return new CommandResponseHandler(ex.Message);
+            }
         }
     }
 }

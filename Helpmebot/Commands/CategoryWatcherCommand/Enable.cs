@@ -30,15 +30,12 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            if (WatcherController.instance().addWatcherToChannel(args[0], channel))
-                return new CommandResponseHandler(new Message().get("done"));
-            return new CommandResponseHandler(new Message().get("no-change"));
+            return WatcherController.instance().addWatcherToChannel(this.Arguments[0], this.Channel)
+                       ? new CommandResponseHandler(new Message().get("done"))
+                       : new CommandResponseHandler(new Message().get("no-change"));
         }
     }
 }

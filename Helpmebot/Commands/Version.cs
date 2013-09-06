@@ -27,6 +27,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Version : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Version"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Version(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -36,36 +48,40 @@ namespace helpmebot6.Commands
         /// Gets the version.
         /// </summary>
         /// <value>The version.</value>
-        public string version
+        public string SoftwareVersion
         {
             get { return "6.1"; }
         }
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the version string.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the version</returns>
+        public string GetVersionString()
         {
-            if (GlobalFunctions.isInArray("@svn", args) != -1)
-                return new CommandResponseHandler(getVersionString());
-            return new CommandResponseHandler(this.version);
+            Process process = Process.Start("svnversion");
+
+            if (process != null)
+            {
+                string rev = process.StandardOutput.ReadLine();
+
+                string versionString = this.SoftwareVersion + "-r" + rev;
+
+                return versionString;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
-        /// Gets the version string.
+        /// Actual command logic
         /// </summary>
-        /// <returns></returns>
-        public string getVersionString()
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string rev = Process.Start("svnversion").StandardOutput.ReadLine();
-
-            string versionString = version + "-r" + rev;
-
-            return versionString;
+            return GlobalFunctions.isInArray("@svn", this.Arguments) != -1
+                       ? new CommandResponseHandler(this.GetVersionString())
+                       : new CommandResponseHandler(this.SoftwareVersion);
         }
     }
 }

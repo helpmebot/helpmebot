@@ -25,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Silence : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Silence"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Silence(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -33,14 +45,11 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             bool global = false;
-
+            var args = this.Arguments;
 
             if (args.Length > 0)
             {
@@ -51,7 +60,9 @@ namespace helpmebot6.Commands
                 }
             }
 
-            bool oldValue = bool.Parse( !global ? Configuration.singleton()["silence",channel] : Configuration.singleton()["silence"] );
+            bool oldValue =
+                bool.Parse(
+                    !global ? Configuration.singleton()["silence", this.Channel] : Configuration.singleton()["silence"]);
 
             if (args.Length > 0)
             {
@@ -68,30 +79,41 @@ namespace helpmebot6.Commands
                         newValue = "global";
                         break;
                 }
+
                 if (newValue == oldValue.ToString().ToLower())
                 {
-                    return new CommandResponseHandler(new Message().get("no-change"),
-                                                      CommandResponseDestination.PrivateMessage);
+                    return new CommandResponseHandler(
+                        new Message().get("no-change"),
+                        CommandResponseDestination.PrivateMessage);
                 }
+
                 if (newValue == "global")
                 {
-                    Configuration.singleton( )[ "silence", channel ] = null;
-                    return new CommandResponseHandler(new Message().get("defaultConfig"),
-                                                      CommandResponseDestination.PrivateMessage);
+                    Configuration.singleton()["silence", this.Channel] = null;
+                    return new CommandResponseHandler(
+                        new Message().get("defaultConfig"),
+                        CommandResponseDestination.PrivateMessage);
                 }
+
                 if (!global)
-                    Configuration.singleton()["silence", channel]= newValue;
+                {
+                    Configuration.singleton()["silence", this.Channel] = newValue;
+                }
                 else
                 {
-                    if (source.accessLevel >= User.UserRights.Superuser)
-                        Configuration.singleton( )[ "silence" ] = newValue;
+                    if (this.Source.accessLevel >= User.UserRights.Superuser)
+                    {
+                        Configuration.singleton()["silence"] = newValue;
+                    }
                 }
-                return new CommandResponseHandler(new Message().get("done"),
-                                                  CommandResponseDestination.PrivateMessage);
+
+                return new CommandResponseHandler(new Message().get("done"), CommandResponseDestination.PrivateMessage);
             }
-            string[] mP = {"silence", 1.ToString(), args.Length.ToString()};
-            return new CommandResponseHandler(new Message().get("notEnoughParameters", mP),
-                                              CommandResponseDestination.PrivateMessage);
+
+            string[] mP = { "silence", 1.ToString(), args.Length.ToString() };
+            return new CommandResponseHandler(
+                new Message().get("notEnoughParameters", mP),
+                CommandResponseDestination.PrivateMessage);
         }
     }
 }

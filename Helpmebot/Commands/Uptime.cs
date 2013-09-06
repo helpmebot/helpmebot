@@ -18,7 +18,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace helpmebot6.Commands
 {
     /// <summary>
@@ -26,6 +25,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Uptime : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Uptime"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Uptime(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -34,17 +45,15 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>The <see cref="CommandResponseHandler"/>.</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] messageParams = {
-                                         Helpmebot6.StartupTime.DayOfWeek.ToString(),
-                                         Helpmebot6.StartupTime.ToLongDateString(),
-                                         Helpmebot6.StartupTime.ToLongTimeString()
-                                     };
+            string[] messageParams =
+                {
+                    Helpmebot6.StartupTime.DayOfWeek.ToString(),
+                    Helpmebot6.StartupTime.ToLongDateString(),
+                    Helpmebot6.StartupTime.ToLongTimeString()
+                };
             string message = new Message().get("cmdUptimeUpSince", messageParams);
             return new CommandResponseHandler(message);
         }

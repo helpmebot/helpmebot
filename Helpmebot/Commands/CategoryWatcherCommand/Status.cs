@@ -18,32 +18,29 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using helpmebot6.Monitoring;
 
     /// <summary>
-    /// Category watcher status subcomand
+    /// Category watcher status subcommand
     /// </summary>
     internal class Status : GenericCommand
     {
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] messageParams = {
-                                         args[0],
-                                         WatcherController.instance().isWatcherInChannel(channel, args[0])
-                                             ? new Message().get("enabled")
-                                             : new Message().get("disabled"),
-                                         WatcherController.instance().getDelay(args[0]).ToString()
-                                     };
+            string[] messageParams =
+                {
+                    this.Arguments[0],
+                    WatcherController.instance().isWatcherInChannel(this.Channel, this.Arguments[0])
+                        ? new Message().get("enabled")
+                        : new Message().get("disabled"),
+                    WatcherController.instance().getDelay(this.Arguments[0]).ToString()
+                };
 
             return new CommandResponseHandler(new Message().get("keywordStatus", messageParams));
         }
