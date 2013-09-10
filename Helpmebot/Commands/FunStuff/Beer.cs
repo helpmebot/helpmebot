@@ -20,22 +20,39 @@
 
 namespace helpmebot6.Commands
 {
-    class Beer : FunStuff.FunCommand
-    {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {
-            string name;
-            if( args.Length == 0 ) {
-                name = source.nickname;
-            }
-            else
-            {
-                name = string.Join(" ", args);
-            }
-            string[] messageparams = { name };
-            string message = new Message().get("cmdBeer", messageparams);
+    using helpmebot.Commands.FunStuff;
 
-            return new CommandResponseHandler(message);
+    /// <summary>
+    /// The beer.
+    /// </summary>
+    internal class Beer : TargetedFunCommand
+    {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Beer"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Beer(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdBeer";
+            }
         }
     }
 }

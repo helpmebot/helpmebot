@@ -20,13 +20,15 @@
 
 namespace helpmebot6.Commands
 {
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
     /// The soda.
     /// </summary>
-    internal class Soda : FunStuff.FunCommand
+    internal class Soda : TargetedFunCommand
     {
         /// <summary>
-        /// The execute.
+        /// Initialises a new instance of the <see cref="Soda"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -37,17 +39,20 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
-        /// </returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        public Soda(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = args.Length == 0 ? source.nickname : string.Join(" ", args);
+        }
 
-            string[] messageparams = { name };
-            string message = new Message().get("cmdSoda", messageparams);
-
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdSoda";
+            }
         }
     }
 }

@@ -20,11 +20,39 @@
 
 namespace helpmebot6.Commands
 {
-    class Electrocute : Trout
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The electrocute.
+    /// </summary>
+    internal class Electrocute : ProtectedTargetedFunCommand
     {
-        public Electrocute()
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Electrocute"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Electrocute(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            this.messageName = "CmdElectrocute";
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "CmdElectrocute";
+            }
         }
     }
 }

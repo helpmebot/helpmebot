@@ -20,16 +20,36 @@
 
 namespace helpmebot6.Commands
 {
-    class Pie : FunStuff.FunCommand
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The pie.
+    /// </summary>
+    internal class Pie : ProtectedTargetedFunCommand
     {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Pie"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Pie(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = string.Join(" ", args);
+        }
 
-            string[] messageparams = { name };
-            string message = new Message().get("CmdPie", messageparams);
-
-            return new CommandResponseHandler(message);
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "CmdPie";
+            }
         }
     }
 }

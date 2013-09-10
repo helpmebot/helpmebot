@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Pillow.cs" company="Helpmebot Development Team">
+// <copyright file="ProtectedTargetedFunCommand.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,21 +14,30 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Pillow type.
+//   The protected targeted command.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands
+namespace helpmebot.Commands.FunStuff
 {
-    using helpmebot.Commands.FunStuff;
+    using helpmebot6;
 
     /// <summary>
-    /// The pillow.
+    /// The protected targeted command.
     /// </summary>
-    internal class Pillow : ProtectedTargetedFunCommand
+    public abstract class ProtectedTargetedFunCommand : TargetedFunCommand
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Pillow"/> class.
+        /// The forbidden targets.
+        /// </summary>
+        private readonly string[] forbiddenTargets =
+            {
+                "itself", "himself", "herself", "themself",
+                Helpmebot6.irc.ircNickname.ToLower()
+            };
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="ProtectedTargetedFunCommand"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -39,16 +48,24 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Pillow(User source, string channel, string[] args)
+        protected ProtectedTargetedFunCommand(User source, string channel, string[] args)
             : base(source, channel, args)
         {
         }
 
-        protected override string TargetMessage
+        /// <summary>
+        /// Gets the command target.
+        /// </summary>
+        protected override string CommandTarget
         {
             get
             {
-                return "CmdPillow";
+                if (GlobalFunctions.isInArray(base.CommandTarget, this.forbiddenTargets) != -1)
+                {
+                    return this.Source.nickname;
+                }
+
+                return base.CommandTarget;
             }
         }
     }

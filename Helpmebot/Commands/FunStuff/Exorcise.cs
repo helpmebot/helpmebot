@@ -20,11 +20,37 @@
 
 namespace helpmebot6.Commands
 {
-    class Exorcise : FunStuff.FunCommand
+    /// <summary>
+    /// The exorcise.
+    /// </summary>
+    internal class Exorcise : FunStuff.FunCommand
     {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Exorcise"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Exorcise(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = string.Join(" ", args);
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            string name = string.Join(" ", this.Arguments);
 
             string[] messageparams = { name };
             string message = new Message().get("CmdExorcise", messageparams);

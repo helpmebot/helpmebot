@@ -20,17 +20,39 @@
 
 namespace helpmebot6.Commands
 {
-    class Pat : FunStuff.FunCommand
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The pat.
+    /// </summary>
+    internal class Pat : TargetedFunCommand
     {
-            
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
-        {   
-            string name = string.Join(" ", args);
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Pat"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Pat(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
 
-            string[] messageparams = {name};
-            string message = new Message().get("cmdPat", messageparams);
-
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdPat";
+            }
         }
     }
 }

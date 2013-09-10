@@ -20,13 +20,15 @@
 
 namespace helpmebot6.Commands
 {
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
     /// The lick.
     /// </summary>
-    internal class Lick : Trout
+    internal class Lick : TargetedFunCommand
     {
         /// <summary>
-        /// The execute command.
+        /// Initialises a new instance of the <see cref="Lick"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -37,17 +39,31 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
-        /// </returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        public Lick(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = args.Length == 0 ? new Message().get("cmdLickSelf") : string.Join(" ", args);
+        }
 
-            string[] messageparams = { name };
-            string message = new Message().get("cmdLick", messageparams);
+        /// <summary>
+        /// Gets the command target.
+        /// </summary>
+        protected override string CommandTarget
+        {
+            get
+            {
+                return this.Arguments.Length == 0 ? new Message().get("cmdLickSelf") : string.Join(" ", this.Arguments);
+            }
+        }
 
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdLick";
+            }
         }
     }
 }

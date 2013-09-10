@@ -20,26 +20,39 @@
 
 namespace helpmebot6.Commands
 {
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
     /// Gives a user a drink.
     /// </summary>
-    internal class Drink : FunStuff.FunCommand
+    internal class Drink : TargetedFunCommand
     {
         /// <summary>
-        /// Actual command logic
+        /// Initialises a new instance of the <see cref="Drink"/> class.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Drink(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = string.Join(" ", args);
+        }
 
-            string[] messageparams = {name};
-            string message =  new Message().get("cmdDrink", messageparams);
-
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdDrink";
+            }
         }
     }
 }

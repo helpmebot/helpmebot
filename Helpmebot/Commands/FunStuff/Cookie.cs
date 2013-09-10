@@ -20,25 +20,39 @@
 
 namespace helpmebot6.Commands
 {
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
     /// Gives a user a cookie.
     /// </summary>
-    internal class Cookie : FunStuff.FunCommand
+    internal class Cookie : TargetedFunCommand
     {
         /// <summary>
-        /// Actual command logic
+        /// Initialises a new instance of the <see cref="Cookie"/> class.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Cookie(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = args.Length == 0 ? source.nickname : string.Join(" ", args);
+        }
 
-            string[] messageparams = { name };
-
-            return new CommandResponseHandler(new Message().get("cmdCookie", messageparams));
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdCookie";
+            }
         }
     }
 }

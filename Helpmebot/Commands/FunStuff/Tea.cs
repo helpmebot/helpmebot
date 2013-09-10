@@ -20,16 +20,39 @@
 
 namespace helpmebot6.Commands
 {
-    class Tea : FunStuff.FunCommand
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The tea.
+    /// </summary>
+    internal class Tea : TargetedFunCommand
     {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Tea"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Tea(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name = string.Join(" ", args);
+        }
 
-            string[] messageparams = { name };
-            string message = new Message().get("cmdTea", messageparams);
-
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "cmdTea";
+            }
         }
     }
 }

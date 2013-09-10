@@ -24,11 +24,17 @@ namespace helpmebot6.Commands
     /// Uncurl command to set the bot's hedgehog status to false.
     /// </summary>
     /// <remarks>This is a fun command, but because FunCommand checks hedgehog is false, that base class can't be used.</remarks>
-    class Uncurl : GenericCommand
+    internal class Uncurl : GenericCommand
     {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            Configuration.singleton()["hedgehog", channel] = "false";
+            Configuration.singleton()["hedgehog", this.Channel] = "false";
             return new CommandResponseHandler(new Message().get("Done"));
         }
     }

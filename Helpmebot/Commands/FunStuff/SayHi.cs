@@ -26,15 +26,31 @@ namespace helpmebot6.Commands
     internal class Sayhi : FunStuff.FunCommand
     {
         /// <summary>
-        /// Executes the specified to user.
+        /// Initialises a new instance of the <see cref="Sayhi"/> class.
         /// </summary>
-        /// <param name="toUser">To user.</param>
-        /// <param name="channel">The channel.</param>
-        /// <param name="args">The args.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User toUser, string channel, string[] args)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Sayhi(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string[] commandParams = {toUser.nickname};
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            string[] commandParams = { this.Source.nickname };
             return new CommandResponseHandler(new Message().get("cmdSayHi1", commandParams));
         }
     }

@@ -105,6 +105,8 @@
     <Compile Include="Commands\Age.cs" />
     <Compile Include="Commands\BlockInfo.cs" />
     <Compile Include="Commands\Date.cs" />
+    <Compile Include="Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
+    <Compile Include="Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Commands\Reg.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />

@@ -20,11 +20,38 @@
 
 namespace helpmebot6.Commands
 {
-    class Minnow : Trout
-    {
-        public Minnow()
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The minnow.
+    /// </summary>
+    internal class Minnow : ProtectedTargetedFunCommand
+    {        /// <summary>
+        /// Initialises a new instance of the <see cref="Minnow"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Minnow(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            this.messageName = "CmdMinnow";
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "CmdMinnow";
+            }
         }
     }
 }

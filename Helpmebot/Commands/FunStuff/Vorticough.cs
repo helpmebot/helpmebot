@@ -20,9 +20,37 @@
 
 namespace helpmebot6.Commands
 {
-    class Vorticough : FunStuff.FunCommand
-    {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+    using System.Diagnostics.CodeAnalysis;
+
+    /// <summary>
+    /// The vorticough.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
+    internal class Vorticough : FunStuff.FunCommand
+    {        /// <summary>
+        /// Initialises a new instance of the <see cref="Vorticough"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Vorticough(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             return new CommandResponseHandler(new Message().get("Vortigaunt"));
         }

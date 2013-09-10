@@ -20,11 +20,37 @@
 
 namespace helpmebot6.Commands
 {
+    /// <summary>
+    /// The curl.
+    /// </summary>
     class Curl : FunStuff.FunCommand
     {
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Curl"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Curl(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            Configuration.singleton()["hedgehog", channel] = "true";
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            Configuration.singleton()["hedgehog", this.Channel] = "true";
             return new CommandResponseHandler(new Message().get("HedgehogCurlup"));
         }
     }

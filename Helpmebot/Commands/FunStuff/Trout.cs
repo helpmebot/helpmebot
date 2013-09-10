@@ -14,44 +14,45 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Trouts a user
+//   Hits a user with a trout.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace helpmebot6.Commands
 {
-    /// <summary>
-    /// Trouts a user
-    /// </summary>
-    internal class Trout : FunStuff.FunCommand
-    {
-        protected readonly string[] forbiddenTargets = {
-                                            "itself", "himself", "herself", "themself", 
-                                            Helpmebot6.irc.ircNickname.ToLower()
-                                        };
+    using helpmebot.Commands.FunStuff;
 
-        protected string messageName = "CmdTrout";
+    /// <summary>
+    /// Hits a user with a trout.
+    /// </summary>
+    internal class Trout : ProtectedTargetedFunCommand
+    {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Trout"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Trout(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the target message.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override string TargetMessage
         {
-            string name = string.Join(" ", args);
-
-            if (GlobalFunctions.isInArray(name.ToLower(), forbiddenTargets) != -1)
+            get
             {
-                name = source.nickname;
+                return "CmdTrout";
             }
-
-            string[] messageparams = {name};
-            string message = new Message().get(messageName, messageparams);
-
-            return new CommandResponseHandler(message);
         }
     }
 }

@@ -20,11 +20,39 @@
 
 namespace helpmebot6.Commands
 {
-    class Stab : Trout
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The stab.
+    /// </summary>
+    internal class Stab : ProtectedTargetedFunCommand
     {
-        public Stab()
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Stab"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Stab(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            this.messageName = "CmdStab";
-        } 
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "CmdStab";
+            }
+        }
     }
 }

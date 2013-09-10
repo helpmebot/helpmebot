@@ -20,36 +20,39 @@
 
 namespace helpmebot6.Commands
 {
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
-    /// Cluebats a user.
+    /// hits a user with a clue bat
     /// </summary>
-    internal class Cluebat : Trout
+    internal class Cluebat : ProtectedTargetedFunCommand
     {
         /// <summary>
-        /// Actual command logic
+        /// Initialises a new instance of the <see cref="Cluebat"/> class.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Cluebat(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            string name;
-            if (args.Length > 0 && args[0] != string.Empty)
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
             {
-                name = args[0];
-                if (GlobalFunctions.isInArray(name.ToLower(), this.forbiddenTargets) != -1)
-                {
-                    name = source.nickname;
-                }
+                return "cmdCluebat";
             }
-            else
-            {
-                name = source.nickname;
-            }
-            
-            string[] messageparams = { name };
-            return new CommandResponseHandler(new Message().get("cmdCluebat", messageparams));
         }
     }
 }

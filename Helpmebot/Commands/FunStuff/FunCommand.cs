@@ -23,8 +23,25 @@ namespace helpmebot6.Commands.FunStuff
     /// <summary>
     /// The fun command.
     /// </summary>
-    internal abstract class FunCommand : GenericCommand
+    public abstract class FunCommand : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="FunCommand"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        protected FunCommand(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         /// <summary>
         /// The on access denied.
         /// </summary>

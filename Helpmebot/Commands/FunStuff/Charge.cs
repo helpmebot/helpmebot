@@ -20,13 +20,17 @@
 
 namespace helpmebot6.Commands
 {
+    using System;
+
+    using helpmebot.Commands.FunStuff;
+
     /// <summary>
     /// The charge.
     /// </summary>
-    internal class Charge : Trout
+    internal class Charge : ProtectedTargetedFunCommand
     {
         /// <summary>
-        /// The execute command.
+        /// Initialises a new instance of the <see cref="Charge"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -37,28 +41,36 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
+        public Charge(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        /// <exception cref="NotSupportedException">
+        /// This operation is not supported for this command
+        /// </exception>
+        protected override string TargetMessage
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
         /// <returns>
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override CommandResponseHandler ExecuteCommand()
         {
-            string name;
-            if (args.Length > 0 && args[0] != string.Empty)
-            {
-
-                name = args[0];
-                if (GlobalFunctions.isInArray(name.ToLower(), this.forbiddenTargets) != -1)
-                {
-                    name = source.nickname;
-                }
-
-                return new CommandResponseHandler(new Message().get("cmdChargeParam", name));
-            }
-            
-            name = source.nickname;
-
-            string[] messageparams = { name };
-            return new CommandResponseHandler(new Message().get("cmdCharge", messageparams));
+            return this.Arguments.Length > 0
+                       ? new CommandResponseHandler(new Message().get("cmdChargeParam", this.CommandTarget))
+                       : new CommandResponseHandler(new Message().get("cmdCharge", new[] { this.Source.nickname }));
         }
     }
 }

@@ -20,27 +20,50 @@
 
 namespace helpmebot6.Commands
 {
-    /// <summary>
-    /// Trouts a user
-    /// </summary>
-    internal class Friday : FunStuff.FunCommand
-    {
+    using helpmebot.Commands.FunStuff;
 
-        protected string messageName = "CmdTroutFriday";
+    /// <summary>
+    /// The friday.
+    /// </summary>
+    internal class Friday : TargetedFunCommand
+    {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Friday"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Friday(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the target message.
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected override string TargetMessage
         {
-            string[] messageparams = { source.nickname };
-            string message = new Message().get(messageName, messageparams);
+            get
+            {
+                return "CmdTroutFriday";
+            }
+        }
 
-            return new CommandResponseHandler(message);
+        /// <summary>
+        /// Gets the command target.
+        /// </summary>
+        protected override string CommandTarget
+        {
+            get
+            {
+                return this.Source.nickname;
+            }
         }
     }
 }

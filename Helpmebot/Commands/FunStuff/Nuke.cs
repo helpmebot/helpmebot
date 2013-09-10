@@ -20,11 +20,38 @@
 
 namespace helpmebot6.Commands
 {
-    class Nuke : Whale // nuke *is* a subclass of whale, right Deskana? ;)
-    {
-        public Nuke()
+    using helpmebot.Commands.FunStuff;
+
+    /// <summary>
+    /// The nuke.
+    /// </summary>
+    internal class Nuke : ProtectedTargetedFunCommand
+    {        /// <summary>
+        /// Initialises a new instance of the <see cref="Nuke"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Nuke(User source, string channel, string[] args)
+            : base(source, channel, args)
         {
-            this.messageName = "CmdNuke"; 
+        }
+
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
+        protected override string TargetMessage
+        {
+            get
+            {
+                return "CmdNuke";
+            }
         }
     }
 }
