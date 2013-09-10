@@ -27,7 +27,7 @@ namespace helpmebot6.Commands
     using HttpRequest = helpmebot6.HttpRequest;
 
     /// <summary>
-    /// The stats of acc.
+    /// The stats of the account creation interface.
     /// </summary>
     internal class Accstats : GenericCommand
     {
