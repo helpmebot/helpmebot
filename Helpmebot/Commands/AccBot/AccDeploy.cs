@@ -31,6 +31,23 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Accdeploy : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Accdeploy"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Accdeploy(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         #region Overrides of GenericCommand
 
         /// <summary>

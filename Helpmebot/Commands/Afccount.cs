@@ -50,7 +50,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return this.getResultOfCommand("Pending AfC submissions", this.Channel);
+            return this.GetResultOfCommand("Pending AfC submissions");
         }
     }
 }

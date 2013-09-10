@@ -31,6 +31,23 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Accstats : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Accstats"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Accstats(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         #region Overrides of GenericCommand
 
         /// <summary>

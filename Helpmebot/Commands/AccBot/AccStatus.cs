@@ -28,6 +28,23 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Accstatus : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Accstatus"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Accstatus(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
         #region Overrides of GenericCommand
 
         /// <summary>

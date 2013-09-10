@@ -28,6 +28,23 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
     internal class Enable : GenericCommand
     {
         /// <summary>
+        /// Initialises a new instance of the <see cref="Enable"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public Enable(User source, string channel, string[] args)
+            : base(source, channel, args)
+        {
+        }
+
+        /// <summary>
         /// Actual command logic
         /// </summary>
         /// <returns>the response</returns>

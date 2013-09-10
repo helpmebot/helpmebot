@@ -28,6 +28,18 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Categorysize : GenericCommand
     {
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Categorysize"/> class.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public Categorysize(User source, string channel, string[] args)
             : base(source, channel, args)
         {
@@ -36,51 +48,21 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Actual command logic
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns></returns>
-        protected override CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        /// <returns>the response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
         {
             string categoryName;
-            if (args.Length > 0 && args[0] != "")
+            if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
-                categoryName = string.Join(" ", args);
+                categoryName = string.Join(" ", this.Arguments);
             }
             else
             {
+                // TODO: really?
                 categoryName = "Pending AfC submissions";
             }
 
-            return getResultOfCommand(categoryName, channel);
-        }
-
-        // TODO: rename me!
-        protected CommandResponseHandler getResultOfCommand(string categoryName, string channel)
-        {
-            int categorySize = getCategorySize(categoryName, channel);
-
-            switch (categorySize)
-            {
-                case -2:
-                    {
-                        string[] messageParams = { categoryName };
-                        string message = new Message().get("categoryMissing", messageParams);
-                        return new CommandResponseHandler(message);
-                    }
-                case -1:
-                    {
-                        string[] messageParams = {categoryName};
-                        string message = new Message().get("categoryEmpty", messageParams);
-                        return new CommandResponseHandler(message);
-                    }
-                default:
-                    {
-                        string[] messageParameters = {categorySize.ToString(), categoryName};
-                        string message = new Message().get("categorySize", messageParameters);
-                        return new CommandResponseHandler(message);
-                    }
-            }
+            return this.GetResultOfCommand(categoryName);
         }
 
         /// <summary>
@@ -88,15 +70,15 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="categoryName">The category to retrieve the article count for.</param>
         /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
-        /// <returns></returns>
-        public int getCategorySize(string categoryName, string channel)
+        /// <returns>the size of the category</returns>
+        public int GetCategorySize(string categoryName, string channel)
         {
             if (categoryName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
 
-            string baseWiki = Configuration.singleton()["baseWiki",channel];
+            string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -110,18 +92,63 @@ namespace helpmebot6.Commands
             do
             {
                 creader.Read();
-            } while (creader.Name != "page");
-            if (creader.GetAttribute("missing") == "")
+            }
+            while (creader.Name != "page");
+
+            if (creader.GetAttribute("missing") == string.Empty)
             {
                 return -2;
             }
+
             creader.Read();
             string categorySize = creader.GetAttribute("size");
             if (categorySize != null)
             {
                 return int.Parse(categorySize);
             }
+
             return -1;
+        }
+
+        /// <summary>
+        /// The get result of command.
+        /// </summary>
+        /// <param name="categoryName">
+        /// The category name.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>.
+        /// </returns>
+        /// <remarks>
+        /// TODO: rename me!
+        /// </remarks>
+        protected CommandResponseHandler GetResultOfCommand(string categoryName)
+        {
+            int categorySize = this.GetCategorySize(categoryName, this.Channel);
+
+            switch (categorySize)
+            {
+                case -2:
+                    {
+                        string[] messageParams = { categoryName };
+                        string message = new Message().get("categoryMissing", messageParams);
+                        return new CommandResponseHandler(message);
+                    }
+
+                case -1:
+                    {
+                        string[] messageParams = { categoryName };
+                        string message = new Message().get("categoryEmpty", messageParams);
+                        return new CommandResponseHandler(message);
+                    }
+
+                default:
+                    {
+                        string[] messageParameters = { categorySize.ToString(), categoryName };
+                        string message = new Message().get("categorySize", messageParameters);
+                        return new CommandResponseHandler(message);
+                    }
+            }
         }
     }
 }

@@ -49,7 +49,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return this.getResultOfCommand("Good article nominees awaiting review", this.Channel);
+            return this.GetResultOfCommand("Good article nominees awaiting review");
         }
     }
 }
