@@ -46,11 +46,8 @@ namespace helpmebot6
         public static readonly DateTime StartupTime = DateTime.Now;
 
         public static bool pagewatcherEnabled = true;
-        public static bool enableTwitter = true;
-
-// ReSharper disable InconsistentNaming
+        
         private static void Main(string[] args)
-// ReSharper restore InconsistentNaming
         {
             // startup arguments
             int? configFileArg = args.ContainsPrefix("--configfile");
@@ -78,11 +75,6 @@ namespace helpmebot6
             if (args.ContainsPrefix("--disablepagewatcher").HasValue)
             {
                 pagewatcherEnabled = false;
-            }
-
-            if (args.ContainsPrefix("--disabletwitter").HasValue)
-            {
-                enableTwitter = false;
             }
 
             initialiseBot(configFile);
