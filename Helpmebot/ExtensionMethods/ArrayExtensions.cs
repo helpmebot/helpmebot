@@ -21,6 +21,7 @@
 namespace helpmebot6.ExtensionMethods
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// The string extensions.
@@ -87,6 +88,20 @@ namespace helpmebot6.ExtensionMethods
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// The smart length.
+        /// </summary>
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public static int SmartLength(this string[] data)
+        {
+            return data.Count(arg => !string.IsNullOrEmpty(arg));
         }
     }
 }

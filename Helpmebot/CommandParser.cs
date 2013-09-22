@@ -80,16 +80,20 @@ namespace helpmebot6
              */
             if (WatcherController.instance().isValidKeyword(command))
             {
-                int argsLength = GlobalFunctions.realArrayLength(args);
+                int argsLength = args.SmartLength();
 
                 string[] newArgs = new string[argsLength + 1];
                 int newArrayPos = 1;
-                for (int i = 0; i < args.Length; i++)
+                foreach (string t in args)
                 {
-                    if (!String.IsNullOrEmpty(args[i]))
-                        newArgs[newArrayPos] = args[i];
+                    if (!string.IsNullOrEmpty(t))
+                    {
+                        newArgs[newArrayPos] = t;
+                    }
+
                     newArrayPos++;
                 }
+
                 newArgs[0] = command;
                 string directedTo = findRedirection(destination, ref newArgs);
                 CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs).RunCommand();

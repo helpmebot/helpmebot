@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System.Collections;
     using System.Linq;
 
+    using helpmebot6.ExtensionMethods;
+
     /// <summary>
     /// Triggers the link parser
     /// </summary>
@@ -62,7 +64,7 @@ namespace helpmebot6.Commands
                 }
             }
 
-            if (GlobalFunctions.realArrayLength(args) > 0)
+            if (args.SmartLength() > 0)
             {
                 ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
 

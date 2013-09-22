@@ -32,30 +32,6 @@ namespace helpmebot6
     public class GlobalFunctions
     {
         /// <summary>
-        ///   Searches the array haystack for needle
-        /// </summary>
-        /// <param name = "needle"></param>
-        /// <param name = "haystack"></param>
-        /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
-        [Obsolete("Use extension method", true)]
-        public static int isInArray(string needle, string[] haystack)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <summary>
-        ///   Searches the array haystack for the first needle who's head matches the needlehead we're looking for
-        /// </summary>
-        /// <param name = "needlehead"></param>
-        /// <param name = "haystack"></param>
-        /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
-        [Obsolete("Use extension method", true)]
-        public static int prefixIsInArray(string needlehead, string[] haystack)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <summary>
         ///   Remove the first item from an array, and return the item
         /// </summary>
         /// <param name = "list">The array in question</param>
@@ -107,17 +83,6 @@ namespace helpmebot6
             }
 
             array = newArray;
-        }
-
-        public static int realArrayLength(string[] args)
-        {
-            int argsLength = 0;
-            foreach (string arg in args)
-            {
-                if (!string.IsNullOrEmpty(arg))
-                    argsLength++;
-            }
-            return argsLength;
         }
     }
 }
