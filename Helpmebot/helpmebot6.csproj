@@ -147,7 +147,6 @@
     <Compile Include="Commands\FunStuff\Cookie.cs" />
     <Compile Include="Commands\Gancount.cs" />
     <Compile Include="Commands\Notify.cs" />
-    <Compile Include="Commands\Oauth.cs" />
     <Compile Include="Commands\Editcount.cs" />
     <Compile Include="Commands\Decode.cs" />
     <Compile Include="Commands\Fetchall.cs" />
@@ -178,7 +177,6 @@
     <Compile Include="Commands\Silence.cs" />
     <Compile Include="Commands\ThreadStatus.cs" />
     <Compile Include="Commands\Time.cs" />
-    <Compile Include="Commands\Tweet.cs" />
     <Compile Include="Commands\Udplog.cs" />
     <Compile Include="Commands\Uptime.cs" />
     <Compile Include="Commands\UserInfo.cs" />
@@ -209,7 +207,6 @@
     <Compile Include="SerializableArrayList.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
-    <Compile Include="Twitter.cs" />
     <Compile Include="User.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
@@ -233,10 +230,6 @@
     <Reference Include="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="Twitterizer2, Version=2.1.1.28009, Culture=neutral, PublicKeyToken=69d1469eac671567, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\Twitterizer2.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -277,16 +270,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AWSSDK.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Twitterizer.Data.dll" />
-    <Content Include="Twitterizer2.dll" />
   </ItemGroup>
   <ItemGroup />
 </Project>

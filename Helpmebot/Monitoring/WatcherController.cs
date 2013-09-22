@@ -167,14 +167,6 @@ namespace helpmebot6.Monitoring
                 if (Configuration.singleton()["silence",channel] == "false")
                     Helpmebot6.irc.ircPrivmsg(channel, message);
             }
-
-            if (newItems.Count > 0)
-            {
-                var message = compileMessage(newItems, keyword, ">TWITTER<", false);
-       
-                    new Twitter().updateStatus(message);
-              
-            }
         }
 
         private static ArrayList updateDatabaseTable(ArrayList items, string keyword)
@@ -235,7 +227,7 @@ namespace helpmebot6.Monitoring
             // keywordPlural
             // keywordSingular           
 
-            string fakedestination = destination == ">TWITTER<" ? "" : destination;
+            string fakedestination = destination;
 
             bool showWaitTime = (fakedestination != "" && (Configuration.singleton()["showWaitTime",destination] == "true"));
 
@@ -248,11 +240,7 @@ namespace helpmebot6.Monitoring
             bool shortenUrls = (fakedestination != "" && (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"));
             bool showDelta = (fakedestination != "" && (Configuration.singleton()["catWatcherShowDelta", destination] == "true"));
 
-            if (destination == ">TWITTER<")
-            {
-                shortenUrls = true;
-                showDelta = true;
-            }
+
 
             if (forceShowAll)
                 showDelta = false;
