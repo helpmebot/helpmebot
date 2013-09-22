@@ -25,6 +25,8 @@ namespace helpmebot6
     using System.Reflection;
     using System.Text.RegularExpressions;
 
+    using Helpmebot;
+
     using helpmebot6.Commands;
     using helpmebot6.ExtensionMethods;
     using helpmebot6.Monitoring;
@@ -257,7 +259,7 @@ namespace helpmebot6
         /// </remarks>
         public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
         {
-            return parseRawLineForMessage(ref message, Helpmebot6.irc.ircNickname, Helpmebot6.trigger);
+            return parseRawLineForMessage(ref message, Helpmebot6.irc.ircNickname, Helpmebot6.Trigger);
         }
 
         private static bool parseRawLineForMessage(ref string message, string nickname, string trigger)

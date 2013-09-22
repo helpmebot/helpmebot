@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using System.Collections.Generic;
 
+    using Helpmebot;
+
     /// <summary>
     ///   Joins an IRC channel
     /// </summary>

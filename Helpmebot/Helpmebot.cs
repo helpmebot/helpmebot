@@ -18,10 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
 
+    using Helpmebot.Properties;
+
+    using helpmebot6;
     using helpmebot6.AI;
     using helpmebot6.Commands;
     using helpmebot6.ExtensionMethods;
@@ -35,8 +38,6 @@ namespace helpmebot6
     {
         public static IAL irc;
         private static DAL _dbal;
-        
-        private static string _trigger;
 
         public static string debugChannel;
         public static string mainChannel;
@@ -50,13 +51,7 @@ namespace helpmebot6
         private static void Main(string[] args)
         {
             // startup arguments
-            int? configFileArg = args.ContainsPrefix("--configfile");
-            string configFile = ".hmbot";
-            if (configFileArg.HasValue)
-            {
-                configFile = args[configFileArg.Value].Substring(args[configFileArg.Value].IndexOf('='));
-            }
-
+            
             if (args.ContainsPrefix("--logdal").HasValue)
             {
                 Logger.instance().logDAL = true;
@@ -77,20 +72,20 @@ namespace helpmebot6
                 pagewatcherEnabled = false;
             }
 
-            initialiseBot(configFile);
+            InitialiseBot();
         }
 
-        private static void initialiseBot(string configFile)
+        /// <summary>
+        /// The initialise bot.
+        /// </summary>
+        private static void InitialiseBot()
         {
-            string username;
-            string password;
-            string schema;
-            uint port = 0;
-            string server = username = password = schema = "";
-
-            Configuration.readHmbotConfigFile(configFile, ref server, ref username, ref password, ref port, ref schema);
-
-            _dbal = DAL.singleton(server, port, username, password, schema);
+            _dbal = DAL.singleton(
+                Settings.Default.MysqlHostname,
+                Settings.Default.MysqlPort,
+                Settings.Default.MysqlUsername,
+                Settings.Default.MysqlPassword,
+                Settings.Default.MysqlSchema);
 
             if (!_dbal.connect())
             {
@@ -104,13 +99,13 @@ namespace helpmebot6
 
             _ircNetwork = uint.Parse(Configuration.singleton()["ircNetwork"]);
 
-            _trigger = Configuration.singleton()["commandTrigger"];
+            Trigger = Configuration.singleton()["commandTrigger"];
 
             irc = new IAL(_ircNetwork);
 
             new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
-            setupEvents();
+            SetupEvents();
 
             if (!irc.connect())
             {
@@ -125,15 +120,15 @@ namespace helpmebot6
         }
 
 
-        private static void setupEvents()
+        private static void SetupEvents()
         {
-            irc.connectionRegistrationSucceededEvent += joinChannels;
+            irc.connectionRegistrationSucceededEvent += JoinChannels;
 
             irc.joinEvent += welcomeNewbieOnJoinEvent;
 
-            irc.joinEvent += notifyOnJoinEvent;
+            irc.joinEvent += NotifyOnJoinEvent;
 
-            irc.privmsgEvent += receivedMessage;
+            irc.privmsgEvent += ReceivedMessage;
 
             irc.inviteEvent += irc_InviteEvent;
 
@@ -142,7 +137,7 @@ namespace helpmebot6
 
         private static void irc_ThreadFatalError(object sender, EventArgs e)
         {
-            stop();
+            Stop();
         }
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
@@ -155,12 +150,12 @@ namespace helpmebot6
             NewbieWelcomer.instance().execute(source, channel);
         }
 
-        private static void notifyOnJoinEvent(User source, string channel)
+        private static void NotifyOnJoinEvent(User source, string channel)
         {
             new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
         }
 
-        private static void receivedMessage(User source, string destination, string message)
+        private static void ReceivedMessage(User source, string destination, string message)
         {
             CommandParser cmd = new CommandParser();
             try
@@ -176,6 +171,7 @@ namespace helpmebot6
 
                     cmd.handleCommand(source, destination, command, commandArgs);
                 }
+
                 string aiResponse = Intelligence.Singleton().Respond(message);
                 if (Configuration.singleton()["silence",destination] == "false" &&
                     aiResponse != string.Empty)
@@ -190,7 +186,7 @@ namespace helpmebot6
             }
         }
 
-        private static void joinChannels()
+        private static void JoinChannels()
         {
             irc.ircJoin(debugChannel);
 
@@ -204,21 +200,14 @@ namespace helpmebot6
             }
         }
 
-        public static void stop()
+        public static void Stop()
         {
             ThreadList.instance().stop();
         }
 
-        public static string trigger
-        {
-            get
-            {
-                return _trigger;
-            }
-            set
-            {
-                _trigger = value;
-            }
-        }
+        /// <summary>
+        /// Gets or sets the trigger.
+        /// </summary>
+        public static string Trigger { get; set; }
     }
 }

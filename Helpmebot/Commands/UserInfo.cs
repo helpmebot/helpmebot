@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Text.RegularExpressions;
     using System.Xml;
 
+    using Helpmebot;
+
     using helpmebot6.Model;
 
     /* returns information about a user

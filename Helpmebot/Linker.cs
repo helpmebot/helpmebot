@@ -25,6 +25,8 @@ namespace helpmebot6
     using System.Linq;
     using System.Text.RegularExpressions;
 
+    using Helpmebot;
+
     /// <summary>
     /// Linker and link parser
     /// </summary>

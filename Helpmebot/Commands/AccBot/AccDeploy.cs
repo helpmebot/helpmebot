@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.IO;
     using System.Web;
 
+    using Helpmebot;
+
     using HttpRequest = helpmebot6.HttpRequest;
 
     /// <summary>

@@ -22,6 +22,8 @@ namespace helpmebot6
 {
     using System;
 
+    using Helpmebot;
+
     internal class Message
     {
         private readonly DAL _dbal;

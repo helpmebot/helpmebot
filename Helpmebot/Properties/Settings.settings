@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Helpmebot.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MysqlHostname" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dbmaster.srv.stwalkerster.net</Value>
+    </Setting>
+    <Setting Name="MysqlPort" Type="System.UInt32" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="MysqlUsername" Type="System.String" Scope="User">
+      <Value Profile="(Default)">helpmebot</Value>
+    </Setting>
+    <Setting Name="MysqlPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MysqlSchema" Type="System.String" Scope="User">
+      <Value Profile="(Default)">helpmebot_v6</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

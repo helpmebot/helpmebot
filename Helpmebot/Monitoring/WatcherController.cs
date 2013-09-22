@@ -24,6 +24,8 @@ namespace helpmebot6.Monitoring
     using System.Collections;
     using System.Collections.Generic;
 
+    using Helpmebot;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>

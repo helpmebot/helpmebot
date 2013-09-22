@@ -22,6 +22,8 @@ namespace helpmebot.Commands.FunStuff
 {
     using System.Linq;
 
+    using Helpmebot;
+
     using helpmebot6;
 
     /// <summary>

@@ -22,6 +22,8 @@ namespace helpmebot6.AI
 {
     using System;
 
+    using Helpmebot;
+
     /// <summary>
     /// The intelligence.
     /// </summary>

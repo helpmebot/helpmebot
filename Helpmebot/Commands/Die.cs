@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     ///   Kills the bot.
     /// </summary>
@@ -48,7 +50,7 @@ namespace helpmebot6.Commands
         /// <returns>null - the bot should be shutting down</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.stop();
+            Helpmebot6.Stop();
             return null;
         }
 

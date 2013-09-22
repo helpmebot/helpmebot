@@ -24,6 +24,8 @@ namespace helpmebot6
     using System.Diagnostics;
     using System.Reflection;
 
+    using Helpmebot;
+
     using helpmebot6.ExtensionMethods;
 
     /// <summary>

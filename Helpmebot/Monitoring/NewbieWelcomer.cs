@@ -24,6 +24,8 @@ namespace helpmebot6.Monitoring
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
 
+    using Helpmebot;
+
     /// <summary>
     /// Newbie welcomer subsystem
     /// </summary>
