@@ -24,7 +24,9 @@ namespace helpmebot6.Commands
     using System.Web;
     using System.Xml.XPath;
 
-    using HttpRequest = helpmebot6.HttpRequest;
+    using Helpmebot;
+
+    using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
     ///   Returns the edit count of a Wikipedian

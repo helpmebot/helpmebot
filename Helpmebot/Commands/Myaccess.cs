@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     /// Retrieves the bot access level of the user who called the command
     /// </summary>

@@ -18,9 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.ExtensionMethods
+namespace Helpmebot.ExtensionMethods
 {
-    using System;
     using System.Linq;
 
     /// <summary>

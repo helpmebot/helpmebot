@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     /// Uncurl command to set the bot's hedgehog status to false.
     /// </summary>

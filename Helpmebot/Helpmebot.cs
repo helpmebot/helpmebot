@@ -22,14 +22,14 @@ namespace Helpmebot
 {
     using System;
 
+    using Helpmebot.AI;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Properties;
+    using Helpmebot.Threading;
 
     using helpmebot6;
-    using helpmebot6.AI;
     using helpmebot6.Commands;
-    using helpmebot6.ExtensionMethods;
     using helpmebot6.Monitoring;
-    using helpmebot6.Threading;
 
     /// <summary>
     /// Helpmebot main class

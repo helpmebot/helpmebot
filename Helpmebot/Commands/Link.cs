@@ -23,7 +23,8 @@ namespace helpmebot6.Commands
     using System.Collections;
     using System.Linq;
 
-    using helpmebot6.ExtensionMethods;
+    using Helpmebot;
+    using Helpmebot.ExtensionMethods;
 
     /// <summary>
     /// Triggers the link parser

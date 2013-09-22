@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.IO;
@@ -26,21 +26,25 @@ namespace helpmebot6
     using System.Net.Sockets;
     using System.Threading;
 
-    class IrcProxy : Threading.IThreadedSystem
+    using Helpmebot.Threading;
+
+    using helpmebot6;
+
+    class IrcProxy : IThreadedSystem
     {
         public IrcProxy(IAL baseIrcAccessLayer, int port, string password)
         {
             if (Configuration.singleton()["enableProxy"] != "true") return;
 
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
+            this._listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
 
-            _baseIal = baseIrcAccessLayer;
+            this._baseIal = baseIrcAccessLayer;
             this._password = password;
 
             this.registerInstance();
 
-            _t = new Thread(listenerThread);
-            _t.Start();
+            this._t = new Thread(this.listenerThread);
+            this._t.Start();
         }
 
         private readonly IAL _baseIal;
@@ -55,19 +59,19 @@ namespace helpmebot6
         {
             try
             {
-                _listener.Start();
+                this._listener.Start();
 
                 while (true)
                 {
-                    if (!_listener.Pending())
+                    if (!this._listener.Pending())
                     {
                         Thread.Sleep(100);
                         continue;
                     }
 
-                    TcpClient client = _listener.AcceptTcpClient();
+                    TcpClient client = this._listener.AcceptTcpClient();
 
-                    new IrcProxyInstance(client, _password, _baseIal);
+                    new IrcProxyInstance(client, this._password, this._baseIal);
                 }
             }
             catch (ThreadAbortException)
@@ -82,17 +86,17 @@ namespace helpmebot6
 
         public void stop()
         {
-            _t.Abort();
+            this._t.Abort();
         }
 
         public void registerInstance()
         {
-            Threading.ThreadList.instance().register(this);
+            ThreadList.instance().register(this);
         }
 
         public string[] getThreadStatus()
         {
-            string[] x = {_t.ThreadState.ToString()};
+            string[] x = {this._t.ThreadState.ToString()};
             return x;
         }
 

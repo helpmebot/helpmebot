@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using System.Xml;
 
+    using Helpmebot;
+
     /// <summary>
     ///   Returns the maximum replication lag on the wiki
     /// </summary>

@@ -18,13 +18,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring
+namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
 
     using Helpmebot;
+
+    using helpmebot6;
 
     using MySql.Data.MySqlClient;
 
@@ -363,7 +365,7 @@ namespace helpmebot6.Monitoring
                 return new CommandResponseHandler(message);
             }
 
-            CategoryWatcher cw = getWatcher(keyword);
+            CategoryWatcher cw = this.getWatcher(keyword);
             if (cw != null)
             {
                 Dictionary<string, string> vals = new Dictionary<string, string>
@@ -387,7 +389,7 @@ namespace helpmebot6.Monitoring
         /// <returns></returns>
         public int getDelay(string keyword)
         {
-            CategoryWatcher cw = getWatcher(keyword);
+            CategoryWatcher cw = this.getWatcher(keyword);
             if (cw != null)
             {
                 return cw.sleepTime;

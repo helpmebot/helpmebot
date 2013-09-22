@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     /// Retrieves a link to block a user.
     /// </summary>

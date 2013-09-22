@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System.IO;
     using System.Net;

@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections;
@@ -35,7 +35,7 @@ namespace helpmebot6
             int cnt = info.GetInt32("count");
             for (int i = 0; i < cnt; i++)
             {
-                Add(info.GetString(i.ToString()));
+                this.Add(info.GetString(i.ToString()));
             }
         }
 
@@ -47,8 +47,8 @@ namespace helpmebot6
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("count", Count);
-            for (int i = 0; i < Count; i++)
+            info.AddValue("count", this.Count);
+            for (int i = 0; i < this.Count; i++)
             {
                 info.AddValue(i.ToString(), this[i].ToString());
             }

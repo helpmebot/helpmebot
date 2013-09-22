@@ -18,9 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
+
+    using helpmebot6;
 
     /// <summary>
     /// Represents a configuration setting
@@ -40,9 +42,9 @@ namespace helpmebot6
         /// <param name="value">The value.</param>
         public ConfigurationSetting(string name, string value)
         {
-            _settingName = name;
-            _settingValue = value;
-            _lastRetrieval = DateTime.Now;
+            this._settingName = name;
+            this._settingValue = value;
+            this._lastRetrieval = DateTime.Now;
         }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace helpmebot6
         {
             try
             {
-                TimeSpan difference = DateTime.Now - _lastRetrieval;
+                TimeSpan difference = DateTime.Now - this._lastRetrieval;
                 return difference.TotalMinutes <= CACHE_TIMEOUT;
             }
             catch (Exception ex)
@@ -71,11 +73,11 @@ namespace helpmebot6
         /// <value>The value.</value>
         public string value
         {
-            get { return _settingValue; }
+            get { return this._settingValue; }
             set
             {
-                _settingValue = value;
-                _lastRetrieval = DateTime.Now;
+                this._settingValue = value;
+                this._lastRetrieval = DateTime.Now;
             }
         }
 
@@ -85,7 +87,7 @@ namespace helpmebot6
         /// <value>The name.</value>
         public string name
         {
-            get { return _settingName; }
+            get { return this._settingName; }
         }
 
         /// <summary>
@@ -96,7 +98,7 @@ namespace helpmebot6
         /// </returns>
         public override string ToString()
         {
-            return _settingName;
+            return this._settingName;
         }
     }
 }

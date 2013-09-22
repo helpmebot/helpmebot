@@ -18,11 +18,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
-
-    using Helpmebot;
 
     internal class Message
     {
@@ -30,13 +28,13 @@ namespace helpmebot6
 
         public Message( )
         {
-            _dbal = DAL.singleton( );
+            this._dbal = DAL.singleton( );
         }
         
         private string[] getMessages(string messageName)
         {
             //get message text from database
-            string messageText = _dbal.proc_HMB_GET_MESSAGE_CONTENT(messageName);
+            string messageText = this._dbal.proc_HMB_GET_MESSAGE_CONTENT(messageName);
 
             // split up lines and pass back arraylist
 
@@ -56,7 +54,7 @@ namespace helpmebot6
             }
 
             Random rnd = new Random();
-            string[] al = getMessages(Configuration.singleton()["messagePrefix"]+ messageName);
+            string[] al = this.getMessages(Configuration.singleton()["messagePrefix"]+ messageName);
             if (al.Length == 0) // no messages found with prefix
             {
                 if (Configuration.singleton()["messagePrefix"] != string.Empty) // check a prefix was added
@@ -67,7 +65,7 @@ namespace helpmebot6
                                               "'. Attempting without prefix...");
                     // remove prefix and retry
 
-                    al = getMessages(messageName);
+                    al = this.getMessages(messageName);
                 }
 
                 if (al.Length == 0) // still nothing there
@@ -96,12 +94,12 @@ namespace helpmebot6
         
         public string get(string messageName)
         {
-            return get(messageName, new string[0]);
+            return this.get(messageName, new string[0]);
         }
         
         public string get(string messageName, params string[] args)
         {
-            return buildMessage(chooseRandomMessage(messageName), args);
+            return buildMessage(this.chooseRandomMessage(messageName), args);
         }
     }
 }

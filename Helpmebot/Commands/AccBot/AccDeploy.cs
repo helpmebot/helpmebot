@@ -26,7 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
 
-    using HttpRequest = helpmebot6.HttpRequest;
+    using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
     /// The deploy ACC command.

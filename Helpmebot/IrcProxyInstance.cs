@@ -18,14 +18,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.IO;
     using System.Net.Sockets;
     using System.Threading;
 
-    class IrcProxyInstance  : Threading.IThreadedSystem
+    using Helpmebot.Threading;
+
+    class IrcProxyInstance  : IThreadedSystem
     {
         TcpClient _client;
         Thread _clientThread;
@@ -40,64 +42,64 @@ namespace helpmebot6
             this._password = _password;
             this._baseIal = _baseIal;
 
-            _clientThread = new Thread(threadMethod);
+            this._clientThread = new Thread(this.threadMethod);
 
-            _clientThread.Start();
+            this._clientThread.Start();
         }
 
         private void threadMethod()
         {
             try
             {
-                _sr = new StreamReader(_client.GetStream());
-                _sw = new StreamWriter(_client.GetStream());
+                this._sr = new StreamReader(this._client.GetStream());
+                this._sw = new StreamWriter(this._client.GetStream());
 
                 bool rcvdNick, rcvdUser, rcvdPass;
                 rcvdPass = rcvdNick = rcvdUser = false;
 
-                _sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Looking up your hostname...");
-                _sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Checking Ident");
-                _sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Found your hostname");
-                _sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** No Ident response");
+                this._sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Looking up your hostname...");
+                this._sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Checking Ident");
+                this._sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** Found your hostname");
+                this._sw.WriteLine(":helpmebot.srv.stwalkerster.net NOTICE * :*** No Ident response");
 
 
 
                 while (!(rcvdNick && rcvdUser && rcvdPass))
                 {
-                    string[] l = _sr.ReadLine().Split(' ');
+                    string[] l = this._sr.ReadLine().Split(' ');
                     if (l[0] == "NICK") rcvdNick = true;
                     if (l[0] == "USER") rcvdUser = true;
                     if (l[0] == "PASS")
                     {
-                        if (l[1] == _password)
+                        if (l[1] == this._password)
                             rcvdPass = true;
                     }
                 }
 
-                _sw.WriteLine(":irc.helpmebot.org.uk 001 " + _baseIal.ircNickname + " :Welcome to the Helpmebot IRC Gateway.");
-                _sw.WriteLine(":irc.helpmebot.org.uk 002 " + _baseIal.ircNickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
-                _sw.WriteLine(":irc.helpmebot.org.uk 003 " + _baseIal.ircNickname + " :This server was created " + DateTime.Now.ToString());
-                _sw.WriteLine(":irc.helpmebot.org.uk 004 " + _baseIal.ircNickname + " " + _baseIal.ServerInfo);
-                _sw.Flush();
+                this._sw.WriteLine(":irc.helpmebot.org.uk 001 " + this._baseIal.ircNickname + " :Welcome to the Helpmebot IRC Gateway.");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 002 " + this._baseIal.ircNickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 003 " + this._baseIal.ircNickname + " :This server was created " + DateTime.Now.ToString());
+                this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.ircNickname + " " + this._baseIal.ServerInfo);
+                this._sw.Flush();
 
-                foreach (var c in _baseIal.activeChannels)
+                foreach (var c in this._baseIal.activeChannels)
                 {
-                    _sw.WriteLine(":" + _baseIal.myIdentity + " JOIN " + c);
-                    _sw.Flush();
-                    _baseIal.ircNames(c);
-                    _baseIal.ircTopic(c);
+                    this._sw.WriteLine(":" + this._baseIal.myIdentity + " JOIN " + c);
+                    this._sw.Flush();
+                    this._baseIal.ircNames(c);
+                    this._baseIal.ircTopic(c);
                 }
 
                 
 
 
 
-                _sw.Flush();
-                _baseIal.dataRecievedEvent += baseIalDataRecievedEvent;
+                this._sw.Flush();
+                this._baseIal.dataRecievedEvent += this.baseIalDataRecievedEvent;
 
-                while (_client.Connected)
+                while (this._client.Connected)
                 {
-                    string line = _sr.ReadLine();
+                    string line = this._sr.ReadLine();
                     string source = null;
                     string command = null;
                     string parameters = null;
@@ -105,12 +107,12 @@ namespace helpmebot6
 
                     if (command == "QUIT")
                     {
-                        _sr.Close();
-                        _baseIal.dataRecievedEvent -= baseIalDataRecievedEvent;
+                        this._sr.Close();
+                        this._baseIal.dataRecievedEvent -= this.baseIalDataRecievedEvent;
                         break;
                     }
 
-                    _baseIal.sendRawLine(line);
+                    this._baseIal.sendRawLine(line);
                 }
             }
             catch (ThreadAbortException)
@@ -119,31 +121,31 @@ namespace helpmebot6
             }
             finally
             {
-                _client.Close();
+                this._client.Close();
             }
         }
 
         void baseIalDataRecievedEvent(string data)
         {
-            _sw.WriteLine(data);
-            _sw.Flush();
+            this._sw.WriteLine(data);
+            this._sw.Flush();
         }
 
-        void Threading.IThreadedSystem.stop()
+        void IThreadedSystem.stop()
         {
-            threadActive = false;
+            this.threadActive = false;
             Thread.Sleep(3000);
-            _clientThread.Abort();
+            this._clientThread.Abort();
         }
 
-        void Threading.IThreadedSystem.registerInstance()
+        void IThreadedSystem.registerInstance()
         {
-            Threading.ThreadList.instance().register(this);
+            ThreadList.instance().register(this);
         }
 
-        string[] Threading.IThreadedSystem.getThreadStatus()
+        string[] IThreadedSystem.getThreadStatus()
         {
-            string[] x = { _clientThread.ThreadState.ToString() };
+            string[] x = { this._clientThread.ThreadState.ToString() };
             return x;
         }
 

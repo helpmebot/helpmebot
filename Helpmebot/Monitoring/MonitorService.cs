@@ -26,7 +26,7 @@ namespace helpmebot6.Monitoring
     using System.Net.Sockets;
     using System.Threading;
 
-    using helpmebot6.Threading;
+    using Helpmebot.Threading;
 
     /// <summary>
     /// Nagios monitoring service

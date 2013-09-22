@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     using helpmebot.Commands.FunStuff;
 
     /// <summary>

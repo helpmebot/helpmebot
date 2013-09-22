@@ -23,7 +23,8 @@ namespace helpmebot6.Commands
     using System.Net;
     using System.Xml;
 
-    using helpmebot6.Model;
+    using Helpmebot;
+    using Helpmebot.Model;
 
     /// <summary>
     /// Returns the block information of a wikipedian

@@ -18,14 +18,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring
+namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
     using System.Threading;
     using System.Xml;
 
-    using helpmebot6.Threading;
+    using Helpmebot.Threading;
+
+    using helpmebot6;
 
     /// <summary>
     /// Category watcher thread
@@ -59,30 +61,30 @@ namespace helpmebot6.Monitoring
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            _site = DAL.singleton().executeScalarSelect(q);
+            this._site = DAL.singleton().executeScalarSelect(q);
 
-            _category = category;
-            _key = key;
-            _sleepTime = sleepTime;
+            this._category = category;
+            this._key = key;
+            this._sleepTime = sleepTime;
 
             this.registerInstance();
 
-            this._watcherThread = new Thread(watcherThreadMethod);
+            this._watcherThread = new Thread(this.watcherThreadMethod);
             this._watcherThread.Start();
         }
 
         private void watcherThreadMethod()
         {
-            Logger.instance().addToLog("Starting category watcher for '" + _key + "'...", Logger.LogTypes.General);
+            Logger.instance().addToLog("Starting category watcher for '" + this._key + "'...", Logger.LogTypes.General);
             try
             {
                 while (true)
                 {
                     Thread.Sleep(this.sleepTime*1000);
-                    ArrayList categoryResults = doCategoryCheck();
+                    ArrayList categoryResults = this.doCategoryCheck();
                     if (categoryResults.Count > 0)
                     {
-                        this.categoryHasItemsEvent(categoryResults, _key);
+                        this.categoryHasItemsEvent(categoryResults, this._key);
                     }
                 }
             }
@@ -94,7 +96,7 @@ namespace helpmebot6.Monitoring
                     temp(this, new EventArgs());
                 }
             }
-            Logger.instance().addToLog("Category watcher for '" + _key + "' died.", Logger.LogTypes.Error);
+            Logger.instance().addToLog("Category watcher for '" + this._key + "' died.", Logger.LogTypes.Error);
         }
 
 
@@ -103,14 +105,14 @@ namespace helpmebot6.Monitoring
         /// </summary>
         public int sleepTime
         {
-            get { return _sleepTime; }
+            get { return this._sleepTime; }
             set
             {
-                _sleepTime = value;
+                this._sleepTime = value;
                 Logger.instance().addToLog("Restarting watcher...", Logger.LogTypes.Command);
                 this._watcherThread.Abort();
                 Thread.Sleep(500);
-                this._watcherThread = new Thread(watcherThreadMethod);
+                this._watcherThread = new Thread(this.watcherThreadMethod);
                 this._watcherThread.Start();
             }
         }
@@ -123,7 +125,7 @@ namespace helpmebot6.Monitoring
         /// </returns>
         public override string ToString()
         {
-            return _key;
+            return this._key;
         }
 
         /// <summary>
@@ -132,15 +134,15 @@ namespace helpmebot6.Monitoring
         /// <returns></returns>
         public ArrayList doCategoryCheck()
         {
-            Logger.instance().addToLog("Getting items in category " + _key, Logger.LogTypes.General);
+            Logger.instance().addToLog("Getting items in category " + this._key, Logger.LogTypes.General);
             ArrayList pages = new ArrayList();
             try
             {
                 //Create the XML Reader
                 XmlTextReader xmlreader =
                     new XmlTextReader(
-                        HttpRequest.get(_site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
-                                        _category))
+                        HttpRequest.get(this._site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
+                                        this._category))
                         {
                             WhitespaceHandling = WhitespaceHandling.None
                         };
@@ -177,7 +179,7 @@ namespace helpmebot6.Monitoring
             }
             catch (Exception ex)
             {
-                Logger.instance().addToLog("Error contacting API (" + _site + ") " + ex.Message, Logger.LogTypes.DNWB);
+                Logger.instance().addToLog("Error contacting API (" + this._site + ") " + ex.Message, Logger.LogTypes.DNWB);
             }
             pages = removeBlacklistedItems(pages);
 
@@ -210,13 +212,13 @@ namespace helpmebot6.Monitoring
 
         public void stop()
         {
-            Logger.instance().addToLog("Stopping Watcher Thread for " + _category + " ...", Logger.LogTypes.General);
+            Logger.instance().addToLog("Stopping Watcher Thread for " + this._category + " ...", Logger.LogTypes.General);
             this._watcherThread.Abort();
         }
 
         public string[] getThreadStatus()
         {
-            string[] statuses = {_key + " " + this._watcherThread.ThreadState};
+            string[] statuses = {this._key + " " + this._watcherThread.ThreadState};
             return statuses;
         }
 

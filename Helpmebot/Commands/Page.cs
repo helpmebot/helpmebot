@@ -25,6 +25,8 @@ namespace helpmebot6.Commands
     using System.IO;
     using System.Xml;
 
+    using Helpmebot;
+
     /// <summary>
     /// Retrieves information on a specific page
     /// </summary>

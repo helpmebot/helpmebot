@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     /// The configuration cache clear command.
     /// </summary>

@@ -20,13 +20,16 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     using helpmebot.Commands.FunStuff;
 
     /// <summary>
     /// The nuke.
     /// </summary>
     internal class Nuke : ProtectedTargetedFunCommand
-    {        /// <summary>
+    {
+        /// <summary>
         /// Initialises a new instance of the <see cref="Nuke"/> class.
         /// </summary>
         /// <param name="source">

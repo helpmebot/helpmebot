@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     /// Returns the number of articles currently waiting at Good article nominees awaiting review    /// </summary>
     internal class Gancount : Categorysize

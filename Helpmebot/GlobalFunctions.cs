@@ -26,8 +26,6 @@ namespace helpmebot6
 
     using Helpmebot;
 
-    using helpmebot6.ExtensionMethods;
-
     /// <summary>
     /// Class holding globally accessible functions
     /// </summary>

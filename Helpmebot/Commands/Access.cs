@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
     using System.Reflection;
 
+    using Helpmebot;
+
     /// <summary>
     /// Modifies the bot's access list
     /// </summary>

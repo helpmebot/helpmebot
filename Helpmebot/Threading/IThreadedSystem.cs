@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Threading
+namespace Helpmebot.Threading
 {
     using System;
 

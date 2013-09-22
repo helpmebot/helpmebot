@@ -18,14 +18,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    using Helpmebot;
+    using helpmebot6;
 
     /// <summary>
     /// Linker and link parser
@@ -41,8 +41,8 @@ namespace helpmebot6
             this._lastLink = new Dictionary<string, string>();
             if (Helpmebot6.irc != null)
             {
-                Helpmebot6.irc.privmsgEvent += irc_PrivmsgEvent;
-                Helpmebot6.irc.noticeEvent += irc_PrivmsgEvent;
+                Helpmebot6.irc.privmsgEvent += this.irc_PrivmsgEvent;
+                Helpmebot6.irc.noticeEvent += this.irc_PrivmsgEvent;
             }
         }
 
@@ -63,7 +63,7 @@ namespace helpmebot6
         /// <param name="channel">The channel.</param>
         public void parseMessage(string message, string channel)
         {
-            ArrayList newLink = reallyParseMessage(message);
+            ArrayList newLink = this.reallyParseMessage(message);
             if (newLink.Count == 0)
                 return;
             if (this._lastLink.ContainsKey(channel))
@@ -117,10 +117,10 @@ namespace helpmebot6
         public string getLink(string destination, bool useSecureServer)
         {
             string lastLinkedLine;
-            bool success = _lastLink.TryGetValue(destination, out lastLinkedLine);
+            bool success = this._lastLink.TryGetValue(destination, out lastLinkedLine);
             if (!success) return "";
 
-            ArrayList links = reallyParseMessage(lastLinkedLine);
+            ArrayList links = this.reallyParseMessage(lastLinkedLine);
 
             return links.Cast<string>().Aggregate("", (current, link) => current + " " + getRealLink(destination, link, useSecureServer));
 

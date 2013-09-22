@@ -18,10 +18,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
+
+    using helpmebot6;
 
     internal class BinaryStore
     {

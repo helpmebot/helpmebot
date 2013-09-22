@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.IO;
@@ -51,7 +51,7 @@ namespace helpmebot6
             this._ialLogger.WriteLine(init);
             this._errorLogger.WriteLine(init);
 
-            addToLog(init, LogTypes.General);
+            this.addToLog(init, LogTypes.General);
 
             this.copyToUdp = 7648;
         }
@@ -148,7 +148,7 @@ namespace helpmebot6
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("A " + message);
-                        udpLog(dateString + "A " + message);
+                        this.udpLog(dateString + "A " + message);
                         break;
                     case LogTypes.DalLock:
                         if (this.logDalLock)
@@ -157,7 +157,7 @@ namespace helpmebot6
                             Console.Write(dateString);
                             Console.ForegroundColor = ConsoleColor.Magenta;
                             Console.WriteLine("DL " + message);
-                            udpLog(dateString + "DL " + message);
+                            this.udpLog(dateString + "DL " + message);
                         }
                         this._dalLogger.WriteLine(dateString + message);
                         break;
@@ -168,7 +168,7 @@ namespace helpmebot6
                             Console.Write(dateString);
                             Console.ForegroundColor = ConsoleColor.Magenta;
                             Console.WriteLine("D " + message);
-                            udpLog(dateString + "D " + message);
+                            this.udpLog(dateString + "D " + message);
                         }
                         this._dalLogger.WriteLine(dateString + message);
                         break;
@@ -178,21 +178,21 @@ namespace helpmebot6
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         this._ialLogger.WriteLine(dateString + message);
                         Console.WriteLine("I " + message);
-                        udpLog(dateString + "I " + message);
+                        this.udpLog(dateString + "I " + message);
                         break;
                     case LogTypes.Command:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("C " + message);
-                        udpLog(dateString + "C " + message);
+                        this.udpLog(dateString + "C " + message);
                         break;
                     case LogTypes.General:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("G " + message);
-                        udpLog(dateString + "G " + message);
+                        this.udpLog(dateString + "G " + message);
                         break;
                     case LogTypes.Error:
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -200,7 +200,7 @@ namespace helpmebot6
                         Console.ForegroundColor = ConsoleColor.Red;
                         this._errorLogger.WriteLine(dateString + message);
                         Console.WriteLine("E " + message);
-                        udpLog(dateString + "E " + message);
+                        this.udpLog(dateString + "E " + message);
                         break;
                     case LogTypes.IRC:
                         if (this.logIrc)
@@ -210,7 +210,7 @@ namespace helpmebot6
                             Console.ForegroundColor = ConsoleColor.Black;
                             Console.BackgroundColor = ConsoleColor.Yellow;
                             Console.WriteLine("R " + message);
-                            udpLog(dateString + "R " + message);
+                            this.udpLog(dateString + "R " + message);
                         }
                         this._ircLogger.WriteLine(dateString + message);
 
@@ -224,9 +224,9 @@ namespace helpmebot6
 
         private void udpLog(string message)
         {
-            if( 1025 <= copyToUdp && copyToUdp <= 65535 )
+            if( 1025 <= this.copyToUdp && this.copyToUdp <= 65535 )
             {
-                UdpClient udp = new UdpClient("helpmebot.org.uk", copyToUdp);
+                UdpClient udp = new UdpClient("helpmebot.org.uk", this.copyToUdp);
                 byte[] messageBytes = Encoding.ASCII.GetBytes(message + "\n");
                 udp.Send(messageBytes, messageBytes.Length);
                 udp.Close();

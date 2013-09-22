@@ -23,6 +23,9 @@ namespace helpmebot6.Commands
     using System.Collections.Generic;
     using System.Linq;
 
+    using Helpmebot;
+    using Helpmebot.Monitoring;
+
     using helpmebot6.Monitoring;
 
     /// <summary>
@@ -54,7 +57,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             CommandResponseHandler crh = new CommandResponseHandler();
-            Dictionary<string, Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.instance().getKeywords();
+            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.instance().getKeywords();
             string[] args = this.Arguments;
             if (args.Contains("@cats"))
             {

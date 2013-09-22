@@ -20,6 +20,9 @@
 
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
+    using Helpmebot;
+    using Helpmebot.Monitoring;
+
     using helpmebot6.Monitoring;
 
     /// <summary>

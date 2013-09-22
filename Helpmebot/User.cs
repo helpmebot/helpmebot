@@ -18,9 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
+
+    using helpmebot6;
 
     /// <summary>
     /// 
@@ -179,7 +181,7 @@ namespace helpmebot6
                         UserRights ret =
                             (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
 
-                        _accessLevel = ret;
+                        this._accessLevel = ret;
                         this._retrievedAccessLevel = true;
                         return ret;
                     }

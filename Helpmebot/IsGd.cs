@@ -18,11 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.IO;
     using System.Net;
+
+    using helpmebot6;
 
     /// <summary>
     /// is.gd wrapper class

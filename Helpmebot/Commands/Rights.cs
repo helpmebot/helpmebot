@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
     using System.Xml;
 
+    using Helpmebot;
+
     /// <summary>
     ///   Returns the user rights of a wikipedian
     /// </summary>

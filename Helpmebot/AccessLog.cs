@@ -18,12 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
 
+    using helpmebot6;
     using helpmebot6.Commands;
 
     /// <summary>
@@ -147,12 +148,12 @@ namespace helpmebot6
 
             public string alChannel
             {
-                get { return _channel; }
+                get { return this._channel; }
             }
 
             public string alParams
             {
-                get { return _params; }
+                get { return this._params; }
             }
 
             public static AccessLogEntry[] get(params DAL.WhereConds[] conditions)

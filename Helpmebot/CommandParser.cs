@@ -18,18 +18,18 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections.Generic;
     using System.Reflection;
     using System.Text.RegularExpressions;
 
-    using Helpmebot;
+    using Helpmebot.ExtensionMethods;
+    using Helpmebot.Monitoring;
 
+    using helpmebot6;
     using helpmebot6.Commands;
-    using helpmebot6.ExtensionMethods;
-    using helpmebot6.Monitoring;
 
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 

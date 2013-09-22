@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
     using System.Xml;
 
+    using Helpmebot;
+
     /// <summary>
     /// Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]]).
     /// </summary>

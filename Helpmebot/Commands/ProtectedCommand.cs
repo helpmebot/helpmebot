@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
     using System.Linq;
 
+    using Helpmebot;
+
     /// <summary>
     /// The protected command.
     /// </summary>

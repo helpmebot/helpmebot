@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
     using System.Xml.XPath;
 
+    using Helpmebot;
+
     /// <summary>
     /// The status of ACC.
     /// </summary>

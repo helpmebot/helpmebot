@@ -18,11 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Threading
+namespace Helpmebot.Threading
 {
     using System;
     using System.Collections;
     using System.Threading;
+
+    using helpmebot6;
 
     /// <summary>
     /// Maintains a list of all the available threads the bot is running
@@ -42,7 +44,7 @@ namespace helpmebot6.Threading
         }
 
         private readonly ArrayList _threadedObjects;
-        public ArrayList ThreadedObjects { get { return _threadedObjects; } }
+        public ArrayList ThreadedObjects { get { return this._threadedObjects; } }
 
         /// <summary>
         /// Registers the specified sender.

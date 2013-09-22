@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Net;
     using System.Net.Sockets;
 
+    using Helpmebot;
+
     /// <summary>
     /// Decodes a hex-encoded IP address
     /// </summary>

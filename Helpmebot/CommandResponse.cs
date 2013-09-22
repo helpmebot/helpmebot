@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System.Collections;
 
@@ -72,7 +72,7 @@ namespace helpmebot6
         public CommandResponseHandler(string message)
         {
             this._responses = new ArrayList();
-            respond(message);
+            this.respond(message);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace helpmebot6
         public CommandResponseHandler(string message, CommandResponseDestination destination)
         {
             this._responses = new ArrayList();
-            respond(message, destination);
+            this.respond(message, destination);
         }
 
         /// <summary>

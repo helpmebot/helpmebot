@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using System;
 
+    using Helpmebot;
+
     /// <summary>
     /// Returns the access level of the command specified
     /// </summary>

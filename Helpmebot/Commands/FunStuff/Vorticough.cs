@@ -22,12 +22,15 @@ namespace helpmebot6.Commands
 {
     using System.Diagnostics.CodeAnalysis;
 
+    using Helpmebot;
+
     /// <summary>
     /// The vorticough.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed. Suppression is OK here.")]
     internal class Vorticough : FunStuff.FunCommand
-    {        /// <summary>
+    {
+        /// <summary>
         /// Initialises a new instance of the <see cref="Vorticough"/> class.
         /// </summary>
         /// <param name="source">

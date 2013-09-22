@@ -19,7 +19,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections;
@@ -29,14 +29,16 @@ namespace helpmebot6
     using System.Text;
     using System.Threading;
 
-    using helpmebot6.Threading;
+    using Helpmebot.Threading;
+
+    using helpmebot6;
 
     /// <summary>
     ///   IRC Access Layer
     /// 
     ///   Provides an interface to IRC.
     /// </summary>
-    public class IAL : IThreadedSystem
+    public sealed class IAL : IThreadedSystem
     {
         #region internal variables
 
@@ -68,7 +70,7 @@ namespace helpmebot6
         #endregion
 
         #region properties
-        public string ServerInfo { get { return _rpl_myinfo; } }
+        public string ServerInfo { get { return this._rpl_myinfo; } }
 
         public string clientVersion { get; set; }
 
@@ -79,33 +81,33 @@ namespace helpmebot6
 
         public string ircNickname
         {
-            get { return _myNickname; }
+            get { return this._myNickname; }
             set { throw new NotImplementedException();}
         }
 
         public string ircUsername
         {
-            get { return _myUsername; }
+            get { return this._myUsername; }
         }
 
         public string ircRealname
         {
-            get { return _myRealname; }
+            get { return this._myRealname; }
         }
 
         public string ircServer
         {
-            get { return _ircServer; }
+            get { return this._ircServer; }
         }
 
         public uint ircPort
         {
-            get { return _ircPort; }
+            get { return this._ircPort; }
         }
 
         public string myIdentity
         {
-            get { return ircNickname + "!" + ircUsername + "@wikimedia/bot/helpmebot"; }
+            get { return this.ircNickname + "!" + this.ircUsername + "@wikimedia/bot/helpmebot"; }
         }
 
         public int floodProtectionWaitTime { get; set; }
@@ -129,7 +131,7 @@ namespace helpmebot6
             get
             {
                 Type t = Type.GetType("System.String");
-                return (string[])channelList.ToArray(t);
+                return (string[])this.channelList.ToArray(t);
             }
         }
         #endregion
@@ -140,7 +142,7 @@ namespace helpmebot6
         {
             this.floodProtectionWaitTime = 500;
             this.clientVersion = "Helpmebot IRC Access Layer 1.0";
-            _networkId = ircNetwork;
+            this._networkId = ircNetwork;
 
             DAL db = DAL.singleton();
 
@@ -153,24 +155,24 @@ namespace helpmebot6
 
             ArrayList configSettings = db.executeSelect(q);
 
-            _ircServer = (string) (((object[]) configSettings[0])[0]);
-            _ircPort = (uint) ((object[]) configSettings[0])[1];
+            this._ircServer = (string) (((object[]) configSettings[0])[0]);
+            this._ircPort = (uint) ((object[]) configSettings[0])[1];
 
-            _myNickname = (string) (((object[]) configSettings[0])[2]);
-            _myPassword = (string) (((object[]) configSettings[0])[3]);
-            _myUsername = (string) (((object[]) configSettings[0])[4]);
-            _myRealname = (string) (((object[]) configSettings[0])[5]);
+            this._myNickname = (string) (((object[]) configSettings[0])[2]);
+            this._myPassword = (string) (((object[]) configSettings[0])[3]);
+            this._myUsername = (string) (((object[]) configSettings[0])[4]);
+            this._myRealname = (string) (((object[]) configSettings[0])[5]);
 
             this.logEvents = (bool) (((object[]) configSettings[0])[6]);
 
-            _nickserv = (string) (((object[]) configSettings[0])[7]);
+            this._nickserv = (string) (((object[]) configSettings[0])[7]);
 
             if ( /*recieveWallops*/ true)
                 this.connectionUserModes += 4;
             if ( /*invisible*/ true)
                 this.connectionUserModes += 8;
 
-            initialiseEventHandlers();
+            this.initialiseEventHandlers();
         }
 
         public IAL(string server, uint port, string nickname, string password, string username, string realname)
@@ -178,26 +180,26 @@ namespace helpmebot6
             this.logEvents = true;
             this.floodProtectionWaitTime = 500;
             this.clientVersion = "Helpmebot IRC Access Layer 1.0";
-            _networkId = 0;
-            _ircServer = server;
-            _ircPort = port;
+            this._networkId = 0;
+            this._ircServer = server;
+            this._ircPort = port;
 
-            _myNickname = nickname;
-            _myPassword = password;
-            _myUsername = username;
-            _myRealname = realname;
+            this._myNickname = nickname;
+            this._myPassword = password;
+            this._myUsername = username;
+            this._myRealname = realname;
 
-            initialiseEventHandlers();
+            this.initialiseEventHandlers();
         }
 
         ~IAL()
         {
-            if (_tcpClient.Connected)
+            if (this._tcpClient.Connected)
             {
                 this.ircQuit();
             }
         }
-
+        
         #endregion
 
         #region Methods
@@ -206,24 +208,24 @@ namespace helpmebot6
         {
             try
             {
-                _tcpClient = new TcpClient(_ircServer, (int) _ircPort);
+                this._tcpClient = new TcpClient(this._ircServer, (int) this._ircPort);
 
-                Stream ircStream = _tcpClient.GetStream();
-                _ircReader = new StreamReader(ircStream, Encoding.UTF8);
-                _ircWriter = new StreamWriter(ircStream, Encoding.UTF8);
+                Stream ircStream = this._tcpClient.GetStream();
+                this._ircReader = new StreamReader(ircStream, Encoding.UTF8);
+                this._ircWriter = new StreamWriter(ircStream, Encoding.UTF8);
 
 
-                _sendQ = new Queue(100);
+                this._sendQ = new Queue(100);
 
-                ThreadStart ircReaderThreadStart = _ircReaderThreadMethod;
-                _ircReaderThread = new Thread(ircReaderThreadStart);
+                ThreadStart ircReaderThreadStart = this._ircReaderThreadMethod;
+                this._ircReaderThread = new Thread(ircReaderThreadStart);
 
-                ThreadStart ircWriterThreadStart = _ircWriterThreadMethod;
-                _ircWriterThread = new Thread(ircWriterThreadStart);
+                ThreadStart ircWriterThreadStart = this._ircWriterThreadMethod;
+                this._ircWriterThread = new Thread(ircWriterThreadStart);
 
                 this.registerInstance();
-                _ircReaderThread.Start();
-                _ircWriterThread.Start();
+                this._ircReaderThread.Start();
+                this._ircWriterThread.Start();
 
                 this.connectionRegistrationRequiredEvent();
 
@@ -250,12 +252,12 @@ namespace helpmebot6
 
         private void _sendPass(string password)
         {
-            _sendLine("PASS " + password);
+            this._sendLine("PASS " + password);
         }
 
         private void _sendNick(string nickname)
         {
-            _sendLine("NICK " + nickname);
+            this._sendLine("NICK " + nickname);
         }
 
         /// <summary>
@@ -265,20 +267,20 @@ namespace helpmebot6
         /// <param name = "realname">The client's real name</param>
         private void _sendUser(string username, string realname)
         {
-            _sendLine("USER " + username + " " + "*" + " * :" + realname);
+            this._sendLine("USER " + username + " " + "*" + " * :" + realname);
         }
 
         private void registerConnection()
         {
-            if (_myPassword != null)
-                _sendPass(_myPassword);
-            _sendUser(_myUsername, _myRealname);
-            _sendNick(_myNickname);
+            if (this._myPassword != null)
+                this._sendPass(this._myPassword);
+            this._sendUser(this._myUsername, this._myRealname);
+            this._sendNick(this._myNickname);
         }
 
         private void assumeTakenNickname()
         {
-            _sendNick(_myNickname + "_");
+            this._sendNick(this._myNickname + "_");
             if ( this._nickserv == string.Empty ) return;
             this.ircPrivmsg(this._nickserv, "GHOST " + this._myNickname + " " + this._myPassword);
             this.ircPrivmsg(this._nickserv, "RELEASE " + this._myNickname + " " + this._myPassword);
@@ -287,17 +289,17 @@ namespace helpmebot6
 
         public void sendRawLine(string line)
         {
-            _sendLine(line);
+            this._sendLine(line);
         }
 
         public void ircPong(string datapacket)
         {
-            _sendLine("PONG " + datapacket);
+            this._sendLine("PONG " + datapacket);
         }
 
         public void ircPing(string datapacket)
         {
-            _sendLine("PING " + datapacket);
+            this._sendLine("PING " + datapacket);
         }
 
         /// <summary>
@@ -309,29 +311,29 @@ namespace helpmebot6
         {
             if (message.Length > 400)
             {
-                _sendLine("PRIVMSG " + destination + " :" + message.Substring(0, 400) + "...");
+                this._sendLine("PRIVMSG " + destination + " :" + message.Substring(0, 400) + "...");
                 this.ircPrivmsg(destination, "..." + message.Substring(400));
             }
             else
             {
-                _sendLine("PRIVMSG " + destination + " :" + message);
+                this._sendLine("PRIVMSG " + destination + " :" + message);
             }
             Linker.instance().parseMessage(message, destination);
         }
 
         public void ircQuit(string message)
         {
-            _sendLine("QUIT :" + message);
+            this._sendLine("QUIT :" + message);
         }
 
         public void ircQuit()
         {
-            _sendLine("QUIT");
+            this._sendLine("QUIT");
         }
 
         public void ircJoin(string channel)
         {
-            _sendLine("JOIN " + channel);
+            this._sendLine("JOIN " + channel);
         }
 
         public void ircJoin(string[] channels)
@@ -344,7 +346,7 @@ namespace helpmebot6
 
         public void ircMode(string channel, string modeflags, string param)
         {
-            _sendLine("MODE " + channel + " " + modeflags + " " + param);
+            this._sendLine("MODE " + channel + " " + modeflags + " " + param);
         }
 
         public void ircMode(string channel, string flags)
@@ -354,7 +356,7 @@ namespace helpmebot6
 
         public void ircPart(string channel, string message)
         {
-            _sendLine("PART " + channel + " " + message);
+            this._sendLine("PART " + channel + " " + message);
         }
 
         public void ircPart(string channel)
@@ -369,37 +371,37 @@ namespace helpmebot6
 
         public void ircNames(string channel)
         {
-            _sendLine("NAMES " + channel);
+            this._sendLine("NAMES " + channel);
         }
 
         public void ircNames()
         {
-            _sendLine("NAMES");
+            this._sendLine("NAMES");
         }
 
         public void ircList()
         {
-            _sendLine("LIST");
+            this._sendLine("LIST");
         }
 
         public void ircList(string channels)
         {
-            _sendLine("LIST " + channels);
+            this._sendLine("LIST " + channels);
         }
 
         public void ircInvite(string nickname, string channel)
         {
-            _sendLine("INVITE " + nickname + " " + channel);
+            this._sendLine("INVITE " + nickname + " " + channel);
         }
 
         public void ircKick(string channel, string user)
         {
-            _sendLine("KICK " + channel + " " + user);
+            this._sendLine("KICK " + channel + " " + user);
         }
 
         public void ircKick(string channel, string user, string reason)
         {
-            _sendLine("KICK" + channel + " " + user + " :" + reason);
+            this._sendLine("KICK" + channel + " " + user + " :" + reason);
         }
 
         public void ctcpReply(string destination, string command, string parameters)
@@ -430,95 +432,95 @@ namespace helpmebot6
 
         public void ircNotice(string destination, string message)
         {
-            _sendLine("NOTICE " + destination + " :" + message);
+            this._sendLine("NOTICE " + destination + " :" + message);
         }
 
         //TODO: Expand for network staff use
         public void ircMotd()
         {
-            _sendLine("MOTD");
+            this._sendLine("MOTD");
         }
 
         //TODO: Expand for network staff use
         public void ircLusers()
         {
-            _sendLine("LUSERS");
+            this._sendLine("LUSERS");
         }
 
         //TODO: Expand for network staff use
         public void ircVersion()
         {
-            _sendLine("VERSION");
+            this._sendLine("VERSION");
         }
 
         public void ircStats(string query)
         {
-            _sendLine("STATS " + query);
+            this._sendLine("STATS " + query);
         }
 
         public void ircLinks(string mask)
         {
-            _sendLine("LINKS " + mask);
+            this._sendLine("LINKS " + mask);
         }
 
         public void ircTime()
         {
-            _sendLine("TIME");
+            this._sendLine("TIME");
         }
 
         public void ircTopic(string channel)
         {
-            _sendLine("TOPIC " + channel);
+            this._sendLine("TOPIC " + channel);
         }
 
         public void ircTopic(string channel,string content)
         {
-            _sendLine("TOPIC " + channel + " :" + content);
+            this._sendLine("TOPIC " + channel + " :" + content);
         }
 
         public void ircAdmin()
         {
-            _sendLine("ADMIN");
+            this._sendLine("ADMIN");
         }
 
         public void ircInfo()
         {
-            _sendLine("INFO");
+            this._sendLine("INFO");
         }
 
         public void ircWho(string mask)
         {
-            _sendLine("WHO " + mask);
+            this._sendLine("WHO " + mask);
         }
 
         public void ircWhois(string mask)
         {
-            _sendLine("WHOIS " + mask);
+            this._sendLine("WHOIS " + mask);
         }
 
         public void ircWhowas(string mask)
         {
-            _sendLine("WHOWAS " + mask);
+            this._sendLine("WHOWAS " + mask);
         }
 
         public void ircKill(string nickname, string comment)
         {
-            _sendLine("KILL " + nickname + " :" + comment);
+            this._sendLine("KILL " + nickname + " :" + comment);
         }
 
         public void ircAway()
         {
-            _sendLine("AWAY");
+            this._sendLine("AWAY");
         }
 
         public void ircAway(string message)
         {
-            _sendLine("AWAY :" + message);
+            this._sendLine("AWAY :" + message);
         }
 
         public void ircIson(string nicklist)
         {
-            _sendLine("ISON " + nicklist);
+            this._sendLine("ISON " + nicklist);
         }
 
         /// <summary>
@@ -564,7 +566,7 @@ namespace helpmebot6
             {
                 try
                 {
-                    string line = _ircReader.ReadLine();
+                    string line = this._ircReader.ReadLine();
                     if (line == null)
                     {
                         // noop
@@ -608,17 +610,17 @@ namespace helpmebot6
                 try
                 {
                     string line = null;
-                    lock (_sendQ)
+                    lock (this._sendQ)
                     {
-                        if (_sendQ.Count > 0)
-                            line = (string) _sendQ.Dequeue();
+                        if (this._sendQ.Count > 0)
+                            line = (string) this._sendQ.Dequeue();
                     }
 
                     if (line != null)
                     {
                         Logger.instance().addToLog("< " + line, Logger.LogTypes.IAL);
-                        _ircWriter.WriteLine(line);
-                        _ircWriter.Flush();
+                        this._ircWriter.WriteLine(line);
+                        this._ircWriter.Flush();
                         Thread.Sleep(this.floodProtectionWaitTime);
                     }
                     else
@@ -631,7 +633,7 @@ namespace helpmebot6
                 {
                     threadIsAlive = false;
                     GlobalFunctions.errorLog(ex);
-                    _sendQ.Clear();
+                    this._sendQ.Clear();
                 }
                 catch (IOException ex)
                 {
@@ -642,7 +644,7 @@ namespace helpmebot6
                 {
                     GlobalFunctions.errorLog(ex);
                 }
-            } while (threadIsAlive && _ircReaderThread.IsAlive);
+            } while (threadIsAlive && this._ircReaderThread.IsAlive);
 
             Console.WriteLine("*** Writer thread died.");
 
@@ -725,8 +727,8 @@ namespace helpmebot6
         private void initialiseEventHandlers()
         {
             this.dataRecievedEvent += this.ialDataRecievedEvent;
-            this.unrecognisedDataRecievedEvent += IAL_unrecognisedDataRecievedEvent;
-            this.connectionRegistrationRequiredEvent += registerConnection;
+            this.unrecognisedDataRecievedEvent += this.IAL_unrecognisedDataRecievedEvent;
+            this.connectionRegistrationRequiredEvent += this.registerConnection;
             this.pingEvent += this.ircPong;
             this.nicknameChangeEvent += this.ialNicknameChangeEvent;
             this.quitEvent += this.ialQuitEvent;
@@ -739,10 +741,10 @@ namespace helpmebot6
             this.privmsgEvent += this.ialPrivmsgEvent;
             this.ctcpEvent += this.ialCtcpEvent;
             this.noticeEvent += this.ialNoticeEvent;
-            this.errNicknameInUseEvent += assumeTakenNickname;
+            this.errNicknameInUseEvent += this.assumeTakenNickname;
             this.errUnavailResource += this.ialErrUnavailResource;
             this.nameReplyEvent += this.ialNameReplyEvent;
-            this.connectionRegistrationSucceededEvent += ialConnectionRegistrationSucceededEvent;
+            this.connectionRegistrationSucceededEvent += this.ialConnectionRegistrationSucceededEvent;
         }
 
         void IAL_unrecognisedDataRecievedEvent(string data)
@@ -752,14 +754,14 @@ namespace helpmebot6
 
         void ialConnectionRegistrationSucceededEvent()
         {
-            this.ircPrivmsg(_nickserv, "IDENTIFY " + _myNickname + " " + _myPassword);
-            this.ircMode(_myNickname, "+Q");
+            this.ircPrivmsg(this._nickserv, "IDENTIFY " + this._myNickname + " " + this._myPassword);
+            this.ircMode(this._myNickname, "+Q");
         }
 
         private void ialErrUnavailResource()
         {
-            if (_nickserv != string.Empty)
-                assumeTakenNickname();
+            if (this._nickserv != string.Empty)
+                this.assumeTakenNickname();
 
             else
                 throw new NotImplementedException();
@@ -769,7 +771,7 @@ namespace helpmebot6
 
         private void RPL_MyInfoEvent(string parameters)
         {
-            _rpl_myinfo = parameters;
+            this._rpl_myinfo = parameters;
         }
 
         private void RPL_CreatedEvent(string parameters)
@@ -814,7 +816,7 @@ namespace helpmebot6
                     this.ctcpReply(source.nickname, "PING", message.Split(' ')[1]);
                     break;
                 case "FINGER":
-                    this.ctcpReply(source.nickname, "FINGER", this.ircRealname + ", idle " + idleTime);
+                    this.ctcpReply(source.nickname, "FINGER", this.ircRealname + ", idle " + this.idleTime);
                     break;
                 default:
                     break;
@@ -850,13 +852,13 @@ namespace helpmebot6
         private void ialPartEvent(User source, string channel, string message)
         {
             this.log("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
-            if (source.nickname == ircNickname) this.channelList.Remove(channel);
+            if (source.nickname == this.ircNickname) this.channelList.Remove(channel);
         }
 
         private void ialJoinEvent(User source, string channel)
         {
             this.log("JOIN EVENT BY " + source + " INTO " + channel);
-            if(source.nickname == ircNickname) this.channelList.Add(channel);
+            if(source.nickname == this.ircNickname) this.channelList.Add(channel);
         }
 
         private void ialQuitEvent(User source, string message)
@@ -885,7 +887,7 @@ namespace helpmebot6
 
             if (messagesource != null)
             {
-                source = User.newFromString(messagesource, _networkId);
+                source = User.newFromString(messagesource, this._networkId);
             }
 
             switch (command)
@@ -893,9 +895,9 @@ namespace helpmebot6
                 case "ERROR":
                     if (parameters.ToLower().Contains(":closing link"))
                     {
-                        _tcpClient.Close();
-                        _ircReaderThread.Abort();
-                        _ircWriterThread.Abort();
+                        this._tcpClient.Close();
+                        this._ircReaderThread.Abort();
+                        this._ircWriterThread.Abort();
                     }
                     break;
                 case "PING":
@@ -1027,7 +1029,7 @@ namespace helpmebot6
         {
             if (this.logEvents)
             {
-                Logger.instance().addToLog("<" + _networkId + ">" + message, Logger.LogTypes.IAL);
+                Logger.instance().addToLog("<" + this._networkId + ">" + message, Logger.LogTypes.IAL);
             }
         }
 
@@ -1037,8 +1039,8 @@ namespace helpmebot6
         {
             this.ircQuit("Requested by controller");
             Thread.Sleep(5000);
-            _ircWriterThread.Abort();
-            _ircReaderThread.Abort();
+            this._ircWriterThread.Abort();
+            this._ircReaderThread.Abort();
         }
 
         public void registerInstance()
@@ -1049,8 +1051,8 @@ namespace helpmebot6
         public string[] getThreadStatus()
         {
             string[] statuses = {
-                                    "(" + _networkId + ") " + _ircServer + " READER:" + _ircReaderThread.ThreadState,
-                                    "(" + _networkId + ") " + _ircServer + " WRITER:" + _ircWriterThread.ThreadState
+                                    "(" + this._networkId + ") " + this._ircServer + " READER:" + this._ircReaderThread.ThreadState,
+                                    "(" + this._networkId + ") " + this._ircServer + " WRITER:" + this._ircWriterThread.ThreadState
                                 };
             return statuses;
         }

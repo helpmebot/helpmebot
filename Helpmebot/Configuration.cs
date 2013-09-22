@@ -18,11 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
+
+    using helpmebot6;
 
     /// <summary>
     /// Handles all configuration settings of the bot
@@ -80,7 +82,7 @@ namespace helpmebot6
 
         private string getGlobalSetting( string optionName )
         {
-            lock(_configurationCache)
+            lock(this._configurationCache)
                 if (this._configurationCache.ContainsKey(optionName))
                 {
                     ConfigurationSetting setting;
@@ -109,7 +111,7 @@ namespace helpmebot6
             if (optionValue2 != string.Empty)
             {
                 ConfigurationSetting cachedSetting = new ConfigurationSetting(optionName, optionValue2);
-                lock (_configurationCache)
+                lock (this._configurationCache)
                     this._configurationCache.Add(optionName, cachedSetting);
             }
             return optionValue2;
@@ -158,8 +160,8 @@ namespace helpmebot6
 
             if(newValue == null)
             {
-                this._dbal.delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", getOptionId( optionName ) ),
-                                   new DAL.WhereConds( "cc_channel", getChannelId( channelId ) ) );
+                this._dbal.delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", this.getOptionId( optionName ) ),
+                                   new DAL.WhereConds( "cc_channel", this.getChannelId( channelId ) ) );
                 return;
             }
 
@@ -231,7 +233,7 @@ namespace helpmebot6
 
         public void clearCache()
         {
-            lock (_configurationCache)
+            lock (this._configurationCache)
                 this._configurationCache.Clear();
         }
 
@@ -239,8 +241,8 @@ namespace helpmebot6
 
         public void addToConfigCache(string key, ConfigurationSetting value)
         {
-            lock (_configurationCache)
-                _configurationCache.Add(key, value);
+            lock (this._configurationCache)
+                this._configurationCache.Add(key, value);
         }
 
 #endif

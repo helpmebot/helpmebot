@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Collections;
@@ -28,12 +28,14 @@ namespace helpmebot6
     using System.Text;
     using System.Threading;
 
+    using helpmebot6;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>
     /// Database access class
     /// </summary>
-    public class DAL
+    public sealed class DAL : IDisposable
     {
        
         private readonly string _mySqlServer;
@@ -75,11 +77,11 @@ namespace helpmebot6
 
         protected DAL(string host, uint port, string username, string password, string schema)
         {
-            _mySqlPort = port;
-            _mySqlPassword = password;
-            _mySqlSchema = schema;
-            _mySqlServer = host;
-            _mySqlUsername = username;
+            this._mySqlPort = port;
+            this._mySqlPassword = password;
+            this._mySqlSchema = schema;
+            this._mySqlServer = host;
+            this._mySqlUsername = username;
         }
         #endregion
 
@@ -110,8 +112,8 @@ namespace helpmebot6
                                                                    this._mySqlPort
                                                            };
 
-                    _connection = new MySqlConnection(csb.ConnectionString);
-                    _connection.Open();
+                    this._connection = new MySqlConnection(csb.ConnectionString);
+                    this._connection.Open();
                 }
                 return true;
             }
@@ -132,9 +134,9 @@ namespace helpmebot6
                 Logger.instance().addToLog("Executing (non)query: " + cmd.CommandText, Logger.LogTypes.DAL);
                 try
                 {
-                    runConnectionTest();
+                    this.runConnectionTest();
                     //MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
-                    cmd.Connection = _connection;
+                    cmd.Connection = this._connection;
                     cmd.ExecuteNonQuery();
                     //transact.Commit( );
                 }
@@ -170,7 +172,7 @@ namespace helpmebot6
 
             try
             {
-                runConnectionTest();
+                this.runConnectionTest();
 
                 MySqlCommand cmd = new MySqlCommand(query) {Connection = this._connection};
                 result = cmd.ExecuteReader();
@@ -327,7 +329,7 @@ namespace helpmebot6
         public ArrayList executeSelect(Select query)
         {
             List<string> cols;
-            return executeSelect(query, out cols);
+            return this.executeSelect(query, out cols);
         }
 
         /// <summary>
@@ -383,7 +385,7 @@ namespace helpmebot6
         /// <returns>A single value as a string</returns>
         public string executeScalarSelect(Select query)
         {
-            ArrayList al = executeSelect(query);
+            ArrayList al = this.executeSelect(query);
             return al.Count > 0 ? (((object[]) al[0])[0]).ToString() : "";
         }
 #endregion
@@ -414,15 +416,15 @@ namespace helpmebot6
                     sleepTime = (int) (sleepTime*1.5) > int.MaxValue ? sleepTime : (int) (sleepTime*1.5);
                 }
 
-                while(_connection.State==ConnectionState.Connecting)
+                while(this._connection.State==ConnectionState.Connecting)
                 {
                     Thread.Sleep(100);
                     totalTimeSlept += 100;
                 }
 
-                connectionOk = ((_connection.State == ConnectionState.Open) ||
-                                (_connection.State == ConnectionState.Fetching) ||
-                                (_connection.State == ConnectionState.Executing));
+                connectionOk = ((this._connection.State == ConnectionState.Open) ||
+                                (this._connection.State == ConnectionState.Fetching) ||
+                                (this._connection.State == ConnectionState.Executing));
 
                 
 
@@ -451,9 +453,9 @@ namespace helpmebot6
                 cmd.Parameters.Add(new MySqlParameter(item, MySqlDbType.Int16));
             }
 
-            cmd.Connection = _connection;
+            cmd.Connection = this._connection;
 
-            runConnectionTest();
+            this.runConnectionTest();
 
             cmd.ExecuteNonQuery();
         }
@@ -478,7 +480,7 @@ namespace helpmebot6
             {
                 try
                 {
-                    runConnectionTest();
+                    this.runConnectionTest();
                     cmd.ExecuteNonQuery();
                 }
                 catch (InvalidOperationException ex)
@@ -496,7 +498,7 @@ namespace helpmebot6
             {
                 lock (this)
                 {
-                    runConnectionTest();
+                    this.runConnectionTest();
 
 
                     MySqlCommand cmd = new MySqlCommand
@@ -546,7 +548,7 @@ namespace helpmebot6
             {
                 lock (this)
                 {
-                    runConnectionTest();
+                    this.runConnectionTest();
 
                     MySqlCommand cmd = new MySqlCommand
                                            {
@@ -607,7 +609,7 @@ namespace helpmebot6
             {
                 lock (this)
                 {
-                    runConnectionTest();
+                    this.runConnectionTest();
 
                     MySqlCommand cmd = new MySqlCommand
                                            {
@@ -912,9 +914,9 @@ namespace helpmebot6
 
                 public Join(JoinTypes type, string table, WhereConds conditions)
                 {
-                    joinType = type;
+                    this.joinType = type;
                     this.table = table;
-                    joinConditions = conditions;
+                    this.joinConditions = conditions;
                 }
             }
 
@@ -981,6 +983,11 @@ namespace helpmebot6
         private static string sanitise(string rawData)
         {
             return MySqlHelper.EscapeString(rawData);
+        }
+
+        public void Dispose()
+        {
+            this._connection.Dispose();
         }
     }
 }

@@ -25,8 +25,7 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
-
-    using helpmebot6.Model;
+    using Helpmebot.Model;
 
     /* returns information about a user
     // what                 how                     info    message

@@ -25,6 +25,8 @@ namespace helpmebot6.Commands
     using System.Net;
     using System.Xml;
 
+    using Helpmebot;
+
     /// <summary>
     /// Discovers the location of an IP address
     /// </summary>

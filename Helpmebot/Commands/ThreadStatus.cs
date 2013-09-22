@@ -20,7 +20,8 @@
 
 namespace helpmebot6.Commands
 {
-    using helpmebot6.Threading;
+    using Helpmebot;
+    using Helpmebot.Threading;
 
     /// <summary>
     /// Retrieve the internal status of the bot's subsystems

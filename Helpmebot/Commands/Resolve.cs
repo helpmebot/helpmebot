@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System.Net;
     using System.Net.Sockets;
 
+    using Helpmebot;
+
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
     /// </summary>

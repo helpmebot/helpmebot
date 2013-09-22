@@ -20,6 +20,8 @@
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot;
+
     /// <summary>
     ///   Returns the registration date of a wikipedian. Alias for Registration
     /// </summary>

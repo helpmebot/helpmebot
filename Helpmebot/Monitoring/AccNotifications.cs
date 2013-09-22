@@ -25,8 +25,7 @@ namespace helpmebot6.Monitoring
     using System.Threading;
 
     using Helpmebot;
-
-    using helpmebot6.Threading;
+    using Helpmebot.Threading;
 
     class AccNotifications : IThreadedSystem
     {

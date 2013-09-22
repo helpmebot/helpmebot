@@ -25,7 +25,7 @@ namespace helpmebot6.Monitoring.RSS
     using System.Xml;
     using System.Xml.XPath;
 
-    using helpmebot6.Threading;
+    using Helpmebot.Threading;
 
     class RssMonitor : IThreadedSystem
     {
