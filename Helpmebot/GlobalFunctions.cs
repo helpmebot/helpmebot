@@ -24,6 +24,8 @@ namespace helpmebot6
     using System.Diagnostics;
     using System.Reflection;
 
+    using helpmebot6.ExtensionMethods;
+
     /// <summary>
     /// Class holding globally accessible functions
     /// </summary>
@@ -35,17 +37,10 @@ namespace helpmebot6
         /// <param name = "needle"></param>
         /// <param name = "haystack"></param>
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
+        [Obsolete("Use extension method", true)]
         public static int isInArray(string needle, string[] haystack)
         {
-            int id = 0;
-            foreach (string straw in haystack)
-            {
-                if (needle == straw)
-                    return id;
-                id++;
-            }
-
-            return -1;
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -54,20 +49,10 @@ namespace helpmebot6
         /// <param name = "needlehead"></param>
         /// <param name = "haystack"></param>
         /// <returns>ID of the needle in the haystack, -1 if not in array</returns>
+        [Obsolete("Use extension method", true)]
         public static int prefixIsInArray(string needlehead, string[] haystack)
         {
-            int id = 0;
-            foreach (string straw in haystack)
-            {
-                if (straw.Length >= needlehead.Length)
-                {
-                    if (needlehead == straw.Substring(0, needlehead.Length))
-                        return id;
-                }
-                id++;
-            }
-
-            return -1;
+            throw new NotSupportedException();
         }
 
         /// <summary>

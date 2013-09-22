@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using helpmebot6.Monitoring;
 
@@ -55,7 +56,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh = new CommandResponseHandler();
             Dictionary<string, Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.instance().getKeywords();
             string[] args = this.Arguments;
-            if (GlobalFunctions.isInArray("@cats", args) != -1)
+            if (args.Contains("@cats"))
             {
                 GlobalFunctions.removeItemFromArray("@cats", ref args);
                 string listSep = new Message().get("listSeparator");

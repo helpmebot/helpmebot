@@ -108,6 +108,7 @@
     <Compile Include="Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
     <Compile Include="Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Commands\Reg.cs" />
+    <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />

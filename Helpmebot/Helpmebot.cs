@@ -24,6 +24,7 @@ namespace helpmebot6
 
     using helpmebot6.AI;
     using helpmebot6.Commands;
+    using helpmebot6.ExtensionMethods;
     using helpmebot6.Monitoring;
     using helpmebot6.Threading;
 
@@ -52,25 +53,37 @@ namespace helpmebot6
 // ReSharper restore InconsistentNaming
         {
             // startup arguments
-            int configFileArg = GlobalFunctions.prefixIsInArray("--configfile", args);
+            int? configFileArg = args.ContainsPrefix("--configfile");
             string configFile = ".hmbot";
-            if (configFileArg != -1)
+            if (configFileArg.HasValue)
             {
-                configFile = args[configFileArg].Substring(args[configFileArg].IndexOf('='));
+                configFile = args[configFileArg.Value].Substring(args[configFileArg.Value].IndexOf('='));
             }
 
-            if (GlobalFunctions.prefixIsInArray("--logdal", args) != -1)
+            if (args.ContainsPrefix("--logdal").HasValue)
+            {
                 Logger.instance().logDAL = true;
-            if (GlobalFunctions.prefixIsInArray("--logdallock", args) != -1)
+            }
+
+            if (args.ContainsPrefix("--logdallock").HasValue)
+            {
                 Logger.instance().logDalLock = true;
-            if (GlobalFunctions.prefixIsInArray("--logirc", args) != -1)
+            }
+
+            if (args.ContainsPrefix("--logirc").HasValue)
+            {
                 Logger.instance().logIrc = true;
+            }
 
-            if (GlobalFunctions.prefixIsInArray("--disablepagewatcher", args) != -1)
+            if (args.ContainsPrefix("--disablepagewatcher").HasValue)
+            {
                 pagewatcherEnabled = false;
-            if (GlobalFunctions.prefixIsInArray("--disabletwitter", args) != -1)
-                enableTwitter = false;
+            }
 
+            if (args.ContainsPrefix("--disabletwitter").HasValue)
+            {
+                enableTwitter = false;
+            }
 
             initialiseBot(configFile);
         }

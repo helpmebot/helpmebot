@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System.Diagnostics;
+    using System.Linq;
 
     /// <summary>
     ///   Returns the current version of the bot.
@@ -79,7 +80,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return GlobalFunctions.isInArray("@svn", this.Arguments) != -1
+            return this.Arguments.Contains("@svn")
                        ? new CommandResponseHandler(this.GetVersionString())
                        : new CommandResponseHandler(this.SoftwareVersion);
         }

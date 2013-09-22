@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// The protected command.
@@ -67,7 +68,7 @@ namespace helpmebot6.Commands
 
             try
             {
-                crh = GlobalFunctions.isInArray("@confirm", this.Arguments) != -1 ? this.ExecuteCommand() : this.NotConfirmed();
+                crh = this.Arguments.Contains("@confirm") ? this.ExecuteCommand() : this.NotConfirmed();
             }
             catch (Exception ex)
             {

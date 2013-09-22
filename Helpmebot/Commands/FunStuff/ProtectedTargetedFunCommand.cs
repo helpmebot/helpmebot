@@ -20,6 +20,8 @@
 
 namespace helpmebot.Commands.FunStuff
 {
+    using System.Linq;
+
     using helpmebot6;
 
     /// <summary>
@@ -60,7 +62,7 @@ namespace helpmebot.Commands.FunStuff
         {
             get
             {
-                if (GlobalFunctions.isInArray(base.CommandTarget, this.forbiddenTargets) != -1)
+                if (this.forbiddenTargets.Contains(base.CommandTarget))
                 {
                     return this.Source.nickname;
                 }
