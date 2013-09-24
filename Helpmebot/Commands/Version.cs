@@ -62,17 +62,7 @@ namespace helpmebot6.Commands
         /// <returns>the version</returns>
         public string GetVersionString()
         {
-            Process process = Process.Start("svnversion");
-
-            if (process != null)
-            {
-                string rev = process.StandardOutput.ReadLine();
-
-                string versionString = this.SoftwareVersion + "-r" + rev;
-
-                return versionString;
-            }
-
+            // TODO: implement for git
             return string.Empty;
         }
 
@@ -82,9 +72,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return this.Arguments.Contains("@svn")
-                       ? new CommandResponseHandler(this.GetVersionString())
-                       : new CommandResponseHandler(this.SoftwareVersion);
+            return new CommandResponseHandler(this.SoftwareVersion);
         }
     }
 }
