@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+  <session-factory>
+    <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+    <property name="dialect">NHibernate.Dialect.MySQLDialect</property>
+    <property name="connection.driver_class">NHibernate.Driver.MySqlDataDriver</property>
+    <property name="use_proxy_validator">true</property>
+    <property name="connection.connection_string">
+      Server=localhost;Database=helpmebot_v6;User ID=root;Password=
+    </property>
+
+    <property name="adonet.batch_size">16</property>
+    <property name="generate_statistics">true</property>
+    <property name="current_session_context_class">web</property>
+    <property name="proxyfactory.factory_class">
+      NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle
+    </property>
+
+  </session-factory>
+</hibernate-configuration>
