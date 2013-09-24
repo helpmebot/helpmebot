@@ -27,8 +27,6 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot.Threading;
 
-    using helpmebot6;
-
     /// <summary>
     /// Category watcher thread
     /// </summary>

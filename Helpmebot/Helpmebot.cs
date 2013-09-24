@@ -28,9 +28,7 @@ namespace Helpmebot
     using Helpmebot.Properties;
     using Helpmebot.Threading;
 
-    using helpmebot6;
     using helpmebot6.Commands;
-    using helpmebot6.Monitoring;
 
     /// <summary>
     /// Helpmebot main class

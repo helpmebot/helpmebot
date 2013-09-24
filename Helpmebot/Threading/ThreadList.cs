@@ -24,8 +24,6 @@ namespace Helpmebot.Threading
     using System.Collections;
     using System.Threading;
 
-    using helpmebot6;
-
     /// <summary>
     /// Maintains a list of all the available threads the bot is running
     /// </summary>

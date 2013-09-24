@@ -28,8 +28,6 @@ namespace Helpmebot
 
     using Helpmebot.Threading;
 
-    using helpmebot6;
-
     class IrcProxy : IThreadedSystem
     {
         public IrcProxy(IAL baseIrcAccessLayer, int port, string password)

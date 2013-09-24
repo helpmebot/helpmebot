@@ -28,8 +28,6 @@ namespace Helpmebot
     using System.Text;
     using System.Threading;
 
-    using helpmebot6;
-
     using MySql.Data.MySqlClient;
 
     /// <summary>

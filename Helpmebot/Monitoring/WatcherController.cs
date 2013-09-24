@@ -26,8 +26,6 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot;
 
-    using helpmebot6;
-
     using MySql.Data.MySqlClient;
 
     /// <summary>

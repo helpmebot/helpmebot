@@ -24,8 +24,6 @@ namespace Helpmebot
     using System.IO;
     using System.Net;
 
-    using helpmebot6;
-
     /// <summary>
     /// is.gd wrapper class
     /// </summary>

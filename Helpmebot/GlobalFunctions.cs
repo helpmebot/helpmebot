@@ -18,13 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6
+namespace Helpmebot
 {
     using System;
     using System.Diagnostics;
     using System.Reflection;
-
-    using Helpmebot;
 
     /// <summary>
     /// Class holding globally accessible functions

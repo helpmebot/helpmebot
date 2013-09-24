@@ -22,8 +22,6 @@ namespace Helpmebot
 {
     using System;
 
-    using helpmebot6;
-
     /// <summary>
     /// Represents a configuration setting
     /// </summary>

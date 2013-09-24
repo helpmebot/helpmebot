@@ -22,10 +22,8 @@ namespace Helpmebot
 {
     using System;
 
-    using helpmebot6;
-
     /// <summary>
-    /// 
+    /// The user.
     /// </summary>
     public class User
     {

@@ -24,7 +24,6 @@ namespace Helpmebot
     using System.Collections;
     using System.Collections.Generic;
 
-    using helpmebot6;
     using helpmebot6.Commands;
 
     /// <summary>

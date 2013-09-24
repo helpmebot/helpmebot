@@ -26,8 +26,6 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot;
 
-    using helpmebot6;
-
     /// <summary>
     /// Newbie welcomer subsystem
     /// </summary>

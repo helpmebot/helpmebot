@@ -31,8 +31,6 @@ namespace Helpmebot
 
     using Helpmebot.Threading;
 
-    using helpmebot6;
-
     /// <summary>
     ///   IRC Access Layer
     /// 

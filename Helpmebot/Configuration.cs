@@ -24,8 +24,6 @@ namespace Helpmebot
     using System.Collections.Generic;
     using System.IO;
 
-    using helpmebot6;
-
     /// <summary>
     /// Handles all configuration settings of the bot
     /// </summary>

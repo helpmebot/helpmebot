@@ -28,7 +28,6 @@ namespace Helpmebot
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Monitoring;
 
-    using helpmebot6;
     using helpmebot6.Commands;
 
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
