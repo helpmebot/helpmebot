@@ -24,8 +24,6 @@ namespace helpmebot.Commands.FunStuff
 
     using Helpmebot;
 
-    using helpmebot6;
-
     /// <summary>
     /// The protected targeted command.
     /// </summary>

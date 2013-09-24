@@ -27,8 +27,6 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Monitoring;
 
-    using helpmebot6.Monitoring;
-
     /// <summary>
     /// Category watcher command.
     /// <para>

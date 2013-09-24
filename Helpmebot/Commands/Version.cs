@@ -20,9 +20,6 @@
 
 namespace helpmebot6.Commands
 {
-    using System.Diagnostics;
-    using System.Linq;
-
     using Helpmebot;
 
     /// <summary>
