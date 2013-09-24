@@ -239,7 +239,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="BotInfo.netmodule" />
     <None Include="CREDITS" />
     <None Include="helpmebot6.sql" />
     <None Include="LICENCE" />
