@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring
+namespace Helpmebot.Monitoring
 {
     using System;
     using System.IO;
@@ -48,7 +48,7 @@ namespace helpmebot6.Monitoring
         /// <param name="message">The message.</param>
         public MonitorService(int port, string message)
         {
-            this._monitorthread = new Thread(threadMethod);
+            this._monitorthread = new Thread(this.threadMethod);
 
             this._message = message;
 

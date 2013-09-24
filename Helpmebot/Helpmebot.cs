@@ -24,6 +24,7 @@ namespace Helpmebot
 
     using Helpmebot.AI;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.Monitoring;
     using Helpmebot.Properties;
     using Helpmebot.Threading;
 

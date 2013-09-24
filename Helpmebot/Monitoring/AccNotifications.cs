@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring
+namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
@@ -46,8 +46,8 @@ namespace helpmebot6.Monitoring
 
         private AccNotifications()
         {
-            _watcherThread = new Thread(threadBody);
-            _watcherThread.Start();
+            this._watcherThread = new Thread(this.threadBody);
+            this._watcherThread.Start();
 	        this.registerInstance();
         }
 

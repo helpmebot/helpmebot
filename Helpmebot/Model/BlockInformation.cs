@@ -20,8 +20,6 @@
 
 namespace Helpmebot.Model
 {
-    using helpmebot6;
-
     /// <summary>
     /// Holds the block information of a specific user
     /// </summary>

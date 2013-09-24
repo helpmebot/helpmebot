@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring.RSS
+namespace Helpmebot.Monitoring.RSS
 {
     using System;
     using System.Net;
@@ -42,7 +42,7 @@ namespace helpmebot6.Monitoring.RSS
         {
             
 
-            HttpWebRequest wreq = WebRequest.Create(feedurl) as HttpWebRequest;
+            HttpWebRequest wreq = WebRequest.Create(this.feedurl) as HttpWebRequest;
             HttpWebResponse wrsp = wreq.GetResponse() as HttpWebResponse;
 
 

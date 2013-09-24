@@ -18,13 +18,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Monitoring
+namespace Helpmebot.Monitoring
 {
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
 
     using Helpmebot;
+
+    using helpmebot6;
 
     /// <summary>
     /// Newbie welcomer subsystem
@@ -37,22 +39,22 @@ namespace helpmebot6.Monitoring
         {
             try
             {
-                _hostNames = BinaryStore.retrieve("newbie_hostnames");
+                this._hostNames = BinaryStore.retrieve("newbie_hostnames");
             }
             catch (SerializationException ex)
             {
                 GlobalFunctions.errorLog(ex);
-                _hostNames = new SerializableArrayList();
+                this._hostNames = new SerializableArrayList();
             }
 
             try
             {
-                _ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
+                this._ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
             }
             catch (SerializationException ex)
             {
                 GlobalFunctions.errorLog(ex);
-                _ignoredNicknames = new SerializableArrayList();
+                this._ignoredNicknames = new SerializableArrayList();
             }
         }
 
@@ -80,7 +82,7 @@ namespace helpmebot6.Monitoring
 
             {
                 var match = false;
-                foreach (var pattern in _hostNames.Cast<string>())
+                foreach (var pattern in this._hostNames.Cast<string>())
                 {
                     Logger.instance().addToLog("Checking: " + pattern + " == " + source.hostname, Logger.LogTypes.Command);
                 
@@ -100,7 +102,7 @@ namespace helpmebot6.Monitoring
                 var match = false;
                 Logger.instance().addToLog("Checking ignored nicks...", Logger.LogTypes.Command);
 
-                foreach (var pattern in _ignoredNicknames.Cast<string>())
+                foreach (var pattern in this._ignoredNicknames.Cast<string>())
                 {
                     Logger.instance().addToLog("Checking: " + pattern + " == " + source.nickname, Logger.LogTypes.Command);
                     var rX = new Regex(pattern);
@@ -128,14 +130,14 @@ namespace helpmebot6.Monitoring
         {
             if (except)
             {
-                _ignoredNicknames.Add(host);
+                this._ignoredNicknames.Add(host);
             }
             else
             {
-                _hostNames.Add(host);
+                this._hostNames.Add(host);
             }
 
-            saveHostnames();
+            this.saveHostnames();
         }
 
 
@@ -145,19 +147,19 @@ namespace helpmebot6.Monitoring
         {
             if (except)
             {
-                _ignoredNicknames.Remove(host);
+                this._ignoredNicknames.Remove(host);
             }
             else
             {
-                _hostNames.Remove(host);
+                this._hostNames.Remove(host);
             }
 
-            saveHostnames();
+            this.saveHostnames();
         }
 
         public string[] getHosts(bool except = false)
         {
-            var data = except ? _ignoredNicknames : _hostNames;
+            var data = except ? this._ignoredNicknames : this._hostNames;
 
             var list = new string[data.Count];
             data.CopyTo(list);
@@ -166,8 +168,8 @@ namespace helpmebot6.Monitoring
 
         private void saveHostnames()
         {
-            BinaryStore.storeValue("newbie_hostnames", _hostNames);
-            BinaryStore.storeValue("newbie_ignorednicks", _ignoredNicknames);
+            BinaryStore.storeValue("newbie_hostnames", this._hostNames);
+            BinaryStore.storeValue("newbie_ignorednicks", this._ignoredNicknames);
         }
 
 

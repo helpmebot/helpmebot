@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Monitoring;
 
     /// <summary>
     /// The accmon.
@@ -52,7 +53,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return new CommandResponseHandler(Monitoring.AccNotifications.getInstance().getThreadStatus()[0]);
+            return new CommandResponseHandler(AccNotifications.getInstance().getThreadStatus()[0]);
         }
 
         #endregion
