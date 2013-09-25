@@ -109,6 +109,7 @@
     <Compile Include="Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />
@@ -281,5 +282,6 @@
     <Content Include="Configuration\hibernate.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Configuration\Mapping\User.hbm.xml" />
   </ItemGroup>
 </Project>
