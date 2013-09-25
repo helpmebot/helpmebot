@@ -79,12 +79,7 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
-            _dbal = DAL.singleton(
-                Settings.Default.MysqlHostname,
-                Settings.Default.MysqlPort,
-                Settings.Default.MysqlUsername,
-                Settings.Default.MysqlPassword,
-                Settings.Default.MysqlSchema);
+            _dbal = DAL.singleton();
 
             if (!_dbal.connect())
             {

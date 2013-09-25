@@ -28,6 +28,8 @@ namespace Helpmebot
     using System.Text;
     using System.Threading;
 
+    using Helpmebot.Properties;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -35,13 +37,6 @@ namespace Helpmebot
     /// </summary>
     public sealed class DAL : IDisposable
     {
-       
-        private readonly string _mySqlServer;
-        private readonly string _mySqlUsername;
-        private readonly string _mySqlPassword;
-        private readonly string _mySqlSchema;
-        private readonly uint _mySqlPort;
-
         private MySqlConnection _connection;
 
         #region singleton
@@ -49,37 +44,16 @@ namespace Helpmebot
         private static DAL _singleton;
 
         /// <summary>
-        /// Singletons this instance.
+        /// Singletons the specified host.
         /// </summary>
         /// <returns></returns>
         public static DAL singleton()
         {
-            return _singleton;
+            return _singleton ?? (_singleton = new DAL());
         }
 
-        /// <summary>
-        /// Singletons the specified host.
-        /// </summary>
-        /// <param name="host">The host.</param>
-        /// <param name="port">The port.</param>
-        /// <param name="username">The username.</param>
-        /// <param name="password">The password.</param>
-        /// <param name="schema">The schema.</param>
-        /// <returns></returns>
-        public static DAL singleton(string host, uint port, string username, string password, string schema)
+        protected DAL()
         {
-            return _singleton ??
-                   ( _singleton =
-                     new DAL( host, port, username, password, schema ) );
-        }
-
-        protected DAL(string host, uint port, string username, string password, string schema)
-        {
-            this._mySqlPort = port;
-            this._mySqlPassword = password;
-            this._mySqlSchema = schema;
-            this._mySqlServer = host;
-            this._mySqlUsername = username;
         }
         #endregion
 
@@ -96,11 +70,11 @@ namespace Helpmebot
                     Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
                     var csb = new MySqlConnectionStringBuilder
                                   {
-                                      Database = this._mySqlSchema,
-                                      Password = this._mySqlPassword,
-                                      Server = this._mySqlServer,
-                                      UserID = this._mySqlUsername,
-                                      Port = this._mySqlPort
+                                      Database = Settings.Default.MysqlSchema,
+                                      Password = Settings.Default.MysqlPassword,
+                                      Server = Settings.Default.MysqlHostname,
+                                      UserID = Settings.Default.MysqlUsername,
+                                      Port = Settings.Default.MysqlPort
                                   };
 
                     this._connection = new MySqlConnection(csb.ConnectionString);
