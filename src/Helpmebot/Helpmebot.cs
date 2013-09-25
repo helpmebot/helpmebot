@@ -79,6 +79,10 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
+            // save the settings so we get a local configuration file.
+            Settings.Default.MysqlHostname = Settings.Default.MysqlHostname;
+            Settings.Default.Save();
+
             _dbal = DAL.singleton();
 
             if (!_dbal.connect())
