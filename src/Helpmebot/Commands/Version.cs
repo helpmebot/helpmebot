@@ -20,6 +20,9 @@
 
 namespace helpmebot6.Commands
 {
+    using System.Diagnostics;
+    using System.Reflection;
+
     using Helpmebot;
 
     /// <summary>
@@ -50,7 +53,10 @@ namespace helpmebot6.Commands
         /// <value>The version.</value>
         public string SoftwareVersion
         {
-            get { return "6.1"; }
+            get
+            {
+                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
         }
 
         /// <summary>
