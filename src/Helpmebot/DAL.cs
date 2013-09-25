@@ -25,7 +25,6 @@ namespace Helpmebot
     using System.Collections.Generic;
     using System.Data;
     using System.Net.Sockets;
-    using System.Runtime.InteropServices.ComTypes;
     using System.Text;
     using System.Threading;
 
@@ -107,6 +106,7 @@ namespace Helpmebot
                     this._connection = new MySqlConnection(csb.ConnectionString);
                     this._connection.Open();
                 }
+
                 return true;
             }
             catch (MySqlException ex)
