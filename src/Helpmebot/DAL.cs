@@ -25,6 +25,7 @@ namespace Helpmebot
     using System.Collections.Generic;
     using System.Data;
     using System.Net.Sockets;
+    using System.Runtime.InteropServices.ComTypes;
     using System.Text;
     using System.Threading;
 
@@ -94,21 +95,14 @@ namespace Helpmebot
                 lock (this)
                 {
                     Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
-                    MySqlConnectionStringBuilder csb = new MySqlConnectionStringBuilder
-                                                           {
-                                                               Database =
-                                                                   this._mySqlSchema,
-                                                               Password =
-                                                                   this.
-                                                                   _mySqlPassword,
-                                                               Server =
-                                                                   this._mySqlServer,
-                                                               UserID =
-                                                                   this.
-                                                                   _mySqlUsername,
-                                                               Port =
-                                                                   this._mySqlPort
-                                                           };
+                    var csb = new MySqlConnectionStringBuilder
+                                  {
+                                      Database = this._mySqlSchema,
+                                      Password = this._mySqlPassword,
+                                      Server = this._mySqlServer,
+                                      UserID = this._mySqlUsername,
+                                      Port = this._mySqlPort
+                                  };
 
                     this._connection = new MySqlConnection(csb.ConnectionString);
                     this._connection.Open();
