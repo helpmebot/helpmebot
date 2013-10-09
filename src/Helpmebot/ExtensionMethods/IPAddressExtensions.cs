@@ -43,7 +43,7 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static GeolocateResult GetLocation(this IPAddress ip)
         {
-            Stream s = HttpRequest.get("http://api.ipinfodb.com/v2/ip_query.php?key=" + Configuration.singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&timezone=false");
+            Stream s = HttpRequest.get("http://api.ipinfodb.com/v3/ip-city/?key=" + Configuration.singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
             XmlTextReader xtr = new XmlTextReader(s);
             GeolocateResult result = new GeolocateResult();
 
@@ -52,38 +52,34 @@ namespace Helpmebot.ExtensionMethods
                 xtr.Read();
                 switch (xtr.Name)
                 {
-                    case "Status":
+                    case "statusCode":
                         result.Status = xtr.ReadElementContentAsString();
                         break;
-                    case "CountryCode":
+                    case "countryCode":
                         result.CountryCode = xtr.ReadElementContentAsString();
                         break;
-                    case "CountryName":
+                    case "countryName":
                         result.Country = xtr.ReadElementContentAsString();
                         break;
-                    case "RegionCode":
-                        result.RegionCode = xtr.ReadElementContentAsString();
-                        break;
-                    case "RegionName":
+                    case "regionName":
                         result.Region = xtr.ReadElementContentAsString();
                         break;
-                    case "City":
+                    case "cityName":
                         result.City = xtr.ReadElementContentAsString();
                         break;
-                    case "ZipPostalCode":
+                    case "zipCode":
                         result.ZipPostalCode = xtr.ReadElementContentAsString();
                         break;
-                    case "Latitude":
+                    case "latitude":
                         result.Latitude = xtr.ReadElementContentAsFloat();
                         break;
-                    case "Longitude":
+                    case "longitude":
                         result.Longitude = xtr.ReadElementContentAsFloat();
                         break;
                 }
             }
 
             return result;
-
         }
     }
 }

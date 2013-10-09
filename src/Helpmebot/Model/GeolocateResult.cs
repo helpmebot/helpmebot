@@ -43,11 +43,6 @@ namespace Helpmebot.Model
         public string Country { get; set; }
 
         /// <summary>
-        /// Gets or sets the region code.
-        /// </summary>
-        public string RegionCode { get; set; }
-
-        /// <summary>
         /// Gets or sets the region.
         /// </summary>
         public string Region { get; set; }
