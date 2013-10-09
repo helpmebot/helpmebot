@@ -150,23 +150,9 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
+            DAL.Select q;
 
-            // api-> get mainpage name (Mediawiki:mainpage)
-            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
-            do
-            {
-                creader.Read();
-            } 
-            while (creader.Name != "rev");
-            
-            string mainpagename = creader.ReadElementContentAsString();
-
-            mainpagename = mainpagename.Replace(" ", "_");
+            var mainpagename = GetMainPageName(baseWiki);
 
             // get mainpage url from site table
             q = new DAL.Select("site_mainpage");
@@ -198,23 +184,9 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
+            DAL.Select q;
 
-            // api-> get mainpage name (Mediawiki:mainpage)
-            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
-            do
-            {
-                creader.Read();
-            } 
-            while (creader.Name != "rev");
-            
-            string mainpagename = creader.ReadElementContentAsString();
-
-            mainpagename = mainpagename.Replace(" ", "_");
+            var mainpagename = GetMainPageName(baseWiki);
 
             // get mainpage url from site table
             q = new DAL.Select("site_mainpage");
@@ -245,6 +217,23 @@ namespace helpmebot6.Commands
             // look up site id
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
+            var mainpagename = GetMainPageName(baseWiki);
+            
+            // get mainpage url from site table
+            DAL.Select q;
+            q = new DAL.Select("site_mainpage");
+            q.setFrom("site");
+            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
+            string mainpageurl = DAL.singleton().executeScalarSelect(q);
+
+            // replace mainpage in mainpage url with user:<username>
+            userName = userName.Replace(" ", "_");
+
+            return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
+        }
+
+        private static string GetMainPageName(string baseWiki)
+        {
             // get api
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -257,23 +246,13 @@ namespace helpmebot6.Commands
             do
             {
                 creader.Read();
-            } 
+            }
             while (creader.Name != "rev");
-            
+
             string mainpagename = creader.ReadElementContentAsString();
 
             mainpagename = mainpagename.Replace(" ", "_");
-
-            // get mainpage url from site table
-            q = new DAL.Select("site_mainpage");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string mainpageurl = DAL.singleton().executeScalarSelect(q);
-
-            // replace mainpage in mainpage url with user:<username>
-            userName = userName.Replace(" ", "_");
-
-            return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
+            return mainpagename;
         }
 
         /// <summary>
@@ -294,23 +273,8 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             // get api
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
-
-            // api-> get mainpage name (Mediawiki:mainpage)
-            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
-            do
-            {
-                creader.Read();
-            } 
-            while (creader.Name != "rev");
-            
-            string mainpagename = creader.ReadElementContentAsString();
-
-            mainpagename = mainpagename.Replace(" ", "_");
+            DAL.Select q;
+            var mainpagename = GetMainPageName(baseWiki);
 
             // get mainpage url from site table
             q = new DAL.Select("site_mainpage");
