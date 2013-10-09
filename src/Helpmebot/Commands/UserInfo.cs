@@ -149,21 +149,35 @@ namespace helpmebot6.Commands
             // look up site id
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
-            // get api
-            DAL.Select q;
+            var mainpageurl = GetMainPageUrl(baseWiki);
+
+            // replace mainpage in mainpage url with user:<username>
+            userName = userName.Replace(" ", "_");
 
             var mainpagename = GetMainPageName(baseWiki);
+            return mainpageurl.Replace(mainpagename, "User:" + userName);
+        }
+
+        /// <summary>
+        /// The get main page url.
+        /// </summary>
+        /// <param name="baseWiki">
+        /// The base wiki.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private static string GetMainPageUrl(string baseWiki)
+        {
+            // get api
+            DAL.Select q;
 
             // get mainpage url from site table
             q = new DAL.Select("site_mainpage");
             q.setFrom("site");
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
             string mainpageurl = DAL.singleton().executeScalarSelect(q);
-
-            // replace mainpage in mainpage url with user:<username>
-            userName = userName.Replace(" ", "_");
-
-            return mainpageurl.Replace(mainpagename, "User:" + userName);
+            return mainpageurl;
         }
 
         /// <summary>
@@ -182,17 +196,10 @@ namespace helpmebot6.Commands
 
             // look up site id
             string baseWiki = Configuration.singleton()["baseWiki", channel];
-
-            // get api
-            DAL.Select q;
-
+            
             var mainpagename = GetMainPageName(baseWiki);
 
-            // get mainpage url from site table
-            q = new DAL.Select("site_mainpage");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string mainpageurl = DAL.singleton().executeScalarSelect(q);
+            var mainpageurl = GetMainPageUrl(baseWiki);
 
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
@@ -218,13 +225,8 @@ namespace helpmebot6.Commands
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
             var mainpagename = GetMainPageName(baseWiki);
-            
-            // get mainpage url from site table
-            DAL.Select q;
-            q = new DAL.Select("site_mainpage");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string mainpageurl = DAL.singleton().executeScalarSelect(q);
+
+            var mainpageurl = GetMainPageUrl(baseWiki);
 
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
@@ -232,6 +234,15 @@ namespace helpmebot6.Commands
             return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
         }
 
+        /// <summary>
+        /// The get main page name.
+        /// </summary>
+        /// <param name="baseWiki">
+        /// The base wiki.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
         private static string GetMainPageName(string baseWiki)
         {
             // get api
@@ -272,15 +283,8 @@ namespace helpmebot6.Commands
             // look up site id
             string baseWiki = Configuration.singleton()["baseWiki", channel];
 
-            // get api
-            DAL.Select q;
             var mainpagename = GetMainPageName(baseWiki);
-
-            // get mainpage url from site table
-            q = new DAL.Select("site_mainpage");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string mainpageurl = DAL.singleton().executeScalarSelect(q);
+            var mainpageurl = GetMainPageUrl(baseWiki);
 
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
