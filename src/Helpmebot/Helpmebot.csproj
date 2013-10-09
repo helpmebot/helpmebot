@@ -109,6 +109,8 @@
     <Compile Include="Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
+    <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
+    <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />
