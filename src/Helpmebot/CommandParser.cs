@@ -72,7 +72,7 @@ namespace Helpmebot
                 return;
 
             // flip destination over if required
-            if (destination == Helpmebot6.irc.ircNickname)
+            if (destination == Helpmebot6.irc.Nickname)
                 destination = source.nickname;
 
 
@@ -165,7 +165,7 @@ namespace Helpmebot
 
                         if (rW.action)
                         {
-                            crh.respond(IAL.wrapCTCP("ACTION", wordResponse));
+                            crh.respond(IrcAccessLayer.wrapCTCP("ACTION", wordResponse));
                         }
                         else
                         {
@@ -258,7 +258,7 @@ namespace Helpmebot
         /// </remarks>
         public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
         {
-            return parseRawLineForMessage(ref message, Helpmebot6.irc.ircNickname, Helpmebot6.Trigger);
+            return parseRawLineForMessage(ref message, Helpmebot6.irc.Nickname, Helpmebot6.Trigger);
         }
 
         private static bool parseRawLineForMessage(ref string message, string nickname, string trigger)

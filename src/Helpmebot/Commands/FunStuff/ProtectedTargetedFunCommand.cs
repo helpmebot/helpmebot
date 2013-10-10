@@ -35,7 +35,7 @@ namespace helpmebot.Commands.FunStuff
         private readonly string[] forbiddenTargets =
             {
                 "itself", "himself", "herself", "themself",
-                Helpmebot6.irc.ircNickname.ToLower()
+                Helpmebot6.irc.Nickname.ToLower()
             };
 
         /// <summary>

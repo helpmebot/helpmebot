@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAL.cs" company="Helpmebot Development Team">
+// <copyright file="IrcAccessLayer.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -24,6 +24,7 @@ namespace Helpmebot
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net.Sockets;
     using System.Text;
@@ -33,21 +34,19 @@ namespace Helpmebot
     using Helpmebot.Threading;
 
     /// <summary>
-    ///   IRC Access Layer
-    /// 
-    ///   Provides an interface to IRC.
+    ///   IRC Access Layer - Provides an interface to IRC.
     /// </summary>
-    public sealed class IAL : IThreadedSystem
+    public sealed class IrcAccessLayer : IThreadedSystem
     {
         #region internal variables
+
+        private Thread _ircReaderThread;
+        private Thread _ircWriterThread;
 
         private readonly string _myNickname;
         private readonly string _myUsername;
         private readonly string _myRealname;
         private readonly string _myPassword;
-
-        private readonly string _ircServer;
-        private readonly uint _ircPort;
 
         private readonly string _nickserv;
 
@@ -68,79 +67,12 @@ namespace Helpmebot
         private string _rpl_myinfo;
         #endregion
 
-        #region properties
-        public string ServerInfo { get { return this._rpl_myinfo; } }
-
-        public string clientVersion { get; set; }
-
-        public bool connected
-        {
-            get { return this._tcpClient != null && this._tcpClient.Connected; }
-        }
-
-        public string ircNickname
-        {
-            get { return this._myNickname; }
-            set { throw new NotImplementedException();}
-        }
-
-        public string ircUsername
-        {
-            get { return this._myUsername; }
-        }
-
-        public string ircRealname
-        {
-            get { return this._myRealname; }
-        }
-
-        public string ircServer
-        {
-            get { return this._ircServer; }
-        }
-
-        public uint ircPort
-        {
-            get { return this._ircPort; }
-        }
-
-        public string myIdentity
-        {
-            get { return this.ircNickname + "!" + this.ircUsername + "@wikimedia/bot/helpmebot"; }
-        }
-
-        public int floodProtectionWaitTime { get; set; }
-
-        /// <summary>
-        ///   +4 if recieving wallops, +8 if invisible
-        /// </summary>
-        public int connectionUserModes { get; private set; }
-
-        public int messageCount { get; private set; }
-
-        public TimeSpan idleTime
-        {
-            get { return DateTime.Now.Subtract(this._lastMessage); }
-        }
-
-        public bool logEvents { get; private set; }
-
-        public string[] activeChannels
-        {
-            get
-            {
-                Type t = Type.GetType("System.String");
-                return (string[])this.channelList.ToArray(t);
-            }
-        }
-        #endregion
-
         #region constructor/destructor
 
-        public IAL(uint ircNetwork)
+        public IrcAccessLayer(uint ircNetwork)
         {
-            this.floodProtectionWaitTime = 500;
-            this.clientVersion = "Helpmebot IRC Access Layer 1.0";
+            this.FloodProtectionWaitTime = 500;
+            this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
             this._networkId = ircNetwork;
 
             DAL db = DAL.singleton();
@@ -154,34 +86,55 @@ namespace Helpmebot
 
             ArrayList configSettings = db.executeSelect(q);
 
-            this._ircServer = (string) (((object[]) configSettings[0])[0]);
-            this._ircPort = (uint) ((object[]) configSettings[0])[1];
+            this.Server = (string)(((object[])configSettings[0])[0]);
+            this.Port = (uint)((object[])configSettings[0])[1];
 
-            this._myNickname = (string) (((object[]) configSettings[0])[2]);
-            this._myPassword = (string) (((object[]) configSettings[0])[3]);
-            this._myUsername = (string) (((object[]) configSettings[0])[4]);
-            this._myRealname = (string) (((object[]) configSettings[0])[5]);
+            this._myNickname = (string)(((object[])configSettings[0])[2]);
+            this._myPassword = (string)(((object[])configSettings[0])[3]);
+            this._myUsername = (string)(((object[])configSettings[0])[4]);
+            this._myRealname = (string)(((object[])configSettings[0])[5]);
 
-            this.logEvents = (bool) (((object[]) configSettings[0])[6]);
+            this.LogEvents = (bool)(((object[])configSettings[0])[6]);
 
-            this._nickserv = (string) (((object[]) configSettings[0])[7]);
+            this._nickserv = (string)(((object[])configSettings[0])[7]);
 
             if ( /*recieveWallops*/ true)
-                this.connectionUserModes += 4;
+                this.ConnectionUserModes += 4;
             if ( /*invisible*/ true)
-                this.connectionUserModes += 8;
+                this.ConnectionUserModes += 8;
 
             this.initialiseEventHandlers();
         }
 
-        public IAL(string server, uint port, string nickname, string password, string username, string realname)
+        /// <summary>
+        /// Initialises a new instance of the <see cref="IrcAccessLayer"/> class.
+        /// </summary>
+        /// <param name="server">
+        /// The server.
+        /// </param>
+        /// <param name="port">
+        /// The port.
+        /// </param>
+        /// <param name="nickname">
+        /// The nickname.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        /// <param name="username">
+        /// The username.
+        /// </param>
+        /// <param name="realname">
+        /// The real name.
+        /// </param>
+        public IrcAccessLayer(string server, uint port, string nickname, string password, string username, string realname)
         {
-            this.logEvents = true;
-            this.floodProtectionWaitTime = 500;
-            this.clientVersion = "Helpmebot IRC Access Layer 1.0";
+            this.LogEvents = true;
+            this.FloodProtectionWaitTime = 500;
+            this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
             this._networkId = 0;
-            this._ircServer = server;
-            this._ircPort = port;
+            this.Server = server;
+            this.Port = port;
 
             this._myNickname = nickname;
             this._myPassword = password;
@@ -191,11 +144,211 @@ namespace Helpmebot
             this.initialiseEventHandlers();
         }
 
-        ~IAL()
+        /// <summary>
+        /// Finalises an instance of the <see cref="IrcAccessLayer"/> class. 
+        /// </summary>
+        ~IrcAccessLayer()
         {
             if (this._tcpClient.Connected)
             {
                 this.ircQuit();
+            }
+        }
+
+        #endregion
+
+        #region events
+
+        /// <summary>
+        /// The data received event.
+        /// </summary>
+        public event EventHandler<DataReceivedEventArgs> DataReceivedEvent;
+
+        /// <summary>
+        /// The unrecognised data received event.
+        /// </summary>
+        public event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
+
+
+        public delegate void ConnectionRegistrationEventHandler();
+
+        private event ConnectionRegistrationEventHandler connectionRegistrationRequiredEvent;
+        public event ConnectionRegistrationEventHandler connectionRegistrationSucceededEvent;
+
+        public delegate void PingEventHandler(string datapacket);
+
+        public event PingEventHandler pingEvent;
+
+        public delegate void NicknameChangeEventHandler(string oldnick, string newnick);
+
+        public event NicknameChangeEventHandler nicknameChangeEvent;
+
+        public delegate void ModeChangeEventHandler(User source, string subject, string flagchanges, string parameter);
+
+        public event ModeChangeEventHandler modeChangeEvent;
+
+        public delegate void QuitEventHandler(User source, string message);
+
+        public event QuitEventHandler quitEvent;
+
+        public delegate void JoinEventHandler(User source, string channel);
+
+        public event JoinEventHandler joinEvent;
+
+        public delegate void PartEventHandler(User source, string channel, string message);
+
+        public event PartEventHandler partEvent;
+
+        public delegate void TopicEventHandler(User source, string channel, string topic);
+
+        public event TopicEventHandler topicEvent;
+
+        public delegate void InviteEventHandler(User source, string nickname, string channel);
+
+        public event InviteEventHandler inviteEvent;
+
+        public delegate void KickEventHandler(User source, string channel, string nick, string message);
+
+        public event KickEventHandler kickEvent;
+
+        public delegate void PrivmsgEventHandler(User source, string destination, string message);
+
+        public event PrivmsgEventHandler privmsgEvent;
+        public event PrivmsgEventHandler ctcpEvent;
+        public event PrivmsgEventHandler noticeEvent;
+
+        public delegate void IrcEventHandler();
+
+        public event IrcEventHandler errNicknameInUseEvent;
+        public event IrcEventHandler errUnavailResource;
+
+        public delegate void NameReplyEventHandler(string channel, string[] names);
+
+        // TODO: invoke this event somewhere
+        public event NameReplyEventHandler nameReplyEvent;
+
+
+        #endregion
+
+        #region properties
+
+        /// <summary>
+        /// Gets the server info.
+        /// </summary>
+        public string ServerInfo
+        {
+            get
+            {
+                return this._rpl_myinfo;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the client version.
+        /// </summary>
+        public string ClientVersion { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether is connected.
+        /// </summary>
+        public bool IsConnected
+        {
+            get
+            {
+                return this._tcpClient != null && this._tcpClient.Connected;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the nickname.
+        /// </summary>
+        public string Nickname
+        {
+            get
+            {
+                return this._myNickname;
+            }
+            
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Gets the username.
+        /// </summary>
+        public string Username
+        {
+            get { return this._myUsername; }
+        }
+
+        /// <summary>
+        /// Gets the real name.
+        /// </summary>
+        public string RealName
+        {
+            get { return this._myRealname; }
+        }
+
+        /// <summary>
+        /// Gets the server.
+        /// </summary>
+        public string Server { get; private set; }
+
+        /// <summary>
+        /// Gets the port.
+        /// </summary>
+        public uint Port { get; private set; }
+
+        /// <summary>
+        /// Gets the my identity.
+        /// </summary>
+        /// <remarks>
+        /// TODO: construct this dynamically?
+        /// </remarks>
+        public string MyIdentity
+        {
+            get { return this.Nickname + "!" + this.Username + "@wikimedia/bot/helpmebot"; }
+        }
+
+        /// <summary>
+        /// Gets or sets the flood protection wait time.
+        /// </summary>
+        public int FloodProtectionWaitTime { get; set; }
+
+        /// <summary>
+        /// Gets the connection user modes.
+        /// </summary>
+        /// <remarks>
+        /// +4 if receiving wallops, +8 if invisible
+        /// </remarks>
+        public int ConnectionUserModes { get; private set; }
+
+        /// <summary>
+        /// Gets the message count.
+        /// </summary>
+        public int MessageCount { get; private set; }
+
+        /// <summary>
+        /// Gets the idle time.
+        /// </summary>
+        public TimeSpan IdleTime
+        {
+            get { return DateTime.Now.Subtract(this._lastMessage); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether log events.
+        /// </summary>
+        public bool LogEvents { get; private set; }
+
+        public string[] activeChannels
+        {
+            get
+            {
+                Type t = Type.GetType("System.String");
+                return (string[])this.channelList.ToArray(t);
             }
         }
         
@@ -207,7 +360,7 @@ namespace Helpmebot
         {
             try
             {
-                this._tcpClient = new TcpClient(this._ircServer, (int) this._ircPort);
+                this._tcpClient = new TcpClient(this.Server, (int) this.Port);
 
                 Stream ircStream = this._tcpClient.GetStream();
                 this._ircReader = new StreamReader(ircStream, Encoding.UTF8);
@@ -216,10 +369,10 @@ namespace Helpmebot
 
                 this._sendQ = new Queue(100);
 
-                ThreadStart ircReaderThreadStart = this._ircReaderThreadMethod;
+                ThreadStart ircReaderThreadStart = this.IrcReaderThreadMethod;
                 this._ircReaderThread = new Thread(ircReaderThreadStart);
 
-                ThreadStart ircWriterThreadStart = this._ircWriterThreadMethod;
+                ThreadStart ircWriterThreadStart = this.IrcWriterThreadMethod;
                 this._ircWriterThread = new Thread(ircWriterThreadStart);
 
                 this.registerInstance();
@@ -239,14 +392,14 @@ namespace Helpmebot
 
         private void _sendLine(string line)
         {
-            if ( !this.connected ) return;
+            if ( !this.IsConnected ) return;
             line = line.Replace("\n", " ");
             line = line.Replace("\r", " ");
             lock (this._sendQ)
             {
                 this._sendQ.Enqueue(line.Trim());
             }
-            this.messageCount++;
+            this.MessageCount++;
         }
 
         private void _sendPass(string password)
@@ -555,10 +708,10 @@ namespace Helpmebot
 
         #region Threads
 
-        private Thread _ircReaderThread;
-        private Thread _ircWriterThread;
-
-        private void _ircReaderThreadMethod()
+        /// <summary>
+        /// The IRC reader thread method.
+        /// </summary>
+        private void IrcReaderThreadMethod()
         {
             bool threadIsAlive = true;
             do
@@ -593,7 +746,8 @@ namespace Helpmebot
                 {
                     GlobalFunctions.errorLog(ex);
                 }
-            } while (threadIsAlive);
+            } 
+            while (threadIsAlive);
 
             Console.WriteLine("*** Reader thread died.");
 
@@ -604,7 +758,10 @@ namespace Helpmebot
             }
         }
 
-        private void _ircWriterThreadMethod()
+        /// <summary>
+        /// The IRC writer thread method.
+        /// </summary>
+        private void IrcWriterThreadMethod()
         {
             bool threadIsAlive = true;
             do
@@ -623,7 +780,7 @@ namespace Helpmebot
                         Logger.instance().addToLog("< " + line, Logger.LogTypes.IAL);
                         this._ircWriter.WriteLine(line);
                         this._ircWriter.Flush();
-                        Thread.Sleep(this.floodProtectionWaitTime);
+                        Thread.Sleep(this.FloodProtectionWaitTime);
                     }
                     else
                     {
@@ -656,79 +813,6 @@ namespace Helpmebot
                 temp(this, new EventArgs());
             }
         }
-
-        #endregion
-
-        #region events
-
-        /// <summary>
-        /// The data received event.
-        /// </summary>
-        public event EventHandler<DataReceivedEventArgs> DataReceivedEvent;
-
-        /// <summary>
-        /// The unrecognised data received event.
-        /// </summary>
-        public event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
-        
-
-        public delegate void ConnectionRegistrationEventHandler();
-
-        private event ConnectionRegistrationEventHandler connectionRegistrationRequiredEvent;
-        public event ConnectionRegistrationEventHandler connectionRegistrationSucceededEvent;
-
-        public delegate void PingEventHandler(string datapacket);
-
-        public event PingEventHandler pingEvent;
-
-        public delegate void NicknameChangeEventHandler(string oldnick, string newnick);
-
-        public event NicknameChangeEventHandler nicknameChangeEvent;
-
-        public delegate void ModeChangeEventHandler(User source, string subject, string flagchanges, string parameter);
-
-        public event ModeChangeEventHandler modeChangeEvent;
-
-        public delegate void QuitEventHandler(User source, string message);
-
-        public event QuitEventHandler quitEvent;
-
-        public delegate void JoinEventHandler(User source, string channel);
-
-        public event JoinEventHandler joinEvent;
-
-        public delegate void PartEventHandler(User source, string channel, string message);
-
-        public event PartEventHandler partEvent;
-
-        public delegate void TopicEventHandler(User source, string channel, string topic);
-
-        public event TopicEventHandler topicEvent;
-
-        public delegate void InviteEventHandler(User source, string nickname, string channel);
-
-        public event InviteEventHandler inviteEvent;
-
-        public delegate void KickEventHandler(User source, string channel, string nick, string message);
-
-        public event KickEventHandler kickEvent;
-
-        public delegate void PrivmsgEventHandler(User source, string destination, string message);
-
-        public event PrivmsgEventHandler privmsgEvent;
-        public event PrivmsgEventHandler ctcpEvent;
-        public event PrivmsgEventHandler noticeEvent;
-
-        public delegate void IrcEventHandler();
-
-        public event IrcEventHandler errNicknameInUseEvent;
-        public event IrcEventHandler errUnavailResource;
-
-        public delegate void NameReplyEventHandler(string channel, string[] names);
-
-        // TODO: invoke this event somewhere
-        public event NameReplyEventHandler nameReplyEvent;
-
 
         #endregion
 
@@ -778,10 +862,13 @@ namespace Helpmebot
         private void ialErrUnavailResource()
         {
             if (this._nickserv != string.Empty)
+            {
                 this.assumeTakenNickname();
-
+            }
             else
+            {
                 throw new NotImplementedException();
+            }
         }
 
         #region event handlers
@@ -824,7 +911,7 @@ namespace Helpmebot
             switch (message.Split(' ')[0].ToUpper())
             {
                 case "VERSION":
-                    this.ctcpReply(source.nickname, "VERSION", this.clientVersion);
+                    this.ctcpReply(source.nickname, "VERSION", this.ClientVersion);
                     break;
                 case "TIME":
                     this.ctcpReply(source.nickname, "TIME", DateTime.Now.ToString());
@@ -833,7 +920,7 @@ namespace Helpmebot
                     this.ctcpReply(source.nickname, "PING", message.Split(' ')[1]);
                     break;
                 case "FINGER":
-                    this.ctcpReply(source.nickname, "FINGER", this.ircRealname + ", idle " + this.idleTime);
+                    this.ctcpReply(source.nickname, "FINGER", this.RealName + ", idle " + this.IdleTime);
                     break;
                 default:
                     break;
@@ -869,13 +956,13 @@ namespace Helpmebot
         private void ialPartEvent(User source, string channel, string message)
         {
             this.log("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
-            if (source.nickname == this.ircNickname) this.channelList.Remove(channel);
+            if (source.nickname == this.Nickname) this.channelList.Remove(channel);
         }
 
         private void ialJoinEvent(User source, string channel)
         {
             this.log("JOIN EVENT BY " + source + " INTO " + channel);
-            if(source.nickname == this.ircNickname) this.channelList.Add(channel);
+            if(source.nickname == this.Nickname) this.channelList.Add(channel);
         }
 
         private void ialQuitEvent(User source, string message)
@@ -890,6 +977,7 @@ namespace Helpmebot
 
         #endregion
 
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1121:UseBuiltInTypeAlias", Justification = "Reviewed. Suppression is OK here.")]
         private void ialDataRecievedEvent(object sender, DataReceivedEventArgs e)
         {
             Logger.instance().addToLog(e.Data, Logger.LogTypes.IRC);
@@ -897,7 +985,7 @@ namespace Helpmebot
             char[] colonSeparator = {':'};
 
             string command, parameters;
-            string messagesource = command = parameters = "";
+            string messagesource = command = parameters = string.Empty;
             basicParser(e.Data, ref messagesource, ref command, ref parameters);
 
             User source = new User();
@@ -916,6 +1004,7 @@ namespace Helpmebot
                         this._ircReaderThread.Abort();
                         this._ircWriterThread.Abort();
                     }
+
                     break;
                 case "PING":
                     this.pingEvent(parameters);
@@ -944,10 +1033,10 @@ namespace Helpmebot
                     this.joinEvent(source, parameters);
                     break;
                 case "PART":
-                    this.partEvent(source, parameters.Split(' ')[0],
-                              parameters.Contains(new String(colonSeparator))
-                                  ? parameters.Split(colonSeparator, 2)[1]
-                                  : string.Empty);
+                    string s = parameters.Contains(new String(colonSeparator))
+                                   ? parameters.Split(colonSeparator, 2)[1]
+                                   : string.Empty;
+                    this.partEvent(source, parameters.Split(' ')[0], s);
                     break;
                 case "TOPIC":
                     this.topicEvent(source, parameters.Split(' ')[0], parameters.Split(colonSeparator, 2)[1]);
@@ -956,40 +1045,41 @@ namespace Helpmebot
                     this.inviteEvent(source, parameters.Split(' ')[0], parameters.Split(' ')[1].Substring(1));
                     break;
                 case "KICK":
-                    this.kickEvent(source, parameters.Split(' ')[0], parameters.Split(' ')[1],
-                              parameters.Split(colonSeparator, 2)[1]);
+                    this.kickEvent(
+                        source,
+                        parameters.Split(' ')[0],
+                        parameters.Split(' ')[1],
+                        parameters.Split(colonSeparator, 2)[1]);
                     break;
                 case "PRIVMSG":
                     string message = parameters.Split(colonSeparator, 2)[1];
                     ASCIIEncoding asc = new ASCIIEncoding();
-                    byte[] ctcp = {Convert.ToByte(1)};
+                    byte[] ctcp = { Convert.ToByte(1) };
 
                     string destination = parameters.Split(colonSeparator, 2)[0].Trim();
-                    if (destination == this.ircNickname)
+                    if (destination == this.Nickname)
                     {
                         destination = source.nickname;
                     }
 
                     if (message.StartsWith(asc.GetString(ctcp)))
                     {
-                        this.ctcpEvent(
-                            source,
-                            destination,
-                            message.Trim(Convert.ToChar(Convert.ToByte(1)))
-                            );
+                        this.ctcpEvent(source, destination, message.Trim(Convert.ToChar(Convert.ToByte(1))));
                     }
                     else
                     {
                         this.privmsgEvent(source, destination, message.Trim());
                     }
+                    
                     break;
 
                 case "NOTICE":
                     string noticedestination = parameters.Split(colonSeparator, 2)[0].Trim();
-                    if (noticedestination == this.ircNickname)
+                    if (noticedestination == this.Nickname)
                     {
                         noticedestination = source.nickname;
                     }
+                    
                     this.noticeEvent(source, noticedestination, parameters.Split(colonSeparator, 2)[1]);
                     break;
                 case "001":
@@ -1021,13 +1111,11 @@ namespace Helpmebot
             }
         }
 
-
-
         #region parsers
 
         public static void basicParser(string line, ref string source, ref string command, ref string parameters)
         {
-            char[] stringSplitter = {' '};
+            char[] stringSplitter = { ' ' };
             string[] parseBasic;
             if (line.Substring(0, 1) == ":")
             {
@@ -1049,7 +1137,7 @@ namespace Helpmebot
 
         private void log(string message)
         {
-            if (this.logEvents)
+            if (this.LogEvents)
             {
                 Logger.instance().addToLog("<" + this._networkId + ">" + message, Logger.LogTypes.IAL);
             }
@@ -1057,6 +1145,9 @@ namespace Helpmebot
 
         #region IThreadedSystem Members
 
+        /// <summary>
+        /// The stop.
+        /// </summary>
         public void stop()
         {
             this.ircQuit("Requested by controller");
@@ -1065,17 +1156,29 @@ namespace Helpmebot
             this._ircReaderThread.Abort();
         }
 
+        /// <summary>
+        /// The register instance.
+        /// </summary>
         public void registerInstance()
         {
             ThreadList.instance().register(this);
         }
 
+        /// <summary>
+        /// The get thread status.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="string[]"/>.
+        /// </returns>
         public string[] getThreadStatus()
         {
-            string[] statuses = {
-                                    "(" + this._networkId + ") " + this._ircServer + " READER:" + this._ircReaderThread.ThreadState,
-                                    "(" + this._networkId + ") " + this._ircServer + " WRITER:" + this._ircWriterThread.ThreadState
-                                };
+            string[] statuses =
+                {
+                    "(" + this._networkId + ") " + this.Server + " READER:"
+                    + this._ircReaderThread.ThreadState,
+                    "(" + this._networkId + ") " + this.Server + " WRITER:"
+                    + this._ircWriterThread.ThreadState
+                };
             return statuses;
         }
 

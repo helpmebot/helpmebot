@@ -86,7 +86,7 @@ namespace Helpmebot
             string builtString = String.Format(messageFormat, args);
             if(builtString.StartsWith("#ACTION"))
             {
-                builtString = IAL.wrapCTCP("ACTION", builtString.Substring(8));
+                builtString = IrcAccessLayer.wrapCTCP("ACTION", builtString.Substring(8));
             }
             return builtString;
         }

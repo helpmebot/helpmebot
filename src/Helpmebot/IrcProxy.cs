@@ -30,7 +30,7 @@ namespace Helpmebot
 
     class IrcProxy : IThreadedSystem
     {
-        public IrcProxy(IAL baseIrcAccessLayer, int port, string password)
+        public IrcProxy(IrcAccessLayer baseIrcAccessLayer, int port, string password)
         {
             if (Configuration.singleton()["enableProxy"] != "true") return;
 
@@ -45,7 +45,7 @@ namespace Helpmebot
             this._t.Start();
         }
 
-        private readonly IAL _baseIal;
+        private readonly IrcAccessLayer _baseIal;
         private readonly string _password;
         private readonly TcpListener _listener;
         private readonly Thread _t;

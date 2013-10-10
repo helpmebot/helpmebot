@@ -37,7 +37,7 @@ namespace Helpmebot
         StreamReader _sr;
         StreamWriter _sw;
 
-        public IrcProxyInstance(TcpClient client, string _password, IAL _baseIal)
+        public IrcProxyInstance(TcpClient client, string _password, IrcAccessLayer _baseIal)
         {
             this._client = client;
             this._password = _password;
@@ -77,15 +77,15 @@ namespace Helpmebot
                     }
                 }
 
-                this._sw.WriteLine(":irc.helpmebot.org.uk 001 " + this._baseIal.ircNickname + " :Welcome to the Helpmebot IRC Gateway.");
-                this._sw.WriteLine(":irc.helpmebot.org.uk 002 " + this._baseIal.ircNickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
-                this._sw.WriteLine(":irc.helpmebot.org.uk 003 " + this._baseIal.ircNickname + " :This server was created " + DateTime.Now.ToString());
-                this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.ircNickname + " " + this._baseIal.ServerInfo);
+                this._sw.WriteLine(":irc.helpmebot.org.uk 001 " + this._baseIal.Nickname + " :Welcome to the Helpmebot IRC Gateway.");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 002 " + this._baseIal.Nickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 003 " + this._baseIal.Nickname + " :This server was created " + DateTime.Now.ToString());
+                this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.Nickname + " " + this._baseIal.ServerInfo);
                 this._sw.Flush();
 
                 foreach (var c in this._baseIal.activeChannels)
                 {
-                    this._sw.WriteLine(":" + this._baseIal.myIdentity + " JOIN " + c);
+                    this._sw.WriteLine(":" + this._baseIal.MyIdentity + " JOIN " + c);
                     this._sw.Flush();
                     this._baseIal.ircNames(c);
                     this._baseIal.ircTopic(c);
@@ -104,7 +104,7 @@ namespace Helpmebot
                     string source = null;
                     string command = null;
                     string parameters = null;
-                    IAL.basicParser(line, ref source, ref command, ref parameters);
+                    IrcAccessLayer.basicParser(line, ref source, ref command, ref parameters);
 
                     if (command == "QUIT")
                     {
@@ -152,6 +152,6 @@ namespace Helpmebot
 
         public event EventHandler threadFatalError;
         private string _password;
-        private IAL _baseIal;
+        private IrcAccessLayer _baseIal;
     }
 }

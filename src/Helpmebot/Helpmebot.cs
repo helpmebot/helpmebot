@@ -35,7 +35,7 @@ namespace Helpmebot
     /// </summary>
     public class Helpmebot6
     {
-        public static IAL irc;
+        public static IrcAccessLayer irc;
         private static DAL _dbal;
 
         public static string debugChannel;
@@ -99,7 +99,7 @@ namespace Helpmebot
 
             Trigger = Configuration.singleton()["commandTrigger"];
 
-            irc = new IAL(_ircNetwork);
+            irc = new IrcAccessLayer(_ircNetwork);
 
             new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
