@@ -29,6 +29,7 @@ namespace Helpmebot
     using System.Text;
     using System.Threading;
 
+    using Helpmebot.IRC.Events;
     using Helpmebot.Threading;
 
     /// <summary>
@@ -571,8 +572,11 @@ namespace Helpmebot
                     }
                     else
                     {
-                        if (this.dataRecievedEvent != null)
-                            this.dataRecievedEvent(line);
+                        EventHandler<DataReceivedEventArgs> tempDataReceivedEventHandler = this.DataReceivedEvent;
+                        if (tempDataReceivedEventHandler != null)
+                        {
+                            tempDataReceivedEventHandler(this, new DataReceivedEventArgs(line));
+                        }
                     }
                 }
                 catch (ThreadAbortException ex)
@@ -657,10 +661,16 @@ namespace Helpmebot
 
         #region events
 
-        public delegate void DataRecievedEventHandler(string data);
+        /// <summary>
+        /// The data received event.
+        /// </summary>
+        public event EventHandler<DataReceivedEventArgs> DataReceivedEvent;
 
-        public event DataRecievedEventHandler dataRecievedEvent;
-        public event DataRecievedEventHandler unrecognisedDataRecievedEvent;
+        /// <summary>
+        /// The unrecognised data received event.
+        /// </summary>
+        public event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
+        
 
         public delegate void ConnectionRegistrationEventHandler();
 
@@ -724,8 +734,8 @@ namespace Helpmebot
 
         private void initialiseEventHandlers()
         {
-            this.dataRecievedEvent += this.ialDataRecievedEvent;
-            this.unrecognisedDataRecievedEvent += this.IAL_unrecognisedDataRecievedEvent;
+            this.DataReceivedEvent += this.ialDataRecievedEvent;
+            this.UnrecognisedDataReceivedEvent += this.UnrecognisedDataReceivedEventHandler;
             this.connectionRegistrationRequiredEvent += this.registerConnection;
             this.pingEvent += this.ircPong;
             this.nicknameChangeEvent += this.ialNicknameChangeEvent;
@@ -745,9 +755,18 @@ namespace Helpmebot
             this.connectionRegistrationSucceededEvent += this.ialConnectionRegistrationSucceededEvent;
         }
 
-        void IAL_unrecognisedDataRecievedEvent(string data)
+        /// <summary>
+        /// The unrecognised data received event.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void UnrecognisedDataReceivedEventHandler(object sender, DataReceivedEventArgs e)
         {
-            this.log("DATA RECIEVED EVENT WITH DATA " + data);
+            this.log("DATA RECIEVED EVENT WITH DATA " + e.Data);
         }
 
         void ialConnectionRegistrationSucceededEvent()
@@ -871,15 +890,15 @@ namespace Helpmebot
 
         #endregion
 
-        private void ialDataRecievedEvent(string data)
+        private void ialDataRecievedEvent(object sender, DataReceivedEventArgs e)
         {
-            Logger.instance().addToLog(data, Logger.LogTypes.IRC);
+            Logger.instance().addToLog(e.Data, Logger.LogTypes.IRC);
 
             char[] colonSeparator = {':'};
 
             string command, parameters;
             string messagesource = command = parameters = "";
-            basicParser(data, ref messagesource, ref command, ref parameters);
+            basicParser(e.Data, ref messagesource, ref command, ref parameters);
 
             User source = new User();
 
@@ -992,7 +1011,12 @@ namespace Helpmebot
                     this.errUnavailResource();
                     break;
                 default:
-                    this.unrecognisedDataRecievedEvent(data);
+                    var temp = this.UnrecognisedDataReceivedEvent;
+                    if (temp != null)
+                    {
+                        temp(this, e);
+                    }
+
                     break;
             }
         }

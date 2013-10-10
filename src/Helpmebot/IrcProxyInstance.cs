@@ -25,6 +25,7 @@ namespace Helpmebot
     using System.Net.Sockets;
     using System.Threading;
 
+    using Helpmebot.IRC.Events;
     using Helpmebot.Threading;
 
     class IrcProxyInstance  : IThreadedSystem
@@ -95,7 +96,7 @@ namespace Helpmebot
 
 
                 this._sw.Flush();
-                this._baseIal.dataRecievedEvent += this.baseIalDataRecievedEvent;
+                this._baseIal.DataReceivedEvent += this.baseIalDataRecievedEvent;
 
                 while (this._client.Connected)
                 {
@@ -108,7 +109,7 @@ namespace Helpmebot
                     if (command == "QUIT")
                     {
                         this._sr.Close();
-                        this._baseIal.dataRecievedEvent -= this.baseIalDataRecievedEvent;
+                        this._baseIal.DataReceivedEvent -= this.baseIalDataRecievedEvent;
                         break;
                     }
 
@@ -125,9 +126,9 @@ namespace Helpmebot
             }
         }
 
-        void baseIalDataRecievedEvent(string data)
+        void baseIalDataRecievedEvent(object sender, DataReceivedEventArgs e)
         {
-            this._sw.WriteLine(data);
+            this._sw.WriteLine(e.Data);
             this._sw.Flush();
         }
 

@@ -110,6 +110,7 @@
     <Compile Include="Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
+    <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
