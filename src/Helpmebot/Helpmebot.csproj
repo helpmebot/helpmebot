@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Helpmebot</RootNamespace>
-    <AssemblyName>Helpmebot</AssemblyName>
+    <AssemblyName>Helpmebot6</AssemblyName>
     <StartupObject>Helpmebot.Helpmebot6</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -43,8 +43,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot6</AssemblyName>
-    <RootNamespace>helpmebot</RootNamespace>
+    <AssemblyName>Helpmebot6</AssemblyName>
+    <RootNamespace>Helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -56,9 +56,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot6</AssemblyName>
+    <AssemblyName>Helpmebot6</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>helpmebot</RootNamespace>
+    <RootNamespace>Helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
