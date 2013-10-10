@@ -195,7 +195,7 @@ namespace Helpmebot
             }
         }
 
-        private static void JoinChannels()
+        private static void JoinChannels(object sender, EventArgs e)
         {
             irc.IrcJoin(debugChannel);
 

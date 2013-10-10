@@ -245,10 +245,8 @@ namespace Helpmebot
         /// The unrecognised data received event.
         /// </summary>
         public event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
-
-        public delegate void ConnectionRegistrationEventHandler();
-
-        public event ConnectionRegistrationEventHandler connectionRegistrationSucceededEvent;
+        
+        public event EventHandler connectionRegistrationSucceededEvent;
 
         public delegate void PingEventHandler(string datapacket);
 
@@ -303,17 +301,15 @@ namespace Helpmebot
         /// </summary>
         public event EventHandler<PrivateMessageEventArgs> NoticeEvent;
 
-        public delegate void IrcEventHandler();
-
-        public event IrcEventHandler errNicknameInUseEvent;
-        public event IrcEventHandler errUnavailResource;
+        public event EventHandler errNicknameInUseEvent;
+        public event EventHandler errUnavailResource;
 
         public delegate void NameReplyEventHandler(string channel, string[] names);
 
         // TODO: invoke this event somewhere
         public event NameReplyEventHandler nameReplyEvent;
         
-        private event ConnectionRegistrationEventHandler connectionRegistrationRequiredEvent;
+        private event EventHandler connectionRegistrationRequiredEvent;
         #endregion
 
         #region properties
@@ -496,7 +492,7 @@ namespace Helpmebot
                 this.ircReaderThread.Start();
                 this.ircWriterThread.Start();
 
-                this.connectionRegistrationRequiredEvent();
+                this.connectionRegistrationRequiredEvent(this, new EventArgs());
 
                 return true;
             }
@@ -1168,7 +1164,7 @@ namespace Helpmebot
         /// <summary>
         /// The IRC connection registration succeeded event.
         /// </summary>
-        private void IrcConnectionRegistrationSucceededEvent()
+        private void IrcConnectionRegistrationSucceededEvent(object sender, EventArgs e)
         {
             this.IrcPrivmsg(this.nickserv, "IDENTIFY " + this.myNickname + " " + this.myPassword);
             this.IrcMode(this.myNickname, "+Q");
@@ -1177,11 +1173,11 @@ namespace Helpmebot
         /// <summary>
         /// The IRC error unavailable resource.
         /// </summary>
-        private void IrcErrorUnavailResource()
+        private void IrcErrorUnavailResource(object sender, EventArgs e)
         {
             if (this.nickserv != string.Empty)
             {
-                this.AssumeTakenNickname();
+                this.AssumeTakenNickname(sender, e);
             }
             else
             {
@@ -1575,7 +1571,7 @@ namespace Helpmebot
                         new PrivateMessageEventArgs(source, noticedestination, parameters.Split(colonSeparator, 2)[1]));
                     break;
                 case "001":
-                    this.connectionRegistrationSucceededEvent();
+                    this.connectionRegistrationSucceededEvent(this, new EventArgs());
                     break;
                 case "002":
                     this.ReplyYourHostEvent(parameters);
@@ -1587,10 +1583,10 @@ namespace Helpmebot
                     this.ReplyMyInfoEvent(parameters);
                     break;
                 case "433":
-                    this.errNicknameInUseEvent();
+                    this.errNicknameInUseEvent(this, new EventArgs());
                     break;
                 case "437":
-                    this.errUnavailResource();
+                    this.errUnavailResource(this, new EventArgs());
                     break;
                 default:
                     var temp = this.UnrecognisedDataReceivedEvent;
@@ -1743,7 +1739,7 @@ namespace Helpmebot
         /// <summary>
         /// The register connection.
         /// </summary>
-        private void RegisterConnection()
+        private void RegisterConnection(object sender, EventArgs e)
         {
             if (this.myPassword != null)
             {
@@ -1757,7 +1753,7 @@ namespace Helpmebot
         /// <summary>
         /// The assume taken nickname.
         /// </summary>
-        private void AssumeTakenNickname()
+        private void AssumeTakenNickname(object sender, EventArgs e)
         {
             this.SendNick(this.myNickname + "_");
             if (this.nickserv == string.Empty)
