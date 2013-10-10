@@ -100,7 +100,7 @@ namespace Helpmebot
                     string source = null;
                     string command = null;
                     string parameters = null;
-                    IrcAccessLayer.basicParser(line, ref source, ref command, ref parameters);
+                    IrcAccessLayer.BasicParser(line, ref source, ref command, ref parameters);
 
                     if (command == "QUIT")
                     {
@@ -128,25 +128,25 @@ namespace Helpmebot
             this._sw.Flush();
         }
 
-        void IThreadedSystem.stop()
+        void IThreadedSystem.Stop()
         {
             this.threadActive = false;
             Thread.Sleep(3000);
             this._clientThread.Abort();
         }
 
-        void IThreadedSystem.registerInstance()
+        void IThreadedSystem.RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        string[] IThreadedSystem.getThreadStatus()
+        string[] IThreadedSystem.GetThreadStatus()
         {
             string[] x = { this._clientThread.ThreadState.ToString() };
             return x;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
         private string _password;
         private IrcAccessLayer _baseIal;
     }

@@ -130,10 +130,10 @@ namespace Helpmebot
 
             irc.inviteEvent += irc_InviteEvent;
 
-            irc.threadFatalError += irc_ThreadFatalError;
+            irc.ThreadFatalErrorEvent += IrcThreadFatalErrorEvent;
         }
 
-        private static void irc_ThreadFatalError(object sender, EventArgs e)
+        private static void IrcThreadFatalErrorEvent(object sender, EventArgs e)
         {
             Stop();
         }

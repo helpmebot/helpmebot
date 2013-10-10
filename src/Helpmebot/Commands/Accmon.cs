@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return new CommandResponseHandler(AccNotifications.getInstance().getThreadStatus()[0]);
+            return new CommandResponseHandler(AccNotifications.getInstance().GetThreadStatus()[0]);
         }
 
         #endregion

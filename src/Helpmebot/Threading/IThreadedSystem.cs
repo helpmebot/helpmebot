@@ -27,19 +27,19 @@ namespace Helpmebot.Threading
         /// <summary>
         ///   Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
-        void stop();
+        void Stop();
 
         /// <summary>
         ///   Register this instance of the threaded class with the global list
         /// </summary>
-        void registerInstance();
+        void RegisterInstance();
 
         /// <summary>
         ///   Get the status of thread(s) in this instance.
         /// </summary>
         /// <returns></returns>
-        string[] getThreadStatus();
+        string[] GetThreadStatus();
 
-        event EventHandler threadFatalError;
+        event EventHandler ThreadFatalErrorEvent;
     }
 }

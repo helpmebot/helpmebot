@@ -1,9 +1,11 @@
 <StyleCopSettings Version="105">
   <GlobalSettings>
     <CollectionProperty Name="RecognizedWords">
+      <Value>ChanServ</Value>
       <Value>geolocate</Value>
       <Value>geolocation</Value>
       <Value>ip</Value>
+      <Value>NickServ</Value>
       <Value>whois</Value>
       <Value>Wikipedian</Value>
     </CollectionProperty>

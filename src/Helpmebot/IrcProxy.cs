@@ -39,7 +39,7 @@ namespace Helpmebot
             this._baseIal = baseIrcAccessLayer;
             this._password = password;
 
-            this.registerInstance();
+            this.RegisterInstance();
 
             this._t = new Thread(this.listenerThread);
             this._t.Start();
@@ -82,23 +82,23 @@ namespace Helpmebot
 
         #region IThreadedSystem members
 
-        public void stop()
+        public void Stop()
         {
             this._t.Abort();
         }
 
-        public void registerInstance()
+        public void RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             string[] x = {this._t.ThreadState.ToString()};
             return x;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
         #endregion
     }
 }

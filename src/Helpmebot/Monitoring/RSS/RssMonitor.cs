@@ -64,21 +64,21 @@ namespace Helpmebot.Monitoring.RSS
         }
 
 
-        public void stop()
+        public void Stop()
         {
             throw new NotImplementedException();
         }
 
-        public void registerInstance()
+        public void RegisterInstance()
         {
             throw new NotImplementedException();
         }
 
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             throw new NotImplementedException();
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
     }
 }

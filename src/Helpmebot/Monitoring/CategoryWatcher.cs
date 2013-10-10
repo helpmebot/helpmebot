@@ -65,7 +65,7 @@ namespace Helpmebot.Monitoring
             this._key = key;
             this._sleepTime = sleepTime;
 
-            this.registerInstance();
+            this.RegisterInstance();
 
             this._watcherThread = new Thread(this.watcherThreadMethod);
             this._watcherThread.Start();
@@ -88,7 +88,7 @@ namespace Helpmebot.Monitoring
             }
             catch (ThreadAbortException)
             {
-                EventHandler temp = this.threadFatalError;
+                EventHandler temp = this.ThreadFatalErrorEvent;
                 if (temp != null)
                 {
                     temp(this, new EventArgs());
@@ -203,24 +203,24 @@ namespace Helpmebot.Monitoring
 
         #region IThreadedSystem Members
 
-        public void registerInstance()
+        public void RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        public void stop()
+        public void Stop()
         {
             Logger.instance().addToLog("Stopping Watcher Thread for " + this._category + " ...", Logger.LogTypes.General);
             this._watcherThread.Abort();
         }
 
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             string[] statuses = {this._key + " " + this._watcherThread.ThreadState};
             return statuses;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
 
         #endregion
     }
