@@ -248,7 +248,6 @@ namespace Helpmebot
 
         public delegate void ConnectionRegistrationEventHandler();
 
-        private event ConnectionRegistrationEventHandler connectionRegistrationRequiredEvent;
         public event ConnectionRegistrationEventHandler connectionRegistrationSucceededEvent;
 
         public delegate void PingEventHandler(string datapacket);
@@ -289,9 +288,20 @@ namespace Helpmebot
 
         public delegate void PrivmsgEventHandler(User source, string destination, string message);
 
-        public event PrivmsgEventHandler privmsgEvent;
-        public event PrivmsgEventHandler ctcpEvent;
-        public event PrivmsgEventHandler noticeEvent;
+        /// <summary>
+        /// The private message event.
+        /// </summary>
+        public event EventHandler<PrivateMessageEventArgs> PrivateMessageEvent;
+
+        /// <summary>
+        /// The client to client event.
+        /// </summary>
+        public event EventHandler<PrivateMessageEventArgs> ClientToClientEvent;
+
+        /// <summary>
+        /// The notice event.
+        /// </summary>
+        public event EventHandler<PrivateMessageEventArgs> NoticeEvent;
 
         public delegate void IrcEventHandler();
 
@@ -302,8 +312,8 @@ namespace Helpmebot
 
         // TODO: invoke this event somewhere
         public event NameReplyEventHandler nameReplyEvent;
-
-
+        
+        private event ConnectionRegistrationEventHandler connectionRegistrationRequiredEvent;
         #endregion
 
         #region properties
@@ -1132,9 +1142,9 @@ namespace Helpmebot
             this.modeChangeEvent += this.IrcModeChangeEvent;
             this.inviteEvent += this.IrcInviteEvent;
             this.kickEvent += this.IrcKickEvent;
-            this.privmsgEvent += this.IrcPrivmsgEvent;
-            this.ctcpEvent += this.IrcCtcpEvent;
-            this.noticeEvent += this.IrcNoticeEvent;
+            this.PrivateMessageEvent += this.IrcPrivateMessageEvent;
+            this.ClientToClientEvent += this.IrcClientToClientEvent;
+            this.NoticeEvent += this.IrcNoticeEvent;
             this.errNicknameInUseEvent += this.AssumeTakenNickname;
             this.errUnavailResource += this.IrcErrorUnavailResource;
             this.nameReplyEvent += this.IrcNameReplyEvent;
@@ -1251,39 +1261,36 @@ namespace Helpmebot
         /// <param name="message">
         /// The message.
         /// </param>
-        private void IrcNoticeEvent(User source, string destination, string message)
+        private void IrcNoticeEvent(object sender, PrivateMessageEventArgs e)
         {
-            this.Log("NOTICE EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
+            this.Log("NOTICE EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
         }
 
         /// <summary>
         /// The IRC CTCP event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="destination">
-        /// The destination.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        private void IrcCtcpEvent(User source, string destination, string message)
+        private void IrcClientToClientEvent(object sender, PrivateMessageEventArgs e)
         {
-            this.Log("CTCP EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
-            switch (message.Split(' ')[0].ToUpper())
+            this.Log("CTCP EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
+            switch (e.Message.Split(' ')[0].ToUpper())
             {
                 case "VERSION":
-                    this.CtcpReply(source.nickname, "VERSION", this.ClientVersion);
+                    this.CtcpReply(e.Sender.nickname, "VERSION", this.ClientVersion);
                     break;
                 case "TIME":
-                    this.CtcpReply(source.nickname, "TIME", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    this.CtcpReply(e.Sender.nickname, "TIME", DateTime.Now.ToString(CultureInfo.InvariantCulture));
                     break;
                 case "PING":
-                    this.CtcpReply(source.nickname, "PING", message.Split(' ')[1]);
+                    this.CtcpReply(e.Sender.nickname, "PING", e.Message.Split(' ')[1]);
                     break;
                 case "FINGER":
-                    this.CtcpReply(source.nickname, "FINGER", this.RealName + ", idle " + this.IdleTime);
+                    this.CtcpReply(e.Sender.nickname, "FINGER", this.RealName + ", idle " + this.IdleTime);
                     break;
             }
         }
@@ -1291,16 +1298,13 @@ namespace Helpmebot
         /// <summary>
         /// The IRC private (channel) message event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="destination">
-        /// The destination.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        private void IrcPrivmsgEvent(User source, string destination, string message)
+        private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
         {
             // Don't re-enable.
             // this.log("PRIVMSG EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
@@ -1545,11 +1549,16 @@ namespace Helpmebot
 
                     if (message.StartsWith(asc.GetString(ctcp)))
                     {
-                        this.ctcpEvent(source, destination, message.Trim(Convert.ToChar(Convert.ToByte(1))));
+                        this.ClientToClientEvent(
+                            this,
+                            new PrivateMessageEventArgs(
+                                source,
+                                destination,
+                                message.Trim(Convert.ToChar(Convert.ToByte(1)))));
                     }
                     else
                     {
-                        this.privmsgEvent(source, destination, message.Trim());
+                        this.PrivateMessageEvent(this, new PrivateMessageEventArgs(source, destination, message.Trim()));
                     }
                     
                     break;
@@ -1560,8 +1569,10 @@ namespace Helpmebot
                     {
                         noticedestination = source.nickname;
                     }
-                    
-                    this.noticeEvent(source, noticedestination, parameters.Split(colonSeparator, 2)[1]);
+
+                    this.NoticeEvent(
+                        this,
+                        new PrivateMessageEventArgs(source, noticedestination, parameters.Split(colonSeparator, 2)[1]));
                     break;
                 case "001":
                     this.connectionRegistrationSucceededEvent();

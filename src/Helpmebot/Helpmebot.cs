@@ -24,6 +24,7 @@ namespace Helpmebot
 
     using Helpmebot.AI;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Events;
     using Helpmebot.Monitoring;
     using Helpmebot.Properties;
     using Helpmebot.Threading;
@@ -126,7 +127,7 @@ namespace Helpmebot
 
             irc.joinEvent += NotifyOnJoinEvent;
 
-            irc.privmsgEvent += ReceivedMessage;
+            irc.PrivateMessageEvent += ReceivedMessage;
 
             irc.inviteEvent += irc_InviteEvent;
 
@@ -153,8 +154,19 @@ namespace Helpmebot
             new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
         }
 
-        private static void ReceivedMessage(User source, string destination, string message)
+        /// <summary>
+        /// The received message.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private static void ReceivedMessage(object sender, PrivateMessageEventArgs e)
         {
+            string message = e.Destination;
+
             CommandParser cmd = new CommandParser();
             try
             {
@@ -167,15 +179,14 @@ namespace Helpmebot
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.handleCommand(source, destination, command, commandArgs);
+                    cmd.handleCommand(e.Sender, e.Destination, command, commandArgs);
                 }
 
                 string aiResponse = Intelligence.Singleton().Respond(message);
-                if (Configuration.singleton()["silence",destination] == "false" &&
-                    aiResponse != string.Empty)
+                if (Configuration.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
-                    string[] aiParameters = {source.nickname};
-                    irc.IrcPrivmsg(destination, new Message().get(aiResponse, aiParameters));
+                    string[] aiParameters = { e.Sender.nickname };
+                    irc.IrcPrivmsg(e.Destination, new Message().get(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)
