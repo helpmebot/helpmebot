@@ -114,6 +114,10 @@
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
+    <Compile Include="IRC\IrcClient.cs" />
+    <Compile Include="IRC\Message\IMessage.cs" />
+    <Compile Include="IRC\Message\Message.cs" />
+    <Compile Include="IRC\NetworkClient.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
@@ -271,4 +275,5 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
 </Project>
