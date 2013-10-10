@@ -166,7 +166,7 @@ namespace Helpmebot
         /// </param>
         private static void ReceivedMessage(object sender, PrivateMessageEventArgs e)
         {
-            string message = e.Destination;
+            string message = e.Message;
 
             CommandParser cmd = new CommandParser();
             try
