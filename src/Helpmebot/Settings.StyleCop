@@ -4,6 +4,7 @@
       <Value>geolocate</Value>
       <Value>geolocation</Value>
       <Value>ip</Value>
+      <Value>whois</Value>
       <Value>Wikipedian</Value>
     </CollectionProperty>
   </GlobalSettings>

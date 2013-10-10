@@ -165,7 +165,7 @@ namespace Helpmebot
 
                         if (rW.action)
                         {
-                            crh.respond(IrcAccessLayer.wrapCTCP("ACTION", wordResponse));
+                            crh.respond(IrcAccessLayer.WrapCTCP("ACTION", wordResponse));
                         }
                         else
                         {
@@ -192,7 +192,7 @@ namespace Helpmebot
             foreach (string arg in args)
             {
                 if (!arg.StartsWith(">")) continue;
-                if (Helpmebot6.irc.isOnChannel(destination, arg.Substring(1)) != 0)
+                if (Helpmebot6.irc.IsOnChannel(destination, arg.Substring(1)) != 0)
                     directedTo = arg.Substring(1);
 
                 GlobalFunctions.removeItemFromArray(arg, ref args);
@@ -227,14 +227,14 @@ namespace Helpmebot
                             if (this.OverrideBotSilence ||
                                 Configuration.singleton()["silence",destination] != "true")
                             {
-                                Helpmebot6.irc.ircPrivmsg(destination, message);
+                                Helpmebot6.irc.IrcPrivmsg(destination, message);
                             }
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel, message);
+                            Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
-                            Helpmebot6.irc.ircPrivmsg(source.nickname, message);
+                            Helpmebot6.irc.IrcPrivmsg(source.nickname, message);
                             break;
                     }
                 }

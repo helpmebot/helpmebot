@@ -105,7 +105,7 @@ namespace Helpmebot
 
             SetupEvents();
 
-            if (!irc.connect())
+            if (!irc.Connect())
             {
                 // if can't connect to irc, die
                 return;
@@ -175,7 +175,7 @@ namespace Helpmebot
                     aiResponse != string.Empty)
                 {
                     string[] aiParameters = {source.nickname};
-                    irc.ircPrivmsg(destination, new Message().get(aiResponse, aiParameters));
+                    irc.IrcPrivmsg(destination, new Message().get(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)
@@ -186,7 +186,7 @@ namespace Helpmebot
 
         private static void JoinChannels()
         {
-            irc.ircJoin(debugChannel);
+            irc.IrcJoin(debugChannel);
 
             DAL.Select q = new DAL.Select("channel_name");
             q.setFrom("channel");
@@ -194,7 +194,7 @@ namespace Helpmebot
             q.addWhere(new DAL.WhereConds("channel_network", _ircNetwork.ToString()));
             foreach (object[] item in _dbal.executeSelect(q))
             {
-                irc.ircJoin((string) (item)[0]);
+                irc.IrcJoin((string) (item)[0]);
             }
         }
 

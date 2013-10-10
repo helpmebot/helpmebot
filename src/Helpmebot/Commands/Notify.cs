@@ -82,7 +82,7 @@ namespace helpmebot6.Commands
                 string message = msgprovider.get("notifyJoin", new[] { source.nickname, channel });
                 foreach (User user in toNotify)
                 {
-                    Helpmebot6.irc.ircPrivmsg(user.nickname, message);
+                    Helpmebot6.irc.IrcPrivmsg(user.nickname, message);
                 }
             }
         }

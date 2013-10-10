@@ -80,12 +80,12 @@ namespace helpmebot6.Commands
                                                       };
                 DAL.singleton().update("channel", vals, 1, new DAL.WhereConds("channel_name", args));
 
-                Helpmebot6.irc.ircJoin(args);
+                Helpmebot6.irc.IrcJoin(args);
             }
             else
             {
                 DAL.singleton().insert("channel", string.Empty, args, string.Empty, "1", network.ToString());
-                Helpmebot6.irc.ircJoin(args);
+                Helpmebot6.irc.IrcJoin(args);
             }
 
             return null;

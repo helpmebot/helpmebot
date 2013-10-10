@@ -83,17 +83,13 @@ namespace Helpmebot
                 this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.Nickname + " " + this._baseIal.ServerInfo);
                 this._sw.Flush();
 
-                foreach (var c in this._baseIal.activeChannels)
+                foreach (var c in this._baseIal.ActiveChannels)
                 {
                     this._sw.WriteLine(":" + this._baseIal.MyIdentity + " JOIN " + c);
                     this._sw.Flush();
-                    this._baseIal.ircNames(c);
-                    this._baseIal.ircTopic(c);
+                    this._baseIal.IrcNames(c);
+                    this._baseIal.IrcTopic(c);
                 }
-
-                
-
-
 
                 this._sw.Flush();
                 this._baseIal.DataReceivedEvent += this.baseIalDataRecievedEvent;
@@ -113,7 +109,7 @@ namespace Helpmebot
                         break;
                     }
 
-                    this._baseIal.sendRawLine(line);
+                    this._baseIal.SendRawLine(line);
                 }
             }
             catch (ThreadAbortException)

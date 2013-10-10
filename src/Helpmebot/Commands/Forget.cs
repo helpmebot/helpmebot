@@ -56,12 +56,12 @@ namespace helpmebot6.Commands
                                      ? new Message().get("cmdForgetDone")
                                      : new Message().get("cmdForgetError");
 
-                Helpmebot6.irc.ircNotice(this.Source.nickname, forgottenMessage);
+                Helpmebot6.irc.IrcNotice(this.Source.nickname, forgottenMessage);
             }
             else
             {
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString() };
-                Helpmebot6.irc.ircNotice(
+                Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
                     new Message().get("notEnoughParameters", messageParameters));
             }

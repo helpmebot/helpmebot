@@ -96,7 +96,7 @@ namespace Helpmebot.Monitoring
 
                         if (Configuration.singleton()["silence", destination] == "false")
                         {
-                            Helpmebot6.irc.ircPrivmsg(destination, text);
+                            Helpmebot6.irc.IrcPrivmsg(destination, text);
                         }
                     }
 
@@ -110,7 +110,7 @@ namespace Helpmebot.Monitoring
                     temp(this, new EventArgs());
                 }
             }
-            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher died");
+            Helpmebot6.irc.IrcPrivmsg("##helpmebot", "ACC Notifications watcher died");
             Logger.instance().addToLog("ACC Notifications watcher died.", Logger.LogTypes.Error);
         }
 

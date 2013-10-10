@@ -124,7 +124,7 @@ namespace helpmebot6.Commands
             else
             {
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString() };
-                Helpmebot6.irc.ircNotice(
+                Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
                     new Message().get("notEnoughParameters", messageParameters));
             }

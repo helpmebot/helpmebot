@@ -54,7 +54,7 @@ namespace Helpmebot
 
             if (Helpmebot6.irc != null)
             {
-                Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message);
+                Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message);
             }
         }
 

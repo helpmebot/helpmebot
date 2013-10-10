@@ -178,7 +178,7 @@ namespace Helpmebot
         private void sendLink(string channel, string link)
         {
             if (Configuration.singleton()["autoLink",channel] == "true")
-                Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
+                Helpmebot6.irc.IrcPrivmsg(channel, this.getLink(link, false));
         }
     
 

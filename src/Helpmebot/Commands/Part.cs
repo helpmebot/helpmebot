@@ -52,7 +52,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.irc.ircPart(this.Channel, this.Source.ToString());
+            Helpmebot6.irc.IrcPart(this.Channel, this.Source.ToString());
             Dictionary<string, string> vals = new Dictionary<string, string> { { "channel_enabled", "0" } };
             DAL.singleton()
                 .update(

@@ -50,7 +50,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.irc.sendRawLine(string.Join(" ", this.Arguments));
+            Helpmebot6.irc.SendRawLine(string.Join(" ", this.Arguments));
 
             return new CommandResponseHandler();
         }
