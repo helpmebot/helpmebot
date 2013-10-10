@@ -22,6 +22,8 @@ namespace Helpmebot
 {
     using System;
 
+    using Helpmebot.IRC.Legacy;
+
     internal class Message
     {
         private readonly DAL _dbal;

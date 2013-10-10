@@ -202,7 +202,7 @@
     <Compile Include="DAL.cs" />
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
-    <Compile Include="IrcAccessLayer.cs" />
+    <Compile Include="IRC\Legacy\IrcAccessLayer.cs" />
     <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\RSS\RssMonitor.cs" />

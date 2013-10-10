@@ -26,6 +26,7 @@ namespace Helpmebot
     using System.Text.RegularExpressions;
 
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Legacy;
     using Helpmebot.Monitoring;
 
     using helpmebot6.Commands;
