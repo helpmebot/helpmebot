@@ -21,9 +21,6 @@
 namespace Helpmebot
 {
     using System;
-    using System.IO;
-    using System.Net.Sockets;
-    using System.Text;
 
     /// <summary>
     /// Logger
@@ -34,57 +31,15 @@ namespace Helpmebot
 
         protected Logger()
         {
-            this._dalLogger = new StreamWriter("dal.log");
-            this._ircLogger = new StreamWriter("irc.log");
-            this._ialLogger = new StreamWriter("ial.log");
-            this._errorLogger = new StreamWriter("error.log");
-
-
-            this._dalLogger.AutoFlush = true;
-            this._ircLogger.AutoFlush = true;
-            this._ialLogger.AutoFlush = true;
-            this._errorLogger.AutoFlush = true;
-
             const string init = "Welcome to Helpmebot v6.";
-            this._dalLogger.WriteLine(init);
-            this._ircLogger.WriteLine(init);
-            this._ialLogger.WriteLine(init);
-            this._errorLogger.WriteLine(init);
 
             this.addToLog(init, LogTypes.General);
-
-            this.copyToUdp = 7648;
         }
 
         public static Logger instance()
         {
             return _instance ?? ( _instance = new Logger( ) );
         }
-
-        private readonly StreamWriter _dalLogger;
-        private readonly StreamWriter _ialLogger;
-        private readonly StreamWriter _ircLogger;
-        private readonly StreamWriter _errorLogger;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [log DAL].
-        /// </summary>
-        /// <value><c>true</c> if [log DAL]; otherwise, <c>false</c>.</value>
-        public bool logDAL { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [log irc].
-        /// </summary>
-        /// <value><c>true</c> if [log irc]; otherwise, <c>false</c>.</value>
-        public bool logIrc { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether [log dal lock].
-        /// </summary>
-        /// <value><c>true</c> if [log dal lock]; otherwise, <c>false</c>.</value>
-        public bool logDalLock { get; set; }
-
-        public int copyToUdp { get; set; }
 
         /// <summary>
         /// Log types
@@ -94,31 +49,38 @@ namespace Helpmebot
             /// <summary>
             /// dotnetwikibot, GREY, no choice
             /// </summary>
-            DNWB, // 
+            DNWB,
+
             /// <summary>
             /// Database stuff, MAGENTA
             /// </summary>
-            DAL, // 
+            DAL, 
+
             /// <summary>
             /// IRC stuff YELLOW
             /// </summary>
-            IAL, // 
+            IAL,
+
             /// <summary>
             /// command log events, BLUE
             /// </summary>
-            Command, // 
+            Command,
+
             /// <summary>
             /// general log events, WHITE
             /// </summary>
-            General, // 
+            General,
+
             /// <summary>
             /// error events, RED
             /// </summary>
-            Error, // 
+            Error, 
+
             /// <summary>
             /// raw IRC events,
             /// </summary>
-            IRC, //  
+            IRC, 
+
             /// <summary>
             /// ?
             /// </summary>
@@ -148,88 +110,53 @@ namespace Helpmebot
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("A " + message);
-                        this.udpLog(dateString + "A " + message);
                         break;
                     case LogTypes.DalLock:
-                        if (this.logDalLock)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write(dateString);
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine("DL " + message);
-                            this.udpLog(dateString + "DL " + message);
-                        }
-                        this._dalLogger.WriteLine(dateString + message);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write(dateString);
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("DL " + message);
                         break;
                     case LogTypes.DAL:
-                        if (this.logDAL)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write(dateString);
-                            Console.ForegroundColor = ConsoleColor.Magenta;
-                            Console.WriteLine("D " + message);
-                            this.udpLog(dateString + "D " + message);
-                        }
-                        this._dalLogger.WriteLine(dateString + message);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write(dateString);
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine("D " + message); 
                         break;
                     case LogTypes.IAL:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        this._ialLogger.WriteLine(dateString + message);
                         Console.WriteLine("I " + message);
-                        this.udpLog(dateString + "I " + message);
                         break;
                     case LogTypes.Command:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("C " + message);
-                        this.udpLog(dateString + "C " + message);
                         break;
                     case LogTypes.General:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("G " + message);
-                        this.udpLog(dateString + "G " + message);
                         break;
                     case LogTypes.Error:
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.Write(dateString);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        this._errorLogger.WriteLine(dateString + message);
                         Console.WriteLine("E " + message);
-                        this.udpLog(dateString + "E " + message);
                         break;
                     case LogTypes.IRC:
-                        if (this.logIrc)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.Write(dateString);
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            Console.BackgroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine("R " + message);
-                            this.udpLog(dateString + "R " + message);
-                        }
-                        this._ircLogger.WriteLine(dateString + message);
-
-                        break;
-                    default:
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.Write(dateString);
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("R " + message);
                         break;
                 }
-                Console.ResetColor();
-            }
-        }
 
-        private void udpLog(string message)
-        {
-            if( 1025 <= this.copyToUdp && this.copyToUdp <= 65535 )
-            {
-                UdpClient udp = new UdpClient("helpmebot.org.uk", this.copyToUdp);
-                byte[] messageBytes = Encoding.ASCII.GetBytes(message + "\n");
-                udp.Send(messageBytes, messageBytes.Length);
-                udp.Close();
+                Console.ResetColor();
             }
         }
     }

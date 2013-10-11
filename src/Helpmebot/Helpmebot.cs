@@ -46,8 +46,6 @@ namespace Helpmebot
         private static uint _ircNetwork;
 
         public static readonly DateTime StartupTime = DateTime.Now;
-
-        public static bool pagewatcherEnabled = true;
         
         private static void Main(string[] args)
         {
@@ -55,24 +53,16 @@ namespace Helpmebot
             
             if (args.ContainsPrefix("--logdal").HasValue)
             {
-                Logger.instance().logDAL = true;
             }
 
             if (args.ContainsPrefix("--logdallock").HasValue)
             {
-                Logger.instance().logDalLock = true;
             }
 
             if (args.ContainsPrefix("--logirc").HasValue)
             {
-                Logger.instance().logIrc = true;
             }
-
-            if (args.ContainsPrefix("--disablepagewatcher").HasValue)
-            {
-                pagewatcherEnabled = false;
-            }
-
+            
             InitialiseBot();
         }
 
