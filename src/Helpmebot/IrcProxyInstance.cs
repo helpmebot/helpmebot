@@ -26,7 +26,7 @@ namespace Helpmebot
     using System.Threading;
 
     using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Threading;
 
     class IrcProxyInstance  : IThreadedSystem

@@ -25,6 +25,8 @@ namespace Helpmebot.Monitoring
     using System.Threading;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
     class AccNotifications : IThreadedSystem
@@ -94,7 +96,7 @@ namespace Helpmebot.Monitoring
 
                         DAL.singleton().delete("acc_notifications", 1, new DAL.WhereConds("notif_id", id));
 
-                        if (Configuration.singleton()["silence", destination] == "false")
+                        if (LegacyConfig.singleton()["silence", destination] == "false")
                         {
                             Helpmebot6.irc.IrcPrivmsg(destination, text);
                         }

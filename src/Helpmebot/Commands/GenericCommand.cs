@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Reflection;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     /// Generic bot command abstract class

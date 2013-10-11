@@ -25,6 +25,8 @@ namespace Helpmebot.Monitoring
     using System.Collections.Generic;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
 
     using MySql.Data.MySqlClient;
 
@@ -98,7 +100,7 @@ namespace Helpmebot.Monitoring
         /// <returns></returns>
         public bool addWatcherToChannel(string keyword, string channel)
         {
-            string channelId = Configuration.singleton().getChannelId(channel);
+            string channelId = LegacyConfig.singleton().getChannelId(channel);
             int watcherId = getWatcherId(keyword);
 
             DAL.Select q = new DAL.Select("COUNT(*)");
@@ -122,7 +124,7 @@ namespace Helpmebot.Monitoring
         /// <param name="channel">The channel.</param>
         public void removeWatcherFromChannel(string keyword, string channel)
         {
-            string channelId = Configuration.singleton().getChannelId(channel);
+            string channelId = LegacyConfig.singleton().getChannelId(channel);
             int watcherId = getWatcherId(keyword);
 
             DAL.singleton().delete("channelwatchers", 0, new DAL.WhereConds("cw_channel", channelId),
@@ -166,7 +168,7 @@ namespace Helpmebot.Monitoring
                 string channel = (string) item[0];
 
                 string message = compileMessage(items, keyword, channel, false);
-                if (Configuration.singleton()["silence",channel] == "false")
+                if (LegacyConfig.singleton()["silence",channel] == "false")
                     Helpmebot6.irc.IrcPrivmsg(channel, message);
             }
         }
@@ -231,16 +233,16 @@ namespace Helpmebot.Monitoring
 
             string fakedestination = destination;
 
-            bool showWaitTime = (fakedestination != "" && (Configuration.singleton()["showWaitTime",destination] == "true"));
+            bool showWaitTime = (fakedestination != "" && (LegacyConfig.singleton()["showWaitTime",destination] == "true"));
 
             TimeSpan minimumWaitTime;
             if (
-                !TimeSpan.TryParse(Configuration.singleton()["minimumWaitTime",destination],
+                !TimeSpan.TryParse(LegacyConfig.singleton()["minimumWaitTime",destination],
                                    out minimumWaitTime))
                 minimumWaitTime = new TimeSpan(0);
 
-            bool shortenUrls = (fakedestination != "" && (Configuration.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"));
-            bool showDelta = (fakedestination != "" && (Configuration.singleton()["catWatcherShowDelta", destination] == "true"));
+            bool shortenUrls = (fakedestination != "" && (LegacyConfig.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true"));
+            bool showDelta = (fakedestination != "" && (LegacyConfig.singleton()["catWatcherShowDelta", destination] == "true"));
 
 
 
@@ -263,12 +265,12 @@ namespace Helpmebot.Monitoring
                     {
                         try
                         {
-                            Uri uri = new Uri(Configuration.singleton()["wikiUrl"] + item);
+                            Uri uri = new Uri(LegacyConfig.singleton()["wikiUrl"] + item);
                             listString += IsGd.shorten(uri).ToString();
                         }
                         catch (UriFormatException ex)
                         {
-                            listString += Configuration.singleton()["wikiUrl"] + item;
+                            listString += LegacyConfig.singleton()["wikiUrl"] + item;
                             GlobalFunctions.errorLog(ex);
                         }
                     }

@@ -196,12 +196,12 @@
     <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
-    <Compile Include="Configuration.cs" />
-    <Compile Include="ConfigurationSetting.cs" />
-    <Compile Include="DAL.cs" />
+    <Compile Include="Legacy\Configuration\LegacyConfig.cs" />
+    <Compile Include="Legacy\Configuration\ConfigurationSetting.cs" />
+    <Compile Include="Legacy\Database\DAL.cs" />
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
-    <Compile Include="IRC\Legacy\IrcAccessLayer.cs" />
+    <Compile Include="Legacy\IRC\IrcAccessLayer.cs" />
     <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />

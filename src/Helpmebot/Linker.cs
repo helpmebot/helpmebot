@@ -26,6 +26,8 @@ namespace Helpmebot
     using System.Text.RegularExpressions;
 
     using Helpmebot.IRC.Events;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     /// Linker and link parser
@@ -144,7 +146,7 @@ namespace Helpmebot
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
                 url =
-                    Configuration.singleton( )[
+                    LegacyConfig.singleton( )[
                         ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination ];
                 return url + antispace( link );
             }
@@ -179,7 +181,7 @@ namespace Helpmebot
 
         private void sendLink(string channel, string link)
         {
-            if (Configuration.singleton()["autoLink",channel] == "true")
+            if (LegacyConfig.singleton()["autoLink",channel] == "true")
                 Helpmebot6.irc.IrcPrivmsg(channel, this.getLink(link, false));
         }
     

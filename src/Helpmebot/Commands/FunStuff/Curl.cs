@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// The curl.
@@ -52,7 +53,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Configuration.singleton()["hedgehog", this.Channel] = "true";
+            LegacyConfig.singleton()["hedgehog", this.Channel] = "true";
             return new CommandResponseHandler(new Message().get("HedgehogCurlup"));
         }
     }

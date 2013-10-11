@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Configuration.cs" company="Helpmebot Development Team">
+// <copyright file="LegacyConfig.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -18,34 +18,36 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Legacy.Configuration
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
 
+    using Helpmebot.Legacy.Database;
+
     /// <summary>
     /// Handles all configuration settings of the bot
     /// </summary>
-    internal class Configuration
+    internal class LegacyConfig
     {
         private readonly DAL _dbal = DAL.singleton();
 
-        private static Configuration _singleton;
+        private static LegacyConfig _singleton;
 
         /// <summary>
         /// Singletons this instance.
         /// </summary>
         /// <returns></returns>
-        public static Configuration singleton()
+        public static LegacyConfig singleton()
         {
-            return _singleton ?? ( _singleton = new Configuration( ) );
+            return _singleton ?? ( _singleton = new LegacyConfig( ) );
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// Initializes a new instance of the <see cref="LegacyConfig"/> class.
         /// </summary>
-        protected Configuration()
+        protected LegacyConfig()
         {
             this._configurationCache = new Dictionary<string, ConfigurationSetting>();
         }

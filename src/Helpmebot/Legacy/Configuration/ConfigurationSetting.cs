@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Legacy.Configuration
 {
     using System;
 

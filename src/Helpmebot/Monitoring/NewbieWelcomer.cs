@@ -25,6 +25,7 @@ namespace Helpmebot.Monitoring
     using System.Text.RegularExpressions;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// Newbie welcomer subsystem
@@ -73,8 +74,8 @@ namespace Helpmebot.Monitoring
         {
             Logger.instance().addToLog("Executing newbie welcomer: " + channel, Logger.LogTypes.Command);
 
-            if (Configuration.singleton()["silence", channel] != "false" ||
-                Configuration.singleton()["welcomeNewbie", channel] != "true") return;
+            if (LegacyConfig.singleton()["silence", channel] != "false" ||
+                LegacyConfig.singleton()["welcomeNewbie", channel] != "true") return;
 
             Logger.instance().addToLog("NW: config OK", Logger.LogTypes.Command);
 

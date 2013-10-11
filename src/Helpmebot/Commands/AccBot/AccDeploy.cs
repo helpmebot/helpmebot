@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
     using System.Web;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -81,7 +82,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentException();
             }
             
-            string apiDeployPassword = Configuration.singleton()["accDeployPassword"];
+            string apiDeployPassword = LegacyConfig.singleton()["accDeployPassword"];
 
             string key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
 

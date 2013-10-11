@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// Triggers the link parser
@@ -54,7 +55,7 @@ namespace helpmebot6.Commands
         /// <returns>The result</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer", this.Channel]);
+            bool secure = bool.Parse(LegacyConfig.singleton()["useSecureWikiServer", this.Channel]);
             string[] args = this.Arguments;
             if (args.Length > 0)
             {

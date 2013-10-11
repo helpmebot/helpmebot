@@ -23,6 +23,8 @@ namespace Helpmebot
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
 
+    using Helpmebot.Legacy.Database;
+
     internal class BinaryStore
     {
         public static SerializableArrayList retrieve(string blobName)

@@ -19,7 +19,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.IRC.Legacy
+namespace Helpmebot.Legacy.IRC
 {
     using System;
     using System.Collections;
@@ -31,6 +31,7 @@ namespace Helpmebot.IRC.Legacy
     using System.Threading;
 
     using Helpmebot.IRC.Events;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
     /// <summary>

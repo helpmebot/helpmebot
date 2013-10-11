@@ -22,6 +22,8 @@ namespace Helpmebot
 {
     using System;
 
+    using Helpmebot.Legacy.Database;
+
     /// <summary>
     /// The user.
     /// </summary>

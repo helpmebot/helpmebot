@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Legacy.Database
 {
     using System;
     using System.Collections;
@@ -28,7 +28,8 @@ namespace Helpmebot
     using System.Text;
     using System.Threading;
 
-    using Helpmebot.Properties;
+    using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections;
 
     using MySql.Data.MySqlClient;
 
@@ -63,6 +64,8 @@ namespace Helpmebot
         /// <returns></returns>
         public bool connect()
         {
+            DatabaseConfiguration dbConfiguration = ConfigurationHelper.DatabaseConfiguration;
+
             try
             {
                 lock (this)
@@ -70,11 +73,11 @@ namespace Helpmebot
                     Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
                     var csb = new MySqlConnectionStringBuilder
                                   {
-                                      Database = Settings.Default.MysqlSchema,
-                                      Password = Settings.Default.MysqlPassword,
-                                      Server = Settings.Default.MysqlHostname,
-                                      UserID = Settings.Default.MysqlUsername,
-                                      Port = Settings.Default.MysqlPort
+                                      Database = dbConfiguration.Schema,
+                                      Password = dbConfiguration.Password,
+                                      Server = dbConfiguration.Hostname,
+                                      UserID = dbConfiguration.Username,
+                                      Port = (uint)dbConfiguration.Port
                                   };
 
                     this._connection = new MySqlConnection(csb.ConnectionString);

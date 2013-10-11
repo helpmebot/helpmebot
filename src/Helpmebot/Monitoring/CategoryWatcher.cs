@@ -25,6 +25,8 @@ namespace Helpmebot.Monitoring
     using System.Threading;
     using System.Xml;
 
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
     /// <summary>
@@ -54,7 +56,7 @@ namespace Helpmebot.Monitoring
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki"];
+            string baseWiki = LegacyConfig.singleton()["baseWiki"];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

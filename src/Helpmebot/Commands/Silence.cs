@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// Controls the bots silencer
@@ -64,7 +65,7 @@ namespace helpmebot6.Commands
 
             bool oldValue =
                 bool.Parse(
-                    !global ? Configuration.singleton()["silence", this.Channel] : Configuration.singleton()["silence"]);
+                    !global ? LegacyConfig.singleton()["silence", this.Channel] : LegacyConfig.singleton()["silence"]);
 
             if (args.Length > 0)
             {
@@ -91,7 +92,7 @@ namespace helpmebot6.Commands
 
                 if (newValue == "global")
                 {
-                    Configuration.singleton()["silence", this.Channel] = null;
+                    LegacyConfig.singleton()["silence", this.Channel] = null;
                     return new CommandResponseHandler(
                         new Message().get("defaultConfig"),
                         CommandResponseDestination.PrivateMessage);
@@ -99,13 +100,13 @@ namespace helpmebot6.Commands
 
                 if (!global)
                 {
-                    Configuration.singleton()["silence", this.Channel] = newValue;
+                    LegacyConfig.singleton()["silence", this.Channel] = newValue;
                 }
                 else
                 {
                     if (this.Source.accessLevel >= User.UserRights.Superuser)
                     {
-                        Configuration.singleton()["silence"] = newValue;
+                        LegacyConfig.singleton()["silence"] = newValue;
                     }
                 }
 

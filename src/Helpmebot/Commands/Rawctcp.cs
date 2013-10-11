@@ -21,7 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.IRC;
 
     /// <summary>
     /// Sends a raw client-to-client protocol command

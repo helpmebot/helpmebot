@@ -26,7 +26,8 @@ namespace Helpmebot
     using System.Text.RegularExpressions;
 
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
 
     using helpmebot6.Commands;
@@ -226,7 +227,7 @@ namespace Helpmebot
                     {
                         case CommandResponseDestination.Default:
                             if (this.OverrideBotSilence ||
-                                Configuration.singleton()["silence",destination] != "true")
+                                LegacyConfig.singleton()["silence",destination] != "true")
                             {
                                 Helpmebot6.irc.IrcPrivmsg(destination, message);
                             }

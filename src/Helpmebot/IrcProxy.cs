@@ -26,14 +26,15 @@ namespace Helpmebot
     using System.Net.Sockets;
     using System.Threading;
 
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Threading;
 
     class IrcProxy : IThreadedSystem
     {
         public IrcProxy(IrcAccessLayer baseIrcAccessLayer, int port, string password)
         {
-            if (Configuration.singleton()["enableProxy"] != "true") return;
+            if (LegacyConfig.singleton()["enableProxy"] != "true") return;
 
             this._listener = new TcpListener(new IPEndPoint(IPAddress.Any, port));
 

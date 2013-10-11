@@ -25,6 +25,8 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
 
     /* returns information about a user
@@ -77,7 +79,7 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            bool useLongInfo = bool.Parse(Configuration.singleton()["useLongUserInfo", this.Channel]);
+            bool useLongInfo = bool.Parse(LegacyConfig.singleton()["useLongUserInfo", this.Channel]);
 
             if (args.Length > 0)
             {
@@ -147,7 +149,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpageurl = GetMainPageUrl(baseWiki);
 
@@ -195,7 +197,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
             
             var mainpagename = GetMainPageName(baseWiki);
 
@@ -222,7 +224,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpagename = GetMainPageName(baseWiki);
 
@@ -281,7 +283,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpagename = GetMainPageName(baseWiki);
             var mainpageurl = GetMainPageUrl(baseWiki);

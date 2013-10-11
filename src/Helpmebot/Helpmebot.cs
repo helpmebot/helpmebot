@@ -25,7 +25,9 @@ namespace Helpmebot
     using Helpmebot.AI;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
     using Helpmebot.Properties;
     using Helpmebot.Threading;
@@ -83,17 +85,17 @@ namespace Helpmebot
                 return;
             }
 
-            Configuration.singleton();
+            LegacyConfig.singleton();
 
-            debugChannel = Configuration.singleton()["channelDebug"];
+            debugChannel = LegacyConfig.singleton()["channelDebug"];
 
-            _ircNetwork = uint.Parse(Configuration.singleton()["ircNetwork"]);
+            _ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
 
-            Trigger = Configuration.singleton()["commandTrigger"];
+            Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             irc = new IrcAccessLayer(_ircNetwork);
 
-            new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
+            new IrcProxy(irc, int.Parse(LegacyConfig.singleton()["proxyPort"]), LegacyConfig.singleton()["proxyPassword"]);
 
             SetupEvents();
 
@@ -174,7 +176,7 @@ namespace Helpmebot
                 }
 
                 string aiResponse = Intelligence.Singleton().Respond(message);
-                if (Configuration.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
+                if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
                     string[] aiParameters = { e.Sender.nickname };
                     irc.IrcPrivmsg(e.Destination, new Message().get(aiResponse, aiParameters));

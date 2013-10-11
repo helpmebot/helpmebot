@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// Uncurl command to set the bot's hedgehog status to false.
@@ -53,7 +54,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Configuration.singleton()["hedgehog", this.Channel] = "false";
+            LegacyConfig.singleton()["hedgehog", this.Channel] = "false";
             return new CommandResponseHandler(new Message().get("Done"));
         }
     }

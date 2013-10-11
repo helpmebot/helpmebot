@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// The fun command.
@@ -52,7 +53,7 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            return Configuration.singleton()["hedgehog", this.Channel] == "false" ? 
+            return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" ? 
                 base.OnAccessDenied() : 
                 new CommandResponseHandler(new Message().get("HedgehogAccessDenied"), CommandResponseDestination.PrivateMessage);
         }
@@ -65,7 +66,7 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override bool TestAccess()
         {
-            return Configuration.singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
+            return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
         }
     }
 }
