@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Accmon.cs" company="Helpmebot Development Team">
+// <copyright file="DataReceivedEventArgs.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,48 +14,33 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Accmon type.
+//   Defines the DataReceivedEventArgs type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands
+namespace Helpmebot.IRC.Events
 {
-    using Helpmebot;
-    using Helpmebot.Monitoring;
+    using System;
 
     /// <summary>
-    /// The accmon.
+    /// The data received event args.
     /// </summary>
-    internal class Accmon : GenericCommand
+    public class DataReceivedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Accmon"/> class.
+        /// Initialises a new instance of the <see cref="DataReceivedEventArgs"/> class.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="data">
+        /// The data.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        public Accmon(User source, string channel, string[] args)
-            : base(source, channel, args)
+        public DataReceivedEventArgs(string data)
         {
+            this.Data = data;
         }
-
-        #region Overrides of GenericCommand
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the data.
         /// </summary>
-        /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand()
-        {
-            return new CommandResponseHandler(AccNotifications.getInstance().GetThreadStatus()[0]);
-        }
-
-        #endregion
+        public string Data { get; private set; }
     }
 }

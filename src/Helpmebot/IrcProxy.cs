@@ -26,11 +26,12 @@ namespace Helpmebot
     using System.Net.Sockets;
     using System.Threading;
 
+    using Helpmebot.IRC.Legacy;
     using Helpmebot.Threading;
 
     class IrcProxy : IThreadedSystem
     {
-        public IrcProxy(IAL baseIrcAccessLayer, int port, string password)
+        public IrcProxy(IrcAccessLayer baseIrcAccessLayer, int port, string password)
         {
             if (Configuration.singleton()["enableProxy"] != "true") return;
 
@@ -39,13 +40,13 @@ namespace Helpmebot
             this._baseIal = baseIrcAccessLayer;
             this._password = password;
 
-            this.registerInstance();
+            this.RegisterInstance();
 
             this._t = new Thread(this.listenerThread);
             this._t.Start();
         }
 
-        private readonly IAL _baseIal;
+        private readonly IrcAccessLayer _baseIal;
         private readonly string _password;
         private readonly TcpListener _listener;
         private readonly Thread _t;
@@ -82,23 +83,23 @@ namespace Helpmebot
 
         #region IThreadedSystem members
 
-        public void stop()
+        public void Stop()
         {
             this._t.Abort();
         }
 
-        public void registerInstance()
+        public void RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             string[] x = {this._t.ThreadState.ToString()};
             return x;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
         #endregion
     }
 }

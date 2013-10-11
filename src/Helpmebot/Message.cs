@@ -22,6 +22,8 @@ namespace Helpmebot
 {
     using System;
 
+    using Helpmebot.IRC.Legacy;
+
     internal class Message
     {
         private readonly DAL _dbal;
@@ -59,7 +61,7 @@ namespace Helpmebot
             {
                 if (Configuration.singleton()["messagePrefix"] != string.Empty) // check a prefix was added
                 {
-                    Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
+                    Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel,
                                               "***ERROR*** Message '" + messageName + "' not found with prefix '" +
                                               Configuration.singleton()["messagePrefix"] +
                                               "'. Attempting without prefix...");
@@ -72,7 +74,7 @@ namespace Helpmebot
                 {
 
                     // error out - can't find message
-                    Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel,
+                    Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel,
                                               "***ERROR*** Message '" + messageName + "' not found in message table");
                     return "";
                 }
@@ -86,7 +88,7 @@ namespace Helpmebot
             string builtString = String.Format(messageFormat, args);
             if(builtString.StartsWith("#ACTION"))
             {
-                builtString = IAL.wrapCTCP("ACTION", builtString.Substring(8));
+                builtString = IrcAccessLayer.WrapCTCP("ACTION", builtString.Substring(8));
             }
             return builtString;
         }

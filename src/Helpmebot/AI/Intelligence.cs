@@ -104,7 +104,7 @@ namespace Helpmebot.AI
                     continue;
                 }
 
-                if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
+                if (tokens[0] == word && tokens[1] == Helpmebot6.irc.Nickname)
                 {
                     return helloResponses;
                 }
@@ -114,7 +114,7 @@ namespace Helpmebot.AI
             {
                 if (tokens.Length > 1)
                 {
-                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.Nickname)
                     {
                         return morningResponses;
                     }
@@ -125,7 +125,7 @@ namespace Helpmebot.AI
             {
                 if (tokens.Length > 1)
                 {
-                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.Nickname)
                     {
                         return afternoonResponses;
                     }
@@ -136,7 +136,7 @@ namespace Helpmebot.AI
             {
                 if (tokens.Length > 1)
                 {
-                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.ircNickname)
+                    if (tokens[0] == word && tokens[1] == Helpmebot6.irc.Nickname)
                     {
                         return eveningResponses;
                     }

@@ -52,7 +52,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] messageParameters = { Helpmebot6.irc.messageCount.ToString() };
+            string[] messageParameters = { Helpmebot6.irc.MessageCount.ToString() };
             return
                 new CommandResponseHandler(new Message().get("messageCountReport", messageParameters));
         }

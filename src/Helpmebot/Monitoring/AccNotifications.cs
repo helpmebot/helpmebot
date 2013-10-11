@@ -48,7 +48,7 @@ namespace Helpmebot.Monitoring
         {
             this._watcherThread = new Thread(this.threadBody);
             this._watcherThread.Start();
-	        this.registerInstance();
+	        this.RegisterInstance();
         }
 
         private void threadBody()
@@ -96,7 +96,7 @@ namespace Helpmebot.Monitoring
 
                         if (Configuration.singleton()["silence", destination] == "false")
                         {
-                            Helpmebot6.irc.ircPrivmsg(destination, text);
+                            Helpmebot6.irc.IrcPrivmsg(destination, text);
                         }
                     }
 
@@ -104,13 +104,13 @@ namespace Helpmebot.Monitoring
             }
             catch (ThreadAbortException)
             {
-                EventHandler temp = this.threadFatalError;
+                EventHandler temp = this.ThreadFatalErrorEvent;
                 if (temp != null)
                 {
                     temp(this, new EventArgs());
                 }
             }
-            Helpmebot6.irc.ircPrivmsg("##helpmebot", "ACC Notifications watcher died");
+            Helpmebot6.irc.IrcPrivmsg("##helpmebot", "ACC Notifications watcher died");
             Logger.instance().addToLog("ACC Notifications watcher died.", Logger.LogTypes.Error);
         }
 
@@ -119,7 +119,7 @@ namespace Helpmebot.Monitoring
         /// <summary>
         ///   Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
-        public void stop()
+        public void Stop()
         {
             Logger.instance().addToLog("Stopping ACC Notifications thread...", Logger.LogTypes.General);
             this._watcherThread.Abort();
@@ -128,7 +128,7 @@ namespace Helpmebot.Monitoring
         /// <summary>
         ///   Register this instance of the threaded class with the global list
         /// </summary>
-        public void registerInstance()
+        public void RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
@@ -137,13 +137,13 @@ namespace Helpmebot.Monitoring
         ///   Get the status of thread(s) in this instance.
         /// </summary>
         /// <returns></returns>
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             string[] statuses = { this._watcherThread.ThreadState.ToString() };
             return statuses;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
 
         #endregion
     }

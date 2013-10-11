@@ -24,6 +24,8 @@ namespace Helpmebot
 
     using Helpmebot.AI;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Legacy;
     using Helpmebot.Monitoring;
     using Helpmebot.Properties;
     using Helpmebot.Threading;
@@ -35,7 +37,7 @@ namespace Helpmebot
     /// </summary>
     public class Helpmebot6
     {
-        public static IAL irc;
+        public static IrcAccessLayer irc;
         private static DAL _dbal;
 
         public static string debugChannel;
@@ -99,13 +101,13 @@ namespace Helpmebot
 
             Trigger = Configuration.singleton()["commandTrigger"];
 
-            irc = new IAL(_ircNetwork);
+            irc = new IrcAccessLayer(_ircNetwork);
 
             new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
             SetupEvents();
 
-            if (!irc.connect())
+            if (!irc.Connect())
             {
                 // if can't connect to irc, die
                 return;
@@ -126,14 +128,14 @@ namespace Helpmebot
 
             irc.joinEvent += NotifyOnJoinEvent;
 
-            irc.privmsgEvent += ReceivedMessage;
+            irc.PrivateMessageEvent += ReceivedMessage;
 
             irc.inviteEvent += irc_InviteEvent;
 
-            irc.threadFatalError += irc_ThreadFatalError;
+            irc.ThreadFatalErrorEvent += IrcThreadFatalErrorEvent;
         }
 
-        private static void irc_ThreadFatalError(object sender, EventArgs e)
+        private static void IrcThreadFatalErrorEvent(object sender, EventArgs e)
         {
             Stop();
         }
@@ -153,8 +155,19 @@ namespace Helpmebot
             new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
         }
 
-        private static void ReceivedMessage(User source, string destination, string message)
+        /// <summary>
+        /// The received message.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private static void ReceivedMessage(object sender, PrivateMessageEventArgs e)
         {
+            string message = e.Message;
+
             CommandParser cmd = new CommandParser();
             try
             {
@@ -167,15 +180,14 @@ namespace Helpmebot
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.handleCommand(source, destination, command, commandArgs);
+                    cmd.handleCommand(e.Sender, e.Destination, command, commandArgs);
                 }
 
                 string aiResponse = Intelligence.Singleton().Respond(message);
-                if (Configuration.singleton()["silence",destination] == "false" &&
-                    aiResponse != string.Empty)
+                if (Configuration.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
-                    string[] aiParameters = {source.nickname};
-                    irc.ircPrivmsg(destination, new Message().get(aiResponse, aiParameters));
+                    string[] aiParameters = { e.Sender.nickname };
+                    irc.IrcPrivmsg(e.Destination, new Message().get(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)
@@ -184,9 +196,9 @@ namespace Helpmebot
             }
         }
 
-        private static void JoinChannels()
+        private static void JoinChannels(object sender, EventArgs e)
         {
-            irc.ircJoin(debugChannel);
+            irc.IrcJoin(debugChannel);
 
             DAL.Select q = new DAL.Select("channel_name");
             q.setFrom("channel");
@@ -194,7 +206,7 @@ namespace Helpmebot
             q.addWhere(new DAL.WhereConds("channel_network", _ircNetwork.ToString()));
             foreach (object[] item in _dbal.executeSelect(q))
             {
-                irc.ircJoin((string) (item)[0]);
+                irc.IrcJoin((string) (item)[0]);
             }
         }
 

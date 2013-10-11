@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.IRC.Legacy;
 
     /// <summary>
     /// Sends a raw client-to-client protocol command
@@ -55,7 +56,7 @@ namespace helpmebot6.Commands
             string cmd = GlobalFunctions.popFromFront(ref args);
             string dst = GlobalFunctions.popFromFront(ref args);
 
-            Helpmebot6.irc.ircPrivmsg(dst, IAL.wrapCTCP(cmd, string.Join(" ", args)));
+            Helpmebot6.irc.IrcPrivmsg(dst, IrcAccessLayer.WrapCTCP(cmd, string.Join(" ", args)));
 
             return null;
         }

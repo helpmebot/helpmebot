@@ -167,7 +167,7 @@ namespace Helpmebot.Monitoring
 
                 string message = compileMessage(items, keyword, channel, false);
                 if (Configuration.singleton()["silence",channel] == "false")
-                    Helpmebot6.irc.ircPrivmsg(channel, message);
+                    Helpmebot6.irc.IrcPrivmsg(channel, message);
             }
         }
 

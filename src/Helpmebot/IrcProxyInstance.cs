@@ -25,6 +25,8 @@ namespace Helpmebot
     using System.Net.Sockets;
     using System.Threading;
 
+    using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Legacy;
     using Helpmebot.Threading;
 
     class IrcProxyInstance  : IThreadedSystem
@@ -36,7 +38,7 @@ namespace Helpmebot
         StreamReader _sr;
         StreamWriter _sw;
 
-        public IrcProxyInstance(TcpClient client, string _password, IAL _baseIal)
+        public IrcProxyInstance(TcpClient client, string _password, IrcAccessLayer _baseIal)
         {
             this._client = client;
             this._password = _password;
@@ -76,26 +78,22 @@ namespace Helpmebot
                     }
                 }
 
-                this._sw.WriteLine(":irc.helpmebot.org.uk 001 " + this._baseIal.ircNickname + " :Welcome to the Helpmebot IRC Gateway.");
-                this._sw.WriteLine(":irc.helpmebot.org.uk 002 " + this._baseIal.ircNickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
-                this._sw.WriteLine(":irc.helpmebot.org.uk 003 " + this._baseIal.ircNickname + " :This server was created " + DateTime.Now.ToString());
-                this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.ircNickname + " " + this._baseIal.ServerInfo);
+                this._sw.WriteLine(":irc.helpmebot.org.uk 001 " + this._baseIal.Nickname + " :Welcome to the Helpmebot IRC Gateway.");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 002 " + this._baseIal.Nickname + " :Your Host is helpmebot.srv.stwalkerster.net, running version Helpmebot/6.0");
+                this._sw.WriteLine(":irc.helpmebot.org.uk 003 " + this._baseIal.Nickname + " :This server was created " + DateTime.Now.ToString());
+                this._sw.WriteLine(":irc.helpmebot.org.uk 004 " + this._baseIal.Nickname + " " + this._baseIal.ServerInfo);
                 this._sw.Flush();
 
-                foreach (var c in this._baseIal.activeChannels)
+                foreach (var c in this._baseIal.ActiveChannels)
                 {
-                    this._sw.WriteLine(":" + this._baseIal.myIdentity + " JOIN " + c);
+                    this._sw.WriteLine(":" + this._baseIal.MyIdentity + " JOIN " + c);
                     this._sw.Flush();
-                    this._baseIal.ircNames(c);
-                    this._baseIal.ircTopic(c);
+                    this._baseIal.IrcNames(c);
+                    this._baseIal.IrcTopic(c);
                 }
 
-                
-
-
-
                 this._sw.Flush();
-                this._baseIal.dataRecievedEvent += this.baseIalDataRecievedEvent;
+                this._baseIal.DataReceivedEvent += this.baseIalDataRecievedEvent;
 
                 while (this._client.Connected)
                 {
@@ -103,16 +101,16 @@ namespace Helpmebot
                     string source = null;
                     string command = null;
                     string parameters = null;
-                    IAL.basicParser(line, ref source, ref command, ref parameters);
+                    IrcAccessLayer.BasicParser(line, ref source, ref command, ref parameters);
 
                     if (command == "QUIT")
                     {
                         this._sr.Close();
-                        this._baseIal.dataRecievedEvent -= this.baseIalDataRecievedEvent;
+                        this._baseIal.DataReceivedEvent -= this.baseIalDataRecievedEvent;
                         break;
                     }
 
-                    this._baseIal.sendRawLine(line);
+                    this._baseIal.SendRawLine(line);
                 }
             }
             catch (ThreadAbortException)
@@ -125,32 +123,32 @@ namespace Helpmebot
             }
         }
 
-        void baseIalDataRecievedEvent(string data)
+        void baseIalDataRecievedEvent(object sender, DataReceivedEventArgs e)
         {
-            this._sw.WriteLine(data);
+            this._sw.WriteLine(e.Data);
             this._sw.Flush();
         }
 
-        void IThreadedSystem.stop()
+        void IThreadedSystem.Stop()
         {
             this.threadActive = false;
             Thread.Sleep(3000);
             this._clientThread.Abort();
         }
 
-        void IThreadedSystem.registerInstance()
+        void IThreadedSystem.RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        string[] IThreadedSystem.getThreadStatus()
+        string[] IThreadedSystem.GetThreadStatus()
         {
             string[] x = { this._clientThread.ThreadState.ToString() };
             return x;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
         private string _password;
-        private IAL _baseIal;
+        private IrcAccessLayer _baseIal;
     }
 }

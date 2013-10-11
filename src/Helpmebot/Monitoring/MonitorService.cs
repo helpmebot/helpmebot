@@ -53,7 +53,7 @@ namespace Helpmebot.Monitoring
             this._message = message;
 
             this._service = new TcpListener(IPAddress.Any, port);
-            this.registerInstance();
+            this.RegisterInstance();
             this._monitorthread.Start();
         }
 
@@ -83,18 +83,18 @@ namespace Helpmebot.Monitoring
             }
             catch (ThreadAbortException)
             {
-                this.threadFatalError(this, new EventArgs());
+                this.ThreadFatalErrorEvent(this, new EventArgs());
             }
             catch(ObjectDisposedException)
             {
-                this.threadFatalError(this, new EventArgs());
+                this.ThreadFatalErrorEvent(this, new EventArgs());
             }
         }
 
         /// <summary>
         /// Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
-        public void stop()
+        public void Stop()
         {
             this._service.Stop();
             this._alive = false;
@@ -102,18 +102,18 @@ namespace Helpmebot.Monitoring
 
         #region IThreadedSystem Members
 
-        public void registerInstance()
+        public void RegisterInstance()
         {
             ThreadList.instance().register(this);
         }
 
-        public string[] getThreadStatus()
+        public string[] GetThreadStatus()
         {
             string[] status = {"NagiosMonitor thread: " + this._monitorthread.ThreadState};
             return status;
         }
 
-        public event EventHandler threadFatalError;
+        public event EventHandler ThreadFatalErrorEvent;
 
         #endregion
     }

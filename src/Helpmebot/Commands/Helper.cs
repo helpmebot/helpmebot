@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
                     message += " (message: \"" + string.Join(" ", this.Arguments) + "\")";
                 }
 
-                Helpmebot6.irc.ircNotice("#wikipedia-en-helpers", message);
+                Helpmebot6.irc.IrcNotice("#wikipedia-en-helpers", message);
             }
 
             return null;

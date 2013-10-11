@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Accmon.cs" company="Helpmebot Development Team">
+// <copyright file="PrivateMessageEventArgs.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,48 +14,51 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Accmon type.
+//   Defines the PrivateMessageEventArgs type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands
+namespace Helpmebot.IRC.Events
 {
-    using Helpmebot;
-    using Helpmebot.Monitoring;
+    using System;
 
     /// <summary>
-    /// The accmon.
+    /// The private message event args.
     /// </summary>
-    internal class Accmon : GenericCommand
+    public class PrivateMessageEventArgs : EventArgs
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Accmon"/> class.
+        /// Initialises a new instance of the <see cref="PrivateMessageEventArgs"/> class.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
+        /// <param name="destination">
+        /// The destination.
         /// </param>
-        /// <param name="args">
-        /// The args.
+        /// <param name="message">
+        /// The message.
         /// </param>
-        public Accmon(User source, string channel, string[] args)
-            : base(source, channel, args)
+        public PrivateMessageEventArgs(User sender, string destination, string message)
         {
+            this.Message = message;
+            this.Destination = destination;
+            this.Sender = sender;
         }
-
-        #region Overrides of GenericCommand
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the message.
         /// </summary>
-        /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand()
-        {
-            return new CommandResponseHandler(AccNotifications.getInstance().GetThreadStatus()[0]);
-        }
+        public string Message { get; private set; }
 
-        #endregion
+        /// <summary>
+        /// Gets the destination.
+        /// </summary>
+        public string Destination { get; private set; }
+
+        /// <summary>
+        /// Gets the sender.
+        /// </summary>
+        public User Sender { get; private set; }
     }
 }

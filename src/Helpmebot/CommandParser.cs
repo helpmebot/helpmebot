@@ -26,6 +26,7 @@ namespace Helpmebot
     using System.Text.RegularExpressions;
 
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Legacy;
     using Helpmebot.Monitoring;
 
     using helpmebot6.Commands;
@@ -72,7 +73,7 @@ namespace Helpmebot
                 return;
 
             // flip destination over if required
-            if (destination == Helpmebot6.irc.ircNickname)
+            if (destination == Helpmebot6.irc.Nickname)
                 destination = source.nickname;
 
 
@@ -165,7 +166,7 @@ namespace Helpmebot
 
                         if (rW.action)
                         {
-                            crh.respond(IAL.wrapCTCP("ACTION", wordResponse));
+                            crh.respond(IrcAccessLayer.WrapCTCP("ACTION", wordResponse));
                         }
                         else
                         {
@@ -192,7 +193,7 @@ namespace Helpmebot
             foreach (string arg in args)
             {
                 if (!arg.StartsWith(">")) continue;
-                if (Helpmebot6.irc.isOnChannel(destination, arg.Substring(1)) != 0)
+                if (Helpmebot6.irc.IsOnChannel(destination, arg.Substring(1)) != 0)
                     directedTo = arg.Substring(1);
 
                 GlobalFunctions.removeItemFromArray(arg, ref args);
@@ -227,14 +228,14 @@ namespace Helpmebot
                             if (this.OverrideBotSilence ||
                                 Configuration.singleton()["silence",destination] != "true")
                             {
-                                Helpmebot6.irc.ircPrivmsg(destination, message);
+                                Helpmebot6.irc.IrcPrivmsg(destination, message);
                             }
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            Helpmebot6.irc.ircPrivmsg(Helpmebot6.debugChannel, message);
+                            Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
-                            Helpmebot6.irc.ircPrivmsg(source.nickname, message);
+                            Helpmebot6.irc.IrcPrivmsg(source.nickname, message);
                             break;
                     }
                 }
@@ -258,7 +259,7 @@ namespace Helpmebot
         /// </remarks>
         public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
         {
-            return parseRawLineForMessage(ref message, Helpmebot6.irc.ircNickname, Helpmebot6.Trigger);
+            return parseRawLineForMessage(ref message, Helpmebot6.irc.Nickname, Helpmebot6.Trigger);
         }
 
         private static bool parseRawLineForMessage(ref string message, string nickname, string trigger)

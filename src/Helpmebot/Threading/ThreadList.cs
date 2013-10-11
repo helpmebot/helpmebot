@@ -73,7 +73,7 @@ namespace Helpmebot.Threading
                 {
                     Logger.instance().addToLog("Attempting to shut down threaded system: " + obj.GetType(),
                                                Logger.LogTypes.General);
-                    ((IThreadedSystem) obj).stop();
+                    ((IThreadedSystem) obj).Stop();
                 }
                 catch (NotImplementedException ex)
                 {
@@ -96,7 +96,7 @@ namespace Helpmebot.Threading
                 string status = item.GetType() + ": ";
                 try
                 {
-                    foreach (string i in item.getThreadStatus())
+                    foreach (string i in item.GetThreadStatus())
                     {
                         responses.Add(status + i);
                     }

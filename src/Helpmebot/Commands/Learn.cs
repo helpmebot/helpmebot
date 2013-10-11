@@ -64,12 +64,12 @@ namespace helpmebot6.Commands
                 
                 string message = hasLearntWord ? new Message().get("cmdLearnDone") : new Message().get("cmdLearnError");
 
-                Helpmebot6.irc.ircNotice(this.Source.nickname, message);
+                Helpmebot6.irc.IrcNotice(this.Source.nickname, message);
             }
             else
             {
                 string[] messageParameters = { "learn", "2", args.Length.ToString() };
-                Helpmebot6.irc.ircNotice(
+                Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
                     new Message().get("notEnoughParameters", messageParameters));
             }

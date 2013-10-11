@@ -25,6 +25,8 @@ namespace Helpmebot
     using System.Linq;
     using System.Text.RegularExpressions;
 
+    using Helpmebot.IRC.Events;
+
     /// <summary>
     /// Linker and link parser
     /// </summary>
@@ -39,14 +41,14 @@ namespace Helpmebot
             this._lastLink = new Dictionary<string, string>();
             if (Helpmebot6.irc != null)
             {
-                Helpmebot6.irc.privmsgEvent += this.irc_PrivmsgEvent;
-                Helpmebot6.irc.noticeEvent += this.irc_PrivmsgEvent;
+                Helpmebot6.irc.PrivateMessageEvent += this.IrcPrivateMessageEvent;
+                Helpmebot6.irc.NoticeEvent += this.IrcPrivateMessageEvent;
             }
         }
 
-        private void irc_PrivmsgEvent(User source, string destination, string message)
+        private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
         {
-            this.parseMessage(message, destination);
+            this.parseMessage(e.Message, e.Destination);
         }
 
         public static Linker instance()
@@ -178,7 +180,7 @@ namespace Helpmebot
         private void sendLink(string channel, string link)
         {
             if (Configuration.singleton()["autoLink",channel] == "true")
-                Helpmebot6.irc.ircPrivmsg(channel, this.getLink(link, false));
+                Helpmebot6.irc.IrcPrivmsg(channel, this.getLink(link, false));
         }
     
 

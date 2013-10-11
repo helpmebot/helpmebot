@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Helpmebot</RootNamespace>
-    <AssemblyName>Helpmebot</AssemblyName>
+    <AssemblyName>Helpmebot6</AssemblyName>
     <StartupObject>Helpmebot.Helpmebot6</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -43,8 +43,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot6</AssemblyName>
-    <RootNamespace>helpmebot</RootNamespace>
+    <AssemblyName>Helpmebot6</AssemblyName>
+    <RootNamespace>Helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -56,9 +56,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputType>Exe</OutputType>
-    <AssemblyName>helpmebot6</AssemblyName>
+    <AssemblyName>Helpmebot6</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>helpmebot</RootNamespace>
+    <RootNamespace>Helpmebot</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
@@ -110,6 +110,10 @@
     <Compile Include="Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="Model\User.cs" />
+    <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
+    <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
+    <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
+    <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />
@@ -199,10 +203,9 @@
     <Compile Include="DAL.cs" />
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
-    <Compile Include="IAL.cs" />
+    <Compile Include="IRC\Legacy\IrcAccessLayer.cs" />
     <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\NewbieWelcomer.cs" />
-    <Compile Include="Monitoring\RSS\RssMonitor.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
