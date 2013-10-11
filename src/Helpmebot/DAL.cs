@@ -52,7 +52,7 @@ namespace Helpmebot
             return _singleton ?? (_singleton = new DAL());
         }
 
-        protected DAL()
+        private DAL()
         {
         }
         #endregion
