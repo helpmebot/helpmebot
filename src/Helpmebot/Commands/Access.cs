@@ -138,7 +138,6 @@ namespace helpmebot6.Commands
         /// <param name="newEntry">The new entry.</param>
         /// <param name="accessLevel">The access level.</param>
         /// <returns>a response</returns>
-        [Obsolete("Use User class")]
         private static CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
         {
             Logger.instance()
@@ -170,7 +169,6 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="id">The id.</param>
         /// <returns>a response</returns>
-        [Obsolete("Use the User class")]
         private static CommandResponseHandler DeleteAccessEntry(int id)
         {
             Logger.instance()
