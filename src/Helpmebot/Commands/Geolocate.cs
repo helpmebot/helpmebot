@@ -28,6 +28,8 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
 
+    using User = Helpmebot.User;
+
     /// <summary>
     /// Discovers the location of an IP address
     /// </summary>

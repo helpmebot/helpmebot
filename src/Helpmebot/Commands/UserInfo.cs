@@ -27,6 +27,8 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Model;
 
+    using User = Helpmebot.User;
+
     /* returns information about a user
     // what                 how                     info    message
 

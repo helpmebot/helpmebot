@@ -26,6 +26,8 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Model;
 
+    using User = Helpmebot.User;
+
     /// <summary>
     /// Returns the block information of a wikipedian
     /// </summary>
