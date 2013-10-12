@@ -115,6 +115,7 @@
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
+    <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Commands\Blockuser.cs" />
@@ -270,5 +271,8 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="EventArgs\" />
   </ItemGroup>
 </Project>

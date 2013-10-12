@@ -63,7 +63,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 1)
             {
                 // just do category check
-                crh.respond(WatcherController.instance().forceUpdate(this.Arguments[0], this.Channel));
+                crh.respond(WatcherController.Instance().ForceUpdate(this.Arguments[0], this.Channel));
             }
             else
             {
