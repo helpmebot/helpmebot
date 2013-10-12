@@ -135,7 +135,7 @@ namespace helpmebot6.Commands
         {
             string command = GetType().ToString();
 
-            this.LogMessage("Running command: " + command);
+            Log.Info("Running command: " + command);
 
             return this.TestAccess()
                        ? this.ReallyRunCommand()
@@ -166,7 +166,7 @@ namespace helpmebot6.Commands
                 return errorResponse;
             }
 
-            this.LogMessage("Starting command execution...");
+            Log.Info("Starting command execution...");
             CommandResponseHandler crh;
             try
             {
@@ -178,7 +178,7 @@ namespace helpmebot6.Commands
                 crh = new CommandResponseHandler(ex.Message);
             }
 
-            this.LogMessage("Command execution complete.");
+            Log.Info("Command execution complete.");
             return crh;
         }
 
@@ -191,7 +191,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler response = new CommandResponseHandler();
 
             response.respond(new Message().get("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
-            this.LogMessage("Access denied to command.");
+            Log.Info("Access denied to command.");
             if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments)))
             {
                 response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
@@ -224,16 +224,6 @@ namespace helpmebot6.Commands
 #pragma warning disable 612
             return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
 #pragma warning restore 612
-        }
-
-        /// <summary>
-        /// Logs the specified message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        protected void LogMessage(string message)
-        {
-            Logger.instance()
-                .addToLog(MethodBase.GetCurrentMethod().DeclaringType.Name + ": " + message, Logger.LogTypes.Command);
         }
     }
 }

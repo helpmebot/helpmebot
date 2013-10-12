@@ -74,7 +74,7 @@ namespace helpmebot6.Commands
                 return errorResponse;
             }
 
-            this.LogMessage("Starting command execution...");
+            Log.Info("Starting command execution...");
             CommandResponseHandler crh;
 
             try
@@ -87,7 +87,7 @@ namespace helpmebot6.Commands
                 crh = new CommandResponseHandler(ex.Message);
             }
 
-            this.LogMessage("Command execution complete.");
+            Log.Info("Command execution complete.");
             return crh;
         }
 

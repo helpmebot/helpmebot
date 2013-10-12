@@ -20,21 +20,13 @@
 
 namespace Helpmebot
 {
-    using System;
     using System.Configuration;
-    using System.Diagnostics;
-    using System.Reflection;
-
-    using log4net;
 
     /// <summary>
     /// Class holding globally accessible functions
     /// </summary>
     public class GlobalFunctions
     {
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
         ///   Remove the first item from an array, and return the item
         /// </summary>
@@ -45,26 +37,6 @@ namespace Helpmebot
             string firstItem = list[0];
             list = string.Join(" ", list, 1, list.Length - 1).Split(' ');
             return firstItem;
-        }
-
-        /// <summary>
-        ///   Log an exception to the log and IRC
-        /// </summary>
-        /// <param name = "ex">The exception thrown</param>
-        [Obsolete]
-        public static void errorLog(Exception ex)
-        {
-            log.Error(ex.Message, ex);
-
-            Logger.instance().addToLog(ex + ex.StackTrace, Logger.LogTypes.Error);
-
-            StackTrace stack = new StackTrace();
-            MethodBase method = stack.GetFrame(1).GetMethod();
-
-            if (Helpmebot6.irc != null)
-            {
-                Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message);
-            }
         }
 
         public static void removeItemFromArray(string item, ref string[] array)
