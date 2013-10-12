@@ -22,6 +22,7 @@ namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
+    using System.Reflection;
     using System.Threading;
 
     using Helpmebot;
@@ -29,8 +30,16 @@ namespace Helpmebot.Monitoring
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
+    using log4net;
+
     class AccNotifications : IThreadedSystem
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private Thread _watcherThread;
 
         private static AccNotifications instance;
@@ -40,7 +49,6 @@ namespace Helpmebot.Monitoring
             if(instance == null)
             {
                 instance = new AccNotifications();
-
             }
             return instance;
         }
@@ -50,12 +58,12 @@ namespace Helpmebot.Monitoring
         {
             this._watcherThread = new Thread(this.threadBody);
             this._watcherThread.Start();
-	        this.RegisterInstance();
+            this.RegisterInstance();
         }
 
         private void threadBody()
         {
-            Logger.instance().addToLog("Starting ACC Notifications watcher", Logger.LogTypes.General);
+            Log.Info("Starting ACC Notifications watcher");
             try
             {
                 DAL.Select query = new DAL.Select("notif_id", "notif_text", "notif_type");
@@ -101,7 +109,6 @@ namespace Helpmebot.Monitoring
                             Helpmebot6.irc.IrcPrivmsg(destination, text);
                         }
                     }
-
                 }
             }
             catch (ThreadAbortException)
@@ -112,8 +119,9 @@ namespace Helpmebot.Monitoring
                     temp(this, new EventArgs());
                 }
             }
+
             Helpmebot6.irc.IrcPrivmsg("##helpmebot", "ACC Notifications watcher died");
-            Logger.instance().addToLog("ACC Notifications watcher died.", Logger.LogTypes.Error);
+            Log.Warn("ACC Notifications watcher died.");
         }
 
         #region Implementation of IThreadedSystem
@@ -123,7 +131,7 @@ namespace Helpmebot.Monitoring
         /// </summary>
         public void Stop()
         {
-            Logger.instance().addToLog("Stopping ACC Notifications thread...", Logger.LogTypes.General);
+            Log.Info("Stopping ACC Notifications thread...");
             this._watcherThread.Abort();
         }
 

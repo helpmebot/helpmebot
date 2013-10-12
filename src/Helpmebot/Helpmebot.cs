@@ -21,9 +21,9 @@
 namespace Helpmebot
 {
     using System;
+    using System.Reflection;
 
     using Helpmebot.AI;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
@@ -33,11 +33,16 @@ namespace Helpmebot
 
     using helpmebot6.Commands;
 
+    using log4net;
+
     /// <summary>
     /// Helpmebot main class
     /// </summary>
     public class Helpmebot6
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static IrcAccessLayer irc;
         private static DAL _dbal;
 
@@ -50,19 +55,7 @@ namespace Helpmebot
         
         private static void Main(string[] args)
         {
-            // startup arguments
-            
-            if (args.ContainsPrefix("--logdal").HasValue)
-            {
-            }
-
-            if (args.ContainsPrefix("--logdallock").HasValue)
-            {
-            }
-
-            if (args.ContainsPrefix("--logirc").HasValue)
-            {
-            }
+            Log.Info("Initialising Helpmebot...");
             
             InitialiseBot();
         }
@@ -179,7 +172,7 @@ namespace Helpmebot
             }
             catch (Exception ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
         }
 

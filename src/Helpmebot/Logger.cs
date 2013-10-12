@@ -25,6 +25,7 @@ namespace Helpmebot
     /// <summary>
     /// Logger
     /// </summary>
+    [Obsolete]
     internal class Logger
     {
         private static Logger _instance;
@@ -94,6 +95,7 @@ namespace Helpmebot
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="type">The type.</param>
+        [Obsolete]
         public void addToLog(string message, LogTypes type)
         {
             lock (this)

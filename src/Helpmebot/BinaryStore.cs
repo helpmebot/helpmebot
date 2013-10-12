@@ -20,13 +20,24 @@
 
 namespace Helpmebot
 {
+    using System;
+    using System.CodeDom;
     using System.IO;
+    using System.Reflection;
     using System.Runtime.Serialization.Formatters.Binary;
 
     using Helpmebot.Legacy.Database;
 
+    using log4net;
+
     internal class BinaryStore
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static SerializableArrayList retrieve(string blobName)
         {
             var q = new DAL.Select("bin_blob");
@@ -37,8 +48,16 @@ namespace Helpmebot
             var serializationStream = new MemoryStream(((byte[]) (((object[]) (result[0]))[0])));
             if (serializationStream.Length != 0)
             {
-                return (SerializableArrayList) new BinaryFormatter().Deserialize(serializationStream);
+                try
+                {
+                    return (SerializableArrayList)new BinaryFormatter().Deserialize(serializationStream);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.Message, ex);
+                }
             }
+
             return new SerializableArrayList();
         }
 

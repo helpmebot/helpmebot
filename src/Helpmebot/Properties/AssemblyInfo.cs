@@ -51,3 +51,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("6.2.*")]
 [assembly: NeutralResourcesLanguageAttribute("")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("HelpmebotUnitTests")]
+
+[assembly: log4net.Config.XmlConfigurator(Watch = false)]

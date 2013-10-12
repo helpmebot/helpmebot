@@ -21,14 +21,23 @@
 namespace Helpmebot
 {
     using System;
+    using System.Reflection;
 
     using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     /// <summary>
     /// The user.
     /// </summary>
     public class User
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly DAL _db;
 
         private UserRights _accessLevel;
@@ -107,7 +116,7 @@ namespace Helpmebot
             }
             catch (IndexOutOfRangeException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
 
             User ret = new User
@@ -189,7 +198,7 @@ namespace Helpmebot
                 }
                 catch (Exception ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
 
                 return UserRights.Normal;

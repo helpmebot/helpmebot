@@ -32,6 +32,8 @@ namespace Helpmebot
 
     using helpmebot6.Commands;
 
+    using log4net;
+
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
     /// <summary>
@@ -39,6 +41,12 @@ namespace Helpmebot
     /// </summary>
     internal class CommandParser
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The allowed command name chars.
         /// </summary>
@@ -67,7 +75,7 @@ namespace Helpmebot
         /// <param name="args">The args.</param>
         public void handleCommand(User source, string destination, string command, string[] args)
         {
-            Logger.instance().addToLog("Handling recieved message...", Logger.LogTypes.General);
+            Log.Debug("Handling recieved message...");
 
             // if on ignore list, ignore!
             if (source.accessLevel == User.UserRights.Ignored)

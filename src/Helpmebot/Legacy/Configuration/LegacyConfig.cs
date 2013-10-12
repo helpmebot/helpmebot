@@ -23,14 +23,23 @@ namespace Helpmebot.Legacy.Configuration
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reflection;
 
     using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     /// <summary>
     /// Handles all configuration settings of the bot
     /// </summary>
     internal class LegacyConfig
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly DAL _dbal = DAL.singleton();
 
         private static LegacyConfig _singleton;
@@ -131,7 +140,7 @@ namespace Helpmebot.Legacy.Configuration
             }
             catch (Exception ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
             return null;
         }

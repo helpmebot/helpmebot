@@ -23,15 +23,24 @@ namespace Helpmebot
     using System;
     using System.IO;
     using System.Net;
+    using System.Reflection;
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     /// <summary>
     /// is.gd wrapper class
     /// </summary>
     internal class IsGd
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Shortens the specified long URL.
         /// </summary>
@@ -54,7 +63,7 @@ namespace Helpmebot
                 }
                 catch(WebException ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                     return longUrl;
                 }
             }

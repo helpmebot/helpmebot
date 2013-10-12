@@ -21,12 +21,21 @@
 namespace Helpmebot.Legacy.Configuration
 {
     using System;
+    using System.Reflection;
+
+    using log4net;
 
     /// <summary>
     /// Represents a configuration setting
     /// </summary>
     internal class ConfigurationSetting
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private const double CACHE_TIMEOUT = 5;
 
         private string _settingValue;
@@ -60,7 +69,7 @@ namespace Helpmebot.Legacy.Configuration
             }
             catch (Exception ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
             return false;
         }

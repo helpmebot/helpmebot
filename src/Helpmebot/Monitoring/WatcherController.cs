@@ -23,10 +23,13 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Reflection;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     using MySql.Data.MySqlClient;
 
@@ -35,6 +38,12 @@ namespace Helpmebot.Monitoring
     /// </summary>
     internal class WatcherController
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly Dictionary<string, CategoryWatcher> _watchers;
 
         /// <summary>
@@ -190,7 +199,7 @@ namespace Helpmebot.Monitoring
                 }
                 catch(MySqlException ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                     dbResult = "0";
                 }
 
@@ -271,7 +280,7 @@ namespace Helpmebot.Monitoring
                         catch (UriFormatException ex)
                         {
                             listString += LegacyConfig.singleton()["wikiUrl"] + item;
-                            GlobalFunctions.errorLog(ex);
+                            Log.Error(ex.Message, ex);
                         }
                     }
 

@@ -21,17 +21,23 @@
 namespace Helpmebot.Monitoring
 {
     using System.Linq;
+    using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
 
+    using log4net;
+
     /// <summary>
     /// Newbie welcomer subsystem
     /// </summary>
     internal class NewbieWelcomer
     {
+        private static readonly ILog log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static NewbieWelcomer _instance;
 
         protected NewbieWelcomer()
@@ -42,7 +48,7 @@ namespace Helpmebot.Monitoring
             }
             catch (SerializationException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                log.Error(ex.Message, ex);
                 this._hostNames = new SerializableArrayList();
             }
 
@@ -52,7 +58,7 @@ namespace Helpmebot.Monitoring
             }
             catch (SerializationException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                log.Error(ex.Message, ex);
                 this._ignoredNicknames = new SerializableArrayList();
             }
         }
@@ -72,52 +78,68 @@ namespace Helpmebot.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            Logger.instance().addToLog("Executing newbie welcomer: " + channel, Logger.LogTypes.Command);
+            log.Debug(string.Format("Executing newbie welcomer: {0}", channel));
 
-            if (LegacyConfig.singleton()["silence", channel] != "false" ||
-                LegacyConfig.singleton()["welcomeNewbie", channel] != "true") return;
+            if (LegacyConfig.singleton()["silence", channel] != "false"
+                || LegacyConfig.singleton()["welcomeNewbie", channel] != "true")
+            {
+                return;
+            }
 
-            Logger.instance().addToLog("NW: config OK", Logger.LogTypes.Command);
-
+            log.Debug("NewbieWelcomer - config OK");
+            
             {
                 var match = false;
                 foreach (var pattern in this._hostNames.Cast<string>())
                 {
-                    Logger.instance().addToLog("Checking: " + pattern + " == " + source.hostname, Logger.LogTypes.Command);
-                
+                    log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
+
                     var rX = new Regex(pattern);
 
-                    if (!rX.IsMatch(source.hostname)) continue;
+                    if (!rX.IsMatch(source.hostname))
+                    {
+                        continue;
+                    }
 
-                    Logger.instance().addToLog("Matched pattern", Logger.LogTypes.Command);
+                    log.Debug("Matched pattern");
                     match = true;
                     break;
                 }
 
-                if (!match) return;
+                if (!match)
+                {
+                    return;
+                }
             }
 
             {
                 var match = false;
-                Logger.instance().addToLog("Checking ignored nicks...", Logger.LogTypes.Command);
+                log.Debug("Checking ignored nicks...");
 
                 foreach (var pattern in this._ignoredNicknames.Cast<string>())
                 {
-                    Logger.instance().addToLog("Checking: " + pattern + " == " + source.nickname, Logger.LogTypes.Command);
+                    log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
+                    
                     var rX = new Regex(pattern);
 
-                    if (!rX.IsMatch(source.nickname)) continue;
+                    if (!rX.IsMatch(source.nickname))
+                    {
+                        continue;
+                    }
 
-                    Logger.instance().addToLog("Matched pattern", Logger.LogTypes.Command);
+                    log.Debug("Matched pattern");
                     match = true;
                     break;
                 }
 
-                if (match) return;
+                if (match)
+                {
+                    return;
+                }
             }
 
             string[] cmdArgs = {source.nickname, channel};
-            Helpmebot6.irc.IrcPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#", ""), cmdArgs));
+            Helpmebot6.irc.IrcPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#", string.Empty), cmdArgs));
         }
 
         /// <summary>

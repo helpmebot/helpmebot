@@ -24,14 +24,23 @@ namespace Helpmebot
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
+    using System.Reflection;
     using System.Threading;
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Threading;
 
+    using log4net;
+
     class IrcProxy : IThreadedSystem
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public IrcProxy(IrcAccessLayer baseIrcAccessLayer, int port, string password)
         {
             if (LegacyConfig.singleton()["enableProxy"] != "true") return;
@@ -78,7 +87,7 @@ namespace Helpmebot
             {}
             catch (Exception ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
         }
 

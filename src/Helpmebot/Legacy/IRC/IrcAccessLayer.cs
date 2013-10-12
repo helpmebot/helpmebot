@@ -27,6 +27,7 @@ namespace Helpmebot.Legacy.IRC
     using System.Globalization;
     using System.IO;
     using System.Net.Sockets;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
 
@@ -34,12 +35,20 @@ namespace Helpmebot.Legacy.IRC
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
+    using log4net;
+
     /// <summary>
     ///   IRC Access Layer - Provides an interface to IRC.
     /// </summary>
     public sealed class IrcAccessLayer : IThreadedSystem
     {
         #region Readonly Fields
+
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The names list.
@@ -499,7 +508,7 @@ namespace Helpmebot.Legacy.IRC
             }
             catch (SocketException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
                 return false;
             }
         }
@@ -1038,16 +1047,16 @@ namespace Helpmebot.Legacy.IRC
                 catch (ThreadAbortException ex)
                 {
                     threadIsAlive = false;
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
                 catch (IOException ex)
                 {
                     threadIsAlive = false;
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
                 catch (Exception ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
             } 
             while (threadIsAlive);
@@ -1082,7 +1091,7 @@ namespace Helpmebot.Legacy.IRC
 
                     if (line != null)
                     {
-                        Logger.instance().addToLog("< " + line, Logger.LogTypes.IAL);
+                        Log.Info("< " + line);
                         this.ircWriter.WriteLine(line);
                         this.ircWriter.Flush();
                         Thread.Sleep(this.FloodProtectionWaitTime);
@@ -1096,17 +1105,17 @@ namespace Helpmebot.Legacy.IRC
                 catch (ThreadAbortException ex)
                 {
                     threadIsAlive = false;
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                     this.sendQ.Clear();
                 }
                 catch (IOException ex)
                 {
                     threadIsAlive = false;
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
                 catch (Exception ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
             }
             while (threadIsAlive && this.ircReaderThread.IsAlive);
@@ -1159,7 +1168,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void UnrecognisedDataReceivedEventHandler(object sender, DataReceivedEventArgs e)
         {
-            this.Log("DATA RECIEVED EVENT WITH DATA " + e.Data);
+            Log.Debug("DATA RECIEVED EVENT WITH DATA " + e.Data);
         }
 
         /// <summary>
@@ -1260,7 +1269,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcNoticeEvent(object sender, PrivateMessageEventArgs e)
         {
-            this.Log("NOTICE EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
+            Log.Debug("NOTICE EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
         }
 
         /// <summary>
@@ -1274,7 +1283,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcClientToClientEvent(object sender, PrivateMessageEventArgs e)
         {
-            this.Log("CTCP EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
+            Log.Debug("CTCP EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
             switch (e.Message.Split(' ')[0].ToUpper())
             {
                 case "VERSION":
@@ -1304,7 +1313,7 @@ namespace Helpmebot.Legacy.IRC
         private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
         {
             // Don't re-enable.
-            // this.log("PRIVMSG EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
+            // Log.Debug("PRIVMSG EVENT FROM " + source + " TO " + destination + " MESSAGE " + message);
         }
 
         /// <summary>
@@ -1324,7 +1333,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcKickEvent(User source, string channel, string nick, string message)
         {
-            this.Log("KICK FROM " + channel + " BY " + source + " AFFECTED " + nick + " REASON " + message);
+            Log.Debug("KICK FROM " + channel + " BY " + source + " AFFECTED " + nick + " REASON " + message);
         }
 
         /// <summary>
@@ -1341,7 +1350,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcInviteEvent(User source, string nickname, string channel)
         {
-            this.Log("INVITE FROM " + source + " TO " + nickname + " CHANNEL " + channel);
+            Log.Debug("INVITE FROM " + source + " TO " + nickname + " CHANNEL " + channel);
         }
 
         /// <summary>
@@ -1361,7 +1370,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcModeChangeEvent(User source, string subject, string flagChanges, string parameter)
         {
-            this.Log("MODE CHANGE BY " + source + " ON " + subject + " CHANGES " + flagChanges + " PARAMETER " + parameter);
+            Log.Debug("MODE CHANGE BY " + source + " ON " + subject + " CHANGES " + flagChanges + " PARAMETER " + parameter);
         }
 
         /// <summary>
@@ -1378,7 +1387,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcTopicEvent(User source, string channel, string topic)
         {
-            this.Log("TOPIC CHANGED BY " + source + " IN " + channel + " TOPIC " + topic);
+            Log.Debug("TOPIC CHANGED BY " + source + " IN " + channel + " TOPIC " + topic);
         }
 
         /// <summary>
@@ -1395,7 +1404,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcPartEvent(User source, string channel, string message)
         {
-            this.Log("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
+            Log.Debug("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
             if (source.nickname == this.Nickname)
             {
                 this.channelList.Remove(channel);
@@ -1413,7 +1422,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcJoinEvent(User source, string channel)
         {
-            this.Log("JOIN EVENT BY " + source + " INTO " + channel);
+            Log.Debug("JOIN EVENT BY " + source + " INTO " + channel);
             if (source.nickname == this.Nickname)
             {
                 this.channelList.Add(channel);
@@ -1431,7 +1440,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcQuitEvent(User source, string message)
         {
-            this.Log("QUIT BY " + source + " MESSAGE " + message);
+            Log.Debug("QUIT BY " + source + " MESSAGE " + message);
         }
 
         /// <summary>
@@ -1445,7 +1454,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcNicknameChangeEvent(string oldNick, string newNick)
         {
-            this.Log("NICK CHANGE BY " + oldNick + " TO " + newNick);
+            Log.Debug("NICK CHANGE BY " + oldNick + " TO " + newNick);
         }
 
         #endregion
@@ -1461,7 +1470,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcDataReceivedEvent(object sender, DataReceivedEventArgs e)
         {
-            Logger.instance().addToLog(e.Data, Logger.LogTypes.IRC);
+            Log.Info(e.Data);
 
             char[] colonSeparator = { ':' };
 
@@ -1504,7 +1513,7 @@ namespace Helpmebot.Legacy.IRC
                     }
                     catch (NullReferenceException ex)
                     {
-                        GlobalFunctions.errorLog(ex);
+                        Log.Error(ex.Message, ex);
                     }
 
                     break;
@@ -1641,20 +1650,6 @@ namespace Helpmebot.Legacy.IRC
         }
 
         #endregion
-
-        /// <summary>
-        /// The log.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        private void Log(string message)
-        {
-            if (this.LogEvents)
-            {
-                Logger.instance().addToLog("<" + this.networkId + ">" + message, Logger.LogTypes.IAL);
-            }
-        }
 
         #region IThreadedSystem Members
 

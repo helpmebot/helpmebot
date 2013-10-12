@@ -25,11 +25,14 @@ namespace Helpmebot.Legacy.Database
     using System.Collections.Generic;
     using System.Data;
     using System.Net.Sockets;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
 
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections;
+
+    using log4net;
 
     using MySql.Data.MySqlClient;
 
@@ -38,6 +41,12 @@ namespace Helpmebot.Legacy.Database
     /// </summary>
     public sealed class DAL : IDisposable
     {
+       /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private MySqlConnection _connection;
 
         #region singleton
@@ -70,7 +79,7 @@ namespace Helpmebot.Legacy.Database
             {
                 lock (this)
                 {
-                    Logger.instance().addToLog("Opening database connection...", Logger.LogTypes.DAL);
+                    Log.Info("Opening database connection...");
                     var csb = new MySqlConnectionStringBuilder
                                   {
                                       Database = dbConfiguration.Schema,
@@ -88,56 +97,50 @@ namespace Helpmebot.Legacy.Database
             }
             catch (MySqlException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
                 return false;
             }
         }
 
         #region internals
 
+        /// <summary>
+        /// The execute non query.
+        /// </summary>
+        /// <param name="cmd">
+        /// The cmd.
+        /// </param>
         private void executeNonQuery(ref MySqlCommand cmd)
         {
-            Logger.instance().addToLog("Locking access to DAL...", Logger.LogTypes.DalLock);
             lock (this)
             {
-                Logger.instance().addToLog("Executing (non)query: " + cmd.CommandText, Logger.LogTypes.DAL);
+                Log.Debug(string.Format("Executing non-query: {0}", cmd.CommandText));
                 try
                 {
                     this.runConnectionTest();
-                    //MySqlTransaction transact = _connection.BeginTransaction( System.Data.IsolationLevel.RepeatableRead );
                     cmd.Connection = this._connection;
                     cmd.ExecuteNonQuery();
-                    //transact.Commit( );
-                }
-                catch (MySqlException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    GlobalFunctions.errorLog(ex);
                 }
                 catch (Exception ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
-                Logger.instance().addToLog("Done executing (non)query: " + cmd.CommandText, Logger.LogTypes.DAL);
+
+                Log.Debug("Done executing query");
             }
-            Logger.instance().addToLog("DAL Lock released.", Logger.LogTypes.DalLock);
         }
 
         /// <summary>
-        /// 
+        /// Executes the reader query
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
         /// <remarks>Needs Lock!</remarks>
         private MySqlDataReader executeReaderQuery(string query)
         {
-
             MySqlDataReader result = null;
 
-            Logger.instance().addToLog("Executing (reader)query: " + query, Logger.LogTypes.DAL);
+            Log.Debug("Executing (reader)query: " + query);
 
             try
             {
@@ -145,14 +148,13 @@ namespace Helpmebot.Legacy.Database
 
                 MySqlCommand cmd = new MySqlCommand(query) {Connection = this._connection};
                 result = cmd.ExecuteReader();
-                Logger.instance().addToLog("Done executing (reader)query: " + query, Logger.LogTypes.DAL);
+                Log.Debug("Done executing (reader)query: " + query);
 
                 return result;
             }
             catch (Exception ex)
             {
-                Logger.instance().addToLog("Problem executing (reader)query: " + query, Logger.LogTypes.DAL);
-                GlobalFunctions.errorLog(ex);
+                Log.Error("Problem executing (reader)query", ex);
             }
 
             return result;
@@ -192,10 +194,11 @@ namespace Helpmebot.Legacy.Database
                 this.executeNonQuery(ref cmd);
                 lastInsertedId = cmd.LastInsertedId;
             }
-            catch(MySqlException ex)
+            catch (MySqlException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
+
             return lastInsertedId;
         }
 
@@ -214,15 +217,21 @@ namespace Helpmebot.Legacy.Database
             for (int i = 0; i < conditions.Length; i++)
             {
                 if (i == 0)
+                {
                     query += " WHERE ";
+                }
                 else
+                {
                     query += " AND ";
+                }
 
                 query += conditions[i].ToString();
             }
 
             if (limit > 0)
+            {
                 query += " LIMIT " + limit;
+            }
 
             query += ";";
             try
@@ -233,10 +242,10 @@ namespace Helpmebot.Legacy.Database
             }
             catch (MySqlException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
-            return succeed;
 
+            return succeed;
         }
 
         /// <summary>
@@ -251,7 +260,9 @@ namespace Helpmebot.Legacy.Database
             bool succeed = false;
 
             if (items.Count < 1)
+            {
                 return true;
+            }
 
             string query = "UPDATE `" + sanitise(table) + "` SET ";
 
@@ -265,15 +276,21 @@ namespace Helpmebot.Legacy.Database
             for (int i = 0; i < conditions.Length; i++)
             {
                 if (i == 0)
+                {
                     query += " WHERE ";
+                }
                 else
+                {
                     query += " AND ";
+                }
 
                 query += conditions[i].ToString();
             }
 
             if (limit > 0)
+            {
                 query += " LIMIT " + limit;
+            }
 
             query += ";";
 
@@ -285,8 +302,9 @@ namespace Helpmebot.Legacy.Database
             }
             catch (MySqlException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
+
             return succeed;
         }
 
@@ -318,12 +336,12 @@ namespace Helpmebot.Legacy.Database
                 {
                     try
                     {
-
                         DataTableReader cols = dr.GetSchemaTable().CreateDataReader();
                         while (cols.Read())
                         {
                             columns.Add((string) cols.GetValue(0));
                         }
+
                         cols.Close();
 
                         while (dr.Read())
@@ -335,7 +353,7 @@ namespace Helpmebot.Legacy.Database
                     }
                     catch (MySqlException ex)
                     {
-                        GlobalFunctions.errorLog(ex);
+                        Log.Error(ex.Message, ex);
                         throw;
                     }
                     finally
@@ -344,6 +362,7 @@ namespace Helpmebot.Legacy.Database
                     }
                 }
             }
+
             return resultSet;
         }
 
@@ -355,9 +374,10 @@ namespace Helpmebot.Legacy.Database
         public string executeScalarSelect(Select query)
         {
             ArrayList al = this.executeSelect(query);
-            return al.Count > 0 ? (((object[]) al[0])[0]).ToString() : "";
+            return al.Count > 0 ? ((object[])al[0])[0].ToString() : string.Empty;
         }
-#endregion
+
+        #endregion
 
         private void runConnectionTest()
         {
@@ -375,33 +395,33 @@ namespace Helpmebot.Legacy.Database
             {
                 if (!firstTime)
                 {
-                    Logger.instance().addToLog("Reconnecting to database....", Logger.LogTypes.Error);
+                    Log.Warn("Reconnecting to database...");
 
                     this.connect();
 
                     Thread.Sleep(sleepTime);
                     totalTimeSlept += sleepTime;
 
-                    sleepTime = (int) (sleepTime*1.5) > int.MaxValue ? sleepTime : (int) (sleepTime*1.5);
+                    sleepTime = (int)(sleepTime * 1.5) > int.MaxValue ? sleepTime : (int)(sleepTime * 1.5);
                 }
 
-                while(this._connection.State==ConnectionState.Connecting)
+                while (this._connection.State == ConnectionState.Connecting)
                 {
                     Thread.Sleep(100);
                     totalTimeSlept += 100;
                 }
 
-                connectionOk = ((this._connection.State == ConnectionState.Open) ||
+                connectionOk = (this._connection.State == ConnectionState.Open) ||
                                 (this._connection.State == ConnectionState.Fetching) ||
-                                (this._connection.State == ConnectionState.Executing));
-
-                
+                                (this._connection.State == ConnectionState.Executing);
 
                 firstTime = false;
             }
 
-            if(!connectionOk)
+            if (!connectionOk)
+            {
                 throw new SocketException();
+            }
         }
 
         /// <summary>
@@ -433,8 +453,6 @@ namespace Helpmebot.Legacy.Database
         public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
         // ReSharper restore InconsistentNaming
         {
-
-
             MySqlCommand cmd = new MySqlCommand
                                    {
                                        Connection = this._connection,
@@ -454,7 +472,7 @@ namespace Helpmebot.Legacy.Database
                 }
                 catch (InvalidOperationException ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
             }
         }
@@ -484,24 +502,23 @@ namespace Helpmebot.Legacy.Database
                     cmd.Parameters.AddWithValue("@channel", channel);
                     cmd.Parameters["@channel"].Direction = ParameterDirection.Input;
 
-                    cmd.Parameters.AddWithValue("@optionValue", "");
+                    cmd.Parameters.AddWithValue("@optionValue", string.Empty);
                     cmd.Parameters["@optionValue"].Direction = ParameterDirection.Output;
 
 
                     cmd.ExecuteNonQuery();
 
-                    return (string) cmd.Parameters["@optionValue"].Value;
+                    return (string)cmd.Parameters["@optionValue"].Value;
                 }
             }
             catch (FormatException ex)
             {
-                GlobalFunctions.errorLog(ex);
-                Logger.instance().addToLog(option + "@" + channel, Logger.LogTypes.Error);
+                Log.Error(ex.Message, ex);
                 throw;
             }
             catch (InvalidOperationException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
 
             return null;
@@ -534,40 +551,26 @@ namespace Helpmebot.Legacy.Database
                     cmd.Parameters.Add("@title", MySqlDbType.VarBinary).Value = title;
                     cmd.Parameters["@title"].Direction = ParameterDirection.Input;
 
-
                     byte[] messagebytes = new byte[0];
                     cmd.Parameters.Add("@message", MySqlDbType.MediumBlob).Value = messagebytes;
                     cmd.Parameters["@message"].Direction = ParameterDirection.Output;
 
                     cmd.ExecuteNonQuery();
 
-                    //                Logger.instance().addToLog("pre-error.", Logger.LogTypes.General);
 
                     object foo = cmd.Parameters["@message"].Value is DBNull
                                      ? new byte[0]
                                      : cmd.Parameters["@message"].Value;
-                    //                Logger.instance().addToLog("empty or param value", Logger.LogTypes.General);
 
-                    //                Logger.instance().addToLog(foo.GetType().ToString(), Logger.LogTypes.General);
-
-
-                    binarymessage = (byte[]) (foo);
-
-                    //                Logger.instance().addToLog("convert to byte", Logger.LogTypes.General);
-
-
-                    //               Logger.instance().addToLog("got binary message, returning.", Logger.LogTypes.General);
+                    binarymessage = (byte[])foo;
                 }
             }
             catch (InvalidOperationException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
             return Encoding.UTF8.GetString(binarymessage);
         }
-
-
-
 
         // ReSharper disable InconsistentNaming
         public string proc_HMB_GET_IW_URL(string prefix)
@@ -590,7 +593,9 @@ namespace Helpmebot.Legacy.Database
                                            };
 
                     if (prefix.Length > 32)
+                    {
                         return string.Empty;
+                    }
 
                     cmd.Parameters.Add("@prefix", MySqlDbType.VarChar).Value = prefix;
                     cmd.Parameters["@prefix"].Direction = ParameterDirection.Input;
@@ -600,7 +605,6 @@ namespace Helpmebot.Legacy.Database
                     cmd.Parameters.Add("@url", MySqlDbType.VarChar).Value = url;
                     cmd.Parameters["@url"].Direction = ParameterDirection.Output;
 
-                    
                     cmd.ExecuteNonQuery();
 
                     surl =
@@ -610,7 +614,7 @@ namespace Helpmebot.Legacy.Database
             }
             catch (InvalidOperationException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
             return surl;
         }
@@ -935,8 +939,8 @@ namespace Helpmebot.Legacy.Database
 
             public override string ToString()
             {
-                string actualA = (this._quoteA ? "\"" : "") + MySqlHelper.EscapeString(this._a) + (this._quoteA ? "\"" : "");
-                string actualB = (this._quoteB ? "\"" : "") + MySqlHelper.EscapeString(this._b) + (this._quoteB ? "\"" : "");
+                string actualA = (this._quoteA ? "\"" : string.Empty) + MySqlHelper.EscapeString(this._a) + (this._quoteA ? "\"" : string.Empty);
+                string actualB = (this._quoteB ? "\"" : string.Empty) + MySqlHelper.EscapeString(this._b) + (this._quoteB ? "\"" : string.Empty);
                 string actualComp = MySqlHelper.EscapeString(this._comparer);
                 return actualA + " " + actualComp + " " + actualB;
             }

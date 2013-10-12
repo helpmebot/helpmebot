@@ -26,11 +26,19 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Database;
 
+    using log4net;
+
     /// <summary>
     /// Generic bot command abstract class
     /// </summary>
     public abstract class GenericCommand
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Initialises a new instance of the <see cref="GenericCommand"/> class.
         /// </summary>
@@ -79,8 +87,7 @@ namespace helpmebot6.Commands
                 }
                 catch (ArgumentException)
                 {
-                    Logger.instance()
-                        .addToLog("Warning: " + command + " not found in access list.", Logger.LogTypes.Error);
+                    Log.Warn("Warning: " + command + " not found in access list.");
                     return User.UserRights.Developer;
                 }
             }
@@ -167,7 +174,7 @@ namespace helpmebot6.Commands
             }
             catch (Exception ex)
             {
-                Logger.instance().addToLog(ex.ToString(), Logger.LogTypes.Error);
+                Log.Error(ex.Message, ex);
                 crh = new CommandResponseHandler(ex.Message);
             }
 
