@@ -144,7 +144,6 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="ircNetwork">
         /// The IRC network.
         /// </param>
-        [Obsolete]
         public IrcAccessLayer(uint ircNetwork)
         {
             this.FloodProtectionWaitTime = 500;
