@@ -33,7 +33,6 @@ namespace Helpmebot
     {
         TcpClient _client;
         Thread _clientThread;
-        bool threadActive = true;
 
         StreamReader _sr;
         StreamWriter _sw;
@@ -131,7 +130,6 @@ namespace Helpmebot
 
         void IThreadedSystem.Stop()
         {
-            this.threadActive = false;
             Thread.Sleep(3000);
             this._clientThread.Abort();
         }

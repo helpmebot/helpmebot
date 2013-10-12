@@ -21,7 +21,6 @@
 namespace Helpmebot
 {
     using System;
-    using System.IO;
     using System.Net;
     using System.Net.Sockets;
     using System.Reflection;
@@ -60,9 +59,6 @@ namespace Helpmebot
         private readonly string _password;
         private readonly TcpListener _listener;
         private readonly Thread _t;
-
-        StreamReader _sr;
-        StreamWriter _sw;
 
         private void listenerThread()
         {
