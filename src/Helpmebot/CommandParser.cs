@@ -25,6 +25,8 @@ namespace Helpmebot
     using System.Reflection;
     using System.Text.RegularExpressions;
 
+    using Castle.Core.Logging;
+
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.IRC;
@@ -32,7 +34,7 @@ namespace Helpmebot
 
     using helpmebot6.Commands;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
@@ -42,10 +44,9 @@ namespace Helpmebot
     internal class CommandParser
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// The allowed command name chars.
@@ -57,6 +58,9 @@ namespace Helpmebot
         /// </summary>
         public CommandParser()
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             this.OverrideBotSilence = false;
         }
 

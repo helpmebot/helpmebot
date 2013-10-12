@@ -22,24 +22,24 @@ namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
-    using System.Reflection;
     using System.Threading;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     class AccNotifications : IThreadedSystem
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        public ILogger Log { get; set; }
+        
         private Thread _watcherThread;
 
         private static AccNotifications instance;
@@ -50,12 +50,16 @@ namespace Helpmebot.Monitoring
             {
                 instance = new AccNotifications();
             }
+
             return instance;
         }
 
 
         private AccNotifications()
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             this._watcherThread = new Thread(this.threadBody);
             this._watcherThread.Start();
             this.RegisterInstance();

@@ -24,15 +24,16 @@ namespace Helpmebot.Monitoring
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using System.Xml;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Category watcher thread
@@ -40,10 +41,9 @@ namespace Helpmebot.Monitoring
     public class CategoryWatcher : IThreadedSystem
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// The site.
@@ -84,6 +84,9 @@ namespace Helpmebot.Monitoring
         /// </param>
         public CategoryWatcher(string category, string key, int sleepTime)
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             // look up site id
             string baseWiki = LegacyConfig.singleton()["baseWiki"];
 

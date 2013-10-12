@@ -21,16 +21,17 @@
 namespace helpmebot6.Commands
 {
     using System;
-    using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Xml;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /* returns information about a user
     // what                 how                     info    message
@@ -55,8 +56,7 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The log4net logger for this class
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
 
         /// <summary>
         /// The response.
@@ -346,7 +346,7 @@ namespace helpmebot6.Commands
             }
             catch (NullReferenceException ex)
             {
-                Log.Error(ex.Message, ex);
+                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                 throw new InvalidOperationException();
             }
         }

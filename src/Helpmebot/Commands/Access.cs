@@ -21,24 +21,19 @@
 namespace helpmebot6.Commands
 {
     using System.Globalization;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Modifies the bot's access list
     /// </summary>
     internal class Access : GenericCommand
     {
-        /// <summary>
-        /// The log4net logger for this class
-        /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
         /// <summary>
         /// Initialises a new instance of the <see cref="Access"/> class.
         /// </summary>
@@ -153,7 +148,7 @@ namespace helpmebot6.Commands
             string message = new Message().get("addAccessEntry", messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
-            Log.Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
+            ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
 
             DAL.singleton()
                 .insert(
@@ -175,10 +170,10 @@ namespace helpmebot6.Commands
         /// <returns>a response</returns>
         private static CommandResponseHandler DeleteAccessEntry(int id)
         {
-            string[] messageParams = { id.ToString() };
+            string[] messageParams = { id.ToString(CultureInfo.InvariantCulture) };
             string message = new Message().get("removeAccessEntry", messageParams);
 
-            Log.Info(string.Format("Removing access entry #{0}", id));
+            ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Removing access entry #{0}", id));
 
             DAL.singleton().delete("user", 1, new DAL.WhereConds("user_id", id.ToString(CultureInfo.InvariantCulture)));
 

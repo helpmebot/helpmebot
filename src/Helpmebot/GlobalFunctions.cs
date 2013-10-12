@@ -20,8 +20,6 @@
 
 namespace Helpmebot
 {
-    using System.Configuration;
-
     /// <summary>
     /// Class holding globally accessible functions
     /// </summary>

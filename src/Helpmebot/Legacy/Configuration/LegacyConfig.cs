@@ -23,11 +23,10 @@ namespace Helpmebot.Legacy.Configuration
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
-
-    using log4net;
 
     /// <summary>
     /// Handles all configuration settings of the bot
@@ -35,10 +34,9 @@ namespace Helpmebot.Legacy.Configuration
     internal class LegacyConfig
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         private readonly DAL _dbal = DAL.singleton();
 
