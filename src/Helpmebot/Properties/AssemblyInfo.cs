@@ -52,4 +52,4 @@ using System.Runtime.InteropServices;
 [assembly: NeutralResourcesLanguageAttribute("")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("HelpmebotUnitTests")]
 
-[assembly: log4net.Config.XmlConfigurator(Watch = false)]
+[assembly: log4net.Config.XmlConfigurator(Watch = false, ConfigFile = "logger.config")]

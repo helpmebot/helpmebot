@@ -240,6 +240,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="database.config" />
+    <None Include="logger.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
