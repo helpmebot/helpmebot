@@ -23,8 +23,6 @@ namespace Helpmebot
     using System;
 
     using Helpmebot.AI;
-    using Helpmebot.Configuration;
-    using Helpmebot.Configuration.XmlSections;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Configuration;

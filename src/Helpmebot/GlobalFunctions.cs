@@ -58,8 +58,6 @@ namespace Helpmebot
             }
         }
 
-
-
         public static void removeItemFromArray(string item, ref string[] array)
         {
             int count = 0;
