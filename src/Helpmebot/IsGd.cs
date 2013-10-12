@@ -23,12 +23,24 @@ namespace Helpmebot
     using System;
     using System.IO;
     using System.Net;
+    using System.Reflection;
+
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     /// <summary>
     /// is.gd wrapper class
     /// </summary>
     internal class IsGd
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Shortens the specified long URL.
         /// </summary>
@@ -51,7 +63,7 @@ namespace Helpmebot
                 }
                 catch(WebException ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                     return longUrl;
                 }
             }
@@ -62,7 +74,7 @@ namespace Helpmebot
         private static string getShortUrl(Uri longUrl)
         {
             HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
-            wrq.UserAgent = Configuration.singleton()["useragent"];
+            wrq.UserAgent = LegacyConfig.singleton()["useragent"];
             HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

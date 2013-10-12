@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System.Collections.Generic;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     /// Leave an IRC channel

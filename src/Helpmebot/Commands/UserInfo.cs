@@ -21,13 +21,18 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
 
     using User = Helpmebot.User;
+    
+    using log4net;
 
     /* returns information about a user
     // what                 how                     info    message
@@ -49,6 +54,12 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Userinfo : GenericCommand
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// The response.
         /// </summary>
@@ -79,7 +90,7 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            bool useLongInfo = bool.Parse(Configuration.singleton()["useLongUserInfo", this.Channel]);
+            bool useLongInfo = bool.Parse(LegacyConfig.singleton()["useLongUserInfo", this.Channel]);
 
             if (args.Length > 0)
             {
@@ -149,7 +160,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpageurl = GetMainPageUrl(baseWiki);
 
@@ -197,7 +208,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
             
             var mainpagename = GetMainPageName(baseWiki);
 
@@ -224,7 +235,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpagename = GetMainPageName(baseWiki);
 
@@ -283,7 +294,7 @@ namespace helpmebot6.Commands
             }
 
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             var mainpagename = GetMainPageName(baseWiki);
             var mainpageurl = GetMainPageUrl(baseWiki);
@@ -337,7 +348,7 @@ namespace helpmebot6.Commands
             }
             catch (NullReferenceException ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
                 throw new InvalidOperationException();
             }
         }

@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// Enables or disables automatic parsing of wiki links
@@ -65,7 +66,7 @@ namespace helpmebot6.Commands
 
             bool oldValue =
                 bool.Parse(
-                    !global ? Configuration.singleton()["autoLink", this.Channel] : Configuration.singleton()["autoLink"]);
+                    !global ? LegacyConfig.singleton()["autoLink", this.Channel] : LegacyConfig.singleton()["autoLink"]);
 
             if (args.Length > 0)
             {
@@ -92,7 +93,7 @@ namespace helpmebot6.Commands
 
                 if (newValue == "global")
                 {
-                    Configuration.singleton()["autoLink", this.Channel] = null;
+                    LegacyConfig.singleton()["autoLink", this.Channel] = null;
                     return new CommandResponseHandler(
                         new Message().get("defaultConfig"),
                         CommandResponseDestination.PrivateMessage);
@@ -100,11 +101,11 @@ namespace helpmebot6.Commands
 
                 if (!global)
                 {
-                    Configuration.singleton()["autoLink", this.Channel] = newValue;
+                    LegacyConfig.singleton()["autoLink", this.Channel] = newValue;
                 }
                 else
                 {
-                    Configuration.singleton()["autoLink"] = newValue;
+                    LegacyConfig.singleton()["autoLink"] = newValue;
                 }
 
                 return new CommandResponseHandler(new Message().get("done"), CommandResponseDestination.PrivateMessage);

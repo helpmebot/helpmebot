@@ -30,3 +30,4 @@ _ReSharper*
 _ReSharper.*
 #ignore configfile
 .hmbot
+database.config

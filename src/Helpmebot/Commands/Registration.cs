@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     ///   Returns the registration date of a wikipedian
@@ -69,7 +71,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

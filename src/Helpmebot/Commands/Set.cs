@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     ///   Sets a global config option.
@@ -52,11 +53,11 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments[0] == "global")
             {
-                Configuration.singleton()[this.Arguments[1]] = this.Arguments[2];
+                LegacyConfig.singleton()[this.Arguments[1]] = this.Arguments[2];
             }
             else
             {
-                Configuration.singleton()[this.Arguments[1], this.Arguments[0]] = this.Arguments[2];
+                LegacyConfig.singleton()[this.Arguments[1], this.Arguments[0]] = this.Arguments[2];
             }
 
             return null;

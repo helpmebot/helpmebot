@@ -22,13 +22,22 @@ namespace Helpmebot.Threading
 {
     using System;
     using System.Collections;
+    using System.Reflection;
     using System.Threading;
+
+    using log4net;
 
     /// <summary>
     /// Maintains a list of all the available threads the bot is running
     /// </summary>
     internal class ThreadList
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static ThreadList _instance;
 
         public static ThreadList instance()
@@ -71,17 +80,16 @@ namespace Helpmebot.Threading
             {
                 try
                 {
-                    Logger.instance().addToLog("Attempting to shut down threaded system: " + obj.GetType(),
-                                               Logger.LogTypes.General);
+                    Log.Info("Attempting to shut down threaded system: " + obj.GetType());
                     ((IThreadedSystem) obj).Stop();
                 }
                 catch (NotImplementedException ex)
                 {
-                    GlobalFunctions.errorLog(ex);
+                    Log.Error(ex.Message, ex);
                 }
             }
 
-            Logger.instance().addToLog("All threaded systems have been shut down.", Logger.LogTypes.General);
+            Log.Info("All threaded systems have been shut down.");
         }
 
         /// <summary>

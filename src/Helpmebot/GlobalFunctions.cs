@@ -20,9 +20,7 @@
 
 namespace Helpmebot
 {
-    using System;
-    using System.Diagnostics;
-    using System.Reflection;
+    using System.Configuration;
 
     /// <summary>
     /// Class holding globally accessible functions
@@ -40,25 +38,6 @@ namespace Helpmebot
             list = string.Join(" ", list, 1, list.Length - 1).Split(' ');
             return firstItem;
         }
-
-        /// <summary>
-        ///   Log an exception to the log and IRC
-        /// </summary>
-        /// <param name = "ex">The exception thrown</param>
-        public static void errorLog(Exception ex)
-        {
-            Logger.instance().addToLog(ex + ex.StackTrace, Logger.LogTypes.Error);
-
-            StackTrace stack = new StackTrace();
-            MethodBase method = stack.GetFrame(1).GetMethod();
-
-            if (Helpmebot6.irc != null)
-            {
-                Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, "***ERROR*** in " + method.Name + ": " + ex.Message);
-            }
-        }
-
-
 
         public static void removeItemFromArray(string item, ref string[] array)
         {

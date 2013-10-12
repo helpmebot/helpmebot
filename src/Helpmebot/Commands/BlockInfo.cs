@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
 
     using User = Helpmebot.User;
@@ -60,7 +62,7 @@ namespace helpmebot6.Commands
         {
             IPAddress ip;
 
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");

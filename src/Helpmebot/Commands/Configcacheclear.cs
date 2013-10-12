@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
 
     /// <summary>
     /// The configuration cache clear command.
@@ -52,7 +53,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Configuration.singleton().clearCache();
+            LegacyConfig.singleton().clearCache();
             return new CommandResponseHandler(new Message().get("done"));
         }
     }

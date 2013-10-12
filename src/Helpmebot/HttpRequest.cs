@@ -23,6 +23,8 @@ namespace Helpmebot
     using System.IO;
     using System.Net;
 
+    using Helpmebot.Legacy.Configuration;
+
     internal static class HttpRequest
     {
         /// <summary>
@@ -34,8 +36,8 @@ namespace Helpmebot
         public static Stream get(string uri, int timeout = -1)
         {
             HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
-            hwr.UserAgent = Configuration.singleton()["useragent"];
-            hwr.Timeout = timeout == -1 ? int.Parse(Configuration.singleton()["httpTimeout"]) : timeout;
+            hwr.UserAgent = LegacyConfig.singleton()["useragent"];
+            hwr.Timeout = timeout == -1 ? int.Parse(LegacyConfig.singleton()["httpTimeout"]) : timeout;
             HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
 
             return resp.GetResponseStream();

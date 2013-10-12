@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     ///   Returns the maximum replication lag on the wiki
@@ -54,7 +56,7 @@ namespace helpmebot6.Commands
         public static string GetMaxLag(string channel)
         {
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
              
             // get api
             DAL.Select q = new DAL.Select("site_api");

@@ -21,22 +21,28 @@
 namespace Helpmebot
 {
     using System;
+    using System.Reflection;
 
     using Helpmebot.AI;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
-    using Helpmebot.Properties;
     using Helpmebot.Threading;
 
     using helpmebot6.Commands;
+
+    using log4net;
 
     /// <summary>
     /// Helpmebot main class
     /// </summary>
     public class Helpmebot6
     {
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static IrcAccessLayer irc;
         private static DAL _dbal;
 
@@ -49,19 +55,7 @@ namespace Helpmebot
         
         private static void Main(string[] args)
         {
-            // startup arguments
-            
-            if (args.ContainsPrefix("--logdal").HasValue)
-            {
-            }
-
-            if (args.ContainsPrefix("--logdallock").HasValue)
-            {
-            }
-
-            if (args.ContainsPrefix("--logirc").HasValue)
-            {
-            }
+            Log.Info("Initialising Helpmebot...");
             
             InitialiseBot();
         }
@@ -71,10 +65,6 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
-            // save the settings so we get a local configuration file.
-            Settings.Default.MysqlHostname = Settings.Default.MysqlHostname;
-            Settings.Default.Save();
-
             _dbal = DAL.singleton();
 
             if (!_dbal.connect())
@@ -83,17 +73,15 @@ namespace Helpmebot
                 return;
             }
 
-            Configuration.singleton();
+            LegacyConfig.singleton();
 
-            debugChannel = Configuration.singleton()["channelDebug"];
+            debugChannel = LegacyConfig.singleton()["channelDebug"];
 
-            _ircNetwork = uint.Parse(Configuration.singleton()["ircNetwork"]);
+            _ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
 
-            Trigger = Configuration.singleton()["commandTrigger"];
+            Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             irc = new IrcAccessLayer(_ircNetwork);
-
-            new IrcProxy(irc, int.Parse(Configuration.singleton()["proxyPort"]), Configuration.singleton()["proxyPassword"]);
 
             SetupEvents();
 
@@ -174,7 +162,7 @@ namespace Helpmebot
                 }
 
                 string aiResponse = Intelligence.Singleton().Respond(message);
-                if (Configuration.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
+                if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
                     string[] aiParameters = { e.Sender.nickname };
                     irc.IrcPrivmsg(e.Destination, new Message().get(aiResponse, aiParameters));
@@ -182,7 +170,7 @@ namespace Helpmebot
             }
             catch (Exception ex)
             {
-                GlobalFunctions.errorLog(ex);
+                Log.Error(ex.Message, ex);
             }
         }
 

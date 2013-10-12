@@ -22,16 +22,27 @@ namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
+    using System.Reflection;
     using System.Threading;
     using System.Xml;
 
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
+
+    using log4net;
 
     /// <summary>
     /// Category watcher thread
     /// </summary>
     public class CategoryWatcher : IThreadedSystem
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly string _site;
         private readonly string _category;
         private readonly string _key;
@@ -54,7 +65,7 @@ namespace Helpmebot.Monitoring
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // look up site id
-            string baseWiki = Configuration.singleton()["baseWiki"];
+            string baseWiki = LegacyConfig.singleton()["baseWiki"];
 
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
@@ -73,7 +84,7 @@ namespace Helpmebot.Monitoring
 
         private void watcherThreadMethod()
         {
-            Logger.instance().addToLog("Starting category watcher for '" + this._key + "'...", Logger.LogTypes.General);
+            Log.Info("Starting category watcher for '" + this._key + "'...");
             try
             {
                 while (true)
@@ -94,7 +105,7 @@ namespace Helpmebot.Monitoring
                     temp(this, new EventArgs());
                 }
             }
-            Logger.instance().addToLog("Category watcher for '" + this._key + "' died.", Logger.LogTypes.Error);
+            Log.Warn("Category watcher for '" + this._key + "' died.");
         }
 
 
@@ -107,7 +118,7 @@ namespace Helpmebot.Monitoring
             set
             {
                 this._sleepTime = value;
-                Logger.instance().addToLog("Restarting watcher...", Logger.LogTypes.Command);
+                Log.Info("Restarting watcher...");
                 this._watcherThread.Abort();
                 Thread.Sleep(500);
                 this._watcherThread = new Thread(this.watcherThreadMethod);
@@ -132,7 +143,7 @@ namespace Helpmebot.Monitoring
         /// <returns></returns>
         public ArrayList doCategoryCheck()
         {
-            Logger.instance().addToLog("Getting items in category " + this._key, Logger.LogTypes.General);
+            Log.Info("Getting items in category " + this._key);
             ArrayList pages = new ArrayList();
             try
             {
@@ -177,8 +188,9 @@ namespace Helpmebot.Monitoring
             }
             catch (Exception ex)
             {
-                Logger.instance().addToLog("Error contacting API (" + this._site + ") " + ex.Message, Logger.LogTypes.DNWB);
+                Log.Error("Error contacting API (" + this._site + ") ", ex);
             }
+
             pages = removeBlacklistedItems(pages);
 
             return pages;
@@ -210,7 +222,7 @@ namespace Helpmebot.Monitoring
 
         public void Stop()
         {
-            Logger.instance().addToLog("Stopping Watcher Thread for " + this._category + " ...", Logger.LogTypes.General);
+            Log.Info("Stopping Watcher Thread for " + this._category + " ...");
             this._watcherThread.Abort();
         }
 

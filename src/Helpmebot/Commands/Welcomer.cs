@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Monitoring;
 
     /// <summary>
@@ -57,23 +58,23 @@ namespace helpmebot6.Commands
             switch (args[0].ToLower())
             {
                 case "enable":
-                    if (Configuration.singleton()["welcomeNewbie", this.Channel] == "true")
+                    if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "true")
                     {
                         return new CommandResponseHandler(new Message().get("no-change"));
                     }
 
-                    Configuration.singleton()["welcomeNewbie", this.Channel] = "true";
+                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
                     return new CommandResponseHandler(new Message().get("done"));
                 case "disable":
-                    if (Configuration.singleton()["welcomeNewbie", this.Channel] == "false")
+                    if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
                         return new CommandResponseHandler(new Message().get("no-change"));
                     }
 
-                    Configuration.singleton()["welcomeNewbie", this.Channel] = "false";
+                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
                     return new CommandResponseHandler(new Message().get("done"));
                 case "global":
-                    Configuration.singleton()["welcomeNewbie", this.Channel] = null;
+                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
                     return new CommandResponseHandler(new Message().get("defaultSetting"));
                 case "add":
                     if (args[1] == "@ignore")

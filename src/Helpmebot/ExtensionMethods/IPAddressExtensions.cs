@@ -25,6 +25,7 @@ namespace Helpmebot.ExtensionMethods
     using System.Security.Cryptography.X509Certificates;
     using System.Xml;
 
+    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
 
     /// <summary>
@@ -43,7 +44,7 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static GeolocateResult GetLocation(this IPAddress ip)
         {
-            Stream s = HttpRequest.get("http://api.ipinfodb.com/v3/ip-city/?key=" + Configuration.singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
+            Stream s = HttpRequest.get("http://api.ipinfodb.com/v3/ip-city/?key=" + LegacyConfig.singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
             XmlTextReader xtr = new XmlTextReader(s);
             GeolocateResult result = new GeolocateResult();
 

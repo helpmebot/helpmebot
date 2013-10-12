@@ -22,14 +22,23 @@ namespace helpmebot6.Commands
 {
     using System;
     using System.Linq;
+    using System.Reflection;
 
     using Helpmebot;
+
+    using log4net;
 
     /// <summary>
     /// The protected command.
     /// </summary>
     public abstract class ProtectedCommand : GenericCommand
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
         /// Initialises a new instance of the <see cref="ProtectedCommand"/> class.
         /// </summary>
@@ -65,7 +74,7 @@ namespace helpmebot6.Commands
                 return errorResponse;
             }
 
-            this.LogMessage("Starting command execution...");
+            Log.Info("Starting command execution...");
             CommandResponseHandler crh;
 
             try
@@ -74,11 +83,11 @@ namespace helpmebot6.Commands
             }
             catch (Exception ex)
             {
-                Logger.instance().addToLog(ex.ToString(), Logger.LogTypes.Error);
+                Log.Error(ex.Message, ex);
                 crh = new CommandResponseHandler(ex.Message);
             }
 
-            this.LogMessage("Command execution complete.");
+            Log.Info("Command execution complete.");
             return crh;
         }
 

@@ -21,6 +21,8 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
 
     /// <summary>
     /// Retrieves a link to block a user.
@@ -52,7 +54,7 @@ namespace helpmebot6.Commands
         {
             string[] args = this.Arguments;
 
-            bool secure = bool.Parse(Configuration.singleton()["useSecureWikiServer", this.Channel]);
+            bool secure = bool.Parse(LegacyConfig.singleton()["useSecureWikiServer", this.Channel]);
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")

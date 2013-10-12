@@ -20,16 +20,25 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
+    using System.Globalization;
     using System.Reflection;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Database;
+
+    using log4net;
 
     /// <summary>
     /// Modifies the bot's access list
     /// </summary>
     internal class Access : GenericCommand
     {
+        /// <summary>
+        /// The log4net logger for this class
+        /// </summary>
+        private static readonly ILog Log =
+            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         /// <summary>
         /// Initialises a new instance of the <see cref="Access"/> class.
         /// </summary>
@@ -140,17 +149,12 @@ namespace helpmebot6.Commands
         /// <returns>a response</returns>
         private static CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
         {
-            Logger.instance()
-                .addToLog(
-                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                    Logger.LogTypes.DNWB);
-
             string[] messageParams = {newEntry.ToString(), accessLevel.ToString()};
             string message = new Message().get("addAccessEntry", messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
-            Logger.instance()
-                .addToLog("Adding access entry for " + newEntry + " at level " + accessLevel, Logger.LogTypes.Command);
+            Log.Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
+
             DAL.singleton()
                 .insert(
                     "user",
@@ -165,22 +169,18 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Dels the access entry.
+        /// Deletes the access entry.
         /// </summary>
         /// <param name="id">The id.</param>
         /// <returns>a response</returns>
         private static CommandResponseHandler DeleteAccessEntry(int id)
         {
-            Logger.instance()
-                .addToLog(
-                    "Method:" + MethodBase.GetCurrentMethod().DeclaringType.Name + MethodBase.GetCurrentMethod().Name,
-                    Logger.LogTypes.DNWB);
-
             string[] messageParams = { id.ToString() };
             string message = new Message().get("removeAccessEntry", messageParams);
 
-            Logger.instance().addToLog("Removing access entry #" + id, Logger.LogTypes.Command);
-            DAL.singleton().delete("user", 1, new DAL.WhereConds("user_id", id.ToString()));
+            Log.Info(string.Format("Removing access entry #{0}", id));
+
+            DAL.singleton().delete("user", 1, new DAL.WhereConds("user_id", id.ToString(CultureInfo.InvariantCulture)));
 
             return new CommandResponseHandler(message);
         }

@@ -20,6 +20,8 @@
 
 namespace Helpmebot
 {
+    using Helpmebot.Legacy.Database;
+
     /// <summary>
     /// Word learner class
     /// </summary>

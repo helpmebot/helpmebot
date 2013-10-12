@@ -22,7 +22,9 @@ namespace Helpmebot
 {
     using System;
 
-    using Helpmebot.IRC.Legacy;
+    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.IRC;
 
     internal class Message
     {
@@ -56,14 +58,14 @@ namespace Helpmebot
             }
 
             Random rnd = new Random();
-            string[] al = this.getMessages(Configuration.singleton()["messagePrefix"]+ messageName);
+            string[] al = this.getMessages(LegacyConfig.singleton()["messagePrefix"]+ messageName);
             if (al.Length == 0) // no messages found with prefix
             {
-                if (Configuration.singleton()["messagePrefix"] != string.Empty) // check a prefix was added
+                if (LegacyConfig.singleton()["messagePrefix"] != string.Empty) // check a prefix was added
                 {
                     Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel,
                                               "***ERROR*** Message '" + messageName + "' not found with prefix '" +
-                                              Configuration.singleton()["messagePrefix"] +
+                                              LegacyConfig.singleton()["messagePrefix"] +
                                               "'. Attempting without prefix...");
                     // remove prefix and retry
 

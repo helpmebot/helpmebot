@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Curl.cs" company="Helpmebot Development Team">
+// <copyright file="ConfigurationHelper.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,47 +14,35 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Curl type.
+//   Defines the ConfigurationHelper type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands
+namespace Helpmebot.Configuration
 {
-    using Helpmebot;
-    using Helpmebot.Legacy.Configuration;
+    using System.Configuration;
+
+    using Helpmebot.Configuration.XmlSections;
 
     /// <summary>
-    /// The curl.
+    /// The configuration helper.
     /// </summary>
-    class Curl : FunStuff.FunCommand
+    public class ConfigurationHelper
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Curl"/> class.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        public Curl(User source, string channel, string[] args)
-            : base(source, channel, args)
-        {
-        }
-
-        /// <summary>
-        /// The execute command.
+        /// Gets the database configuration.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        /// The <see cref="DatabaseConfiguration"/>.
         /// </returns>
-        protected override CommandResponseHandler ExecuteCommand()
+        public static DatabaseConfiguration DatabaseConfiguration
         {
-            LegacyConfig.singleton()["hedgehog", this.Channel] = "true";
-            return new CommandResponseHandler(new Message().get("HedgehogCurlup"));
+            get
+            {
+                DatabaseConfiguration databaseConfiguration =
+                    ConfigurationManager.GetSection("database") as DatabaseConfiguration;
+                return databaseConfiguration;
+            }
         }
     }
 }
