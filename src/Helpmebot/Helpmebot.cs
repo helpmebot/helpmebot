@@ -83,8 +83,6 @@ namespace Helpmebot
 
             irc = new IrcAccessLayer(_ircNetwork);
 
-            new IrcProxy(irc, int.Parse(LegacyConfig.singleton()["proxyPort"]), LegacyConfig.singleton()["proxyPassword"]);
-
             SetupEvents();
 
             if (!irc.Connect())
