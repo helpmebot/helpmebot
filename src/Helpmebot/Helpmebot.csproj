@@ -214,9 +214,13 @@
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\lib\fluentnhibernate\FluentNHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections">
-      <HintPath>..\..\lib\nhibernate\Iesi.Collections.dll</HintPath>    
-    </Reference><Reference Include="log4net">
+      <HintPath>..\..\lib\nhibernate\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.6.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
@@ -283,9 +287,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Configuration\Mapping\User.hbm.xml" />
-      </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EventArgs\" />
-
   </ItemGroup>
+  <ItemGroup />
 </Project>
