@@ -89,7 +89,7 @@ namespace Helpmebot
             /*
              * check category codes
              */
-            if (WatcherController.instance().isValidKeyword(command))
+            if (WatcherController.Instance().IsValidKeyword(command))
             {
                 int argsLength = args.SmartLength();
 

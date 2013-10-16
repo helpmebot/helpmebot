@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Disable.cs" company="Helpmebot Development Team">
+// <copyright file="CategoryHasItemsEventArgs.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,45 +14,43 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Category watcher disable subcommand
+//   Defines the CategoryHasItemsEventArgs type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands.CategoryWatcherCommand
+namespace Helpmebot.Monitoring
 {
-    using Helpmebot;
-    using Helpmebot.Monitoring;
+    using System;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// Category watcher disable subcommand
+    /// The category has items event args.
     /// </summary>
-    internal class Disable : GenericCommand
+    public class CategoryHasItemsEventArgs : EventArgs
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Disable"/> class.
+        /// Initialises a new instance of the <see cref="CategoryHasItemsEventArgs"/> class.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="items">
+        /// The items.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
+        /// <param name="keyword">
+        /// The keyword.
         /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        public Disable(User source, string channel, string[] args)
-            : base(source, channel, args)
+        public CategoryHasItemsEventArgs(IEnumerable<string> items, string keyword)
         {
+            this.Items = items;
+            this.Keyword = keyword;
         }
 
         /// <summary>
-        /// Actual command logic
+        /// Gets the items.
         /// </summary>
-        /// <returns>the response</returns>
-        protected override CommandResponseHandler ExecuteCommand()
-        {
-            WatcherController.Instance().RemoveWatcherFromChannel(this.Arguments[0], this.Channel);
-            return new CommandResponseHandler(new Message().get("done"));
-        }
+        public IEnumerable<string> Items { get; private set; }
+
+        /// <summary>
+        /// Gets the keyword.
+        /// </summary>
+        public string Keyword { get; private set; }
     }
 }

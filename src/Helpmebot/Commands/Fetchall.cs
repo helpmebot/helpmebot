@@ -55,7 +55,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             CommandResponseHandler crh = new CommandResponseHandler();
-            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.instance().getKeywords();
+            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.Instance().getKeywords();
             string[] args = this.Arguments;
             if (args.Contains("@cats"))
             {
@@ -74,7 +74,7 @@ namespace helpmebot6.Commands
             {
                 foreach (string key in kc)
                 {
-                    crh.respond(WatcherController.instance().forceUpdate(key, this.Channel), CommandResponseDestination.PrivateMessage);
+                    crh.respond(WatcherController.Instance().ForceUpdate(key, this.Channel), CommandResponseDestination.PrivateMessage);
                 }
             }
             

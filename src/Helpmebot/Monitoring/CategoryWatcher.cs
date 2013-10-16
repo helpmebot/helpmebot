@@ -22,6 +22,8 @@ namespace Helpmebot.Monitoring
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
     using System.Threading;
     using System.Xml;
@@ -43,25 +45,43 @@ namespace Helpmebot.Monitoring
         private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly string _site;
-        private readonly string _category;
-        private readonly string _key;
-
-        private Thread _watcherThread;
-
-        private int _sleepTime = 180;
-
-
-        public delegate void CategoryHasItemsEventHook(ArrayList items, string keyword);
-
-        public event CategoryHasItemsEventHook categoryHasItemsEvent;
+        /// <summary>
+        /// The site.
+        /// </summary>
+        private readonly string site;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CategoryWatcher"/> class.
+        /// The category.
         /// </summary>
-        /// <param name="category">The category.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="sleepTime">The sleep time.</param>
+        private readonly string category;
+
+        /// <summary>
+        /// The key.
+        /// </summary>
+        private readonly string key;
+
+        /// <summary>
+        /// The watcher thread.
+        /// </summary>
+        private Thread watcherThread;
+
+        /// <summary>
+        /// The sleep time.
+        /// </summary>
+        private int sleepTime = 180;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="CategoryWatcher"/> class.
+        /// </summary>
+        /// <param name="category">
+        /// The category.
+        /// </param>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="sleepTime">
+        /// The sleep time.
+        /// </param>
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // look up site id
@@ -70,59 +90,46 @@ namespace Helpmebot.Monitoring
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            this._site = DAL.singleton().executeScalarSelect(q);
+            this.site = DAL.singleton().executeScalarSelect(q);
 
-            this._category = category;
-            this._key = key;
-            this._sleepTime = sleepTime;
+            this.category = category;
+            this.key = key;
+            this.sleepTime = sleepTime;
 
             this.RegisterInstance();
 
-            this._watcherThread = new Thread(this.watcherThreadMethod);
-            this._watcherThread.Start();
+            this.watcherThread = new Thread(this.WatcherThreadMethod);
+            this.watcherThread.Start();
         }
-
-        private void watcherThreadMethod()
-        {
-            Log.Info("Starting category watcher for '" + this._key + "'...");
-            try
-            {
-                while (true)
-                {
-                    Thread.Sleep(this.sleepTime*1000);
-                    ArrayList categoryResults = this.doCategoryCheck();
-                    if (categoryResults.Count > 0)
-                    {
-                        this.categoryHasItemsEvent(categoryResults, this._key);
-                    }
-                }
-            }
-            catch (ThreadAbortException)
-            {
-                EventHandler temp = this.ThreadFatalErrorEvent;
-                if (temp != null)
-                {
-                    temp(this, new EventArgs());
-                }
-            }
-            Log.Warn("Category watcher for '" + this._key + "' died.");
-        }
-
 
         /// <summary>
-        ///   The time to sleep, in seconds.
+        /// The category has items event.
         /// </summary>
-        public int sleepTime
+        public event EventHandler<CategoryHasItemsEventArgs> CategoryHasItemsEvent;
+
+        /// <summary>
+        /// The thread fatal error event.
+        /// </summary>
+        public event EventHandler ThreadFatalErrorEvent;
+
+        /// <summary>
+        ///  Gets or sets the time to sleep, in seconds.
+        /// </summary>
+        public int SleepTime
         {
-            get { return this._sleepTime; }
+            get
+            {
+                return this.sleepTime;
+            }
+
             set
             {
-                this._sleepTime = value;
+                this.sleepTime = value;
                 Log.Info("Restarting watcher...");
-                this._watcherThread.Abort();
+                this.watcherThread.Abort();
                 Thread.Sleep(500);
-                this._watcherThread = new Thread(this.watcherThreadMethod);
-                this._watcherThread.Start();
+                this.watcherThread = new Thread(this.WatcherThreadMethod);
+                this.watcherThread.Start();
             }
         }
 
@@ -134,69 +141,111 @@ namespace Helpmebot.Monitoring
         /// </returns>
         public override string ToString()
         {
-            return this._key;
+            return this.key;
+        }
+
+        /// <summary>
+        /// The register instance.
+        /// </summary>
+        public void RegisterInstance()
+        {
+            ThreadList.instance().register(this);
+        }
+
+        /// <summary>
+        /// The stop.
+        /// </summary>
+        public void Stop()
+        {
+            Log.Info("Stopping Watcher Thread for " + this.category + " ...");
+            this.watcherThread.Abort();
+        }
+
+        /// <summary>
+        /// The get thread status.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string[] GetThreadStatus()
+        {
+            string[] statuses = { this.key + " " + this.watcherThread.ThreadState };
+            return statuses;
         }
 
         /// <summary>
         /// Does the category check.
         /// </summary>
-        /// <returns></returns>
-        public ArrayList doCategoryCheck()
+        /// <returns>
+        /// The <see cref="IEnumerable"/>.
+        /// </returns>
+        public IEnumerable<string> DoCategoryCheck()
         {
-            Log.Info("Getting items in category " + this._key);
-            ArrayList pages = new ArrayList();
+            Log.Info("Getting items in category " + this.key);
+            List<string> pages = new List<string>();
             try
             {
-                //Create the XML Reader
+                // Create the XML Reader
                 XmlTextReader xmlreader =
                     new XmlTextReader(
-                        HttpRequest.get(this._site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
-                                        this._category))
-                        {
-                            WhitespaceHandling = WhitespaceHandling.None
-                        };
+                        HttpRequest.get(this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
+                                        this.category))
+                    {
+                        // Disable whitespace so that you don't have to read over whitespaces
+                        WhitespaceHandling = WhitespaceHandling.None
+                    };
 
-                //Disable whitespace so that you don't have to read over whitespaces
+                // read the xml declaration and advance to api tag
+                xmlreader.Read();
 
-                //read the xml declaration and advance to api tag
+                // read the api tag
                 xmlreader.Read();
-                //read the api tag
+
+                // read the query tag
                 xmlreader.Read();
-                //read the query tag
-                xmlreader.Read();
-                //read the categorymembers tag
+
+                // read the categorymembers tag
                 xmlreader.Read();
 
                 while (true)
                 {
-                    //Go to the name tag
+                    // Go to the name tag
                     xmlreader.Read();
 
-                    //if not start element exit while loop
+                    // if not start element exit while loop
                     if (!xmlreader.IsStartElement())
                     {
                         break;
                     }
 
-                    //Get the title Attribute Value
+                    // Get the title Attribute Value
                     string titleAttribute = xmlreader.GetAttribute("title");
                     pages.Add(titleAttribute);
                 }
 
-                //close the reader
+                // close the reader
                 xmlreader.Close();
             }
             catch (Exception ex)
             {
-                Log.Error("Error contacting API (" + this._site + ") ", ex);
+                Log.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
-            pages = removeBlacklistedItems(pages);
+            pages = RemoveBlacklistedItems(pages);
 
             return pages;
         }
 
-        private static ArrayList removeBlacklistedItems(ArrayList pageList)
+        /// <summary>
+        /// The remove blacklisted items.
+        /// </summary>
+        /// <param name="pageList">
+        /// The page list.
+        /// </param>
+        /// <returns>
+        /// The <see cref="List{String}"/>.
+        /// </returns>
+        private static List<string> RemoveBlacklistedItems(List<string> pageList)
         {
             DAL.Select q = new DAL.Select("ip_title");
             q.setFrom("ignoredpages");
@@ -204,36 +253,43 @@ namespace Helpmebot.Monitoring
 
             foreach (object[] item in blacklist)
             {
-                if (pageList.Contains(item[0]))
+                if (pageList.Contains((string)item[0]))
                 {
-                    pageList.Remove(item[0]);
+                    pageList.Remove((string)item[0]);
                 }
             }
 
             return pageList;
         }
 
-        #region IThreadedSystem Members
-
-        public void RegisterInstance()
+        /// <summary>
+        /// The watcher thread method.
+        /// </summary>
+        private void WatcherThreadMethod()
         {
-            ThreadList.instance().register(this);
+            Log.Info("Starting category watcher for '" + this.key + "'...");
+            try
+            {
+                while (true)
+                {
+                    Thread.Sleep(this.SleepTime * 1000);
+                    IEnumerable<string> categoryResults = this.DoCategoryCheck().ToList();
+                    if (categoryResults.Any())
+                    {
+                        this.CategoryHasItemsEvent(this, new CategoryHasItemsEventArgs(categoryResults, this.key));
+                    }
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                EventHandler temp = this.ThreadFatalErrorEvent;
+                if (temp != null)
+                {
+                    temp(this, new EventArgs());
+                }
+            }
+
+            Log.Warn("Category watcher for '" + this.key + "' died.");
         }
-
-        public void Stop()
-        {
-            Log.Info("Stopping Watcher Thread for " + this._category + " ...");
-            this._watcherThread.Abort();
-        }
-
-        public string[] GetThreadStatus()
-        {
-            string[] statuses = {this._key + " " + this._watcherThread.ThreadState};
-            return statuses;
-        }
-
-        public event EventHandler ThreadFatalErrorEvent;
-
-        #endregion
     }
 }

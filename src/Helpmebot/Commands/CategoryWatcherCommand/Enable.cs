@@ -51,7 +51,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return WatcherController.instance().addWatcherToChannel(this.Arguments[0], this.Channel)
+            return WatcherController.Instance().AddWatcherToChannel(this.Arguments[0], this.Channel)
                        ? new CommandResponseHandler(new Message().get("done"))
                        : new CommandResponseHandler(new Message().get("no-change"));
         }
