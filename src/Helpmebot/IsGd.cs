@@ -23,12 +23,13 @@ namespace Helpmebot
     using System;
     using System.IO;
     using System.Net;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// is.gd wrapper class
@@ -36,10 +37,9 @@ namespace Helpmebot
     internal class IsGd
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// Shortens the specified long URL.
@@ -63,7 +63,7 @@ namespace Helpmebot
                 }
                 catch(WebException ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                     return longUrl;
                 }
             }

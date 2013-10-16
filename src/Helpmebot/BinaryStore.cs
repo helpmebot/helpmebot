@@ -21,22 +21,22 @@
 namespace Helpmebot
 {
     using System;
-    using System.CodeDom;
     using System.IO;
-    using System.Reflection;
     using System.Runtime.Serialization.Formatters.Binary;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     internal class BinaryStore
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
+        
 
         public static SerializableArrayList retrieve(string blobName)
         {
@@ -54,7 +54,7 @@ namespace Helpmebot
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                 }
             }
 

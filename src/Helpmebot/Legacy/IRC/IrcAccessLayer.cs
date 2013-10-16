@@ -27,28 +27,28 @@ namespace Helpmebot.Legacy.IRC
     using System.Globalization;
     using System.IO;
     using System.Net.Sockets;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   IRC Access Layer - Provides an interface to IRC.
     /// </summary>
     public sealed class IrcAccessLayer : IThreadedSystem
     {
-        #region Readonly Fields
-
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
+
+        #region Readonly Fields
 
         /// <summary>
         /// The names list.
@@ -146,6 +146,9 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         public IrcAccessLayer(uint ircNetwork)
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             this.FloodProtectionWaitTime = 500;
             this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
             this.networkId = ircNetwork; 
@@ -214,7 +217,10 @@ namespace Helpmebot.Legacy.IRC
         /// The real name.
         /// </param>
         public IrcAccessLayer(string server, uint port, string nickname, string password, string username, string realname)
-        {
+        {            
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             this.LogEvents = true;
             this.FloodProtectionWaitTime = 500;
             this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
