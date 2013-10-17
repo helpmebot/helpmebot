@@ -216,7 +216,7 @@
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
-  <Reference Include="FluentNHibernate">
+    <Reference Include="FluentNHibernate">
       <HintPath>..\..\lib\fluentnhibernate\FluentNHibernate.dll</HintPath>
     </Reference>
     <Reference Include="Iesi.Collections">
@@ -306,5 +306,7 @@
     </Content>
     <Content Include="Configuration\Mapping\User.hbm.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Database\" />
+  </ItemGroup>
 </Project>
