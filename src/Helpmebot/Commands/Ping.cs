@@ -57,13 +57,13 @@ namespace helpmebot6.Commands
             {
                 name = this.Source.nickname;
                 string[] messageparams = { name };
-                message = new Message().get("cmdPing", messageparams);
+                message = new Message().GetMessage("cmdPing", messageparams);
             }
             else
             {
                 name = string.Join(" ", this.Arguments);
                 string[] messageparams = { name };
-                message = new Message().get("cmdPingUser", messageparams);
+                message = new Message().GetMessage("cmdPingUser", messageparams);
             }
 
             return new CommandResponseHandler(message);

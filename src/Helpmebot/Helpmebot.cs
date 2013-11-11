@@ -186,7 +186,7 @@ namespace Helpmebot
                 if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
                     string[] aiParameters = { e.Sender.nickname };
-                    irc.IrcPrivmsg(e.Destination, new Message().get(aiResponse, aiParameters));
+                    irc.IrcPrivmsg(e.Destination, new Message().GetMessage(aiResponse, aiParameters));
                 }
             }
             catch (Exception ex)

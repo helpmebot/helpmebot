@@ -127,12 +127,12 @@ namespace helpmebot6.Commands
             if (rights != string.Empty)
             {
                 string[] messageParameters = { userName, rights };
-                message = new Message().get("cmdRightsList", messageParameters);
+                message = new Message().GetMessage("cmdRightsList", messageParameters);
             }
             else
             {
                 string[] messageParameters = { userName };
-                message = new Message().get("cmdRightsNone", messageParameters);
+                message = new Message().GetMessage("cmdRightsNone", messageParameters);
             }
 
             crh.respond(message);

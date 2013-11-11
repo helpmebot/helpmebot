@@ -62,7 +62,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler NotConfirmed()
         {
-            return new CommandResponseHandler(new Message().get("Die-unconfirmed"));
+            return new CommandResponseHandler(new Message().GetMessage("Die-unconfirmed"));
         }
     }
 }

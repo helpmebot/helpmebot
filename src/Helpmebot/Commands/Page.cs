@@ -88,7 +88,7 @@ namespace helpmebot6.Commands
                         case "page":
                             if (xtr.GetAttribute("missing") != null)
                             {
-                                return new CommandResponseHandler(new Message().get("pageMissing"));
+                                return new CommandResponseHandler(new Message().GetMessage("pageMissing"));
                             }
                             
                             title = xtr.GetAttribute("title");
@@ -118,11 +118,11 @@ namespace helpmebot6.Commands
             if (redirects != null)
             {
                 string[] redirArgs = { redirects, title };
-                crh.respond(new Message().get("pageRedirect", redirArgs));
+                crh.respond(new Message().GetMessage("pageRedirect", redirArgs));
             }
 
             string[] margs = { title, user, touched.ToString(), comment, size };
-            crh.respond(new Message().get("pageMainResponse", margs));
+            crh.respond(new Message().GetMessage("pageMainResponse", margs));
 
             foreach (PageProtection p in protection)
             {
@@ -131,7 +131,7 @@ namespace helpmebot6.Commands
                         title, p.Type, p.Level,
                         p.Expiry == DateTime.MaxValue ? "infinity" : p.Expiry.ToString()
                     };
-                crh.respond(new Message().get("pageProtected", pargs));
+                crh.respond(new Message().GetMessage("pageProtected", pargs));
             }
 
             return crh;

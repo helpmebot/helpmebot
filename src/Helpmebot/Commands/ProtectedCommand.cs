@@ -61,7 +61,7 @@ namespace helpmebot6.Commands
             {
                 CommandResponseHandler errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(new Message().get("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
+                errorResponse.respond(new Message().GetMessage("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
                 return errorResponse;
             }
 

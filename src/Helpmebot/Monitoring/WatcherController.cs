@@ -368,27 +368,27 @@ namespace Helpmebot.Monitoring
                                         ? ((int)Math.Floor(ts.TotalDays)) + "d "
                                         : string.Empty
                                 };
-                            listString += new Message().get("catWatcherWaiting", messageparams);
+                            listString += new Message().GetMessage("catWatcherWaiting", messageparams);
                         }
                     }
 
                     // trailing space added as a hack because MediaWiki doesn't preserve the trailing space :(
-                    listString += new Message().get("listSeparator") + " ";
+                    listString += new Message().GetMessage("listSeparator") + " ";
                 }
 
                 listString = listString.TrimEnd(' ', ',');
-                string pluralString = items.Count() == 1 ? new Message().get(keyword + "Singular", "keywordSingularDefault") : new Message().get(keyword + "Plural", "keywordPluralDefault");
+                string pluralString = items.Count() == 1 ? new Message().GetMessage(keyword + "Singular", "keywordSingularDefault") : new Message().GetMessage(keyword + "Plural", "keywordPluralDefault");
                 string[] messageParams =
                     {
                         items.Count().ToString(CultureInfo.InvariantCulture), pluralString,
                         listString
                     };
-                message = new Message().get(keyword + (showDelta ? "New" : string.Empty) + "HasItems", messageParams);
+                message = new Message().GetMessage(keyword + (showDelta ? "New" : string.Empty) + "HasItems", messageParams);
             }
             else
             {
-                string[] mp = { new Message().get(keyword + "Plural", "keywordPluralDefault") };
-                message = new Message().get(keyword + "NoItems", mp);
+                string[] mp = { new Message().GetMessage(keyword + "Plural", "keywordPluralDefault") };
+                message = new Message().GetMessage(keyword + "NoItems", mp);
             }
 
             return message;
@@ -429,7 +429,7 @@ namespace Helpmebot.Monitoring
         {
             if (newDelay < 1)
             {
-                string message = new Message().get("delayTooShort");
+                string message = new Message().GetMessage("delayTooShort");
                 return new CommandResponseHandler(message);
             }
 
@@ -446,7 +446,7 @@ namespace Helpmebot.Monitoring
                                                       };
                 DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
                 cw.SleepTime = newDelay;
-                return new CommandResponseHandler(new Message().get("done"));
+                return new CommandResponseHandler(new Message().GetMessage("done"));
             }
 
             return new CommandResponseHandler();

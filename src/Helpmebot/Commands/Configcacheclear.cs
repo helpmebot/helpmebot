@@ -54,7 +54,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             LegacyConfig.singleton().clearCache();
-            return new CommandResponseHandler(new Message().get("done"));
+            return new CommandResponseHandler(new Message().GetMessage("done"));
         }
     }
 }

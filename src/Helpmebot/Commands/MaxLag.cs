@@ -84,7 +84,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageParameters = { this.Source.nickname, GetMaxLag(this.Channel) };
-            string message = new Message().get("cmdMaxLag", messageParameters);
+            string message = new Message().GetMessage("cmdMaxLag", messageParameters);
             return new CommandResponseHandler(message);
         }
     }

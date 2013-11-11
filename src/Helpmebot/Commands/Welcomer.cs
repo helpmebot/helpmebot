@@ -60,22 +60,22 @@ namespace helpmebot6.Commands
                 case "enable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "true")
                     {
-                        return new CommandResponseHandler(new Message().get("no-change"));
+                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "disable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
-                        return new CommandResponseHandler(new Message().get("no-change"));
+                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "global":
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
-                    return new CommandResponseHandler(new Message().get("defaultSetting"));
+                    return new CommandResponseHandler(new Message().GetMessage("defaultSetting"));
                 case "add":
                     if (args[1] == "@ignore")
                     {
@@ -84,7 +84,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.instance().addHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "del":
                     if (args[1] == "@ignore")
                     {
@@ -93,7 +93,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.instance().delHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().get("done"));
+                    return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "list":
                     if (args[1] == "@ignore")
                     {

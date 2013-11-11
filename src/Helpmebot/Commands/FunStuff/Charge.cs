@@ -71,8 +71,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             return this.Arguments.Length > 0
-                       ? new CommandResponseHandler(new Message().get("cmdChargeParam", this.CommandTarget))
-                       : new CommandResponseHandler(new Message().get("cmdCharge", new[] { this.Source.nickname }));
+                       ? new CommandResponseHandler(new Message().GetMessage("cmdChargeParam", this.CommandTarget))
+                       : new CommandResponseHandler(new Message().GetMessage("cmdCharge", new[] { this.Source.nickname }));
         }
     }
 }

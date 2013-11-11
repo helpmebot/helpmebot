@@ -55,7 +55,7 @@ namespace helpmebot6.Commands.FunStuff
         {
             return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" ? 
                 base.OnAccessDenied() : 
-                new CommandResponseHandler(new Message().get("HedgehogAccessDenied"), CommandResponseDestination.PrivateMessage);
+                new CommandResponseHandler(new Message().GetMessage("HedgehogAccessDenied"), CommandResponseDestination.PrivateMessage);
         }
 
         /// <summary>

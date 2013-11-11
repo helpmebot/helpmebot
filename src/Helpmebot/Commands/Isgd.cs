@@ -55,7 +55,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             return new CommandResponseHandler(IsGd.shorten(new Uri(this.Arguments[0])).ToString());

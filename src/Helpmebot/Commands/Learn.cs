@@ -62,7 +62,7 @@ namespace helpmebot6.Commands
             {
                 bool hasLearntWord = WordLearner.learn(args[0], string.Join(" ", args, 1, args.Length - 1), action);
                 
-                string message = hasLearntWord ? new Message().get("cmdLearnDone") : new Message().get("cmdLearnError");
+                string message = hasLearntWord ? new Message().GetMessage("cmdLearnDone") : new Message().GetMessage("cmdLearnError");
 
                 Helpmebot6.irc.IrcNotice(this.Source.nickname, message);
             }
@@ -71,7 +71,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "learn", "2", args.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().get("notEnoughParameters", messageParameters));
+                    new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             return null;

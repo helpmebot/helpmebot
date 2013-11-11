@@ -67,7 +67,7 @@ namespace Helpmebot.Model
         {
 
             string[] emptyMessageParams = { "", "", "", "", "", "", "" };
-            string emptyMessage = new Message().get("blockInfoShort", emptyMessageParams);
+            string emptyMessage = new Message().GetMessage("blockInfoShort", emptyMessageParams);
 
             string info = "";
             if (this.nocreate) info += "NOCREATE ";
@@ -75,11 +75,11 @@ namespace Helpmebot.Model
             if (this.noemail) info += "NOEMAIL ";
             if (this.allowusertalk) info += "ALLOWUSERTALK ";
             string[] messageParams = { this.id, this.target, this.blockedBy, this.expiry, this.start, this.blockReason, info };
-            string message = new Message().get("blockInfoShort", messageParams);
+            string message = new Message().GetMessage("blockInfoShort", messageParams);
 
             if (message == emptyMessage)
             {
-                message = new Message().get("noBlocks");
+                message = new Message().GetMessage("noBlocks");
             }
 
             return message;

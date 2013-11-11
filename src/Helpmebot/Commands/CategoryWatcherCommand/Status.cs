@@ -55,12 +55,12 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
                 {
                     this.Arguments[0],
                     WatcherController.Instance().IsWatcherInChannel(this.Channel, this.Arguments[0])
-                        ? new Message().get("enabled")
-                        : new Message().get("disabled"),
+                        ? new Message().GetMessage("enabled")
+                        : new Message().GetMessage("disabled"),
                     WatcherController.Instance().GetDelay(this.Arguments[0]).ToString()
                 };
 
-            return new CommandResponseHandler(new Message().get("keywordStatus", messageParams));
+            return new CommandResponseHandler(new Message().GetMessage("keywordStatus", messageParams));
         }
     }
 }
