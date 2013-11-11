@@ -117,7 +117,7 @@ namespace helpmebot6.Commands
                 if (registrationDate == new DateTime(0))
                 {
                     string[] messageParams = { userName };
-                    string message = new Message().get("noSuchUser", messageParams);
+                    string message = new Message().GetMessage("noSuchUser", messageParams);
                     crh.respond(message);
                 }
                 else
@@ -127,7 +127,7 @@ namespace helpmebot6.Commands
                             userName, registrationDate.ToString("hh:mm:ss t"),
                             registrationDate.ToString("d MMMM yyyy")
                         };
-                    string message = new Message().get("registrationDate", messageParameters);
+                    string message = new Message().GetMessage("registrationDate", messageParameters);
                     crh.respond(message);
                 }
             }
@@ -136,7 +136,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "registration", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().get("notEnoughParameters", messageParameters));
+                    new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             return crh;

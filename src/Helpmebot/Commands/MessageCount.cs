@@ -54,7 +54,7 @@ namespace helpmebot6.Commands
         {
             string[] messageParameters = { Helpmebot6.irc.MessageCount.ToString() };
             return
-                new CommandResponseHandler(new Message().get("messageCountReport", messageParameters));
+                new CommandResponseHandler(new Message().GetMessage("messageCountReport", messageParameters));
         }
     }
 }

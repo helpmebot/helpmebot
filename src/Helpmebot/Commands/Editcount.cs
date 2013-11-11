@@ -119,14 +119,14 @@ namespace helpmebot6.Commands
             if (editCount == -1)
             {
                 string[] messageParams = { userName };
-                string message = new Message().get("noSuchUser", messageParams);
+                string message = new Message().GetMessage("noSuchUser", messageParams);
                 return new CommandResponseHandler(message);
             }
             else
             {
                 string[] messageParameters = { editCount.ToString(), userName };
 
-                string message = new Message().get("editCount", messageParameters);
+                string message = new Message().GetMessage("editCount", messageParameters);
 
                 return new CommandResponseHandler(message);
             }

@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             IPAddress[] addresses = new IPAddress[0];
@@ -85,12 +85,12 @@ namespace helpmebot6.Commands
 
                 string[] messageargs = { this.Arguments[0], ipList };
 
-                return new CommandResponseHandler(new Message().get("resolve", messageargs));
+                return new CommandResponseHandler(new Message().GetMessage("resolve", messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0] };
-                return new CommandResponseHandler(new Message().get("resolveFail", messageargs));
+                return new CommandResponseHandler(new Message().GetMessage("resolveFail", messageargs));
             }
         }
     }

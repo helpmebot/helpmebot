@@ -53,8 +53,8 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length >= 1)
             {
                 string forgottenMessage = WordLearner.forget(this.Arguments[0])
-                                     ? new Message().get("cmdForgetDone")
-                                     : new Message().get("cmdForgetError");
+                                     ? new Message().GetMessage("cmdForgetDone")
+                                     : new Message().GetMessage("cmdForgetError");
 
                 Helpmebot6.irc.IrcNotice(this.Source.nickname, forgottenMessage);
             }
@@ -63,7 +63,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().get("notEnoughParameters", messageParameters));
+                    new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             return null;

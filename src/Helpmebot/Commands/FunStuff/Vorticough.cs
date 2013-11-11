@@ -55,7 +55,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return new CommandResponseHandler(new Message().get("Vortigaunt"));
+            return new CommandResponseHandler(new Message().GetMessage("Vortigaunt"));
         }
     }
 }

@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "decode", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             if (this.Arguments[0].Length != 8)
@@ -86,12 +86,12 @@ namespace helpmebot6.Commands
             if (hostname != string.Empty)
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString(), hostname };
-                return new CommandResponseHandler(new Message().get("hexDecodeResult", messageargs));
+                return new CommandResponseHandler(new Message().GetMessage("hexDecodeResult", messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString() };
-                return new CommandResponseHandler(new Message().get("hexDecodeResultNoResolve", messageargs));
+                return new CommandResponseHandler(new Message().GetMessage("hexDecodeResultNoResolve", messageargs));
             }
         }
     }

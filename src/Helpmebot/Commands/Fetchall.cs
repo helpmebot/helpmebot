@@ -60,8 +60,8 @@ namespace helpmebot6.Commands
             if (args.Contains("@cats"))
             {
                 GlobalFunctions.removeItemFromArray("@cats", ref args);
-                string listSep = new Message().get("listSeparator");
-                string list = new Message().get("allCategoryCodes");
+                string listSep = new Message().GetMessage("listSeparator");
+                string list = new Message().GetMessage("allCategoryCodes");
                 foreach (string item in kc)
                 {
                     list += item;

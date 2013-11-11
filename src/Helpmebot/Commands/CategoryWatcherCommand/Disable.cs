@@ -52,7 +52,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler ExecuteCommand()
         {
             WatcherController.Instance().RemoveWatcherFromChannel(this.Arguments[0], this.Channel);
-            return new CommandResponseHandler(new Message().get("done"));
+            return new CommandResponseHandler(new Message().GetMessage("done"));
         }
     }
 }

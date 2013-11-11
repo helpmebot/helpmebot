@@ -74,7 +74,7 @@ namespace helpmebot6.Commands
                         xpni.Current.GetAttribute("usernew", string.Empty)
                     };
 
-                string message = new Message().get("CmdAccStatus", messageParams);
+                string message = new Message().GetMessage("CmdAccStatus", messageParams);
                 return new CommandResponseHandler(message);
             }
 

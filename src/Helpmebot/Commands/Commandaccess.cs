@@ -73,7 +73,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageParameters = { "commandaccess", "1", this.Arguments.Length.ToString() };
-            return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
         }
     }
 }

@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
         {
             get
             {
-                return this.Arguments.Length == 0 ? new Message().get("cmdLickSelf") : string.Join(" ", this.Arguments);
+                return this.Arguments.Length == 0 ? new Message().GetMessage("cmdLickSelf") : string.Join(" ", this.Arguments);
             }
         }
 

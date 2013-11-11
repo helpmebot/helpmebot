@@ -85,7 +85,7 @@ namespace helpmebot6.Commands
             if (time.Equals(new TimeSpan(0)))
             {
                 string[] messageParameters = { userName };
-                message = new Message().get("noSuchUser", messageParameters);
+                message = new Message().GetMessage("noSuchUser", messageParameters);
             }
             else
             {
@@ -94,7 +94,7 @@ namespace helpmebot6.Commands
                         userName, (time.Days / 365).ToString(), (time.Days % 365).ToString(),
                         time.Hours.ToString(), time.Minutes.ToString(), time.Seconds.ToString()
                     };
-                message = new Message().get("cmdAge", messageParameters);
+                message = new Message().GetMessage("cmdAge", messageParameters);
             }
 
             return new CommandResponseHandler(message);

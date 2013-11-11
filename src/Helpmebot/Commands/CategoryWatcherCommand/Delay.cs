@@ -61,7 +61,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
             {
                 int delay = WatcherController.Instance().GetDelay(this.Arguments[0]);
                 string[] messageParams = { this.Arguments[0], delay.ToString() };
-                string message = new Message().get("catWatcherCurrentDelay", messageParams);
+                string message = new Message().GetMessage("catWatcherCurrentDelay", messageParams);
                 return new CommandResponseHandler(message);
             }
 

@@ -135,21 +135,21 @@ namespace helpmebot6.Commands
                 case -2:
                     {
                         string[] messageParams = { categoryName };
-                        string message = new Message().get("categoryMissing", messageParams);
+                        string message = new Message().GetMessage("categoryMissing", messageParams);
                         return new CommandResponseHandler(message);
                     }
 
                 case -1:
                     {
                         string[] messageParams = { categoryName };
-                        string message = new Message().get("categoryEmpty", messageParams);
+                        string message = new Message().GetMessage("categoryEmpty", messageParams);
                         return new CommandResponseHandler(message);
                     }
 
                 default:
                     {
                         string[] messageParameters = { categorySize.ToString(), categoryName };
-                        string message = new Message().get("categorySize", messageParameters);
+                        string message = new Message().GetMessage("categorySize", messageParameters);
                         return new CommandResponseHandler(message);
                     }
             }

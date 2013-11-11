@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
                     Helpmebot6.StartupTime.ToLongDateString(),
                     Helpmebot6.StartupTime.ToLongTimeString()
                 };
-            string message = new Message().get("cmdUptimeUpSince", messageParams);
+            string message = new Message().GetMessage("cmdUptimeUpSince", messageParams);
             return new CommandResponseHandler(message);
         }
     }

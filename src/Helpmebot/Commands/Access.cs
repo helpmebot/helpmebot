@@ -116,7 +116,7 @@ namespace helpmebot6.Commands
                         else
                         {
                             string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString() };
-                            return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
 
                         }
 
@@ -135,7 +135,7 @@ namespace helpmebot6.Commands
             else
             {
                 string[] messageParameters = { "access", "2", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().get("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
             }
 
             return crh;
@@ -150,7 +150,7 @@ namespace helpmebot6.Commands
         private static CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
         {
             string[] messageParams = {newEntry.ToString(), accessLevel.ToString()};
-            string message = new Message().get("addAccessEntry", messageParams);
+            string message = new Message().GetMessage("addAccessEntry", messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             Log.Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
@@ -176,7 +176,7 @@ namespace helpmebot6.Commands
         private static CommandResponseHandler DeleteAccessEntry(int id)
         {
             string[] messageParams = { id.ToString() };
-            string message = new Message().get("removeAccessEntry", messageParams);
+            string message = new Message().GetMessage("removeAccessEntry", messageParams);
 
             Log.Info(string.Format("Removing access entry #{0}", id));
 

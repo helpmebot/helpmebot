@@ -139,7 +139,7 @@ namespace Helpmebot.Monitoring
             }
 
             string[] cmdArgs = {source.nickname, channel};
-            Helpmebot6.irc.IrcPrivmsg(channel, new Message().get("WelcomeMessage-" + channel.Replace("#", string.Empty), cmdArgs));
+            Helpmebot6.irc.IrcPrivmsg(channel, new Message().GetMessage("WelcomeMessage-" + channel.Replace("#", string.Empty), cmdArgs));
         }
 
         /// <summary>

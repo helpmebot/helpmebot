@@ -147,10 +147,10 @@ namespace Helpmebot
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(new Message().get("OnAccessDenied"),
+                        crh.respond(new Message().GetMessage("OnAccessDenied"),
                                     CommandResponseDestination.PrivateMessage);
                         string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.respond(new Message().get("accessDeniedDebug", aDArgs),
+                        crh.respond(new Message().GetMessage("accessDeniedDebug", aDArgs),
                                     CommandResponseDestination.ChannelDebug);
                     }
                     else

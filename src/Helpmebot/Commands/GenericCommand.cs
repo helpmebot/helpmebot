@@ -162,7 +162,7 @@ namespace helpmebot6.Commands
             {
                 CommandResponseHandler errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(new Message().get("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
+                errorResponse.respond(new Message().GetMessage("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
                 return errorResponse;
             }
 
@@ -190,7 +190,7 @@ namespace helpmebot6.Commands
         {
             CommandResponseHandler response = new CommandResponseHandler();
 
-            response.respond(new Message().get("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
+            response.respond(new Message().GetMessage("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
             Log.Info("Access denied to command.");
             if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments)))
             {
