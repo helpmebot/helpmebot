@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Sends a raw client-to-client protocol command
@@ -41,8 +42,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Rawctcp(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Rawctcp(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

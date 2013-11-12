@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The protected command.
@@ -42,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        protected ProtectedCommand(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected ProtectedCommand(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -57,11 +61,15 @@ namespace helpmebot6.Commands
         {
             if (
                 !AccessLog.instance()
-                     .save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments)))
+                     .save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
             {
-                CommandResponseHandler errorResponse = new CommandResponseHandler();
+                var errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(new Message().GetMessage("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
+                string message = this.MessageService.RetrieveMessage(
+                    "AccessDeniedAccessListFailure",
+                    this.Channel,
+                    null);
+                errorResponse.respond(message, CommandResponseDestination.Default);
                 return errorResponse;
             }
 

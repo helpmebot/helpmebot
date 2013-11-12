@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -46,8 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Access(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Access(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -59,7 +63,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments).RunCommand();
+            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments, this.MessageService).RunCommand();
             return crh;
         }
 

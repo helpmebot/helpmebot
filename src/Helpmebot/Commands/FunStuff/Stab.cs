@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
 
     using helpmebot.Commands.FunStuff;
 
+    using Helpmebot.Services.Interfaces;
+
     /// <summary>
     /// The stab.
     /// </summary>
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Stab(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Stab(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

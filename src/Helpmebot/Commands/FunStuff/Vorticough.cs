@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System.Diagnostics.CodeAnalysis;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The vorticough.
@@ -42,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Vorticough(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Vorticough(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

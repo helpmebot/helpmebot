@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Uncurl command to set the bot's hedgehog status to false.
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Uncurl(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Uncurl(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -55,7 +60,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             LegacyConfig.singleton()["hedgehog", this.Channel] = "false";
-            return new CommandResponseHandler(new Message().GetMessage("Done"));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
         }
     }
 }

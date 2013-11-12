@@ -22,7 +22,9 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Controls the newbie welcomer
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Welcomer(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Welcomer(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -64,7 +69,7 @@ namespace helpmebot6.Commands
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
                 case "disable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
@@ -72,7 +77,7 @@ namespace helpmebot6.Commands
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
                 case "global":
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
                     return new CommandResponseHandler(new Message().GetMessage("defaultSetting"));
@@ -84,7 +89,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.Instance().AddHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
                 case "del":
                     if (args[1] == "@ignore")
                     {
@@ -93,7 +98,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.Instance().DeleteHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
                 case "list":
                     if (args[1] == "@ignore")
                     {

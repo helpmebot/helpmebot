@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -35,15 +36,20 @@ namespace helpmebot6.Commands
     public abstract class GenericCommand
     {
         /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
+        /// The message service.
         /// </summary>
-        public ILogger Log { get; set; }
+        protected readonly IMessageService MessageService;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="GenericCommand"/> class.
         /// </summary>
-        public GenericCommand()
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected GenericCommand(IMessageService messageService)
         {
+            this.MessageService = messageService;
+
             // FIXME: Remove me!
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
         }
@@ -60,15 +66,21 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public GenericCommand(User source, string channel, string[] args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected GenericCommand(User source, string channel, string[] args, IMessageService messageService)
+            : this(messageService)
         {
-            // FIXME: Remove me!
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
-
             this.Source = source;
             this.Channel = channel;
             this.Arguments = args;
         }
+
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// Gets the access level of the command
@@ -92,7 +104,7 @@ namespace helpmebot6.Commands
                 }
                 catch (ArgumentException)
                 {
-                    Log.Warn("Warning: " + command + " not found in access list.");
+                    this.Log.Warn("Warning: " + command + " not found in access list.");
                     return User.UserRights.Developer;
                 }
             }
@@ -140,7 +152,7 @@ namespace helpmebot6.Commands
         {
             string command = GetType().ToString();
 
-            Log.Info("Running command: " + command);
+            this.Log.Info("Running command: " + command);
 
             return this.TestAccess()
                        ? this.ReallyRunCommand()
@@ -163,15 +175,16 @@ namespace helpmebot6.Commands
         /// <returns>The response to the command</returns>
         protected virtual CommandResponseHandler ReallyRunCommand()
         {
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments)))
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
             {
-                CommandResponseHandler errorResponse = new CommandResponseHandler();
+                var errorResponse = new CommandResponseHandler();
+                var message = this.MessageService.RetrieveMessage("AccessDeniedAccessListFailure", this.Channel, null);
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(new Message().GetMessage("AccessDeniedAccessListFailure"), CommandResponseDestination.Default);
+                errorResponse.respond(message, CommandResponseDestination.Default);
                 return errorResponse;
             }
 
-            Log.Info("Starting command execution...");
+            this.Log.Info("Starting command execution...");
             CommandResponseHandler crh;
             try
             {
@@ -179,11 +192,11 @@ namespace helpmebot6.Commands
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, ex);
+                this.Log.Error(ex.Message, ex);
                 crh = new CommandResponseHandler(ex.Message);
             }
 
-            Log.Info("Command execution complete.");
+            this.Log.Info("Command execution complete.");
             return crh;
         }
 
@@ -193,11 +206,13 @@ namespace helpmebot6.Commands
         /// <returns>A response to the command if access to the command was denied</returns>
         protected virtual CommandResponseHandler OnAccessDenied()
         {
-            CommandResponseHandler response = new CommandResponseHandler();
+            var response = new CommandResponseHandler();
 
-            response.respond(new Message().GetMessage("OnAccessDenied", string.Empty), CommandResponseDestination.PrivateMessage);
-            Log.Info("Access denied to command.");
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments)))
+            string message = this.MessageService.RetrieveMessage("OnAccessDenied", this.Channel, null);
+
+            response.respond(message, CommandResponseDestination.PrivateMessage);
+            this.Log.Info("Access denied to command.");
+            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments, this.AccessLevel)))
             {
                 response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }

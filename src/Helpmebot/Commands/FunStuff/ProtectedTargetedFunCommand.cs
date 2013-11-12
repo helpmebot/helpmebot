@@ -23,6 +23,7 @@ namespace helpmebot.Commands.FunStuff
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The protected targeted command.
@@ -50,8 +51,11 @@ namespace helpmebot.Commands.FunStuff
         /// <param name="args">
         /// The args.
         /// </param>
-        protected ProtectedTargetedFunCommand(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected ProtectedTargetedFunCommand(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

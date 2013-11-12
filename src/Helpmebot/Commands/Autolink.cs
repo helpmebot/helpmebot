@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Enables or disables automatic parsing of wiki links
@@ -40,8 +42,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Autolink(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Autolink(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -108,7 +113,7 @@ namespace helpmebot6.Commands
                     LegacyConfig.singleton()["autoLink"] = newValue;
                 }
 
-                return new CommandResponseHandler(new Message().GetMessage("done"), CommandResponseDestination.PrivateMessage);
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
             }
 
             string[] mP = { "autolink", 1.ToString(), args.Length.ToString() };

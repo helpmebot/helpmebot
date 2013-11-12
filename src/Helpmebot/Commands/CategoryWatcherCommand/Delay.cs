@@ -22,6 +22,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Category watcher delay subcommand
@@ -40,8 +41,11 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        public Delay(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Delay(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

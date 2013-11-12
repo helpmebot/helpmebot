@@ -21,7 +21,9 @@
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Category watcher disable subcommand
@@ -40,8 +42,11 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        public Disable(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Disable(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -52,7 +57,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler ExecuteCommand()
         {
             WatcherController.Instance().RemoveWatcherFromChannel(this.Arguments[0], this.Channel);
-            return new CommandResponseHandler(new Message().GetMessage("done"));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
         }
     }
 }

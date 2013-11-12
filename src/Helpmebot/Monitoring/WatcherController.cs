@@ -31,6 +31,7 @@ namespace Helpmebot.Monitoring
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -45,6 +46,7 @@ namespace Helpmebot.Monitoring
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public ILogger Log { get; set; }
+        
 
         /// <summary>
         /// The watchers.

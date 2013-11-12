@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Pie.cs" company="Helpmebot Development Team">
+// <copyright file="Messages.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,49 +14,21 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Pie type.
+//   The messages.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot6.Commands
+namespace Helpmebot.Model
 {
-    using Helpmebot;
-
-    using helpmebot.Commands.FunStuff;
-
-    using Helpmebot.Services.Interfaces;
-
     /// <summary>
-    /// The pie.
+    /// Common messages defined in the wiki
     /// </summary>
-    internal class Pie : ProtectedTargetedFunCommand
+    public class Messages
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Pie"/> class.
+        /// The done.
         /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        /// <param name="messageService">
-        /// The message Service.
-        /// </param>
-        public Pie(User source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
-        {
-        }
-
-        protected override string TargetMessage
-        {
-            get
-            {
-                return "CmdPie";
-            }
-        }
+        public const string Done = "done";
+        public const string NoChange = "no-change";
     }
 }

@@ -64,7 +64,7 @@ namespace Helpmebot
         [Obsolete("Use message service instead")]
         public string GetMessage(string messageName)
         {
-            return this.messageService.RetrieveMessage(messageName, null);
+            return this.messageService.RetrieveMessage(messageName, null, null);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Helpmebot
         [Obsolete("Use message service instead")]
         public string GetMessage(string messageName, params string[] args)
         {
-            return this.messageService.RetrieveMessage(messageName, args);
+            return this.messageService.RetrieveMessage(messageName, null, args);
         }
     }
 }

@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
@@ -42,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Resolve(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Resolve(User source, string channel, string[] args, IMessageService messageService )
+            : base(source, channel, args, messageService)
         {
         }
 

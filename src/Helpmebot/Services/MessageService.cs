@@ -74,15 +74,18 @@ namespace Helpmebot.Services
         /// <param name="messageKey">
         /// The message key.
         /// </param>
+        /// <param name="context">
+        /// The context.
+        /// </param>
         /// <param name="arguments">
         /// The arguments.
         /// </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public string RetrieveMessage(string messageKey, IEnumerable<string> arguments)
+        public string RetrieveMessage(Func<string> messageKey, object context, IEnumerable<string> arguments)
         {
-            return this.RetrieveMessage(messageKey, null, arguments);
+            return this.RetrieveMessage(messageKey(), context, arguments);
         }
 
         /// <summary>
@@ -102,7 +105,7 @@ namespace Helpmebot.Services
         /// </returns>
         public string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments)
         {
-            string contextData = context.ToString();
+            string contextData = context != null ? context.ToString() : string.Empty;
 
             if (string.IsNullOrEmpty(contextData))
             {
@@ -217,7 +220,7 @@ namespace Helpmebot.Services
                 return encoding.GetString(y).Split('\n').ToList();
             }
 
-            return null;
+            return new List<string>();
         }
     }
 }

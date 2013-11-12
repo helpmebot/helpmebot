@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Runtime.CompilerServices;
 
     using Castle.Core.Logging;
     using Castle.Windsor;
@@ -32,6 +33,7 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
     using Helpmebot.Threading;
 
@@ -142,7 +144,8 @@ namespace Helpmebot
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            new Join(source, nickname, new[] {channel}).RunCommand();
+            // FIXME: Remove service locator!
+            new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
@@ -152,7 +155,8 @@ namespace Helpmebot
 
         private static void NotifyOnJoinEvent(User source, string channel)
         {
-            new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
+            // FIXME: Remove service locator!
+            new Notify(source, channel, new string[0], ServiceLocator.Current.GetInstance<IMessageService>()).NotifyJoin(source, channel);
         }
 
         /// <summary>
