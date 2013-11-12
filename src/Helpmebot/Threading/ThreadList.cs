@@ -22,10 +22,9 @@ namespace Helpmebot.Threading
 {
     using System;
     using System.Collections;
-    using System.Reflection;
     using System.Threading;
 
-    using log4net;
+    using Castle.Core.Logging;
 
     /// <summary>
     /// Maintains a list of all the available threads the bot is running
@@ -33,10 +32,9 @@ namespace Helpmebot.Threading
     internal class ThreadList
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         private static ThreadList _instance;
 

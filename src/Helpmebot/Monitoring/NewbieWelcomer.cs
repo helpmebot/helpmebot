@@ -21,34 +21,40 @@
 namespace Helpmebot.Monitoring
 {
     using System.Linq;
-    using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Newbie welcomer subsystem
     /// </summary>
     internal class NewbieWelcomer
     {
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
 
         private static NewbieWelcomer _instance;
 
         protected NewbieWelcomer()
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             try
             {
                 this._hostNames = BinaryStore.retrieve("newbie_hostnames");
             }
             catch (SerializationException ex)
             {
-                log.Error(ex.Message, ex);
+                this.Log.Error(ex.Message, ex);
                 this._hostNames = new SerializableArrayList();
             }
 
@@ -58,7 +64,7 @@ namespace Helpmebot.Monitoring
             }
             catch (SerializationException ex)
             {
-                log.Error(ex.Message, ex);
+                this.Log.Error(ex.Message, ex);
                 this._ignoredNicknames = new SerializableArrayList();
             }
         }
@@ -78,7 +84,7 @@ namespace Helpmebot.Monitoring
         /// <param name="channel">The channel.</param>
         public void execute(User source, string channel)
         {
-            log.Debug(string.Format("Executing newbie welcomer: {0}", channel));
+            this.Log.Debug(string.Format("Executing newbie welcomer: {0}", channel));
 
             if (LegacyConfig.singleton()["silence", channel] != "false"
                 || LegacyConfig.singleton()["welcomeNewbie", channel] != "true")
@@ -86,13 +92,13 @@ namespace Helpmebot.Monitoring
                 return;
             }
 
-            log.Debug("NewbieWelcomer - config OK");
+            this.Log.Debug("NewbieWelcomer - config OK");
             
             {
                 var match = false;
                 foreach (var pattern in this._hostNames.Cast<string>())
                 {
-                    log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
+                    this.Log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
 
                     var rX = new Regex(pattern);
 
@@ -101,7 +107,7 @@ namespace Helpmebot.Monitoring
                         continue;
                     }
 
-                    log.Debug("Matched pattern");
+                    this.Log.Debug("Matched pattern");
                     match = true;
                     break;
                 }
@@ -114,11 +120,11 @@ namespace Helpmebot.Monitoring
 
             {
                 var match = false;
-                log.Debug("Checking ignored nicks...");
+                this.Log.Debug("Checking ignored nicks...");
 
                 foreach (var pattern in this._ignoredNicknames.Cast<string>())
                 {
-                    log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
+                    this.Log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
                     
                     var rX = new Regex(pattern);
 
@@ -127,7 +133,7 @@ namespace Helpmebot.Monitoring
                         continue;
                     }
 
-                    log.Debug("Matched pattern");
+                    this.Log.Debug("Matched pattern");
                     match = true;
                     break;
                 }

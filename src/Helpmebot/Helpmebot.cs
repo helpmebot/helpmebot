@@ -21,7 +21,10 @@
 namespace Helpmebot
 {
     using System;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
+    using Castle.Windsor;
+    using Castle.Windsor.Installer;
 
     using Helpmebot.AI;
     using Helpmebot.IRC.Events;
@@ -33,15 +36,14 @@ namespace Helpmebot
 
     using helpmebot6.Commands;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Helpmebot main class
     /// </summary>
     public class Helpmebot6
     {
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static IWindsorContainer container;
 
         public static IrcAccessLayer irc;
         private static DAL _dbal;
@@ -52,12 +54,31 @@ namespace Helpmebot
         private static uint _ircNetwork;
 
         public static readonly DateTime StartupTime = DateTime.Now;
-        
+
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
         private static void Main(string[] args)
         {
-            Log.Info("Initialising Helpmebot...");
-            
+            BootstrapContainer();
+
+            ServiceLocator.Current.GetInstance<ILogger>().Info("Initialising Helpmebot...");
+
             InitialiseBot();
+        }
+
+        /// <summary>
+        /// The bootstrap container.
+        /// </summary>
+        private static void BootstrapContainer()
+        {
+            container = new WindsorContainer();
+            
+            container.Install(FromAssembly.This());
+
+            ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
         }
 
         /// <summary>
@@ -170,7 +191,7 @@ namespace Helpmebot
             }
             catch (Exception ex)
             {
-                Log.Error(ex.Message, ex);
+                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
             }
         }
 

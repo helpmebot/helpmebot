@@ -112,6 +112,7 @@
     <Compile Include="Configuration\XmlSections\DatabaseConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
+    <Compile Include="Installers\LoggerInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
@@ -210,11 +211,28 @@
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="WindsorServiceLocator.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="log4net">
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\lib\castle.windsor\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging">
+      <HintPath>..\..\lib\castle.windsor\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Services.Logging.Log4netIntegration">
+      <HintPath>..\..\lib\castle.windsor\Castle.Services.Logging.Log4netIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\lib\castle.windsor\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\lib\microsoft.practices.servicelocation\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.6.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

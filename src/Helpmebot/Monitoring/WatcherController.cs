@@ -25,13 +25,14 @@ namespace Helpmebot.Monitoring
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
 
@@ -41,10 +42,9 @@ namespace Helpmebot.Monitoring
     internal class WatcherController
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// The watchers.
@@ -237,7 +237,7 @@ namespace Helpmebot.Monitoring
                 }
                 catch (MySqlException ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                     databaseResult = "0";
                 }
 
@@ -337,7 +337,7 @@ namespace Helpmebot.Monitoring
                         catch (UriFormatException ex)
                         {
                             listString += LegacyConfig.singleton()["wikiUrl"] + item;
-                            Log.Error(ex.Message, ex);
+                            ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                         }
                     }
 

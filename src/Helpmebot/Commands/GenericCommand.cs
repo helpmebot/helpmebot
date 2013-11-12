@@ -21,12 +21,13 @@
 namespace helpmebot6.Commands
 {
     using System;
-    using System.Reflection;
+
+    using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Generic bot command abstract class
@@ -34,16 +35,17 @@ namespace helpmebot6.Commands
     public abstract class GenericCommand
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// Initialises a new instance of the <see cref="GenericCommand"/> class.
         /// </summary>
         public GenericCommand()
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
         }
 
         /// <summary>
@@ -60,6 +62,9 @@ namespace helpmebot6.Commands
         /// </param>
         public GenericCommand(User source, string channel, string[] args)
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
             this.Source = source;
             this.Channel = channel;
             this.Arguments = args;

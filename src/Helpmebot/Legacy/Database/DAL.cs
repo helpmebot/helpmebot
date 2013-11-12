@@ -25,14 +25,15 @@ namespace Helpmebot.Legacy.Database
     using System.Collections.Generic;
     using System.Data;
     using System.Net.Sockets;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
 
@@ -41,11 +42,10 @@ namespace Helpmebot.Legacy.Database
     /// </summary>
     public sealed class DAL : IDisposable
     {
-       /// <summary>
-        /// The log4net logger for this class
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         private MySqlConnection _connection;
 
@@ -64,6 +64,8 @@ namespace Helpmebot.Legacy.Database
 
         private DAL()
         {
+            // FIXME: Remove me!
+            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
         }
         #endregion
 
