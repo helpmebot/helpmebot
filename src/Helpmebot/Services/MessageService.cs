@@ -83,26 +83,6 @@ namespace Helpmebot.Services
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public string RetrieveMessage(Func<string> messageKey, object context, IEnumerable<string> arguments)
-        {
-            return this.RetrieveMessage(messageKey(), context, arguments);
-        }
-
-        /// <summary>
-        /// The retrieve message.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments)
         {
             string contextData = context != null ? context.ToString() : string.Empty;

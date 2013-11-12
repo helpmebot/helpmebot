@@ -113,7 +113,7 @@ namespace helpmebot6.Commands
                     LegacyConfig.singleton()["autoLink"] = newValue;
                 }
 
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
             }
 
             string[] mP = { "autolink", 1.ToString(), args.Length.ToString() };

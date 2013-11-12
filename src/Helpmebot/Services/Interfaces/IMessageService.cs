@@ -45,22 +45,5 @@ namespace Helpmebot.Services.Interfaces
         /// The message
         /// </returns>
         string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments);
-
-        /// <summary>
-        /// The retrieve message.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        string RetrieveMessage(Func<string> messageKey , object context, IEnumerable<string> arguments);
     }
 }

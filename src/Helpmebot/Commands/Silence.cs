@@ -115,7 +115,7 @@ namespace helpmebot6.Commands
                     }
                 }
 
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
             }
 
             string[] mP = { "silence", 1.ToString(), args.Length.ToString() };

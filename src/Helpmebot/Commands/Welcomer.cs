@@ -69,7 +69,7 @@ namespace helpmebot6.Commands
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "disable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
@@ -77,7 +77,7 @@ namespace helpmebot6.Commands
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "global":
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
                     return new CommandResponseHandler(new Message().GetMessage("defaultSetting"));
@@ -89,7 +89,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.Instance().AddHost(args[1], ignore);
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "del":
                     if (args[1] == "@ignore")
                     {
@@ -98,7 +98,7 @@ namespace helpmebot6.Commands
                     }
 
                     NewbieWelcomer.Instance().DeleteHost(args[1], ignore);
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(() => Messages.Done, this.Channel, null));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "list":
                     if (args[1] == "@ignore")
                     {
