@@ -673,6 +673,12 @@ namespace Helpmebot.Legacy.Database
                 this._from = from;
             }
 
+            public Select From(string from)
+            {
+                this.setFrom(from);
+                return this;
+            }
+
             /// <summary>
             /// Adds a JOIN clause.
             /// </summary>
@@ -694,6 +700,12 @@ namespace Helpmebot.Legacy.Database
                 {
                     this._wheres.AddLast(condition);    
                 }
+            }
+
+            public Select Where(params WhereConds[] conditions)
+            {
+                this.addWhere(conditions);
+                return this;
             }
 
             /// <summary>

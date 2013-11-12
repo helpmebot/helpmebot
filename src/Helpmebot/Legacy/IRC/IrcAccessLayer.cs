@@ -32,6 +32,7 @@ namespace Helpmebot.Legacy.IRC
 
     using Castle.Core.Logging;
 
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
@@ -471,12 +472,10 @@ namespace Helpmebot.Legacy.IRC
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
+        [Obsolete("Use extension method instead")]
         public static string WrapCTCP(string command, string parameters)
         {
-            ASCIIEncoding asc = new ASCIIEncoding();
-            byte[] ctcp = { Convert.ToByte(1) };
-            return asc.GetString(ctcp) + command.ToUpper()
-                    + (parameters == string.Empty ? string.Empty : " " + parameters) + asc.GetString(ctcp);
+            return parameters.SetupForCtcp(command);
         }
 
         /// <summary>

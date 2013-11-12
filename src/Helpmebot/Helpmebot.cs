@@ -32,6 +32,7 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
+    using Helpmebot.Startup;
     using Helpmebot.Threading;
 
     using helpmebot6.Commands;
@@ -75,10 +76,10 @@ namespace Helpmebot
         private static void BootstrapContainer()
         {
             container = new WindsorContainer();
-            
-            container.Install(FromAssembly.This());
 
             ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
+
+            container.Install(FromAssembly.This(new WindsorBootstrap()));
         }
 
         /// <summary>

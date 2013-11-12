@@ -111,8 +111,11 @@
     <Compile Include="Configuration\ConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\DatabaseConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
+    <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
-    <Compile Include="Installers\LoggerInstaller.cs" />
+    <Compile Include="Startup\Installers\LegacyInstaller.cs" />
+    <Compile Include="Startup\Installers\LoggerInstaller.cs" />
+    <Compile Include="Startup\Installers\ServiceInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
@@ -208,6 +211,10 @@
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableArrayList.cs" />
+    <Compile Include="Services\Interfaces\IMessageService.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Startup\InstallerPriorityAttribute.cs" />
+    <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="User.cs" />
