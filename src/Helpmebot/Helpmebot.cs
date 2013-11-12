@@ -147,7 +147,7 @@ namespace Helpmebot
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
         {
-            NewbieWelcomer.instance().execute(source, channel);
+            NewbieWelcomer.Instance().Execute(source, channel);
         }
 
         private static void NotifyOnJoinEvent(User source, string channel)

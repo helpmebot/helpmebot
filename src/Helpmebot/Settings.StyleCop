@@ -6,6 +6,7 @@
       <Value>geolocation</Value>
       <Value>ip</Value>
       <Value>NickServ</Value>
+      <Value>welcomer</Value>
       <Value>whois</Value>
       <Value>Wikipedian</Value>
     </CollectionProperty>

@@ -83,7 +83,7 @@ namespace helpmebot6.Commands
                         GlobalFunctions.popFromFront(ref args);
                     }
 
-                    NewbieWelcomer.instance().addHost(args[1], ignore);
+                    NewbieWelcomer.Instance().AddHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "del":
                     if (args[1] == "@ignore")
@@ -92,7 +92,7 @@ namespace helpmebot6.Commands
                         GlobalFunctions.popFromFront(ref args);
                     }
 
-                    NewbieWelcomer.instance().delHost(args[1], ignore);
+                    NewbieWelcomer.Instance().DeleteHost(args[1], ignore);
                     return new CommandResponseHandler(new Message().GetMessage("done"));
                 case "list":
                     if (args[1] == "@ignore")
@@ -102,7 +102,7 @@ namespace helpmebot6.Commands
                     }
 
                     var crh = new CommandResponseHandler();
-                    string[] list = NewbieWelcomer.instance().getHosts(ignore);
+                    string[] list = NewbieWelcomer.Instance().GetHosts(ignore);
                     foreach (string item in list)
                     {
                         crh.respond(item);
