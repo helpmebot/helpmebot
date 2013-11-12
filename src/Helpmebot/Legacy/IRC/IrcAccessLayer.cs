@@ -32,7 +32,6 @@ namespace Helpmebot.Legacy.IRC
 
     using Castle.Core.Logging;
 
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Threading;
@@ -459,24 +458,6 @@ namespace Helpmebot.Legacy.IRC
         #endregion
 
         #region Public Methods
-
-        /// <summary>
-        /// The wrap CTCP.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        [Obsolete("Use extension method instead")]
-        public static string WrapCTCP(string command, string parameters)
-        {
-            return parameters.SetupForCtcp(command);
-        }
 
         /// <summary>
         /// The connect.

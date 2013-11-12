@@ -179,7 +179,7 @@ namespace Helpmebot
 
                         if (rW.action)
                         {
-                            crh.respond(IrcAccessLayer.WrapCTCP("ACTION", wordResponse));
+                            crh.respond(wordResponse.SetupForCtcp("ACTION"));
                         }
                         else
                         {

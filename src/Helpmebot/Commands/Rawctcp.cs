@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.IRC;
 
     /// <summary>
@@ -56,7 +57,7 @@ namespace helpmebot6.Commands
             string cmd = GlobalFunctions.popFromFront(ref args);
             string dst = GlobalFunctions.popFromFront(ref args);
 
-            Helpmebot6.irc.IrcPrivmsg(dst, IrcAccessLayer.WrapCTCP(cmd, string.Join(" ", args)));
+            Helpmebot6.irc.IrcPrivmsg(dst, string.Join(" ", args).SetupForCtcp(cmd));
 
             return null;
         }
