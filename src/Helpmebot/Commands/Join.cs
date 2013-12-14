@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -113,7 +114,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageParameters = { "join", "1", this.Arguments.Length.ToString() };
-            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
         }
     }
 }

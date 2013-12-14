@@ -65,7 +65,7 @@ namespace helpmebot6.Commands
         {
             string[] args = this.Arguments;
 
-            Helpmebot6.irc.IrcPrivmsg(this.Channel, new Message().GetMessage("DeployInProgress"));
+            Helpmebot6.irc.IrcPrivmsg(this.Channel, this.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null));
 
             string revision;
 

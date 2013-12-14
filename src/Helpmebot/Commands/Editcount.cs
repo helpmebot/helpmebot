@@ -123,14 +123,14 @@ namespace helpmebot6.Commands
             if (editCount == -1)
             {
                 string[] messageParams = { userName };
-                string message = new Message().GetMessage("noSuchUser", messageParams);
+                string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
             else
             {
                 string[] messageParameters = { editCount.ToString(), userName };
 
-                string message = new Message().GetMessage("editCount", messageParameters);
+                string message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters);
 
                 return new CommandResponseHandler(message);
             }

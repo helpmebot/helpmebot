@@ -58,14 +58,14 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
             if (this.Arguments.Length > 2)
             {
                 // 2 or more args
-                return WatcherController.Instance().SetDelay(this.Arguments[0], int.Parse(this.Arguments[2]));
+                return WatcherController.Instance().SetDelay(this.Arguments[0], int.Parse(this.Arguments[2]), this.Channel);
             }
 
             if (this.Arguments.Length == 2)
             {
                 int delay = WatcherController.Instance().GetDelay(this.Arguments[0]);
                 string[] messageParams = { this.Arguments[0], delay.ToString() };
-                string message = new Message().GetMessage("catWatcherCurrentDelay", messageParams);
+                string message = this.MessageService.RetrieveMessage("catWatcherCurrentDelay", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

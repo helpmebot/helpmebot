@@ -82,8 +82,7 @@ namespace helpmebot6.Commands
 
             if (toNotify != null)
             {
-                Message msgprovider = new Message();
-                string message = msgprovider.GetMessage("notifyJoin", new[] { source.nickname, channel });
+                string message = this.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.nickname, channel });
                 foreach (User user in toNotify)
                 {
                     Helpmebot6.irc.IrcPrivmsg(user.nickname, message);
@@ -99,10 +98,9 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Message msgprovider = new Message();
             if (this.Arguments.Length != 1)
             {
-                return new CommandResponseHandler(msgprovider.GetMessage("argsExpected1", new[] { "nickname" }));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("argsExpected1", this.Channel, new[] { "nickname" }));
             }
 
             string trigger;
@@ -119,7 +117,7 @@ namespace helpmebot6.Commands
                 RequestedNotifications[triggerUpper].Add(toNotify);
             }
 
-            return new CommandResponseHandler(msgprovider.GetMessage("confirmNotify", new[] { trigger }));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("confirmNotify", this.Channel, new[] { trigger }));
         }
     }
 }

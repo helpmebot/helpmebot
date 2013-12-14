@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] commandParams = { this.Source.nickname };
-            return new CommandResponseHandler(new Message().GetMessage("cmdSayHi1", commandParams));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdSayHi1", this.Channel, commandParams));
         }
     }
 }

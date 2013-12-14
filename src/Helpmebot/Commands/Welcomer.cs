@@ -65,7 +65,7 @@ namespace helpmebot6.Commands
                 case "enable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "true")
                     {
-                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
+                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
@@ -73,14 +73,14 @@ namespace helpmebot6.Commands
                 case "disable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
-                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
+                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
                     return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "global":
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
-                    return new CommandResponseHandler(new Message().GetMessage("defaultSetting"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null));
                 case "add":
                     if (args[1] == "@ignore")
                     {

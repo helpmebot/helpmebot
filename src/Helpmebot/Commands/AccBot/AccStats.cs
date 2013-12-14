@@ -85,7 +85,7 @@ namespace helpmebot6.Commands
                 if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                 {
                     string[] msgparams = { username };
-                    string msg = new Message().GetMessage("noSuchUser", msgparams);
+                    string msg = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
                     return new CommandResponseHandler(msg);
                 }
 
@@ -100,7 +100,7 @@ namespace helpmebot6.Commands
                         xpni.Current.GetAttribute("user_onwikiname", string.Empty)
                     };
 
-                string message = new Message().GetMessage("CmdAccStats", messageParams);
+                string message = this.MessageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

@@ -76,12 +76,12 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "geolocate", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             GeolocateResult location = IPAddress.Parse(this.Arguments[0]).GetLocation();
             string[] messageArgs = { location.ToString() };
-            return new CommandResponseHandler(new Message().GetMessage("locationMessage", messageArgs));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
         }
     }
 }

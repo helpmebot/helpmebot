@@ -55,11 +55,6 @@ namespace helpmebot6.Commands
     internal class Userinfo : GenericCommand
     {
         /// <summary>
-        /// The log4net logger for this class
-        /// </summary>
-        
-
-        /// <summary>
         /// The response.
         /// </summary>
         private readonly CommandResponseHandler response = new CommandResponseHandler();
@@ -121,7 +116,7 @@ namespace helpmebot6.Commands
                 if (userInformation.EditCount == -1)
                 {
                     string[] mparams = { userName };
-                    this.response.respond(new Message().GetMessage("noSuchUser", mparams));
+                    this.response.respond(this.MessageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
                     return this.response;
                 }
 
@@ -141,7 +136,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().GetMessage("notEnoughParameters", messageParameters));
+                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return this.response;
@@ -380,7 +375,7 @@ namespace helpmebot6.Commands
                     userInformation.BlockInformation == string.Empty ? string.Empty : "BLOCKED"
                 };
 
-            string message = new Message().GetMessage("cmdUserInfoShort", messageParameters);
+            string message = this.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
 
             this.response.respond(message);
         }
@@ -400,18 +395,18 @@ namespace helpmebot6.Commands
             if (userInformation.UserGroups != string.Empty)
             {
                 string[] messageParameters = { userInformation.UserName, userInformation.UserGroups };
-                message = new Message().GetMessage("cmdRightsList", messageParameters);
+                message = this.MessageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
             }
             else
             {
                 string[] messageParameters = { userInformation.UserName };
-                message = new Message().GetMessage("cmdRightsNone", messageParameters);
+                message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
             this.response.respond(message);
 
             string[] messageParameters2 = { userInformation.EditCount.ToString(), userInformation.UserName };
-            message = new Message().GetMessage("editCount", messageParameters2);
+            message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
             this.response.respond(message);
 
             string[] messageParameters3 =
@@ -420,10 +415,10 @@ namespace helpmebot6.Commands
                     userInformation.RegistrationDate.ToString("hh:mm:ss t"),
                     userInformation.RegistrationDate.ToString("d MMMM yyyy")
                 };
-            message = new Message().GetMessage("registrationDate", messageParameters3);
+            message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
             this.response.respond(message);
             string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString() };
-            message = new Message().GetMessage("editRate", messageParameters4);
+            message = this.MessageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
             this.response.respond(message);
         }
 

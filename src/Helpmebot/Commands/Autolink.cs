@@ -92,7 +92,7 @@ namespace helpmebot6.Commands
                 if (newValue == oldValue.ToString().ToLower())
                 {
                     return new CommandResponseHandler(
-                        new Message().GetMessage("no-change"),
+                        this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -100,7 +100,7 @@ namespace helpmebot6.Commands
                 {
                     LegacyConfig.singleton()["autoLink", this.Channel] = null;
                     return new CommandResponseHandler(
-                        new Message().GetMessage("defaultConfig"),
+                        this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -118,8 +118,9 @@ namespace helpmebot6.Commands
 
             string[] mP = { "autolink", 1.ToString(), args.Length.ToString() };
 
-            return new CommandResponseHandler(
-                new Message().GetMessage("notEnoughParameters", mP),
+            return
+                new CommandResponseHandler(
+                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, mP),
                 CommandResponseDestination.PrivateMessage);
         }
     }

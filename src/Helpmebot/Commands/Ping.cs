@@ -61,13 +61,13 @@ namespace helpmebot6.Commands
             {
                 name = this.Source.nickname;
                 string[] messageparams = { name };
-                message = new Message().GetMessage("cmdPing", messageparams);
+                message = this.MessageService.RetrieveMessage("cmdPing", this.Channel, messageparams);
             }
             else
             {
                 name = string.Join(" ", this.Arguments);
                 string[] messageparams = { name };
-                message = new Message().GetMessage("cmdPingUser", messageparams);
+                message = this.MessageService.RetrieveMessage("cmdPingUser", this.Channel, messageparams);
             }
 
             return new CommandResponseHandler(message);

@@ -30,6 +30,7 @@ namespace Helpmebot
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
     using Helpmebot.Services.Interfaces;
 
@@ -162,11 +163,13 @@ namespace Helpmebot
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(new Message().GetMessage("OnAccessDenied"),
-                                    CommandResponseDestination.PrivateMessage);
-                        string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.respond(new Message().GetMessage("accessDeniedDebug", aDArgs),
-                                    CommandResponseDestination.ChannelDebug);
+                        crh.respond(
+                            this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
+                            CommandResponseDestination.PrivateMessage);
+                        string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
+                        crh.respond(
+                            this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
+                            CommandResponseDestination.ChannelDebug);
                     }
                     else
                     {

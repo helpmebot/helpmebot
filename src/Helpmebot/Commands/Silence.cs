@@ -91,7 +91,7 @@ namespace helpmebot6.Commands
                 if (newValue == oldValue.ToString().ToLower())
                 {
                     return new CommandResponseHandler(
-                        new Message().GetMessage("no-change"),
+                        this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -99,7 +99,7 @@ namespace helpmebot6.Commands
                 {
                     LegacyConfig.singleton()["silence", this.Channel] = null;
                     return new CommandResponseHandler(
-                        new Message().GetMessage("defaultConfig"),
+                        this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -120,7 +120,7 @@ namespace helpmebot6.Commands
 
             string[] mP = { "silence", 1.ToString(), args.Length.ToString() };
             return new CommandResponseHandler(
-                new Message().GetMessage("notEnoughParameters", mP),
+                this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, mP),
                 CommandResponseDestination.PrivateMessage);
         }
     }

@@ -58,7 +58,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             LegacyConfig.singleton()["hedgehog", this.Channel] = "true";
-            return new CommandResponseHandler(new Message().GetMessage("HedgehogCurlup"));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("HedgehogCurlup", this.Channel, null));
         }
     }
 }

@@ -88,7 +88,8 @@ namespace helpmebot6.Commands
                 if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                 {
                     string[] msgparams = { username };
-                    string msg = new Message().GetMessage("noSuchUser", msgparams);
+
+                    string msg = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
                     return new CommandResponseHandler(msg);
                 }
 
@@ -104,7 +105,7 @@ namespace helpmebot6.Commands
                         xpni.Current.GetAttribute("prefchange", string.Empty)
                     };
 
-                string adminmessage = new Message().GetMessage("CmdAccCountAdmin", adminparams);
+                string adminmessage = this.MessageService.RetrieveMessage("CmdAccCountAdmin", this.Channel, adminparams);
 
                 string[] messageParams =
                     {
@@ -117,7 +118,7 @@ namespace helpmebot6.Commands
                             : string.Empty // admin
                     };
 
-                string message = new Message().GetMessage("CmdAccCount", messageParams);
+                string message = this.MessageService.RetrieveMessage("CmdAccCount", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

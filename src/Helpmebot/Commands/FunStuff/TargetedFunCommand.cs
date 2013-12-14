@@ -77,7 +77,7 @@ namespace helpmebot.Commands.FunStuff
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageparams = { this.CommandTarget };
-            string message = new Message().GetMessage(this.TargetMessage, messageparams);
+            string message = this.MessageService.RetrieveMessage(this.TargetMessage, this.Channel, messageparams);
 
             return new CommandResponseHandler(message);
         }

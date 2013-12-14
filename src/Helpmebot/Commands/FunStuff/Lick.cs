@@ -58,7 +58,7 @@ namespace helpmebot6.Commands
         {
             get
             {
-                return this.Arguments.Length == 0 ? new Message().GetMessage("cmdLickSelf") : string.Join(" ", this.Arguments);
+                return this.Arguments.Length == 0 ? this.MessageService.RetrieveMessage("cmdLickSelf", this.Channel, null) : string.Join(" ", this.Arguments);
             }
         }
 

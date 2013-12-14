@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -59,7 +60,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return new CommandResponseHandler(IsGd.shorten(new Uri(this.Arguments[0])).ToString());

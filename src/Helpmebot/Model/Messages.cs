@@ -29,6 +29,40 @@ namespace Helpmebot.Model
         /// The done.
         /// </summary>
         public const string Done = "done";
+
+        /// <summary>
+        /// The no change.
+        /// </summary>
         public const string NoChange = "no-change";
+
+        /// <summary>
+        /// The default config.
+        /// </summary>
+        public const string DefaultConfig = "defaultConfig";
+
+        /// <summary>
+        /// The hedgehog access denied.
+        /// </summary>
+        public const string HedgehogAccessDenied = "HedgehogAccessDenied";
+
+        /// <summary>
+        /// The not enough parameters.
+        /// </summary>
+        public const string NotEnoughParameters = "notEnoughParameters";
+
+        /// <summary>
+        /// The enabled.
+        /// </summary>
+        public const string Enabled = "enabled";
+
+        /// <summary>
+        /// The disabled.
+        /// </summary>
+        public const string Disabled = "disabled";
+
+        /// <summary>
+        /// The on access denied.
+        /// </summary>
+        public const string OnAccessDenied = "OnAccessDenied";
     }
 }

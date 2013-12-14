@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -60,7 +61,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             IPAddress[] addresses = new IPAddress[0];
@@ -89,12 +90,12 @@ namespace helpmebot6.Commands
 
                 string[] messageargs = { this.Arguments[0], ipList };
 
-                return new CommandResponseHandler(new Message().GetMessage("resolve", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolve", this.Channel, messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0] };
-                return new CommandResponseHandler(new Message().GetMessage("resolveFail", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolveFail", this.Channel, messageargs));
             }
         }
     }

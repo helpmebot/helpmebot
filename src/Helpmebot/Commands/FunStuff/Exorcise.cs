@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
             string name = string.Join(" ", this.Arguments);
 
             string[] messageparams = { name };
-            string message = new Message().GetMessage("CmdExorcise", messageparams);
+            string message = this.MessageService.RetrieveMessage("CmdExorcise", this.Channel, messageparams);
 
             return new CommandResponseHandler(message);
         }
