@@ -23,6 +23,7 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
 
@@ -32,6 +33,7 @@ namespace Helpmebot.Monitoring
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -43,21 +45,24 @@ namespace Helpmebot.Monitoring
     internal class WatcherController
     {
         /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
-        
-
-        /// <summary>
         /// The watchers.
         /// </summary>
         private readonly Dictionary<string, CategoryWatcher> watchers;
 
         /// <summary>
+        /// The message service.
+        /// </summary>
+        private readonly IMessageService messageService;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="WatcherController"/> class.
         /// </summary>
-        protected WatcherController()
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected WatcherController(IMessageService messageService)
         {
+            this.messageService = messageService;
             this.watchers = new Dictionary<string, CategoryWatcher>();
 
             DAL.Select q = new DAL.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
@@ -74,7 +79,7 @@ namespace Helpmebot.Monitoring
 
             foreach (KeyValuePair<string, CategoryWatcher> item in this.watchers)
             {
-                item.Value.CategoryHasItemsEvent += CategoryHasItemsEvent;
+                item.Value.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
             }
         }
 
@@ -86,13 +91,25 @@ namespace Helpmebot.Monitoring
         /// </returns>
         public static WatcherController Instance()
         {
-            return instance ?? (instance = new WatcherController());
+            if (instance == null)
+            {
+                var ms = ServiceLocator.Current.GetInstance<IMessageService>(); //TODO sort me out
+                instance = new WatcherController(ms);
+            }
+
+            return instance;
         }
 
         /// <summary>
         /// The _instance.
         /// </summary>
         private static WatcherController instance;
+
+
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
 
         /// <summary>
         /// Determines whether the specified word is a valid keyword.
@@ -178,7 +195,7 @@ namespace Helpmebot.Monitoring
         /// <param name="e">
         /// The e.
         /// </param>
-        private static void CategoryHasItemsEvent(object sender, CategoryHasItemsEventArgs e)
+        private void CategoryHasItemsEvent(object sender, CategoryHasItemsEventArgs e)
         {
             List<string> items = e.Items.ToList();
 
@@ -291,7 +308,7 @@ namespace Helpmebot.Monitoring
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string CompileMessage(IEnumerable<string> itemsEnumerable, string keyword, string destination, bool forceShowAll)
+        private string CompileMessage(IEnumerable<string> itemsEnumerable, string keyword, string destination, bool forceShowAll)
         {
             //// keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             //// keywordNoItems: 0: plural word(s)
@@ -370,27 +387,35 @@ namespace Helpmebot.Monitoring
                                         ? ((int)Math.Floor(ts.TotalDays)) + "d "
                                         : string.Empty
                                 };
-                            listString += new Message().GetMessage("catWatcherWaiting", messageparams);
+                            listString += this.messageService.RetrieveMessage("catWatcherWaiting", destination, messageparams);
                         }
                     }
 
                     // trailing space added as a hack because MediaWiki doesn't preserve the trailing space :(
-                    listString += new Message().GetMessage("listSeparator") + " ";
+                    listString += this.messageService.RetrieveMessage("listSeparator", destination, null) + " ";
                 }
 
                 listString = listString.TrimEnd(' ', ',');
-                string pluralString = items.Count() == 1 ? new Message().GetMessage(keyword + "Singular", "keywordSingularDefault") : new Message().GetMessage(keyword + "Plural", "keywordPluralDefault");
+                string pluralString = items.Count() == 1
+                                          ? this.messageService.RetrieveMessage(
+                                              keyword + "Singular",
+                                              destination,
+                                              new[] { "keywordSingularDefault" })
+                                          : this.messageService.RetrieveMessage(
+                                              keyword + "Plural",
+                                              destination,
+                                              new[] { "keywordPluralDefault" });
                 string[] messageParams =
                     {
                         items.Count().ToString(CultureInfo.InvariantCulture), pluralString,
                         listString
                     };
-                message = new Message().GetMessage(keyword + (showDelta ? "New" : string.Empty) + "HasItems", messageParams);
+                message = this.messageService.RetrieveMessage(keyword + (showDelta ? "New" : string.Empty) + "HasItems", destination, messageParams);
             }
             else
             {
-                string[] mp = { new Message().GetMessage(keyword + "Plural", "keywordPluralDefault") };
-                message = new Message().GetMessage(keyword + "NoItems", mp);
+                string[] mp = { this.messageService.RetrieveMessage(keyword + "Plural", destination, new[] { "keywordPluralDefault" }) };
+                message = this.messageService.RetrieveMessage(keyword + "NoItems", destination, mp);
             }
 
             return message;
@@ -424,14 +449,22 @@ namespace Helpmebot.Monitoring
         /// <summary>
         /// Sets the delay.
         /// </summary>
-        /// <param name="keyword">The keyword.</param>
-        /// <param name="newDelay">The new delay.</param>
-        /// <returns></returns>
-        public CommandResponseHandler SetDelay(string keyword, int newDelay)
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <param name="newDelay">
+        /// The new delay.
+        /// </param>
+        /// <param name="messageContext">
+        /// The message Context.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        public CommandResponseHandler SetDelay(string keyword, int newDelay, object messageContext)
         {
             if (newDelay < 1)
             {
-                string message = new Message().GetMessage("delayTooShort");
+                string message = this.messageService.RetrieveMessage("delayTooShort", messageContext, null);
                 return new CommandResponseHandler(message);
             }
 
@@ -448,7 +481,7 @@ namespace Helpmebot.Monitoring
                                                       };
                 DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
                 cw.SleepTime = newDelay;
-                return new CommandResponseHandler(new Message().GetMessage("done"));
+                return new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
             }
 
             return new CommandResponseHandler();
