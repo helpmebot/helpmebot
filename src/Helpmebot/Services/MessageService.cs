@@ -90,9 +90,20 @@ namespace Helpmebot.Services
             if (!string.IsNullOrEmpty(contextData))
             {
                 contextData = string.Format("/{0}", contextData);
+
+                contextData = contextData.Replace("#", string.Empty) // will cause issues
+                    .Replace("|", string.Empty) // link syntax
+                    .Replace("[", string.Empty) // link syntax
+                    .Replace("]", string.Empty) // link syntax
+                    .Replace("{", string.Empty) // link syntax
+                    .Replace("}", string.Empty) // link syntax
+                    .Replace("<", string.Empty) // html issues
+                    .Replace(">", string.Empty); // html issues
+
+                return this.RetrieveMessage(messageKey, contextData, arguments);
             }
 
-            return this.RetrieveMessage(messageKey, contextData, arguments);
+            return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
 
         /// <summary>
