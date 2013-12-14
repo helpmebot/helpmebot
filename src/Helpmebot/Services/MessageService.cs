@@ -87,7 +87,7 @@ namespace Helpmebot.Services
         {
             string contextData = context != null ? context.ToString() : string.Empty;
 
-            if (string.IsNullOrEmpty(contextData))
+            if (!string.IsNullOrEmpty(contextData))
             {
                 contextData = string.Format("/{0}", contextData);
             }
