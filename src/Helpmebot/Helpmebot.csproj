@@ -197,7 +197,6 @@
     <Compile Include="HttpRequest.cs" />
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
