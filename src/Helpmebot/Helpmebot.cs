@@ -33,6 +33,7 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
     using Helpmebot.Threading;
@@ -191,7 +192,8 @@ namespace Helpmebot
                 if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
                     string[] aiParameters = { e.Sender.nickname };
-                    irc.IrcPrivmsg(e.Destination, new Message().GetMessage(aiResponse, aiParameters));
+                    var messageService = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO: fix me
+                    irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(aiResponse, e.Destination, aiParameters));
                 }
             }
             catch (Exception ex)
