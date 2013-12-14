@@ -20,6 +20,10 @@
 
 namespace Helpmebot.Model
 {
+    using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
+
     /// <summary>
     /// Holds the block information of a specific user
     /// </summary>
@@ -63,23 +67,48 @@ namespace Helpmebot.Model
         /// <returns>
         /// A <see cref="System.String"/> that represents this block.
         /// </returns>
+        /// <remarks>
+        /// TODO: fixes for context, localisation, etc,
+        /// </remarks>
         public override string ToString()
         {
+            var ms = ServiceLocator.Current.GetInstance<IMessageService>();
 
             string[] emptyMessageParams = { "", "", "", "", "", "", "" };
-            string emptyMessage = new Message().GetMessage("blockInfoShort", emptyMessageParams);
+            string emptyMessage = ms.RetrieveMessage("blockInfoShort", null, emptyMessageParams);
 
-            string info = "";
-            if (this.nocreate) info += "NOCREATE ";
-            if (this.autoblock) info += "AUTOBLOCK ";
-            if (this.noemail) info += "NOEMAIL ";
-            if (this.allowusertalk) info += "ALLOWUSERTALK ";
-            string[] messageParams = { this.id, this.target, this.blockedBy, this.expiry, this.start, this.blockReason, info };
-            string message = new Message().GetMessage("blockInfoShort", messageParams);
+            string info = string.Empty;
+
+            if (this.nocreate)
+            {
+                info += "NOCREATE ";
+            }
+
+            if (this.autoblock)
+            {
+                info += "AUTOBLOCK ";
+            }
+
+            if (this.noemail)
+            {
+                info += "NOEMAIL ";
+            }
+
+            if (this.allowusertalk)
+            {
+                info += "ALLOWUSERTALK ";
+            }
+
+            string[] messageParams =
+                {
+                    this.id, this.target, this.blockedBy, this.expiry, this.start, this.blockReason,
+                    info
+                };
+            string message = ms.RetrieveMessage("blockInfoShort", null, messageParams);
 
             if (message == emptyMessage)
             {
-                message = new Message().GetMessage("noBlocks");
+                message = ms.RetrieveMessage("noBlocks", null, null);
             }
 
             return message;
