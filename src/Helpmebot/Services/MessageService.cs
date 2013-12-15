@@ -138,13 +138,15 @@ namespace Helpmebot.Services
                 randomNumber = this.random.Next(0, messages.Count());
             }
 
-            string messageFormat = messages[randomNumber];
+            string builtString = messages[randomNumber];
 
-            // ReSharper disable once CoVariantArrayConversion
-            object[] args = arguments.ToArray();
-
-            string builtString = string.Format(messageFormat, args);
-
+            if (arguments != null)
+            {
+                // ReSharper disable once CoVariantArrayConversion
+                object[] args = arguments.ToArray();
+                builtString = string.Format(builtString, args);
+            }
+            
             if (builtString.StartsWith("#ACTION"))
             {
                 builtString = builtString.Substring(8).SetupForCtcp("ACTION");
