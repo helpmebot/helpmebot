@@ -43,7 +43,6 @@ namespace Helpmebot.Startup.Installers
         /// </param>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Component.For(typeof(DAL)).Instance(DAL.singleton()));
             container.Register(Component.For(typeof(IDAL)).Instance(DAL.singleton()));
         }
     }
