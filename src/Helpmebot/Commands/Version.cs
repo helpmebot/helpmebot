@@ -20,9 +20,13 @@
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
     using System.Reflection;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -51,34 +55,29 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Gets the version.
-        /// </summary>
-        /// <value>The version.</value>
-        public string SoftwareVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
-
-        /// <summary>
-        /// Gets the version string.
-        /// </summary>
-        /// <returns>the version</returns>
-        public string GetVersionString()
-        {
-            // TODO: implement for git
-            return string.Empty;
-        }
-
-        /// <summary>
         /// Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return new CommandResponseHandler(this.SoftwareVersion);
+            System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
+            var date = new DateTime(2000, 1, 1, 0, 0, 0);
+            date = date.AddDays(version.Build);
+            date = date.AddSeconds(version.Revision * 2);
+
+            var messageArgs = new List<string>
+                                  {
+                                      version.Major.ToString(CultureInfo.InvariantCulture),
+                                      version.Minor.ToString(CultureInfo.InvariantCulture),
+                                      version.Build.ToString(CultureInfo.InvariantCulture),
+                                      version.Revision.ToString(CultureInfo.InvariantCulture),
+                                      date.ToInternetFormat()
+                                  };
+
+            string message = this.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
+
+            return new CommandResponseHandler(message);
         }
     }
 }

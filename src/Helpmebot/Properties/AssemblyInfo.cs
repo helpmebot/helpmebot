@@ -49,7 +49,7 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 [assembly: AssemblyVersion("6.2.*")]
-[assembly: NeutralResourcesLanguageAttribute("")]
+[assembly: NeutralResourcesLanguageAttribute("en-GB")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("HelpmebotUnitTests")]
 
 [assembly: log4net.Config.XmlConfigurator(Watch = false, ConfigFile = "logger.config")]
