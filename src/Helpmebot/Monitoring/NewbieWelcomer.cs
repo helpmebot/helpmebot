@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Monitoring
 {
+    using System;
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
@@ -70,9 +71,9 @@ namespace Helpmebot.Monitoring
             {
                 this.hostNames = BinaryStore.retrieve("newbie_hostnames");
             }
-            catch (SerializationException ex)
+            catch (Exception ex)
             {
-                this.Log.Error(ex.Message, ex);
+                this.Log.Warn(ex.Message, ex);
                 this.hostNames = new SerializableArrayList();
             }
 
@@ -80,11 +81,13 @@ namespace Helpmebot.Monitoring
             {
                 this.ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
             }
-            catch (SerializationException ex)
+            catch (Exception ex)
             {
-                this.Log.Error(ex.Message, ex);
+                this.Log.Warn(ex.Message, ex);
                 this.ignoredNicknames = new SerializableArrayList();
             }
+
+            this.SaveHostnames();
         }
 
         /// <summary>
