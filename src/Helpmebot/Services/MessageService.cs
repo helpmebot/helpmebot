@@ -39,7 +39,7 @@ namespace Helpmebot.Services
         /// <summary>
         /// The legacy database.
         /// </summary>
-        private readonly DAL legacyDatabase;
+        private readonly IDAL legacyDatabase;
 
         /// <summary>
         /// The random generator.
@@ -57,7 +57,7 @@ namespace Helpmebot.Services
         /// <param name="legacyDatabase">
         /// The legacy database.
         /// </param>
-        public MessageService(DAL legacyDatabase)
+        public MessageService(IDAL legacyDatabase)
         {
             this.legacyDatabase = legacyDatabase;
             this.random = new Random();
