@@ -65,7 +65,7 @@ namespace Helpmebot.Legacy.Database
 
         public DAL(ILogger logger)
         {
-            this.Log = logger;
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.Database.DAL");
         }
         #endregion
 
