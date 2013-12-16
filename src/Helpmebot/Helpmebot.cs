@@ -137,15 +137,15 @@ namespace Helpmebot
 
         private static void SetupEvents()
         {
-            irc.connectionRegistrationSucceededEvent += JoinChannels;
+            irc.ConnectionRegistrationSucceededEvent += JoinChannels;
 
-            irc.joinEvent += WelcomeNewbieOnJoinEvent;
+            irc.JoinEvent += WelcomeNewbieOnJoinEvent;
 
-            irc.joinEvent += NotifyOnJoinEvent;
+            irc.JoinEvent += NotifyOnJoinEvent;
 
             irc.PrivateMessageEvent += ReceivedMessage;
 
-            irc.inviteEvent += irc_InviteEvent;
+            irc.InviteEvent += irc_InviteEvent;
 
             irc.ThreadFatalErrorEvent += IrcThreadFatalErrorEvent;
         }

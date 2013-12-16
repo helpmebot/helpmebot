@@ -92,6 +92,7 @@
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Database\IDAL.cs" />
+    <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
     <Compile Include="Model\Messages.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
