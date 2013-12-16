@@ -40,7 +40,7 @@ namespace Helpmebot.Startup
         /// <summary>
         /// The database.
         /// </summary>
-        public const int Database = 2;
+        public const int Persistence = 2;
         
         /// <summary>
         /// The default priority assigned whenever this attribute is not applied to a class.

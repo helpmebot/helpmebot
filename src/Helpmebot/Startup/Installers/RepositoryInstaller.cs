@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PersistenceInstaller.cs" company="Helpmebot Development Team">
+// <copyright file="ServiceInstaller.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the PersistenceInstaller type.
+//   Defines the ServiceInstaller type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -24,13 +24,11 @@ namespace Helpmebot.Startup.Installers
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
-    using Helpmebot.Startup.Facilities;
-
     /// <summary>
-    /// The persistence installer.
+    /// The service installer.
     /// </summary>
-    [InstallerPriority(InstallerPriorityAttribute.Persistence)]
-    public class PersistenceInstaller : IWindsorInstaller
+    [InstallerPriority(InstallerPriorityAttribute.Default)]
+    public class RepositoryInstaller : IWindsorInstaller
     {
         /// <summary>
         /// The install.
@@ -43,7 +41,7 @@ namespace Helpmebot.Startup.Installers
         /// </param>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.AddFacility<PersistenceFacility>();
+            container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Repositories").WithService.AllInterfaces());
         }
     }
 }

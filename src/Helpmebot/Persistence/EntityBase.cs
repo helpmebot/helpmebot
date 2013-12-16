@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PersistenceInstaller.cs" company="Helpmebot Development Team">
+// <copyright file="EntityBase.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,36 +14,20 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the PersistenceInstaller type.
+//   Defines the EntityBase type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Startup.Installers
+namespace Helpmebot.Persistence
 {
-    using Castle.MicroKernel.Registration;
-    using Castle.MicroKernel.SubSystems.Configuration;
-    using Castle.Windsor;
-
-    using Helpmebot.Startup.Facilities;
-
     /// <summary>
-    /// The persistence installer.
+    /// The entity base.
     /// </summary>
-    [InstallerPriority(InstallerPriorityAttribute.Persistence)]
-    public class PersistenceInstaller : IWindsorInstaller
+    public class EntityBase
     {
         /// <summary>
-        /// The install.
+        /// Gets or sets the id.
         /// </summary>
-        /// <param name="container">
-        /// The container.
-        /// </param>
-        /// <param name="store">
-        /// The store.
-        /// </param>
-        public void Install(IWindsorContainer container, IConfigurationStore store)
-        {
-            container.AddFacility<PersistenceFacility>();
-        }
+        public virtual int Id { get; protected set; }
     }
 }

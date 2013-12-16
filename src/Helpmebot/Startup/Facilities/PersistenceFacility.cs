@@ -32,7 +32,6 @@ namespace Helpmebot.Startup.Facilities
 
     using NHibernate;
     using NHibernate.Cfg;
-    using NHibernate.Tool.hbm2ddl;
 
     /// <summary>
     /// The persistence facility.
@@ -66,6 +65,7 @@ namespace Helpmebot.Startup.Facilities
             return
                 Fluently.Configure()
                     .Database(this.SetupDatabase)
+                    .Mappings(a => a.FluentMappings.AddFromAssemblyOf<EntityBase>())
                     .ExposeConfiguration(this.ConfigurePersistence)
                     .BuildConfiguration();
         }
@@ -78,7 +78,10 @@ namespace Helpmebot.Startup.Facilities
         /// </param>
         private void ConfigurePersistence(Configuration config)
         {
-            SchemaMetadataUpdater.QuoteTableAndColumns(config);
+            // This is a fix for a wierd exception.
+            // {"Column 'ReservedWord' does not belong to table ReservedWords."}
+            // http://stackoverflow.com/questions/1061128/mysql-nhibernate-how-fix-the-error-column-reservedword-does-not-belong-to
+            config.Properties.Add("hbm2ddl.keywords", "none");
         }
 
         /// <summary>
