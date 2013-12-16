@@ -957,9 +957,6 @@ namespace Helpmebot.Legacy.IRC
         /// <summary>
         /// The IRC MOTD.
         /// </summary>
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
         public void IrcMotd()
         {
             this.SendLine("MOTD");
@@ -967,10 +964,7 @@ namespace Helpmebot.Legacy.IRC
 
         /// <summary>
         /// The IRC local users.
-        /// </summary>    
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
+        /// </summary>
         public void IrcLusers()
         {
             this.SendLine("LUSERS");
@@ -978,10 +972,7 @@ namespace Helpmebot.Legacy.IRC
 
         /// <summary>
         /// The IRC version.
-        /// </summary>    
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
+        /// </summary>
         public void IrcVersion()
         {
             this.SendLine("VERSION");
