@@ -26,6 +26,8 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Returns the registration date of a wikipedian
@@ -44,8 +46,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Registration(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Registration(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -117,7 +122,7 @@ namespace helpmebot6.Commands
                 if (registrationDate == new DateTime(0))
                 {
                     string[] messageParams = { userName };
-                    string message = new Message().GetMessage("noSuchUser", messageParams);
+                    string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
                     crh.respond(message);
                 }
                 else
@@ -127,7 +132,7 @@ namespace helpmebot6.Commands
                             userName, registrationDate.ToString("hh:mm:ss t"),
                             registrationDate.ToString("d MMMM yyyy")
                         };
-                    string message = new Message().GetMessage("registrationDate", messageParameters);
+                    string message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters);
                     crh.respond(message);
                 }
             }
@@ -136,7 +141,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "registration", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().GetMessage("notEnoughParameters", messageParameters));
+                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return crh;

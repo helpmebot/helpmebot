@@ -22,6 +22,8 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Controls the bots silencer
@@ -40,8 +42,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Silence(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Silence(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -86,7 +91,7 @@ namespace helpmebot6.Commands
                 if (newValue == oldValue.ToString().ToLower())
                 {
                     return new CommandResponseHandler(
-                        new Message().GetMessage("no-change"),
+                        this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -94,7 +99,7 @@ namespace helpmebot6.Commands
                 {
                     LegacyConfig.singleton()["silence", this.Channel] = null;
                     return new CommandResponseHandler(
-                        new Message().GetMessage("defaultConfig"),
+                        this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
                 }
 
@@ -110,12 +115,12 @@ namespace helpmebot6.Commands
                     }
                 }
 
-                return new CommandResponseHandler(new Message().GetMessage("done"), CommandResponseDestination.PrivateMessage);
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
             }
 
             string[] mP = { "silence", 1.ToString(), args.Length.ToString() };
             return new CommandResponseHandler(
-                new Message().GetMessage("notEnoughParameters", mP),
+                this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, mP),
                 CommandResponseDestination.PrivateMessage);
         }
     }

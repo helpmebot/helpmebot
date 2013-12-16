@@ -67,21 +67,33 @@ namespace Helpmebot
             /// <summary>
             /// Initializes a new instance of the <see cref="AccessLogEntry"/> struct.
             /// </summary>
-            /// <param name="source">The source.</param>
-            /// <param name="command">The command.</param>
-            /// <param name="success">if set to <c>true</c> [success].</param>
-            /// <param name="channel">The channel the command was launched from</param>
-            /// <param name="parameters"></param>
-            public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters)
+            /// <param name="source">
+            /// The source.
+            /// </param>
+            /// <param name="command">
+            /// The command.
+            /// </param>
+            /// <param name="success">
+            /// if set to <c>true</c> [success].
+            /// </param>
+            /// <param name="channel">
+            /// The channel the command was launched from
+            /// </param>
+            /// <param name="parameters">
+            /// </param>
+            /// <param name="requiredAccessLevel">
+            /// The required Access Level.
+            /// </param>
+            public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters, User.UserRights requiredAccessLevel)
             {
                 this._alId = 0;
                 this._alDate = new DateTime(0);
                 this._alUser = source;
                 this._alClass = command;
                 this._alAllowed = success;
-                this._alReqaccesslevel = ((GenericCommand)Activator.CreateInstance(this._alClass, source, channel, parameters)).AccessLevel;
+                this._alReqaccesslevel = requiredAccessLevel;
                 this._channel = channel;
-                this._params = string.Join(" ", parameters) ?? string.Empty;
+                this._params = string.Join(" ", parameters);
             }
 
             private  int _alId;

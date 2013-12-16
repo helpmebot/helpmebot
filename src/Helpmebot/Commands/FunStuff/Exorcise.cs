@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The exorcise.
@@ -39,8 +40,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Exorcise(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Exorcise(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -55,7 +59,7 @@ namespace helpmebot6.Commands
             string name = string.Join(" ", this.Arguments);
 
             string[] messageparams = { name };
-            string message = new Message().GetMessage("CmdExorcise", messageparams);
+            string message = this.MessageService.RetrieveMessage("CmdExorcise", this.Channel, messageparams);
 
             return new CommandResponseHandler(message);
         }

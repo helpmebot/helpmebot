@@ -26,6 +26,8 @@ namespace helpmebot6.Commands
 
     using helpmebot.Commands.FunStuff;
 
+    using Helpmebot.Services.Interfaces;
+
     /// <summary>
     /// The charge.
     /// </summary>
@@ -43,8 +45,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Charge(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Charge(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -71,8 +76,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             return this.Arguments.Length > 0
-                       ? new CommandResponseHandler(new Message().GetMessage("cmdChargeParam", this.CommandTarget))
-                       : new CommandResponseHandler(new Message().GetMessage("cmdCharge", new[] { this.Source.nickname }));
+                       ? new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdChargeParam", this.Channel, new[] { this.CommandTarget }))
+                       : new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdCharge", this.Channel, new[] { this.Source.nickname }));
         }
     }
 }

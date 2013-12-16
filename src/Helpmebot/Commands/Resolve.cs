@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
@@ -42,8 +44,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Resolve(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Resolve(User source, string channel, string[] args, IMessageService messageService )
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -56,7 +61,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             IPAddress[] addresses = new IPAddress[0];
@@ -85,12 +90,12 @@ namespace helpmebot6.Commands
 
                 string[] messageargs = { this.Arguments[0], ipList };
 
-                return new CommandResponseHandler(new Message().GetMessage("resolve", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolve", this.Channel, messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0] };
-                return new CommandResponseHandler(new Message().GetMessage("resolveFail", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolveFail", this.Channel, messageargs));
             }
         }
     }

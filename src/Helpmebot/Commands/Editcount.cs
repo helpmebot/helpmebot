@@ -27,6 +27,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -47,8 +48,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Editcount(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Editcount(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -119,14 +123,14 @@ namespace helpmebot6.Commands
             if (editCount == -1)
             {
                 string[] messageParams = { userName };
-                string message = new Message().GetMessage("noSuchUser", messageParams);
+                string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
             else
             {
                 string[] messageParameters = { editCount.ToString(), userName };
 
-                string message = new Message().GetMessage("editCount", messageParameters);
+                string message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters);
 
                 return new CommandResponseHandler(message);
             }

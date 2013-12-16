@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Kills the bot.
@@ -39,8 +40,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Die(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Die(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -62,7 +66,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler NotConfirmed()
         {
-            return new CommandResponseHandler(new Message().GetMessage("Die-unconfirmed"));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("Die-unconfirmed", this.Channel, null));
         }
     }
 }

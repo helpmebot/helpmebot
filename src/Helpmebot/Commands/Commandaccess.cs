@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Returns the access level of the command specified
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Commandaccess(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Commandaccess(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -73,7 +78,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageParameters = { "commandaccess", "1", this.Arguments.Length.ToString() };
-            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
         }
     }
 }

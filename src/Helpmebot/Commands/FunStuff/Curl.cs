@@ -22,6 +22,7 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The curl.
@@ -40,8 +41,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Curl(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Curl(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -54,7 +58,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             LegacyConfig.singleton()["hedgehog", this.Channel] = "true";
-            return new CommandResponseHandler(new Message().GetMessage("HedgehogCurlup"));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("HedgehogCurlup", this.Channel, null));
         }
     }
 }

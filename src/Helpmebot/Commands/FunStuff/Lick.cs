@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
 
     using helpmebot.Commands.FunStuff;
 
+    using Helpmebot.Services.Interfaces;
+
     /// <summary>
     /// The lick.
     /// </summary>
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Lick(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Lick(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -53,7 +58,7 @@ namespace helpmebot6.Commands
         {
             get
             {
-                return this.Arguments.Length == 0 ? new Message().GetMessage("cmdLickSelf") : string.Join(" ", this.Arguments);
+                return this.Arguments.Length == 0 ? this.MessageService.RetrieveMessage("cmdLickSelf", this.Channel, null) : string.Join(" ", this.Arguments);
             }
         }
 

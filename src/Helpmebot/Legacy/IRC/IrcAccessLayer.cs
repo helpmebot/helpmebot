@@ -460,26 +460,6 @@ namespace Helpmebot.Legacy.IRC
         #region Public Methods
 
         /// <summary>
-        /// The wrap CTCP.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string WrapCTCP(string command, string parameters)
-        {
-            ASCIIEncoding asc = new ASCIIEncoding();
-            byte[] ctcp = { Convert.ToByte(1) };
-            return asc.GetString(ctcp) + command.ToUpper()
-                    + (parameters == string.Empty ? string.Empty : " " + parameters) + asc.GetString(ctcp);
-        }
-
-        /// <summary>
         /// The connect.
         /// </summary>
         /// <returns>

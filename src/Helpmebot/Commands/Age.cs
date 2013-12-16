@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Returns the age of a wikipedian
@@ -41,8 +42,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Age(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Age(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -85,7 +89,7 @@ namespace helpmebot6.Commands
             if (time.Equals(new TimeSpan(0)))
             {
                 string[] messageParameters = { userName };
-                message = new Message().GetMessage("noSuchUser", messageParameters);
+                message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParameters);
             }
             else
             {
@@ -94,7 +98,7 @@ namespace helpmebot6.Commands
                         userName, (time.Days / 365).ToString(), (time.Days % 365).ToString(),
                         time.Hours.ToString(), time.Minutes.ToString(), time.Seconds.ToString()
                     };
-                message = new Message().GetMessage("cmdAge", messageParameters);
+                message = this.MessageService.RetrieveMessage("cmdAge", this.Channel, messageParameters);
             }
 
             return new CommandResponseHandler(message);

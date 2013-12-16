@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Shortens a URL
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Isgd(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Isgd(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -55,7 +60,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return new CommandResponseHandler(IsGd.shorten(new Uri(this.Arguments[0])).ToString());

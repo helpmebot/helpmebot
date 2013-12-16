@@ -22,7 +22,9 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Controls the newbie welcomer
@@ -41,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Welcomer(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Welcomer(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -60,22 +65,22 @@ namespace helpmebot6.Commands
                 case "enable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "true")
                     {
-                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
+                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "disable":
                     if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
                     {
-                        return new CommandResponseHandler(new Message().GetMessage("no-change"));
+                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
                     }
 
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "global":
                     LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
-                    return new CommandResponseHandler(new Message().GetMessage("defaultSetting"));
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null));
                 case "add":
                     if (args[1] == "@ignore")
                     {
@@ -83,8 +88,8 @@ namespace helpmebot6.Commands
                         GlobalFunctions.popFromFront(ref args);
                     }
 
-                    NewbieWelcomer.instance().addHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    NewbieWelcomer.Instance().AddHost(args[1], ignore);
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "del":
                     if (args[1] == "@ignore")
                     {
@@ -92,8 +97,8 @@ namespace helpmebot6.Commands
                         GlobalFunctions.popFromFront(ref args);
                     }
 
-                    NewbieWelcomer.instance().delHost(args[1], ignore);
-                    return new CommandResponseHandler(new Message().GetMessage("done"));
+                    NewbieWelcomer.Instance().DeleteHost(args[1], ignore);
+                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
                 case "list":
                     if (args[1] == "@ignore")
                     {
@@ -102,7 +107,7 @@ namespace helpmebot6.Commands
                     }
 
                     var crh = new CommandResponseHandler();
-                    string[] list = NewbieWelcomer.instance().getHosts(ignore);
+                    string[] list = NewbieWelcomer.Instance().GetHosts(ignore);
                     foreach (string item in list)
                     {
                         crh.respond(item);

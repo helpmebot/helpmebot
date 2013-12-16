@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Xml.XPath;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The status of ACC.
@@ -42,8 +43,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Accstatus(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Accstatus(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -74,7 +78,7 @@ namespace helpmebot6.Commands
                         xpni.Current.GetAttribute("usernew", string.Empty)
                     };
 
-                string message = new Message().GetMessage("CmdAccStatus", messageParams);
+                string message = this.MessageService.RetrieveMessage("CmdAccStatus", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

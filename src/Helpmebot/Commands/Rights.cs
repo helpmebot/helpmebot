@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Returns the user rights of a wikipedian
@@ -44,8 +45,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Rights(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Rights(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -127,12 +131,12 @@ namespace helpmebot6.Commands
             if (rights != string.Empty)
             {
                 string[] messageParameters = { userName, rights };
-                message = new Message().GetMessage("cmdRightsList", messageParameters);
+                message = this.MessageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
             }
             else
             {
                 string[] messageParameters = { userName };
-                message = new Message().GetMessage("cmdRightsNone", messageParameters);
+                message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
             crh.respond(message);

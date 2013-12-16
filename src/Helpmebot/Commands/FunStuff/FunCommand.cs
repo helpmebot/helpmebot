@@ -22,6 +22,8 @@ namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The fun command.
@@ -40,8 +42,11 @@ namespace helpmebot6.Commands.FunStuff
         /// <param name="args">
         /// The args.
         /// </param>
-        protected FunCommand(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        protected FunCommand(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -53,9 +58,13 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
+            string message = this.MessageService.RetrieveMessage(
+                Messages.HedgehogAccessDenied,
+                this.Channel,
+                null);
             return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" ? 
                 base.OnAccessDenied() : 
-                new CommandResponseHandler(new Message().GetMessage("HedgehogAccessDenied"), CommandResponseDestination.PrivateMessage);
+                new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
         }
 
         /// <summary>

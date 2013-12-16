@@ -21,6 +21,8 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Forgets a keyword
@@ -39,8 +41,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Forget(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Forget(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -53,8 +58,11 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length >= 1)
             {
                 string forgottenMessage = WordLearner.forget(this.Arguments[0])
-                                     ? new Message().GetMessage("cmdForgetDone")
-                                     : new Message().GetMessage("cmdForgetError");
+                                              ? this.MessageService.RetrieveMessage("cmdForgetDone", this.Channel, null)
+                                              : this.MessageService.RetrieveMessage(
+                                                  "cmdForgetError",
+                                                  this.Channel,
+                                                  null);
 
                 Helpmebot6.irc.IrcNotice(this.Source.nickname, forgottenMessage);
             }
@@ -63,7 +71,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().GetMessage("notEnoughParameters", messageParameters));
+                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return null;

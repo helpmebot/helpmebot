@@ -25,6 +25,8 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Decodes a hex-encoded IP address
@@ -43,8 +45,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Decode(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Decode(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -57,7 +62,7 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "decode", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             if (this.Arguments[0].Length != 8)
@@ -86,12 +91,12 @@ namespace helpmebot6.Commands
             if (hostname != string.Empty)
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString(), hostname };
-                return new CommandResponseHandler(new Message().GetMessage("hexDecodeResult", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("hexDecodeResult", this.Channel, messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("hexDecodeResultNoResolve", messageargs));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("hexDecodeResultNoResolve", this.Channel, messageargs));
             }
         }
     }

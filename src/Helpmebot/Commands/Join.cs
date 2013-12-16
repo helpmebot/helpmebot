@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Joins an IRC channel
@@ -42,8 +44,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Join(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Join(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -109,7 +114,7 @@ namespace helpmebot6.Commands
             }
 
             string[] messageParameters = { "join", "1", this.Arguments.Length.ToString() };
-            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
         }
     }
 }

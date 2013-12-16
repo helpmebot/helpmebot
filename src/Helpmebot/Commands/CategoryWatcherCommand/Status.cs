@@ -21,7 +21,9 @@
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Category watcher status subcommand
@@ -40,8 +42,11 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        public Status(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Status(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -55,12 +60,12 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
                 {
                     this.Arguments[0],
                     WatcherController.Instance().IsWatcherInChannel(this.Channel, this.Arguments[0])
-                        ? new Message().GetMessage("enabled")
-                        : new Message().GetMessage("disabled"),
+                        ? this.MessageService.RetrieveMessage(Messages.Enabled, this.Channel, null)
+                        : this.MessageService.RetrieveMessage(Messages.Disabled, this.Channel, null),
                     WatcherController.Instance().GetDelay(this.Arguments[0]).ToString()
                 };
 
-            return new CommandResponseHandler(new Message().GetMessage("keywordStatus", messageParams));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("keywordStatus", this.Channel, messageParams));
         }
     }
 }

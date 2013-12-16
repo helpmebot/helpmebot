@@ -40,7 +40,7 @@ namespace Helpmebot.Legacy.Database
     /// <summary>
     /// Database access class
     /// </summary>
-    public sealed class DAL : IDisposable
+    public class DAL : IDisposable, IDAL
     {
         /// <summary>
         /// Gets or sets the Castle.Windsor Logger
@@ -59,13 +59,13 @@ namespace Helpmebot.Legacy.Database
         /// <returns></returns>
         public static DAL singleton()
         {
-            return _singleton ?? (_singleton = new DAL());
+
+            return _singleton ?? (_singleton = new DAL(ServiceLocator.Current.GetInstance<ILogger>()));
         }
 
-        private DAL()
+        public DAL(ILogger logger)
         {
-            // FIXME: Remove me!
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            this.Log = logger;
         }
         #endregion
 
@@ -673,6 +673,12 @@ namespace Helpmebot.Legacy.Database
                 this._from = from;
             }
 
+            public Select From(string from)
+            {
+                this.setFrom(from);
+                return this;
+            }
+
             /// <summary>
             /// Adds a JOIN clause.
             /// </summary>
@@ -694,6 +700,12 @@ namespace Helpmebot.Legacy.Database
                 {
                     this._wheres.AddLast(condition);    
                 }
+            }
+
+            public Select Where(params WhereConds[] conditions)
+            {
+                this.addWhere(conditions);
+                return this;
             }
 
             /// <summary>

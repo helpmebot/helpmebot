@@ -21,6 +21,8 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Learns a keyword
@@ -39,8 +41,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Learn(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Learn(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -62,7 +67,7 @@ namespace helpmebot6.Commands
             {
                 bool hasLearntWord = WordLearner.learn(args[0], string.Join(" ", args, 1, args.Length - 1), action);
                 
-                string message = hasLearntWord ? new Message().GetMessage("cmdLearnDone") : new Message().GetMessage("cmdLearnError");
+                string message = hasLearntWord ? this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null) : this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
 
                 Helpmebot6.irc.IrcNotice(this.Source.nickname, message);
             }
@@ -71,7 +76,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "learn", "2", args.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.nickname,
-                    new Message().GetMessage("notEnoughParameters", messageParameters));
+                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return null;

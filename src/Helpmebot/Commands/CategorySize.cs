@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]]).
@@ -44,8 +45,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Categorysize(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Categorysize(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -135,21 +139,21 @@ namespace helpmebot6.Commands
                 case -2:
                     {
                         string[] messageParams = { categoryName };
-                        string message = new Message().GetMessage("categoryMissing", messageParams);
+                        string message = this.MessageService.RetrieveMessage("categoryMissing", this.Channel, messageParams);
                         return new CommandResponseHandler(message);
                     }
 
                 case -1:
                     {
                         string[] messageParams = { categoryName };
-                        string message = new Message().GetMessage("categoryEmpty", messageParams);
+                        string message = this.MessageService.RetrieveMessage("categoryEmpty", this.Channel, messageParams);
                         return new CommandResponseHandler(message);
                     }
 
                 default:
                     {
                         string[] messageParameters = { categorySize.ToString(), categoryName };
-                        string message = new Message().GetMessage("categorySize", messageParameters);
+                        string message = this.MessageService.RetrieveMessage("categorySize", this.Channel, messageParameters);
                         return new CommandResponseHandler(message);
                     }
             }

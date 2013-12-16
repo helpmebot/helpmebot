@@ -22,6 +22,7 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Sets a global config option.
@@ -40,8 +41,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Set(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Set(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 

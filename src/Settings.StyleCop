@@ -6,9 +6,11 @@
       <Value>geolocation</Value>
       <Value>ip</Value>
       <Value>NickServ</Value>
+      <Value>welcomer</Value>
       <Value>whois</Value>
       <Value>Wikipedian</Value>
     </CollectionProperty>
+    <StringProperty Name="Culture">en-GB</StringProperty>
   </GlobalSettings>
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">

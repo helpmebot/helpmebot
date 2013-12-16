@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Monitoring
 {
+    using System;
     using System.Linq;
     using System.Runtime.Serialization;
     using System.Text.RegularExpressions;
@@ -28,6 +29,7 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -37,52 +39,79 @@ namespace Helpmebot.Monitoring
     internal class NewbieWelcomer
     {
         /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
+        /// The singletonInstance.
         /// </summary>
-        public ILogger Log { get; set; }
+        private static NewbieWelcomer singletonInstance;
 
-        private static NewbieWelcomer _instance;
+        /// <summary>
+        /// The message service.
+        /// </summary>
+        private readonly IMessageService messageService;
 
+        /// <summary>
+        /// The host names.
+        /// </summary>
+        private readonly SerializableArrayList hostNames;
+
+        /// <summary>
+        /// The ignored nicknames.
+        /// </summary>
+        private readonly SerializableArrayList ignoredNicknames;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="NewbieWelcomer"/> class.
+        /// </summary>
         protected NewbieWelcomer()
         {
             // FIXME: Remove me!
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
 
             try
             {
-                this._hostNames = BinaryStore.retrieve("newbie_hostnames");
+                this.hostNames = BinaryStore.retrieve("newbie_hostnames");
             }
-            catch (SerializationException ex)
+            catch (Exception ex)
             {
-                this.Log.Error(ex.Message, ex);
-                this._hostNames = new SerializableArrayList();
+                this.Log.Warn(ex.Message, ex);
+                this.hostNames = new SerializableArrayList();
             }
 
             try
             {
-                this._ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
+                this.ignoredNicknames = BinaryStore.retrieve("newbie_ignorednicks");
             }
-            catch (SerializationException ex)
+            catch (Exception ex)
             {
-                this.Log.Error(ex.Message, ex);
-                this._ignoredNicknames = new SerializableArrayList();
+                this.Log.Warn(ex.Message, ex);
+                this.ignoredNicknames = new SerializableArrayList();
             }
+
+            this.SaveHostnames();
         }
 
-        public static NewbieWelcomer instance()
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="NewbieWelcomer"/>.
+        /// </returns>
+        public static NewbieWelcomer Instance()
         {
-            return _instance ?? (_instance = new NewbieWelcomer());
+            return singletonInstance ?? (singletonInstance = new NewbieWelcomer());
         }
-
-        private readonly SerializableArrayList _hostNames; 
-        private readonly SerializableArrayList _ignoredNicknames;
 
         /// <summary>
         /// Executes the newbie.
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="channel">The channel.</param>
-        public void execute(User source, string channel)
+        public void Execute(User source, string channel)
         {
             this.Log.Debug(string.Format("Executing newbie welcomer: {0}", channel));
 
@@ -96,7 +125,7 @@ namespace Helpmebot.Monitoring
             
             {
                 var match = false;
-                foreach (var pattern in this._hostNames.Cast<string>())
+                foreach (var pattern in this.hostNames.Cast<string>())
                 {
                     this.Log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
 
@@ -122,7 +151,7 @@ namespace Helpmebot.Monitoring
                 var match = false;
                 this.Log.Debug("Checking ignored nicks...");
 
-                foreach (var pattern in this._ignoredNicknames.Cast<string>())
+                foreach (var pattern in this.ignoredNicknames.Cast<string>())
                 {
                     this.Log.Debug(string.Format("Checking {0} == {1}", pattern, source.hostname));
                     
@@ -144,8 +173,13 @@ namespace Helpmebot.Monitoring
                 }
             }
 
-            string[] cmdArgs = {source.nickname, channel};
-            Helpmebot6.irc.IrcPrivmsg(channel, new Message().GetMessage("WelcomeMessage-" + channel.Replace("#", string.Empty), cmdArgs));
+            string[] cmdArgs = { source.nickname, channel };
+            string message = this.messageService.RetrieveMessage(
+                "WelcomeMessage-" + channel.Replace("#", string.Empty),
+                channel,
+                cmdArgs);
+
+            Helpmebot6.irc.IrcPrivmsg(channel, message);
         }
 
         /// <summary>
@@ -153,52 +187,68 @@ namespace Helpmebot.Monitoring
         /// </summary>
         /// <param name="host">The host.</param>
         /// <param name="except">Add to exemption list instead </param>
-        public void addHost(string host, bool except = false)
+        public void AddHost(string host, bool except = false)
         {
             if (except)
             {
-                this._ignoredNicknames.Add(host);
+                this.ignoredNicknames.Add(host);
             }
             else
             {
-                this._hostNames.Add(host);
+                this.hostNames.Add(host);
             }
 
-            this.saveHostnames();
+            this.SaveHostnames();
         }
 
-
-        /// <param name="host"> The host.</param>
-        /// <param name="except">Add to exemption list instead </param>
-        public void delHost(string host, bool except = false)
+        /// <summary>
+        /// The delete host.
+        /// </summary>
+        /// <param name="host">
+        /// The host.
+        /// </param>
+        /// <param name="except">
+        /// Add to exemption list instead 
+        /// </param>
+        public void DeleteHost(string host, bool except = false)
         {
             if (except)
             {
-                this._ignoredNicknames.Remove(host);
+                this.ignoredNicknames.Remove(host);
             }
             else
             {
-                this._hostNames.Remove(host);
+                this.hostNames.Remove(host);
             }
 
-            this.saveHostnames();
+            this.SaveHostnames();
         }
 
-        public string[] getHosts(bool except = false)
+        /// <summary>
+        /// The get hosts.
+        /// </summary>
+        /// <param name="except">
+        /// The except.
+        /// </param>
+        /// <returns>
+        /// The list of hosts.
+        /// </returns>
+        public string[] GetHosts(bool except = false)
         {
-            var data = except ? this._ignoredNicknames : this._hostNames;
+            var data = except ? this.ignoredNicknames : this.hostNames;
 
             var list = new string[data.Count];
             data.CopyTo(list);
             return list;
         }
 
-        private void saveHostnames()
+        /// <summary>
+        /// The save hostnames.
+        /// </summary>
+        private void SaveHostnames()
         {
-            BinaryStore.storeValue("newbie_hostnames", this._hostNames);
-            BinaryStore.storeValue("newbie_ignorednicks", this._ignoredNicknames);
+            BinaryStore.storeValue("newbie_hostnames", this.hostNames);
+            BinaryStore.storeValue("newbie_ignorednicks", this.ignoredNicknames);
         }
-
-
     }
 }

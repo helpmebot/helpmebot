@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -46,8 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Access(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Access(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -59,7 +63,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments).RunCommand();
+            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments, this.MessageService).RunCommand();
             return crh;
         }
 
@@ -111,7 +115,7 @@ namespace helpmebot6.Commands
                         else
                         {
                             string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString() };
-                            return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                            return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
 
                         }
 
@@ -130,7 +134,7 @@ namespace helpmebot6.Commands
             else
             {
                 string[] messageParameters = { "access", "2", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
             }
 
             return crh;
@@ -142,10 +146,10 @@ namespace helpmebot6.Commands
         /// <param name="newEntry">The new entry.</param>
         /// <param name="accessLevel">The access level.</param>
         /// <returns>a response</returns>
-        private static CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
+        private CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
         {
-            string[] messageParams = {newEntry.ToString(), accessLevel.ToString()};
-            string message = new Message().GetMessage("addAccessEntry", messageParams);
+            string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
+            string message = this.MessageService.RetrieveMessage("addAccessEntry", this.Channel, messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
@@ -168,10 +172,10 @@ namespace helpmebot6.Commands
         /// </summary>
         /// <param name="id">The id.</param>
         /// <returns>a response</returns>
-        private static CommandResponseHandler DeleteAccessEntry(int id)
+        private CommandResponseHandler DeleteAccessEntry(int id)
         {
             string[] messageParams = { id.ToString(CultureInfo.InvariantCulture) };
-            string message = new Message().GetMessage("removeAccessEntry", messageParams);
+            string message = this.MessageService.RetrieveMessage("removeAccessEntry", this.Channel, messageParams);
 
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Removing access entry #{0}", id));
 

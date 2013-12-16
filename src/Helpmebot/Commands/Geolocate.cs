@@ -27,6 +27,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
 
     using User = Helpmebot.User;
 
@@ -47,8 +48,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Geolocate(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Geolocate(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -74,12 +78,12 @@ namespace helpmebot6.Commands
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "geolocate", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                return new CommandResponseHandler(new Message().GetMessage("notEnoughParameters", messageParameters));
+                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             GeolocateResult location = IPAddress.Parse(this.Arguments[0]).GetLocation();
             string[] messageArgs = { location.ToString() };
-            return new CommandResponseHandler(new Message().GetMessage("locationMessage", messageArgs));
+            return new CommandResponseHandler(this.MessageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask"/>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B9DDF39F-2C6C-4C0F-9DA4-10C934DD24BD}</ProjectGuid>
@@ -34,34 +35,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>Helpmebot</AssemblyName>
-    <RootNamespace>Helpmebot</RootNamespace>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>Helpmebot</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>Helpmebot</RootNamespace>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
@@ -74,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
@@ -84,12 +57,22 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
+       Other similar extension points exist, see Microsoft.Common.targets.-->
+  <!--<Target Name="BeforeBuild">
   </Target>
   -->
+  <Target Name="AfterBuild" Condition="'$(RunStyleCop)' == 'true'">
+    <Message Text="$(MSBuildExtensionsPath)" />
+    <StyleCopTask
+      ProjectFullPath="$(MSBuildProjectDirectory)"
+      SourceFiles="@(Compile)"
+      ForceFullAnalysis="true"
+      TreatErrorsAsWarnings="true"
+      OutputFile="StyleCopViolations.xml"
+      MaxViolationCount="0">
+      <Output TaskParameter="ViolationCount" PropertyName="StyleCopViolationCount" />
+    </StyleCopTask>
+  </Target>
   <ItemGroup>
     <Compile Include="AccessLog.cs" />
     <Compile Include="AI\Intelligence.cs" />
@@ -111,9 +94,15 @@
     <Compile Include="Configuration\ConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\DatabaseConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
+    <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
+    <Compile Include="ExtensionMethods\DateExtensions.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
-    <Compile Include="Installers\LoggerInstaller.cs" />
+    <Compile Include="Legacy\Database\IDAL.cs" />
+    <Compile Include="Model\Messages.cs" />
+    <Compile Include="Startup\Installers\LegacyInstaller.cs" />
+    <Compile Include="Startup\Installers\LoggerInstaller.cs" />
+    <Compile Include="Startup\Installers\ServiceInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
@@ -194,7 +183,6 @@
     <Compile Include="HttpRequest.cs" />
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="CommandParser.cs" />
@@ -209,6 +197,10 @@
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableArrayList.cs" />
+    <Compile Include="Services\Interfaces\IMessageService.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Startup\InstallerPriorityAttribute.cs" />
+    <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="User.cs" />

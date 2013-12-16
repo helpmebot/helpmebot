@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Runtime.CompilerServices;
 
     using Castle.Core.Logging;
     using Castle.Windsor;
@@ -32,6 +33,9 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services;
+    using Helpmebot.Services.Interfaces;
+    using Helpmebot.Startup;
     using Helpmebot.Threading;
 
     using helpmebot6.Commands;
@@ -75,10 +79,10 @@ namespace Helpmebot
         private static void BootstrapContainer()
         {
             container = new WindsorContainer();
-            
-            container.Install(FromAssembly.This());
 
             ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
+
+            container.Install(FromAssembly.This(new WindsorBootstrap()));
         }
 
         /// <summary>
@@ -141,17 +145,19 @@ namespace Helpmebot
 
         private static void irc_InviteEvent(User source, string nickname, string channel)
         {
-            new Join(source, nickname, new[] {channel}).RunCommand();
+            // FIXME: Remove service locator!
+            new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
         }
 
         private static void welcomeNewbieOnJoinEvent(User source, string channel)
         {
-            NewbieWelcomer.instance().execute(source, channel);
+            NewbieWelcomer.Instance().Execute(source, channel);
         }
 
         private static void NotifyOnJoinEvent(User source, string channel)
         {
-            new Notify(source, channel, new string[0]).NotifyJoin(source, channel);
+            // FIXME: Remove service locator!
+            new Notify(source, channel, new string[0], ServiceLocator.Current.GetInstance<IMessageService>()).NotifyJoin(source, channel);
         }
 
         /// <summary>
@@ -186,7 +192,8 @@ namespace Helpmebot
                 if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
                 {
                     string[] aiParameters = { e.Sender.nickname };
-                    irc.IrcPrivmsg(e.Destination, new Message().GetMessage(aiResponse, aiParameters));
+                    var messageService = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO: fix me
+                    irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(aiResponse, e.Destination, aiParameters));
                 }
             }
             catch (Exception ex)

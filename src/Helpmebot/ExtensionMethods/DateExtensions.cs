@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LoggerInstaller.cs" company="Helpmebot Development Team">
+// <copyright file="DateExtensions.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,34 +14,31 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   The logger installer.
+//   Defines the DateExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Installers
+namespace Helpmebot.ExtensionMethods
 {
-    using Castle.Facilities.Logging;
-    using Castle.MicroKernel.Registration;
-    using Castle.MicroKernel.SubSystems.Configuration;
-    using Castle.Windsor;
+    using System;
 
     /// <summary>
-    /// The logger installer.
+    /// The date extensions.
     /// </summary>
-    public class LoggerInstaller : IWindsorInstaller
+    public static class DateExtensions
     {
         /// <summary>
-        /// The install.
+        /// Converts a date to internet timestamp (TZ) format.
         /// </summary>
-        /// <param name="container">
-        /// The container.
+        /// <param name="date">
+        /// The date.
         /// </param>
-        /// <param name="store">
-        /// The store.
-        /// </param>
-        public void Install(IWindsorContainer container, IConfigurationStore store)
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string ToInternetFormat(this DateTime date)
         {
-            container.AddFacility<LoggingFacility>(f => f.UseLog4Net().WithConfig("logger.config"));
+            return date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
         }
     }
 }

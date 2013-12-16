@@ -30,7 +30,9 @@ namespace Helpmebot
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Model;
     using Helpmebot.Monitoring;
+    using Helpmebot.Services.Interfaces;
 
     using helpmebot6.Commands;
 
@@ -49,6 +51,11 @@ namespace Helpmebot
         public ILogger Log { get; set; }
 
         /// <summary>
+        /// The message service.
+        /// </summary>
+        private readonly IMessageService messageService;
+
+        /// <summary>
         /// The allowed command name chars.
         /// </summary>
         private const string AllowedCommandNameChars = "0-9a-z-_";
@@ -60,6 +67,7 @@ namespace Helpmebot
         {
             // FIXME: Remove me!
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
 
             this.OverrideBotSilence = false;
         }
@@ -79,16 +87,19 @@ namespace Helpmebot
         /// <param name="args">The args.</param>
         public void handleCommand(User source, string destination, string command, string[] args)
         {
-            Log.Debug("Handling recieved message...");
+            this.Log.Debug("Handling recieved message...");
 
             // if on ignore list, ignore!
             if (source.accessLevel == User.UserRights.Ignored)
+            {
                 return;
+            }
 
             // flip destination over if required
             if (destination == Helpmebot6.irc.Nickname)
+            {
                 destination = source.nickname;
-
+            }
 
             /*
              * check category codes
@@ -111,7 +122,7 @@ namespace Helpmebot
 
                 newArgs[0] = command;
                 string directedTo = findRedirection(destination, ref newArgs);
-                CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs).RunCommand();
+                CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs, this.messageService).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, crh);
                 return;
             }
@@ -125,6 +136,7 @@ namespace Helpmebot
             // if the command handler doesn't exist, then this won't be set to a value
             Type commandHandler =
                 Type.GetType("helpmebot6.Commands." + command.Substring(0, 1).ToUpper() + command.Substring(1).ToLower());
+
             // check the type exists
             if (commandHandler != null)
             {
@@ -134,7 +146,7 @@ namespace Helpmebot
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
                 CommandResponseHandler response =
-                    ((GenericCommand)Activator.CreateInstance(commandHandler, source, destination, args)).RunCommand();
+                    ((GenericCommand)Activator.CreateInstance(commandHandler, source, destination, args, this.messageService)).RunCommand();
                 this.handleCommandResponseHandler(source, destination, directedTo, response);
                 return;
             }
@@ -151,11 +163,13 @@ namespace Helpmebot
                 {
                     if (source.accessLevel < User.UserRights.Normal)
                     {
-                        crh.respond(new Message().GetMessage("OnAccessDenied"),
-                                    CommandResponseDestination.PrivateMessage);
-                        string[] aDArgs = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.respond(new Message().GetMessage("accessDeniedDebug", aDArgs),
-                                    CommandResponseDestination.ChannelDebug);
+                        crh.respond(
+                            this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
+                            CommandResponseDestination.PrivateMessage);
+                        string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
+                        crh.respond(
+                            this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
+                            CommandResponseDestination.ChannelDebug);
                     }
                     else
                     {
@@ -179,7 +193,7 @@ namespace Helpmebot
 
                         if (rW.action)
                         {
-                            crh.respond(IrcAccessLayer.WrapCTCP("ACTION", wordResponse));
+                            crh.respond(wordResponse.SetupForCtcp("ACTION"));
                         }
                         else
                         {

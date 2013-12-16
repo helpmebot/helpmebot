@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Returns the current date/time
@@ -41,8 +42,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Time(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Time(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -59,7 +63,7 @@ namespace helpmebot6.Commands
                     DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
                     DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")
                 };
-            string message = new Message().GetMessage("cmdTime", messageParams);
+            string message = this.MessageService.RetrieveMessage("cmdTime", this.Channel, messageParams);
             return new CommandResponseHandler(message);
         }
     }

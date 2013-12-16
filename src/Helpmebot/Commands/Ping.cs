@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The ping command
@@ -39,8 +40,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        public Ping(User source, string channel, string[] args)
-            : base(source, channel, args)
+        /// <param name="messageService">
+        /// The message Service.
+        /// </param>
+        public Ping(User source, string channel, string[] args, IMessageService messageService)
+            : base(source, channel, args, messageService)
         {
         }
 
@@ -57,13 +61,13 @@ namespace helpmebot6.Commands
             {
                 name = this.Source.nickname;
                 string[] messageparams = { name };
-                message = new Message().GetMessage("cmdPing", messageparams);
+                message = this.MessageService.RetrieveMessage("cmdPing", this.Channel, messageparams);
             }
             else
             {
                 name = string.Join(" ", this.Arguments);
                 string[] messageparams = { name };
-                message = new Message().GetMessage("cmdPingUser", messageparams);
+                message = this.MessageService.RetrieveMessage("cmdPingUser", this.Channel, messageparams);
             }
 
             return new CommandResponseHandler(message);
