@@ -21,9 +21,9 @@
 namespace Helpmebot
 {
     using System;
-    using System.Runtime.CompilerServices;
 
     using Castle.Core.Logging;
+    using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using Castle.Windsor.Installer;
 
@@ -33,7 +33,6 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
     using Helpmebot.Threading;
@@ -58,6 +57,14 @@ namespace Helpmebot
         private static uint _ircNetwork;
 
         public static readonly DateTime StartupTime = DateTime.Now;
+
+        /// <summary>
+        /// The join message service.
+        /// </summary>
+        /// <para>
+        /// This is the replacement for the newbiewelcomer
+        /// </para>
+        private static IJoinMessageService joinMessageService;
 
         /// <summary>
         /// Gets or sets the Castle.Windsor Logger
@@ -108,6 +115,11 @@ namespace Helpmebot
 
             irc = new IrcAccessLayer(_ircNetwork);
 
+            // TODO: remove me!
+            container.Register(Component.For<IrcAccessLayer>().Instance(irc));
+
+            joinMessageService = container.Resolve<IJoinMessageService>();
+
             SetupEvents();
 
             if (!irc.Connect())
@@ -127,7 +139,7 @@ namespace Helpmebot
         {
             irc.connectionRegistrationSucceededEvent += JoinChannels;
 
-            irc.joinEvent += welcomeNewbieOnJoinEvent;
+            irc.joinEvent += WelcomeNewbieOnJoinEvent;
 
             irc.joinEvent += NotifyOnJoinEvent;
 
@@ -149,9 +161,18 @@ namespace Helpmebot
             new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
         }
 
-        private static void welcomeNewbieOnJoinEvent(User source, string channel)
+        /// <summary>
+        /// The welcome newbie on join event.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        private static void WelcomeNewbieOnJoinEvent(User source, string channel)
         {
-            NewbieWelcomer.Instance().Execute(source, channel);
+            joinMessageService.Welcome(source, channel);
         }
 
         private static void NotifyOnJoinEvent(User source, string channel)

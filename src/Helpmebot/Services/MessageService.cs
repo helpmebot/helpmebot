@@ -22,6 +22,7 @@ namespace Helpmebot.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
 
@@ -29,6 +30,7 @@ namespace Helpmebot.Services
 
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -104,6 +106,49 @@ namespace Helpmebot.Services
             }
 
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
+        }
+
+        /// <summary>
+        /// The retrieve not enough parameters.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="expected">
+        /// The expected.
+        /// </param>
+        /// <param name="actual">
+        /// The actual.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string NotEnoughParameters(object context, string command, int expected, int actual)
+        {
+            var arguments = new[]
+                                {
+                                    command, expected.ToString(CultureInfo.InvariantCulture),
+                                    actual.ToString(CultureInfo.InvariantCulture)
+                                };
+
+            return this.RetrieveMessage(Messages.NotEnoughParameters, context, arguments);
+        }
+
+        /// <summary>
+        /// The done.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string Done(object context)
+        {
+            return this.RetrieveMessage(Messages.Done, context, null);
         }
 
         /// <summary>

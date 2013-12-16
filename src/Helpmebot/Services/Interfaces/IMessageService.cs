@@ -20,9 +20,7 @@
 
 namespace Helpmebot.Services.Interfaces
 {
-    using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
 
     /// <summary>
     /// The MessageService interface.
@@ -45,5 +43,36 @@ namespace Helpmebot.Services.Interfaces
         /// The message
         /// </returns>
         string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments);
+
+        /// <summary>
+        /// The retrieve not enough parameters.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="expected">
+        /// The expected.
+        /// </param>
+        /// <param name="actual">
+        /// The actual.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        string NotEnoughParameters(object context, string command, int expected, int actual);
+
+        /// <summary>
+        /// The done.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        string Done(object context);
     }
 }

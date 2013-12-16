@@ -20,11 +20,19 @@
 
 namespace helpmebot6.Commands
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     using Helpmebot;
-    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Monitoring;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
+
+    using NHibernate.Criterion;
+    using NHibernate.Linq;
 
     /// <summary>
     /// Controls the newbie welcomer
@@ -57,66 +65,71 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            var args = this.Arguments;
+            var response = new CommandResponseHandler();
 
-            var ignore = false;
-            switch (args[0].ToLower())
+            if (this.Arguments.Length == 0)
             {
-                case "enable":
-                    if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "true")
-                    {
-                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
-                    }
-
-                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "true";
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
-                case "disable":
-                    if (LegacyConfig.singleton()["welcomeNewbie", this.Channel] == "false")
-                    {
-                        return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
-                    }
-
-                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = "false";
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
-                case "global":
-                    LegacyConfig.singleton()["welcomeNewbie", this.Channel] = null;
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null));
-                case "add":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
-
-                    NewbieWelcomer.Instance().AddHost(args[1], ignore);
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
-                case "del":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
-
-                    NewbieWelcomer.Instance().DeleteHost(args[1], ignore);
-                    return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
-                case "list":
-                    if (args[1] == "@ignore")
-                    {
-                        ignore = true;
-                        GlobalFunctions.popFromFront(ref args);
-                    }
-
-                    var crh = new CommandResponseHandler();
-                    string[] list = NewbieWelcomer.Instance().GetHosts(ignore);
-                    foreach (string item in list)
-                    {
-                        crh.respond(item);
-                    }
-
-                    return crh;
+                response.respond(this.MessageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
+                return response;
             }
 
-            return new CommandResponseHandler();
+            // TODO: fix me
+            var repository = ServiceLocator.Current.GetInstance<IWelcomeUserRepository>();
+
+            List<string> argumentsList = this.Arguments.ToList();
+            var mode = argumentsList.PopFromFront();
+
+            switch (mode.ToLower())
+            {
+                case "enable":
+                case "disable":
+                    response.respond(
+                        this.MessageService.RetrieveMessage(
+                            "Welcomer-ObsoleteOption",
+                            this.Channel,
+                            new[] { mode }));
+                    break;
+                case "add":
+                    var welcomeUser = new WelcomeUser
+                                          {
+                                              Nick = ".*",
+                                              User = ".*",
+                                              Host = string.Join(" ", argumentsList.ToArray()),
+                                              Channel = this.Channel,
+                                              Exception = false
+                                          };
+                    repository.Save(welcomeUser);
+
+                    response.respond(this.MessageService.Done(this.Channel));
+                    break;
+                case "del":
+                case "delete":
+                case "remove":
+
+                    this.Log.Debug("Getting list of welcomeusers ready for deletion!");
+
+                    // TODO: move to repository.
+                    var criteria = Restrictions.And(
+                        Restrictions.Eq("Host", string.Join(" ", argumentsList.ToArray())),
+                        Restrictions.Eq("Channel", this.Channel));
+
+                    var welcomeUsers = repository.Get(criteria);
+
+                    this.Log.Debug("Got list of WelcomeUsers, proceeding to delete...");
+
+                    repository.Delete(welcomeUsers);
+
+                    this.Log.Debug("All done, cleaning up and sending message to IRC");
+
+                    response.respond(this.MessageService.Done(this.Channel));
+                    break;
+                case "list":
+                    var welcomeForChannel = repository.GetWelcomeForChannel(this.Channel);
+                    welcomeForChannel.ForEach(x => response.respond(x.Host));
+                    break;
+            }
+            
+            return response;
         }
     }
 }
