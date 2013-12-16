@@ -257,10 +257,10 @@ namespace Helpmebot.Legacy.IRC
         /// The nickname change event handler.
         /// </summary>
         /// <param name="oldnick">
-        /// The oldnick.
+        /// The old nick.
         /// </param>
         /// <param name="newnick">
-        /// The newnick.
+        /// The new nick.
         /// </param>
         public delegate void NicknameChangeEventHandler(string oldnick, string newnick);
 
@@ -285,7 +285,7 @@ namespace Helpmebot.Legacy.IRC
         /// The subject.
         /// </param>
         /// <param name="flagchanges">
-        /// The flagchanges.
+        /// The flag changes.
         /// </param>
         /// <param name="parameter">
         /// The parameter.
@@ -374,7 +374,7 @@ namespace Helpmebot.Legacy.IRC
         public delegate void KickEventHandler(User source, string channel, string nick, string message);
 
         /// <summary>
-        /// The privmsg event handler.
+        /// The private message event handler.
         /// </summary>
         /// <param name="source">
         /// The source.
@@ -386,6 +386,7 @@ namespace Helpmebot.Legacy.IRC
         /// The message.
         /// </param>
         public delegate void PrivmsgEventHandler(User source, string destination, string message);
+
         #endregion
 
         #region events
@@ -1361,26 +1362,6 @@ namespace Helpmebot.Legacy.IRC
         }
 
         /// <summary>
-        /// The created reply event.
-        /// </summary>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        private void ReplyCreatedEvent(string parameters)
-        {
-        }
-
-        /// <summary>
-        /// The reply your host event.
-        /// </summary>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        private void ReplyYourHostEvent(string parameters)
-        {
-        }
-
-        /// <summary>
         /// The IRC notice event.
         /// </summary>
         /// <param name="sender">
@@ -1704,12 +1685,6 @@ namespace Helpmebot.Legacy.IRC
                     break;
                 case "001":
                     this.ConnectionRegistrationSucceededEvent(this, new EventArgs());
-                    break;
-                case "002":
-                    this.ReplyYourHostEvent(parameters);
-                    break;
-                case "003":
-                    this.ReplyCreatedEvent(parameters);
                     break;
                 case "004":
                     this.ReplyMyInfoEvent(parameters);
