@@ -65,7 +65,7 @@ namespace Helpmebot.Repositories
         protected ILogger Logger { get; private set; }
 
         /// <summary>
-        /// The session.
+        /// Gets the session.
         /// </summary>
         protected ISession Session
         {

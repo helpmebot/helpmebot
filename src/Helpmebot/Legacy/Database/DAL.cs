@@ -451,35 +451,7 @@ namespace Helpmebot.Legacy.Database
             cmd.ExecuteNonQuery();
         }
 
-// ReSharper disable InconsistentNaming
-        public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
-        // ReSharper restore InconsistentNaming
-        {
-            MySqlCommand cmd = new MySqlCommand
-                                   {
-                                       Connection = this._connection,
-                                       CommandType =
-                                           CommandType.StoredProcedure,
-                                       CommandText =
-                                           "HMB_UPDATE_BINARYSTORE"
-                                   };
-            cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
-            cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
-            lock (this)
-            {
-                try
-                {
-                    this.runConnectionTest();
-                    cmd.ExecuteNonQuery();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Log.Error(ex.Message, ex);
-                }
-            }
-        }
-
-// ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming
         public string proc_HMB_GET_LOCAL_OPTION(string option, string channel)
 // ReSharper restore InconsistentNaming
         {

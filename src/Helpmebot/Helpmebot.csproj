@@ -70,7 +70,6 @@
   <ItemGroup>
     <Compile Include="AccessLog.cs" />
     <Compile Include="AI\Intelligence.cs" />
-    <Compile Include="BinaryStore.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\AccBot\AccCount.cs" />
     <Compile Include="Commands\AccBot\AccStats.cs" />

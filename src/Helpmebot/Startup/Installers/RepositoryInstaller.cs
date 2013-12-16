@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ServiceInstaller.cs" company="Helpmebot Development Team">
+// <copyright file="RepositoryInstaller.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the ServiceInstaller type.
+//   Defines the RepositoryInstaller type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ namespace Helpmebot.Startup.Installers
     using Castle.Windsor;
 
     /// <summary>
-    /// The service installer.
+    /// The repository installer.
     /// </summary>
     [InstallerPriority(InstallerPriorityAttribute.Default)]
     public class RepositoryInstaller : IWindsorInstaller

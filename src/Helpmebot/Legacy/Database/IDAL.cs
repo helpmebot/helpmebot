@@ -65,10 +65,6 @@
         /// <param name="args">The args.</param>
         void executeProcedure(string name, params string[] args);
 
-        void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
-            // ReSharper restore InconsistentNaming
-            ;
-
         string proc_HMB_GET_LOCAL_OPTION(string option, string channel)
             // ReSharper restore InconsistentNaming
             ;

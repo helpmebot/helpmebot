@@ -29,11 +29,10 @@ namespace Helpmebot.Configuration.XmlSections
     /// </summary>
     public class DatabaseConfiguration : ConfigurationSection
     {
+        /// <summary>
+        /// The connection string.
+        /// </summary>
         private MySqlConnectionStringBuilder connectionString;
-
-        public DatabaseConfiguration()
-        {
-        }
 
         /// <summary>
         /// Gets the hostname.
