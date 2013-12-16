@@ -39,7 +39,7 @@ namespace Helpmebot.Services
         /// <summary>
         /// The IRC network.
         /// </summary>
-        private readonly IrcAccessLayer ircNetwork;
+        private readonly IIrcAccessLayer ircNetwork;
 
         /// <summary>
         /// The logger.
@@ -71,7 +71,7 @@ namespace Helpmebot.Services
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public JoinMessageService(IrcAccessLayer ircNetwork, ILogger logger, IWelcomeUserRepository repository, IMessageService messageService)
+        public JoinMessageService(IIrcAccessLayer ircNetwork, ILogger logger, IWelcomeUserRepository repository, IMessageService messageService)
         {
             this.ircNetwork = ircNetwork;
             this.logger = logger;
