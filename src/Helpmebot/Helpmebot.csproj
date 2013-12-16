@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask"/>
+  <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -63,13 +63,7 @@
   -->
   <Target Name="AfterBuild" Condition="'$(RunStyleCop)' == 'true'">
     <Message Text="$(MSBuildExtensionsPath)" />
-    <StyleCopTask
-      ProjectFullPath="$(MSBuildProjectDirectory)"
-      SourceFiles="@(Compile)"
-      ForceFullAnalysis="true"
-      TreatErrorsAsWarnings="true"
-      OutputFile="StyleCopViolations.xml"
-      MaxViolationCount="0">
+    <StyleCopTask ProjectFullPath="$(MSBuildProjectDirectory)" SourceFiles="@(Compile)" ForceFullAnalysis="true" TreatErrorsAsWarnings="true" OutputFile="StyleCopViolations.xml" MaxViolationCount="0">
       <Output TaskParameter="ViolationCount" PropertyName="StyleCopViolationCount" />
     </StyleCopTask>
   </Target>
@@ -96,7 +90,6 @@
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\DateExtensions.cs" />
-    <Compile Include="Model\User.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="Legacy\Database\IDAL.cs" />
     <Compile Include="Model\Messages.cs" />
@@ -296,9 +289,9 @@
     <Content Include="Configuration\hibernate.cfg.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Configuration\Mapping\User.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Configuration\Mapping\" />
     <Folder Include="Database\" />
   </ItemGroup>
 </Project>
