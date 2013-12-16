@@ -84,10 +84,8 @@ namespace helpmebot6.Commands
                 case "enable":
                 case "disable":
                     response.respond(
-                        this.MessageService.RetrieveMessage(
-                            "Welcomer-ObsoleteOption",
-                            this.Channel,
-                            new[] { mode }));
+                        this.MessageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
+                        CommandResponseDestination.PrivateMessage);
                     break;
                 case "add":
                     var welcomeUser = new WelcomeUser
