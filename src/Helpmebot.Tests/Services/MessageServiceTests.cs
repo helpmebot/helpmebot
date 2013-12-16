@@ -1,10 +1,28 @@
-﻿namespace Helpmebot.Tests.Services
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MessageServiceTests.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Defines the MessageServiceTests type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Helpmebot.Tests.Services
 {
     using System;
     using System.Collections;
     using System.Text;
-
-    using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
     using Helpmebot.Services;
@@ -13,26 +31,41 @@
 
     using NUnit.Framework;
 
+    /// <summary>
+    /// The message service tests.
+    /// </summary>
     [TestFixture]
     public class MessageServiceTests
     {
+        /// <summary>
+        /// The database access layer.
+        /// </summary>
         private Mock<IDAL> databaseAccessLayer;
 
+        /// <summary>
+        /// The message service.
+        /// </summary>
         private MessageService messageService;
 
+        /// <summary>
+        /// The custom setup.
+        /// </summary>
         [TestFixtureSetUp]
         public void CustomSetup()
         {
-            string value = "test {0} {1}";
-            byte[] data = Encoding.UTF8.GetBytes(value);
+            const string Value = "test {0} {1}";
+            byte[] data = Encoding.UTF8.GetBytes(Value);
 
-            databaseAccessLayer = new Mock<IDAL>();
-            databaseAccessLayer.Setup(x => x.executeSelect(It.IsAny<DAL.Select>()))
+            this.databaseAccessLayer = new Mock<IDAL>();
+            this.databaseAccessLayer.Setup(x => x.executeSelect(It.IsAny<DAL.Select>()))
                 .Returns(new ArrayList { new object[] { data } });
 
-            messageService = new MessageService(databaseAccessLayer.Object);
+            this.messageService = new MessageService(this.databaseAccessLayer.Object);
         }
 
+        /// <summary>
+        /// Should get a message when a context and parameter list is passed in
+        /// </summary>
         [Test]
         public void ShouldGetMessage()
         {
@@ -45,6 +78,9 @@
             Assert.That(result, Is.EqualTo("test arg1 arg2"));
         }
 
+        /// <summary>
+        /// Should get a message when a parameter list is passed in
+        /// </summary>
         [Test]
         public void ShouldGetMessageOnNullContext()
         {
@@ -57,6 +93,9 @@
             Assert.That(result, Is.EqualTo("test arg1 arg2"));
         }
 
+        /// <summary>
+        /// Should get a message when a context is passed in
+        /// </summary>
         [Test]
         public void ShouldGetMessageOnNullArgs()
         {
@@ -67,6 +106,20 @@
 
             // assert
             Assert.That(result, Is.EqualTo("test {0} {1}"));
+        }
+
+        /// <summary>
+        /// Should get a message when a context is passed in
+        /// </summary>
+        [Test, ExpectedException(typeof(ArgumentNullException))]
+        public void ShouldGetMessageOnNullMessage()
+        {
+            // arrange
+
+            // act
+            this.messageService.RetrieveMessage(null, null, null);
+
+            // assert
         }
     }
 }

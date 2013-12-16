@@ -87,6 +87,11 @@ namespace Helpmebot.Services
         /// </returns>
         public string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments)
         {
+            if (string.IsNullOrEmpty(messageKey))
+            {
+                throw new ArgumentNullException("messageKey");
+            }
+
             string contextData = context != null ? context.ToString() : string.Empty;
 
             if (!string.IsNullOrEmpty(contextData))
