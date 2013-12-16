@@ -93,7 +93,11 @@
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="Legacy\Database\IDAL.cs" />
     <Compile Include="Model\Messages.cs" />
+    <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\SessionFactoryProvider.cs" />
+    <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Startup\Installers\LegacyInstaller.cs" />
+    <Compile Include="Startup\Installers\PersistenceInstaller.cs" />
     <Compile Include="Startup\Installers\LoggerInstaller.cs" />
     <Compile Include="Startup\Installers\ServiceInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
@@ -286,12 +290,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configuration\hibernate.cfg.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Configuration\Mapping\" />
-    <Folder Include="Database\" />
   </ItemGroup>
 </Project>

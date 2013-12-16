@@ -36,6 +36,11 @@ namespace Helpmebot.Startup
         /// The logger installer priority.
         /// </summary>
         public const int Logger = 1;
+
+        /// <summary>
+        /// The database.
+        /// </summary>
+        public const int Database = 2;
         
         /// <summary>
         /// The default priority assigned whenever this attribute is not applied to a class.

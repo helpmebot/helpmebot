@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigurationHelper.cs" company="Helpmebot Development Team">
+// <copyright file="LoggerInstaller.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,34 +14,36 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the ConfigurationHelper type.
+//   The logger installer.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Configuration
+namespace Helpmebot.Startup.Installers
 {
-    using System.Configuration;
+    using Castle.MicroKernel.Registration;
+    using Castle.MicroKernel.SubSystems.Configuration;
+    using Castle.Windsor;
 
-    using Helpmebot.Configuration.XmlSections;
+    using Helpmebot.Startup.Facilities;
 
     /// <summary>
-    /// The configuration helper.
+    /// The logger installer.
     /// </summary>
-    public class ConfigurationHelper
+    [InstallerPriority(InstallerPriorityAttribute.Database)]
+    public class PersistenceInstaller : IWindsorInstaller
     {
         /// <summary>
-        /// Gets the database configuration.
+        /// The install.
         /// </summary>
-        /// <returns>
-        /// The <see cref="DatabaseConfiguration"/>.
-        /// </returns>
-        public static DatabaseConfiguration DatabaseConfiguration
+        /// <param name="container">
+        /// The container.
+        /// </param>
+        /// <param name="store">
+        /// The store.
+        /// </param>
+        public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            get
-            {
-                var databaseConfiguration = ConfigurationManager.GetSection("database") as DatabaseConfiguration;
-                return databaseConfiguration;
-            }
+            container.AddFacility<PersistenceFacility>();
         }
     }
 }
