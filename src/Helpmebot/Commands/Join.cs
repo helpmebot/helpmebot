@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System.Collections.Generic;
+    using System.Globalization;
 
     using Helpmebot;
     using Helpmebot.Legacy.Database;
@@ -69,7 +70,7 @@ namespace helpmebot6.Commands
         {
             DAL.Select q = new DAL.Select("count(*)");
             q.addWhere(new DAL.WhereConds("channel_name", args));
-            q.addWhere(new DAL.WhereConds("channel_network", network.ToString()));
+            q.addWhere(new DAL.WhereConds("channel_network", network.ToString(CultureInfo.InvariantCulture)));
             q.setFrom("channel");
 
             string count = DAL.singleton().executeScalarSelect(q);
@@ -90,7 +91,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                DAL.singleton().insert("channel", string.Empty, args, string.Empty, "1", network.ToString());
+                DAL.singleton().insert("channel", string.Empty, args, string.Empty, "1", network.ToString(CultureInfo.InvariantCulture));
                 Helpmebot6.irc.IrcJoin(args);
             }
 
@@ -105,16 +106,35 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments.Length >= 1)
             {
-                if (this.Arguments[0] == "0")
-                {
-                    return this.OnAccessDenied(); // TODO: put this in the access check, not the execution
-                }
-
                 return JoinChannel(this.Arguments[0], this.Source.network);
             }
 
-            string[] messageParameters = { "join", "1", this.Arguments.Length.ToString() };
+            string[] messageParameters = { "join", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
             return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+        }
+
+        /// <summary>
+        /// The test access.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        protected override bool TestAccess()
+        {
+            if (!base.TestAccess())
+            {
+                return false;
+            }
+
+            if (this.Arguments.Length >= 1)
+            {
+                if (this.Arguments[0] == "0")
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

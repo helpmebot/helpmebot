@@ -151,7 +151,7 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user page url</returns>
-        /// <remarks>TODO: refactor me!</remarks>
+        /// TODO: refactor me!
         private static string GetUserPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -199,7 +199,7 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user talk page url</returns>
-        /// <remarks>TODO: refactor me!</remarks>
+        /// TODO: refactor me!
         private static string GetUserTalkPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -226,7 +226,7 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the contributions url</returns>
-        /// <remarks>TODO: refactor me!</remarks>
+        /// TODO: refactor me!
         private static string GetUserContributionsUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -285,7 +285,7 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>block log url</returns>
-        /// <remarks>TODO: refactor me!</remarks>
+        /// TODO: refactor me!
         private static string GetBlockLogUrl(string userName, string channel)
         {
             if (userName == string.Empty)
