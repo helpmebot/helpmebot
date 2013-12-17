@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Startup
 {
     using System;
     using System.Collections.Generic;

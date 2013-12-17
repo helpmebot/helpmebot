@@ -214,7 +214,7 @@
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="WindsorServiceLocator.cs" />
+    <Compile Include="Startup\WindsorServiceLocator.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
