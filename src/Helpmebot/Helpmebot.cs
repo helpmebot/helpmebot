@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Globalization;
 
     using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
@@ -46,17 +47,35 @@ namespace Helpmebot
     /// </summary>
     public class Helpmebot6
     {
+        /// <summary>
+        /// The start-up time.
+        /// </summary>
+        public static readonly DateTime StartupTime = DateTime.Now;
+
+        /// <summary>
+        /// The container.
+        /// </summary>
         private static IWindsorContainer container;
 
-        public static IrcAccessLayer irc;
-        private static DAL _dbal;
+        /// <summary>
+        /// The IRC.
+        /// </summary>
+        private static IrcAccessLayer irc;
 
-        public static string debugChannel;
-        public static string mainChannel;
+        /// <summary>
+        /// The DB access layer.
+        /// </summary>
+        private static DAL dbal;
 
-        private static uint _ircNetwork;
+        /// <summary>
+        /// The debug channel.
+        /// </summary>
+        private static string debugChannel;
 
-        public static readonly DateTime StartupTime = DateTime.Now;
+        /// <summary>
+        /// The IRC network.
+        /// </summary>
+        private static uint ircNetwork;
 
         /// <summary>
         /// The join message service.
@@ -67,10 +86,29 @@ namespace Helpmebot
         private static IJoinMessageService joinMessageService;
 
         /// <summary>
+        /// Gets or sets the trigger.
+        /// </summary>
+        public static string Trigger { get; set; }
+
+        /// <summary>
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public ILogger Log { get; set; }
 
+        /// <summary>
+        /// The stop.
+        /// </summary>
+        public static void Stop()
+        {
+            ThreadList.instance().stop();
+        }
+
+        /// <summary>
+        /// The main.
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         private static void Main(string[] args)
         {
             BootstrapContainer();
@@ -97,9 +135,9 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
-            _dbal = DAL.singleton();
+            dbal = DAL.singleton();
 
-            if (!_dbal.connect())
+            if (!dbal.connect())
             {
                 // can't connect to database, DIE
                 return;
@@ -109,11 +147,11 @@ namespace Helpmebot
 
             debugChannel = LegacyConfig.singleton()["channelDebug"];
 
-            _ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
+            ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
 
             Trigger = LegacyConfig.singleton()["commandTrigger"];
 
-            irc = new IrcAccessLayer(_ircNetwork);
+            irc = new IrcAccessLayer(ircNetwork);
 
             // TODO: remove me!
             container.Register(Component.For<IrcAccessLayer>().Instance(irc));
@@ -134,7 +172,9 @@ namespace Helpmebot
             AccNotifications.getInstance();
         }
 
-
+        /// <summary>
+        /// The setup events.
+        /// </summary>
         private static void SetupEvents()
         {
             irc.ConnectionRegistrationSucceededEvent += JoinChannels;
@@ -145,17 +185,38 @@ namespace Helpmebot
 
             irc.PrivateMessageEvent += ReceivedMessage;
 
-            irc.InviteEvent += irc_InviteEvent;
+            irc.InviteEvent += IrcInviteEvent;
 
             irc.ThreadFatalErrorEvent += IrcThreadFatalErrorEvent;
         }
 
+        /// <summary>
+        /// The IRC thread fatal error event.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         private static void IrcThreadFatalErrorEvent(object sender, EventArgs e)
         {
             Stop();
         }
 
-        private static void irc_InviteEvent(User source, string nickname, string channel)
+        /// <summary>
+        /// The IRC invite event.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="nickname">
+        /// The nickname.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        private static void IrcInviteEvent(User source, string nickname, string channel)
         {
             // FIXME: Remove service locator!
             new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
@@ -175,6 +236,15 @@ namespace Helpmebot
             joinMessageService.Welcome(source, channel);
         }
 
+        /// <summary>
+        /// The notify on join event.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
         private static void NotifyOnJoinEvent(User source, string channel)
         {
             // FIXME: Remove service locator!
@@ -194,7 +264,7 @@ namespace Helpmebot
         {
             string message = e.Message;
 
-            CommandParser cmd = new CommandParser();
+            var cmd = new CommandParser();
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;
@@ -209,12 +279,12 @@ namespace Helpmebot
                     cmd.handleCommand(e.Sender, e.Destination, command, commandArgs);
                 }
 
-                string aiResponse = Intelligence.Singleton().Respond(message);
-                if (LegacyConfig.singleton()["silence", e.Destination] == "false" && aiResponse != string.Empty)
+                string intelligenceResponse = Intelligence.Singleton().Respond(message);
+                if (LegacyConfig.singleton()["silence", e.Destination] == "false" && intelligenceResponse != string.Empty)
                 {
-                    string[] aiParameters = { e.Sender.nickname };
+                    string[] intelligenceParameters = { e.Sender.nickname };
                     var messageService = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO: fix me
-                    irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(aiResponse, e.Destination, aiParameters));
+                    irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(intelligenceResponse, e.Destination, intelligenceParameters));
                 }
             }
             catch (Exception ex)
@@ -223,28 +293,27 @@ namespace Helpmebot
             }
         }
 
+        /// <summary>
+        /// The join channels.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         private static void JoinChannels(object sender, EventArgs e)
         {
             irc.IrcJoin(debugChannel);
 
-            DAL.Select q = new DAL.Select("channel_name");
+            var q = new DAL.Select("channel_name");
             q.setFrom("channel");
             q.addWhere(new DAL.WhereConds("channel_enabled", 1));
-            q.addWhere(new DAL.WhereConds("channel_network", _ircNetwork.ToString()));
-            foreach (object[] item in _dbal.executeSelect(q))
+            q.addWhere(new DAL.WhereConds("channel_network", ircNetwork.ToString(CultureInfo.InvariantCulture)));
+            foreach (object[] item in dbal.executeSelect(q))
             {
-                irc.IrcJoin((string) (item)[0]);
+                irc.IrcJoin((string)item[0]);
             }
         }
-
-        public static void Stop()
-        {
-            ThreadList.instance().stop();
-        }
-
-        /// <summary>
-        /// Gets or sets the trigger.
-        /// </summary>
-        public static string Trigger { get; set; }
     }
 }

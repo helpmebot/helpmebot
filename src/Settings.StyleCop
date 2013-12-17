@@ -9,6 +9,7 @@
       <Value>welcomer</Value>
       <Value>whois</Value>
       <Value>Wikipedian</Value>
+      <Value>Helpmebot</Value>
     </CollectionProperty>
     <StringProperty Name="Culture">en-GB</StringProperty>
   </GlobalSettings>
