@@ -28,10 +28,43 @@ namespace Helpmebot
 
     using Microsoft.Practices.ServiceLocation;
 
+    public interface IUser
+    {
+        /// <summary>
+        /// Gets or sets the nickname.
+        /// </summary>
+        /// <value>The nickname.</value>
+        string nickname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the username.
+        /// </summary>
+        /// <value>The username.</value>
+        string username { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname.
+        /// </summary>
+        /// <value>The hostname.</value>
+        string hostname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the network.
+        /// </summary>
+        /// <value>The network.</value>
+        uint network { get; }
+
+        /// <summary>
+        /// Gets or sets the access level.
+        /// </summary>
+        /// <value>The access level.</value>
+        User.UserRights accessLevel { get; set; }
+    }
+
     /// <summary>
     /// The user.
     /// </summary>
-    public class User
+    public class User : IUser
     {
         /// <summary>
         /// Gets or sets the Castle.Windsor Logger

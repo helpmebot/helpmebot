@@ -34,6 +34,6 @@ namespace Helpmebot.Services.Interfaces
         /// <param name="channel">
         /// The channel.
         /// </param>
-        void Welcome(User user, string channel);
+        void Welcome(IUser user, string channel);
     }
 }

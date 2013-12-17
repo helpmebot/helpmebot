@@ -88,7 +88,7 @@ namespace Helpmebot.Services
         /// <param name="channel">
         /// The channel.
         /// </param>
-        public void Welcome(User networkUser, string channel)
+        public void Welcome(IUser networkUser, string channel)
         {
             List<WelcomeUser> users = this.repository.GetWelcomeForChannel(channel).ToList();
             if (users.Any())
