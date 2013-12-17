@@ -60,7 +60,7 @@ namespace Helpmebot
         /// <summary>
         /// The IRC.
         /// </summary>
-        private static IrcAccessLayer irc;
+        public static IrcAccessLayer irc;
 
         /// <summary>
         /// The DB access layer.
@@ -70,7 +70,7 @@ namespace Helpmebot
         /// <summary>
         /// The debug channel.
         /// </summary>
-        private static string debugChannel;
+        public static string debugChannel;
 
         /// <summary>
         /// The IRC network.
@@ -154,7 +154,7 @@ namespace Helpmebot
             irc = new IrcAccessLayer(ircNetwork);
 
             // TODO: remove me!
-            container.Register(Component.For<IrcAccessLayer>().Instance(irc));
+            container.Register(Component.For<IIrcAccessLayer>().Instance(irc));
 
             joinMessageService = container.Resolve<IJoinMessageService>();
 

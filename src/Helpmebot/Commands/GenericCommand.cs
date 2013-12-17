@@ -92,7 +92,7 @@ namespace helpmebot6.Commands
             {
                 string command = GetType().ToString();
 
-                DAL.Select q = new DAL.Select("accesslevel");
+                var q = new DAL.Select("accesslevel");
                 q.setFrom("command");
                 q.addLimit(1, 0);
                 q.addWhere(new DAL.WhereConds("typename", command));
