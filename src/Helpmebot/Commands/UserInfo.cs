@@ -22,13 +22,11 @@ namespace helpmebot6.Commands
 {
     using System;
     using System.Text.RegularExpressions;
-    using System.Xml;
 
     using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
@@ -151,46 +149,9 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user page url</returns>
-        /// TODO: refactor me!
         private static string GetUserPageUrl(string userName, string channel)
         {
-            if (userName == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-
-            // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
-
-            var mainpageurl = GetMainPageUrl(baseWiki);
-
-            // replace mainpage in mainpage url with user:<username>
-            userName = userName.Replace(" ", "_");
-
-            var mainpagename = GetMainPageName(baseWiki);
-            return mainpageurl.Replace(mainpagename, "User:" + userName);
-        }
-
-        /// <summary>
-        /// The get main page url.
-        /// </summary>
-        /// <param name="baseWiki">
-        /// The base wiki.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        private static string GetMainPageUrl(string baseWiki)
-        {
-            // get api
-            DAL.Select q;
-
-            // get mainpage url from site table
-            q = new DAL.Select("site_mainpage");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string mainpageurl = DAL.singleton().executeScalarSelect(q);
-            return mainpageurl;
+            return Linker.getRealLink(channel, "User:" + userName, true);
         }
 
         /// <summary>
@@ -199,7 +160,6 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user talk page url</returns>
-        /// TODO: refactor me!
         private static string GetUserTalkPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -207,17 +167,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
-            
-            var mainpagename = GetMainPageName(baseWiki);
-
-            var mainpageurl = GetMainPageUrl(baseWiki);
-
-            // replace mainpage in mainpage url with user:<username>
-            userName = userName.Replace(" ", "_");
-
-            return mainpageurl.Replace(mainpagename, "User_talk:" + userName);
+            return Linker.getRealLink(channel, "User_talk:" + userName, true);
         }
 
         /// <summary>
@@ -226,57 +176,14 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the contributions url</returns>
-        /// TODO: refactor me!
         private static string GetUserContributionsUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
-
-            // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
-
-            var mainpagename = GetMainPageName(baseWiki);
-
-            var mainpageurl = GetMainPageUrl(baseWiki);
-
-            // replace mainpage in mainpage url with user:<username>
-            userName = userName.Replace(" ", "_");
-
-            return mainpageurl.Replace(mainpagename, "Special:Contributions/" + userName);
-        }
-
-        /// <summary>
-        /// The get main page name.
-        /// </summary>
-        /// <param name="baseWiki">
-        /// The base wiki.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        private static string GetMainPageName(string baseWiki)
-        {
-            // get api
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
-
-            // api-> get mainpage name (Mediawiki:mainpage)
-            const string ApiQuery = "?action=query&prop=revisions&titles=Mediawiki:Mainpage&rvprop=content&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + ApiQuery));
-            do
-            {
-                creader.Read();
-            }
-            while (creader.Name != "rev");
-
-            string mainpagename = creader.ReadElementContentAsString();
-
-            mainpagename = mainpagename.Replace(" ", "_");
-            return mainpagename;
+            
+            return Linker.getRealLink(channel, "Special:Contributions/" + userName, true);
         }
 
         /// <summary>
@@ -285,7 +192,6 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>block log url</returns>
-        /// TODO: refactor me!
         private static string GetBlockLogUrl(string userName, string channel)
         {
             if (userName == string.Empty)
@@ -293,16 +199,10 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
-
-            var mainpagename = GetMainPageName(baseWiki);
-            var mainpageurl = GetMainPageUrl(baseWiki);
-
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            return mainpageurl.Replace(mainpagename, "Special:Log?type=block&page=User:" + userName);
+            return Linker.getRealLink(channel, "Special:Log?type=block&page=User:" + userName, true);
         }
 
         // TODO: tidy up! why return a value when it's passed by ref anyway?

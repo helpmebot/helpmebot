@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Collections.Generic;
     using System.Xml;
 
     using Helpmebot;
@@ -34,6 +35,12 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Registration : GenericCommand
     {
+        /// <summary>
+        /// The registration cache.
+        /// </summary>
+        private static Dictionary<string, DateTime> registrationCache =
+            new Dictionary<string, DateTime>();
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Registration"/> class.
         /// </summary>
@@ -78,6 +85,11 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
+            if (registrationCache.ContainsKey(baseWiki + "||" + username))
+            {
+                return registrationCache[baseWiki + "||" + username];
+            }
+
             DAL.Select q = new DAL.Select("site_api");
             q.setFrom("site");
             q.addWhere(new DAL.WhereConds("site_id", baseWiki));
@@ -96,10 +108,13 @@ namespace helpmebot6.Commands
             {
                 if (apiRegDate == string.Empty)
                 {
-                    return new DateTime(1970, 1, 1, 0, 0, 0);
+                    var registrationDate = new DateTime(1970, 1, 1, 0, 0, 0);
+                    registrationCache.Add(baseWiki + "||" + username, registrationDate);
+                    return registrationDate;
                 }
 
                 DateTime regDate = DateTime.Parse(apiRegDate);
+                registrationCache.Add(baseWiki + "||" + username, regDate);
                 return regDate;
             }
 
