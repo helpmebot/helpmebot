@@ -172,7 +172,7 @@ namespace Helpmebot.Repositories
         /// <param name="model">
         /// The model.
         /// </param>
-        private void DoSave(T model)
+        protected virtual void DoSave(T model)
         {
             this.Logger.DebugFormat("Saving model {0} ({1})...", model, model.GetType().Name);
             this.Session.SaveOrUpdate(model);
@@ -184,7 +184,7 @@ namespace Helpmebot.Repositories
         /// <param name="model">
         /// The model.
         /// </param>
-        private void DoDelete(T model)
+        protected virtual void DoDelete(T model)
         {
             this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
             this.Session.Delete(model);
