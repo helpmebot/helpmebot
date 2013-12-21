@@ -141,7 +141,8 @@ namespace Helpmebot.Legacy.IRC
         public IrcAccessLayer(uint ircNetwork)
         {
             // FIXME: Remove me!
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.IRC.IrcAccessLayer");
 
             this.FloodProtectionWaitTime = 500;
             this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
@@ -211,9 +212,10 @@ namespace Helpmebot.Legacy.IRC
         /// The real name.
         /// </param>
         public IrcAccessLayer(string server, uint port, string nickname, string password, string username, string realname)
-        {            
+        {
             // FIXME: Remove me!
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.IRC.IrcAccessLayer");
 
             this.LogEvents = true;
             this.FloodProtectionWaitTime = 500;
