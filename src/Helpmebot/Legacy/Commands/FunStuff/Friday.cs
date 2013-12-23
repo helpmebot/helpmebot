@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
         {
             get
             {
-                return this.Source.nickname;
+                return this.Source.Nickname;
             }
         }
     }

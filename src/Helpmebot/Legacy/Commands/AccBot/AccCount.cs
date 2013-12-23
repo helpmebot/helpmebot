@@ -73,7 +73,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                username = this.Source.nickname;
+                username = this.Source.Nickname;
             }
 
             username = HttpUtility.UrlEncode(username);

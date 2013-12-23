@@ -78,7 +78,7 @@ namespace helpmebot6.Commands
         {
             return this.Arguments.Length > 0
                        ? new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdChargeParam", this.Channel, new[] { this.CommandTarget }))
-                       : new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdCharge", this.Channel, new[] { this.Source.nickname }));
+                       : new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdCharge", this.Channel, new[] { this.Source.Nickname }));
         }
     }
 }

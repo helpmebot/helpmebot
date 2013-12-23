@@ -69,7 +69,7 @@ namespace helpmebot.Commands.FunStuff
             {
                 if (this.forbiddenTargets.Contains(base.CommandTarget))
                 {
-                    return this.Source.nickname;
+                    return this.Source.Nickname;
                 }
 
                 return base.CommandTarget;

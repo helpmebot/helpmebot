@@ -20,7 +20,7 @@
 
 namespace Helpmebot.Services.Interfaces
 {
-    using Helpmebot.Legacy.Model;
+    using Helpmebot.Model.Interfaces;
 
     /// <summary>
     /// The JoinMessageService interface.
@@ -36,6 +36,6 @@ namespace Helpmebot.Services.Interfaces
         /// <param name="channel">
         /// The channel.
         /// </param>
-        void Welcome(ILegacyUser user, string channel);
+        void Welcome(IUser user, string channel);
     }
 }

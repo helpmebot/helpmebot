@@ -27,8 +27,8 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.IRC;
-    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
+    using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
@@ -89,7 +89,7 @@ namespace Helpmebot.Services
         /// <param name="channel">
         /// The channel.
         /// </param>
-        public void Welcome(ILegacyUser networkUser, string channel)
+        public void Welcome(IUser networkUser, string channel)
         {
             List<WelcomeUser> users = this.repository.GetWelcomeForChannel(channel).ToList();
             if (users.Any())
