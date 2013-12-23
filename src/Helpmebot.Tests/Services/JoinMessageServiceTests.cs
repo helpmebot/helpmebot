@@ -26,6 +26,7 @@ namespace Helpmebot.Tests.Services
 
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Model;
+    using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
@@ -88,9 +89,9 @@ namespace Helpmebot.Tests.Services
             var networkUser = new Mock<IUser>();
 
             networkUser.SetupAllProperties();
-            networkUser.Object.nickname = "ab";
-            networkUser.Object.username = "ab";
-            networkUser.Object.hostname = "cd/test";
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "cd/test";
 
             // act
             joinMessageService.Welcome(networkUser.Object, "ab");
@@ -116,9 +117,9 @@ namespace Helpmebot.Tests.Services
             var networkUser = new Mock<IUser>();
 
             networkUser.SetupAllProperties();
-            networkUser.Object.nickname = "ab";
-            networkUser.Object.username = "ign";
-            networkUser.Object.hostname = "ab/test";
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ign";
+            networkUser.Object.Hostname = "ab/test";
 
             // act
             joinMessageService.Welcome(networkUser.Object, "ab");
@@ -144,9 +145,9 @@ namespace Helpmebot.Tests.Services
             var networkUser = new Mock<IUser>();
             
             networkUser.SetupAllProperties();
-            networkUser.Object.nickname = "ab";
-            networkUser.Object.username = "ab";
-            networkUser.Object.hostname = "ab/test";
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "ab/test";
 
             // act
             joinMessageService.Welcome(networkUser.Object, "ab");
@@ -172,9 +173,9 @@ namespace Helpmebot.Tests.Services
             var networkUser = new Mock<IUser>();
 
             networkUser.SetupAllProperties();
-            networkUser.Object.nickname = "ab";
-            networkUser.Object.username = "ab";
-            networkUser.Object.hostname = "ab/test";
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "ab/test";
 
             // act
             joinMessageService.Welcome(networkUser.Object, "cd");
