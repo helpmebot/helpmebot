@@ -167,7 +167,7 @@ namespace helpmebot6.Commands
         protected virtual bool TestAccess()
         {
             // check the access level
-            return this.Source.accessLevel >= this.AccessLevel;
+            return this.Source.AccessLevel >= this.AccessLevel;
         }
 
         /// <summary>

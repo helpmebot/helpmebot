@@ -75,7 +75,7 @@ namespace Helpmebot.Legacy.Model
         /// Gets or sets the network.
         /// </summary>
         /// <value>The network.</value>
-        public uint network { get; private set; }
+        public uint Network { get; private set; }
 
         /// <summary>
         /// News from string.
@@ -129,7 +129,7 @@ namespace Helpmebot.Legacy.Model
                                Hostname = host,
                                Nickname = nick,
                                Username = user,
-                               network = network
+                               Network = network
                            };
             return ret;
         }
@@ -174,7 +174,7 @@ namespace Helpmebot.Legacy.Model
         /// Gets or sets the access level.
         /// </summary>
         /// <value>The access level.</value>
-        public UserRights accessLevel
+        public UserRights AccessLevel
         {
             get
             {

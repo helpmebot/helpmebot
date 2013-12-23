@@ -28,15 +28,15 @@ namespace Helpmebot.Legacy.Model
     public interface ILegacyUser : IUser
     {
         /// <summary>
-        /// Gets or sets the network.
+        /// Gets the network.
         /// </summary>
         /// <value>The network.</value>
-        uint network { get; }
+        uint Network { get; }
 
         /// <summary>
         /// Gets or sets the access level.
         /// </summary>
         /// <value>The access level.</value>
-        LegacyUser.UserRights accessLevel { get; set; }
+        LegacyUser.UserRights AccessLevel { get; set; }
     }
 }

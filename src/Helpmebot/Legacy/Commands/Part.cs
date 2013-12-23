@@ -66,7 +66,7 @@ namespace helpmebot6.Commands
                     vals,
                     0,
                     new DAL.WhereConds("channel_name", this.Channel),
-                    new DAL.WhereConds("channel_network", this.Source.network.ToString()));
+                    new DAL.WhereConds("channel_network", this.Source.Network.ToString()));
             return null;
         }
     }

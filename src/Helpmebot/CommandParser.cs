@@ -91,7 +91,7 @@ namespace Helpmebot
             this.Log.Debug("Handling recieved message...");
 
             // if on ignore list, ignore!
-            if (source.accessLevel == LegacyUser.UserRights.Ignored)
+            if (source.AccessLevel == LegacyUser.UserRights.Ignored)
             {
                 return;
             }
@@ -162,7 +162,7 @@ namespace Helpmebot
                 string directedTo = string.Empty;
                 if (wordResponse != string.Empty)
                 {
-                    if (source.accessLevel < LegacyUser.UserRights.Normal)
+                    if (source.AccessLevel < LegacyUser.UserRights.Normal)
                     {
                         crh.respond(
                             this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
@@ -180,7 +180,7 @@ namespace Helpmebot
                         dict.Add("nickname", source.Nickname);
                         dict.Add("hostname", source.Hostname);
 
-                        dict.Add("AccessLevel", source.accessLevel);
+                        dict.Add("AccessLevel", source.AccessLevel);
 
                         dict.Add("channel", destination);
 

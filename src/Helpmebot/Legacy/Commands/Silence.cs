@@ -110,7 +110,7 @@ namespace helpmebot6.Commands
                 }
                 else
                 {
-                    if (this.Source.accessLevel >= LegacyUser.UserRights.Superuser)
+                    if (this.Source.AccessLevel >= LegacyUser.UserRights.Superuser)
                     {
                         LegacyConfig.singleton()["silence"] = newValue;
                     }

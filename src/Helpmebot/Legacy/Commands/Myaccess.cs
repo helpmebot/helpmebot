@@ -61,13 +61,13 @@ namespace helpmebot6.Commands
             {
                 foreach (string s in this.Arguments)
                 {
-                    string[] cmdArgs = { s, LegacyUser.newFromString(s).accessLevel.ToString() };
+                    string[] cmdArgs = { s, LegacyUser.newFromString(s).AccessLevel.ToString() };
                     crh.respond(this.MessageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
                 }
             }
             else
             {
-                string[] cmdArgs = { this.Source.ToString(), this.Source.accessLevel.ToString() };
+                string[] cmdArgs = { this.Source.ToString(), this.Source.AccessLevel.ToString() };
                 crh.respond(this.MessageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
             }
 

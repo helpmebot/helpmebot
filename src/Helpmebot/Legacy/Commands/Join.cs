@@ -107,7 +107,7 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments.Length >= 1)
             {
-                return JoinChannel(this.Arguments[0], this.Source.network);
+                return JoinChannel(this.Arguments[0], this.Source.Network);
             }
 
             string[] messageParameters = { "join", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };

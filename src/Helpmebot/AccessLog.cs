@@ -55,7 +55,7 @@ namespace Helpmebot
         /// <param name="logEntry">The log entry.</param>
         public bool save(AccessLogEntry logEntry)
         {
-            return DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
+            return DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.AccessLevel.ToString(),
                                           logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
                                           (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel, logEntry.alParams) != -1;
         }
