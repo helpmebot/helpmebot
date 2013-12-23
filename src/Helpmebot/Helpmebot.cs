@@ -31,7 +31,6 @@ namespace Helpmebot
     using Castle.Windsor.Diagnostics;
     using Castle.Windsor.Installer;
 
-    using Helpmebot.AI;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
@@ -297,14 +296,6 @@ namespace Helpmebot
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
                     cmd.handleCommand(e.Sender, e.Destination, command, commandArgs);
-                }
-
-                string intelligenceResponse = Intelligence.Singleton().Respond(message);
-                if (LegacyConfig.singleton()["silence", e.Destination] == "false" && intelligenceResponse != string.Empty)
-                {
-                    string[] intelligenceParameters = { e.Sender.Nickname };
-                    var messageService = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO: fix me
-                    irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(intelligenceResponse, e.Destination, intelligenceParameters));
                 }
             }
             catch (Exception ex)

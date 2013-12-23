@@ -72,7 +72,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessLog.cs" />
-    <Compile Include="AI\Intelligence.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
