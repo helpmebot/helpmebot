@@ -44,7 +44,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Sayhi(User source, string channel, string[] args, IMessageService messageService)
+        public Sayhi(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] commandParams = { this.Source.nickname };
+            string[] commandParams = { this.Source.Nickname };
             return new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdSayHi1", this.Channel, commandParams));
         }
     }

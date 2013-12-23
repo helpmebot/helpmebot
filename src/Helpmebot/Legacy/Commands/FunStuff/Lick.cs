@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Lick(User source, string channel, string[] args, IMessageService messageService)
+        public Lick(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

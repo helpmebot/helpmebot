@@ -43,7 +43,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Gancount(User source, string channel, string[] args, IMessageService messageService)
+        public Gancount(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

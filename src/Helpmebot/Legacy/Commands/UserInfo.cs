@@ -27,13 +27,11 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
-
-    using User = Helpmebot.Legacy.Model.User;
-    
 
     /* returns information about a user
     // what                 how                     info    message
@@ -75,7 +73,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Userinfo(User source, string channel, string[] args, IMessageService messageService)
+        public Userinfo(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -136,7 +134,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
-                    this.Source.nickname,
+                    this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 

@@ -50,7 +50,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Accstats(User source, string channel, string[] args, IMessageService messageService)
+        public Accstats(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -71,7 +71,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                username = this.Source.nickname;
+                username = this.Source.Nickname;
             }
 
             username = HttpUtility.UrlEncode(username);

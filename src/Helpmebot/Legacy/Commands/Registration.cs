@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Registration(User source, string channel, string[] args, IMessageService messageService)
+        public Registration(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -156,7 +156,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = { "registration", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
-                    this.Source.nickname,
+                    this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 

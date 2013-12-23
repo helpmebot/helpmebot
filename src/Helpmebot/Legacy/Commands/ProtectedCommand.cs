@@ -47,7 +47,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        protected ProtectedCommand(User source, string channel, string[] args, IMessageService messageService)
+        protected ProtectedCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

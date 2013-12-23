@@ -49,7 +49,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Rights(User source, string channel, string[] args, IMessageService messageService)
+        public Rights(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -123,7 +123,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                userName = this.Source.nickname;
+                userName = this.Source.Nickname;
             }
 
             string rights = GetRights(userName, this.Channel);

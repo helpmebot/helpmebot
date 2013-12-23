@@ -48,7 +48,7 @@ namespace helpmebot.Commands.FunStuff
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        protected TargetedFunCommand(User source, string channel, string[] args, IMessageService messageService)
+        protected TargetedFunCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -60,7 +60,7 @@ namespace helpmebot.Commands.FunStuff
         {
             get
             {
-                return this.Arguments.Any() ? string.Join(" ", this.Arguments) : this.Source.nickname;
+                return this.Arguments.Any() ? string.Join(" ", this.Arguments) : this.Source.Nickname;
             }
         }
 

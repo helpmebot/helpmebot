@@ -46,7 +46,7 @@ namespace helpmebot6.Commands.FunStuff
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        protected FunCommand(User source, string channel, string[] args, IMessageService messageService)
+        protected FunCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

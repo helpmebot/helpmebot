@@ -46,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Age(User source, string channel, string[] args, IMessageService messageService)
+        public Age(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -82,7 +82,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                userName = this.Source.nickname;
+                userName = this.Source.Nickname;
             }
 
             TimeSpan time = GetWikipedianAge(userName, this.Channel);

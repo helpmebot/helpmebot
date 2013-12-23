@@ -45,7 +45,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Learn(User source, string channel, string[] args, IMessageService messageService)
+        public Learn(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -70,13 +70,13 @@ namespace helpmebot6.Commands
                 
                 string message = hasLearntWord ? this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null) : this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
 
-                Helpmebot6.irc.IrcNotice(this.Source.nickname, message);
+                Helpmebot6.irc.IrcNotice(this.Source.Nickname, message);
             }
             else
             {
                 string[] messageParameters = { "learn", "2", args.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
-                    this.Source.nickname,
+                    this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 

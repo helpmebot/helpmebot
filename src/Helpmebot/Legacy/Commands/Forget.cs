@@ -45,7 +45,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Forget(User source, string channel, string[] args, IMessageService messageService)
+        public Forget(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -65,13 +65,13 @@ namespace helpmebot6.Commands
                                                   this.Channel,
                                                   null);
 
-                Helpmebot6.irc.IrcNotice(this.Source.nickname, forgottenMessage);
+                Helpmebot6.irc.IrcNotice(this.Source.Nickname, forgottenMessage);
             }
             else
             {
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString() };
                 Helpmebot6.irc.IrcNotice(
-                    this.Source.nickname,
+                    this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 

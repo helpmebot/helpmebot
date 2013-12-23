@@ -34,7 +34,7 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The requested notifications.
         /// </summary>
-        private static readonly Dictionary<string, List<User>> RequestedNotifications = new Dictionary<string, List<User>>();
+        private static readonly Dictionary<string, List<LegacyUser>> RequestedNotifications = new Dictionary<string, List<LegacyUser>>();
 
         /// <summary>
         /// The lock for the requested notifications dictionary.
@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Notify(User source, string channel, string[] args, IMessageService messageService)
+        public Notify(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -70,23 +70,23 @@ namespace helpmebot6.Commands
         /// <param name="channel">
         /// The channel.
         /// </param>
-        internal void NotifyJoin(User source, string channel)
+        internal void NotifyJoin(LegacyUser source, string channel)
         {
-            List<User> toNotify;
+            List<LegacyUser> toNotify;
             lock (NotificationsDictionaryLock)
             {
-                if (RequestedNotifications.TryGetValue(source.nickname.ToUpperInvariant(), out toNotify))
+                if (RequestedNotifications.TryGetValue(source.Nickname.ToUpperInvariant(), out toNotify))
                 {
-                    RequestedNotifications.Remove(source.nickname);
+                    RequestedNotifications.Remove(source.Nickname);
                 }
             }
 
             if (toNotify != null)
             {
-                string message = this.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.nickname, channel });
-                foreach (User user in toNotify)
+                string message = this.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
+                foreach (LegacyUser user in toNotify)
                 {
-                    Helpmebot6.irc.IrcPrivmsg(user.nickname, message);
+                    Helpmebot6.irc.IrcPrivmsg(user.Nickname, message);
                 }
             }
         }
@@ -107,12 +107,12 @@ namespace helpmebot6.Commands
             string trigger;
             lock (NotificationsDictionaryLock)
             {
-                User toNotify = this.Source;
+                LegacyUser toNotify = this.Source;
                 trigger = this.Arguments[0];
                 string triggerUpper = trigger.ToUpperInvariant();
                 if (!RequestedNotifications.ContainsKey(trigger))
                 {
-                    RequestedNotifications.Add(triggerUpper, new List<User>());
+                    RequestedNotifications.Add(triggerUpper, new List<LegacyUser>());
                 }
 
                 RequestedNotifications[triggerUpper].Add(toNotify);

@@ -26,10 +26,9 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
-    using User = Helpmebot.Legacy.Model.User;
 
     /// <summary>
     /// Discovers the location of an IP address
@@ -51,7 +50,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Geolocate(User source, string channel, string[] args, IMessageService messageService)
+        public Geolocate(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        protected GenericCommand(User source, string channel, string[] args, IMessageService messageService)
+        protected GenericCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : this(messageService)
         {
             this.Source = source;
@@ -87,7 +87,7 @@ namespace helpmebot6.Commands
         /// Gets the access level of the command
         /// </summary>
         /// <value>The access level.</value>
-        public User.UserRights AccessLevel
+        public LegacyUser.UserRights AccessLevel
         {
             get
             {
@@ -101,12 +101,12 @@ namespace helpmebot6.Commands
                 string al = DAL.singleton().executeScalarSelect(q);
                 try
                 {
-                    return (User.UserRights)Enum.Parse(typeof(User.UserRights), al, true);
+                    return (LegacyUser.UserRights)Enum.Parse(typeof(LegacyUser.UserRights), al, true);
                 }
                 catch (ArgumentException)
                 {
                     this.Log.Warn("Warning: " + command + " not found in access list.");
-                    return User.UserRights.Developer;
+                    return LegacyUser.UserRights.Developer;
                 }
             }
         }
@@ -114,7 +114,7 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Gets or sets the source.
         /// </summary>
-        public User Source { get; set; }
+        public LegacyUser Source { get; set; }
 
         /// <summary>
         /// Gets or sets the channel.
@@ -134,7 +134,7 @@ namespace helpmebot6.Commands
         /// <param name="args">Arguments to the command.</param>
         /// <returns>the response container</returns>
         [Obsolete]
-        public CommandResponseHandler RunCommand(User source, string channel, string[] args)
+        public CommandResponseHandler RunCommand(LegacyUser source, string channel, string[] args)
         {
             this.Source = source;
             this.Channel = channel;
@@ -229,7 +229,7 @@ namespace helpmebot6.Commands
         /// <param name="args">The arguments to the command.</param>
         /// <returns>The response to the command</returns>
         [Obsolete]
-        protected virtual CommandResponseHandler ExecuteCommand(User source, string channel, string[] args)
+        protected virtual CommandResponseHandler ExecuteCommand(LegacyUser source, string channel, string[] args)
         {
             return new CommandResponseHandler("not implemented");
         }

@@ -41,7 +41,7 @@ namespace Helpmebot.IRC.Events
         /// <param name="message">
         /// The message.
         /// </param>
-        public PrivateMessageEventArgs(User sender, string destination, string message)
+        public PrivateMessageEventArgs(LegacyUser sender, string destination, string message)
         {
             this.Message = message;
             this.Destination = destination;
@@ -61,6 +61,6 @@ namespace Helpmebot.IRC.Events
         /// <summary>
         /// Gets the sender.
         /// </summary>
-        public User Sender { get; private set; }
+        public LegacyUser Sender { get; private set; }
     }
 }

@@ -89,23 +89,23 @@ namespace Helpmebot.Services
         /// <param name="channel">
         /// The channel.
         /// </param>
-        public void Welcome(IUser networkUser, string channel)
+        public void Welcome(ILegacyUser networkUser, string channel)
         {
             List<WelcomeUser> users = this.repository.GetWelcomeForChannel(channel).ToList();
             if (users.Any())
             {
                 foreach (var welcomeUser in users)
                 {
-                    Match nick = new Regex(welcomeUser.Nick).Match(networkUser.nickname);
-                    Match user = new Regex(welcomeUser.User).Match(networkUser.username);
-                    Match host = new Regex(welcomeUser.Host).Match(networkUser.hostname);
+                    Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
+                    Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
+                    Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
 
                     if (nick.Success && user.Success && host.Success)
                     {
                         var welcomeMessage = this.messageService.RetrieveMessage(
                             "WelcomeMessage",
                             channel,
-                            new[] { networkUser.nickname, channel });
+                            new[] { networkUser.Nickname, channel });
 
                         this.logger.DebugFormat("Welcoming {0} in channel {1}", networkUser, channel);
 

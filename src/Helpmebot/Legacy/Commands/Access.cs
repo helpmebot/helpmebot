@@ -51,7 +51,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Access(User source, string channel, string[] args, IMessageService messageService)
+        public Access(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -82,36 +82,36 @@ namespace helpmebot6.Commands
                     case "add":
                         if (this.Arguments.Length > 2)
                         {
-                            var aL = User.UserRights.Normal;
+                            var aL = LegacyUser.UserRights.Normal;
 
                             switch (this.Arguments[2].ToLower())
                             {
                                 case "developer":
-                                    aL = this.Source.accessLevel == User.UserRights.Developer
-                                             ? User.UserRights.Developer
-                                             : User.UserRights.Superuser;
+                                    aL = this.Source.accessLevel == LegacyUser.UserRights.Developer
+                                             ? LegacyUser.UserRights.Developer
+                                             : LegacyUser.UserRights.Superuser;
                                     break;
                                 case "superuser":
-                                    aL = User.UserRights.Superuser;
+                                    aL = LegacyUser.UserRights.Superuser;
                                     break;
                                 case "advanced":
-                                    aL = User.UserRights.Advanced;
+                                    aL = LegacyUser.UserRights.Advanced;
                                     break;
                                 case "semi-ignored":
-                                    aL = User.UserRights.Semiignored;
+                                    aL = LegacyUser.UserRights.Semiignored;
                                     break;
                                 case "semiignored":
-                                    aL = User.UserRights.Semiignored;
+                                    aL = LegacyUser.UserRights.Semiignored;
                                     break;
                                 case "ignored":
-                                    aL = User.UserRights.Ignored;
+                                    aL = LegacyUser.UserRights.Ignored;
                                     break;
                                 case "normal":
-                                    aL = User.UserRights.Normal;
+                                    aL = LegacyUser.UserRights.Normal;
                                     break;
                             }
 
-                            crh = AddAccessEntry(User.newFromString(this.Arguments[1]), aL);
+                            crh = AddAccessEntry(LegacyUser.newFromString(this.Arguments[1]), aL);
                         }
                         else
                         {
@@ -147,7 +147,7 @@ namespace helpmebot6.Commands
         /// <param name="newEntry">The new entry.</param>
         /// <param name="accessLevel">The access level.</param>
         /// <returns>a response</returns>
-        private CommandResponseHandler AddAccessEntry(User newEntry, User.UserRights accessLevel)
+        private CommandResponseHandler AddAccessEntry(LegacyUser newEntry, LegacyUser.UserRights accessLevel)
         {
             string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
             string message = this.MessageService.RetrieveMessage("addAccessEntry", this.Channel, messageParams);
@@ -159,9 +159,9 @@ namespace helpmebot6.Commands
                 .insert(
                     "user",
                     string.Empty,
-                    newEntry.nickname,
-                    newEntry.username,
-                    newEntry.hostname,
+                    newEntry.Nickname,
+                    newEntry.Username,
+                    newEntry.Hostname,
                     accessLevel.ToString(),
                     string.Empty);
 

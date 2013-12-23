@@ -46,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Time(User source, string channel, string[] args, IMessageService messageService)
+        public Time(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
         {
             string[] messageParams =
                 {
-                    this.Source.nickname, DateTime.Now.DayOfWeek.ToString(),
+                    this.Source.Nickname, DateTime.Now.DayOfWeek.ToString(),
                     DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"),
                     DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
                     DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")

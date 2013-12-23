@@ -52,7 +52,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Editcount(User source, string channel, string[] args, IMessageService messageService)
+        public Editcount(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -117,7 +117,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                userName = this.Source.nickname;
+                userName = this.Source.Nickname;
             }
 
             int editCount = GetEditCount(userName, this.Channel);

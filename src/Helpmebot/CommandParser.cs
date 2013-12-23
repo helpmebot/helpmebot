@@ -86,12 +86,12 @@ namespace Helpmebot
         /// <param name="destination">The destination.</param>
         /// <param name="command">The command.</param>
         /// <param name="args">The args.</param>
-        public void handleCommand(User source, string destination, string command, string[] args)
+        public void handleCommand(LegacyUser source, string destination, string command, string[] args)
         {
             this.Log.Debug("Handling recieved message...");
 
             // if on ignore list, ignore!
-            if (source.accessLevel == User.UserRights.Ignored)
+            if (source.accessLevel == LegacyUser.UserRights.Ignored)
             {
                 return;
             }
@@ -99,7 +99,7 @@ namespace Helpmebot
             // flip destination over if required
             if (destination == Helpmebot6.irc.Nickname)
             {
-                destination = source.nickname;
+                destination = source.Nickname;
             }
 
             /*
@@ -162,7 +162,7 @@ namespace Helpmebot
                 string directedTo = string.Empty;
                 if (wordResponse != string.Empty)
                 {
-                    if (source.accessLevel < User.UserRights.Normal)
+                    if (source.accessLevel < LegacyUser.UserRights.Normal)
                     {
                         crh.respond(
                             this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
@@ -176,9 +176,9 @@ namespace Helpmebot
                     {
                         IDictionary<string, object> dict = new Dictionary<string, object>();
 
-                        dict.Add("username", source.username);
-                        dict.Add("nickname", source.nickname);
-                        dict.Add("hostname", source.hostname);
+                        dict.Add("username", source.Username);
+                        dict.Add("nickname", source.Nickname);
+                        dict.Add("hostname", source.Hostname);
 
                         dict.Add("AccessLevel", source.accessLevel);
 
@@ -236,7 +236,7 @@ namespace Helpmebot
         /// <param name="destination">The destination.</param>
         /// <param name="directedTo">The directed to.</param>
         /// <param name="response">The response.</param>
-        private void handleCommandResponseHandler(User source, string destination, string directedTo,
+        private void handleCommandResponseHandler(LegacyUser source, string destination, string directedTo,
                                                   CommandResponseHandler response)
         {
             if (response != null)
@@ -263,7 +263,7 @@ namespace Helpmebot
                             Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
-                            Helpmebot6.irc.IrcPrivmsg(source.nickname, message);
+                            Helpmebot6.irc.IrcPrivmsg(source.Nickname, message);
                             break;
                     }
                 }

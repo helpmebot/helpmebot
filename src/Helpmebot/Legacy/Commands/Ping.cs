@@ -44,7 +44,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Ping(User source, string channel, string[] args, IMessageService messageService)
+        public Ping(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -60,7 +60,7 @@ namespace helpmebot6.Commands
 
             if (this.Arguments.Length == 0)
             {
-                name = this.Source.nickname;
+                name = this.Source.Nickname;
                 string[] messageparams = { name };
                 message = this.MessageService.RetrieveMessage("cmdPing", this.Channel, messageparams);
             }

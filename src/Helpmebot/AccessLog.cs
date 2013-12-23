@@ -85,7 +85,7 @@ namespace Helpmebot
             /// <param name="requiredAccessLevel">
             /// The required Access Level.
             /// </param>
-            public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters, User.UserRights requiredAccessLevel)
+            public AccessLogEntry(LegacyUser source, Type command, bool success, string channel, string[] parameters, LegacyUser.UserRights requiredAccessLevel)
             {
                 this._alId = 0;
                 this._alDate = new DateTime(0);
@@ -98,8 +98,8 @@ namespace Helpmebot
             }
 
             private  int _alId;
-            private  User _alUser;
-            private  User.UserRights _alReqaccesslevel;
+            private  LegacyUser _alUser;
+            private  LegacyUser.UserRights _alReqaccesslevel;
             private  Type _alClass;
             private  DateTime _alDate;
             private  bool _alAllowed;
@@ -119,7 +119,7 @@ namespace Helpmebot
             /// Gets the access log user.
             /// </summary>
             /// <value>The al user.</value>
-            public User alUser
+            public LegacyUser alUser
             {
                 get { return this._alUser; }
             }
@@ -128,7 +128,7 @@ namespace Helpmebot
             /// Gets the access log required access level.
             /// </summary>
             /// <value>The al reqaccesslevel.</value>
-            public User.UserRights alReqaccesslevel
+            public LegacyUser.UserRights alReqaccesslevel
             {
                 get { return this._alReqaccesslevel; }
             }
@@ -190,7 +190,7 @@ namespace Helpmebot
                     AccessLogEntry entry = new AccessLogEntry();
 
                     string usermask = string.Empty;
-                    User.UserRights useraccess = User.UserRights.Normal;
+                    LegacyUser.UserRights useraccess = LegacyUser.UserRights.Normal;
                     #region parse
                     for (int i = 0; i < row.Length; i++)
                     {
@@ -204,10 +204,10 @@ namespace Helpmebot
                                 usermask = row[i];
                                 break;
                             case ACCESSLOG_USER_ACCESS:
-                                useraccess = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                useraccess = (LegacyUser.UserRights) Enum.Parse(typeof (LegacyUser.UserRights), row[i]);
                                 break;
                             case ACCESSLOG_COMMAND_ACCESS:
-                                entry._alReqaccesslevel = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                entry._alReqaccesslevel = (LegacyUser.UserRights) Enum.Parse(typeof (LegacyUser.UserRights), row[i]);
                                 break;
                             case ACCESSLOG_DATE:
                                 entry._alDate = DateTime.Parse(row[i]);
@@ -226,7 +226,7 @@ namespace Helpmebot
                                 break;
                         }
 
-                        entry._alUser = User.newFromStringWithAccessLevel(usermask, useraccess);
+                        entry._alUser = LegacyUser.newFromStringWithAccessLevel(usermask, useraccess);
 
                     }
                     #endregion
@@ -253,7 +253,7 @@ namespace Helpmebot
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns><c>true</c> if the user is flooding; otherwise <c>false</c></returns>
-        public bool doFloodCheck(User source)
+        public bool doFloodCheck(LegacyUser source)
         {
             //TODO: Implement
             return false;

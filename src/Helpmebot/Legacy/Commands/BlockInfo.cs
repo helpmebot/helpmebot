@@ -26,10 +26,9 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
-    using User = Helpmebot.Legacy.Model.User;
 
     /// <summary>
     /// Returns the block information of a wikipedian
@@ -51,7 +50,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Blockinfo(User source, string channel, string[] args, IMessageService messageService)
+        public Blockinfo(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

@@ -236,7 +236,7 @@ namespace Helpmebot
         /// <param name="channel">
         /// The channel.
         /// </param>
-        private static void IrcInviteEvent(User source, string nickname, string channel)
+        private static void IrcInviteEvent(LegacyUser source, string nickname, string channel)
         {
             // FIXME: Remove service locator!
             new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
@@ -251,7 +251,7 @@ namespace Helpmebot
         /// <param name="channel">
         /// The channel.
         /// </param>
-        private static void WelcomeNewbieOnJoinEvent(User source, string channel)
+        private static void WelcomeNewbieOnJoinEvent(LegacyUser source, string channel)
         {
             joinMessageService.Welcome(source, channel);
         }
@@ -265,7 +265,7 @@ namespace Helpmebot
         /// <param name="channel">
         /// The channel.
         /// </param>
-        private static void NotifyOnJoinEvent(User source, string channel)
+        private static void NotifyOnJoinEvent(LegacyUser source, string channel)
         {
             // FIXME: Remove service locator!
             new Notify(source, channel, new string[0], ServiceLocator.Current.GetInstance<IMessageService>()).NotifyJoin(source, channel);
@@ -302,7 +302,7 @@ namespace Helpmebot
                 string intelligenceResponse = Intelligence.Singleton().Respond(message);
                 if (LegacyConfig.singleton()["silence", e.Destination] == "false" && intelligenceResponse != string.Empty)
                 {
-                    string[] intelligenceParameters = { e.Sender.nickname };
+                    string[] intelligenceParameters = { e.Sender.Nickname };
                     var messageService = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO: fix me
                     irc.IrcPrivmsg(e.Destination, messageService.RetrieveMessage(intelligenceResponse, e.Destination, intelligenceParameters));
                 }

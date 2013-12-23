@@ -96,15 +96,27 @@
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Database\IDAL.cs" />
     <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
+    <Compile Include="Legacy\Model\ILegacyUser.cs" />
+    <Compile Include="Model\Interfaces\IUser.cs" />
+    <Compile Include="Model\FlagGroupUser.cs" />
+    <Compile Include="Model\FlagGroupAssoc.cs" />
+    <Compile Include="Model\FlagGroup.cs" />
     <Compile Include="Model\Messages.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupAssocMap.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
+    <Compile Include="Repositories\FlagGroupRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
     <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Repositories\WelcomeUserRepository.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
@@ -213,7 +225,7 @@
     <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
-    <Compile Include="Legacy\Model\User.cs" />
+    <Compile Include="Legacy\Model\LegacyUser.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>

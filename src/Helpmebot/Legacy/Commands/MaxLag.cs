@@ -48,7 +48,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Maxlag(User source, string channel, string[] args, IMessageService messageService)
+        public Maxlag(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -88,7 +88,7 @@ namespace helpmebot6.Commands
         /// <returns>The response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] messageParameters = { this.Source.nickname, GetMaxLag(this.Channel) };
+            string[] messageParameters = { this.Source.Nickname, GetMaxLag(this.Channel) };
             string message = this.MessageService.RetrieveMessage("cmdMaxLag",this.Channel, messageParameters);
             return new CommandResponseHandler(message);
         }

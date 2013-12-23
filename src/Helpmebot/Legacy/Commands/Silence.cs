@@ -46,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Silence(User source, string channel, string[] args, IMessageService messageService)
+        public Silence(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -110,7 +110,7 @@ namespace helpmebot6.Commands
                 }
                 else
                 {
-                    if (this.Source.accessLevel >= User.UserRights.Superuser)
+                    if (this.Source.accessLevel >= LegacyUser.UserRights.Superuser)
                     {
                         LegacyConfig.singleton()["silence"] = newValue;
                     }

@@ -46,7 +46,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Disable(User source, string channel, string[] args, IMessageService messageService)
+        public Disable(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

@@ -44,7 +44,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Myaccess(User source, string channel, string[] args, IMessageService messageService)
+        public Myaccess(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -61,7 +61,7 @@ namespace helpmebot6.Commands
             {
                 foreach (string s in this.Arguments)
                 {
-                    string[] cmdArgs = { s, User.newFromString(s).accessLevel.ToString() };
+                    string[] cmdArgs = { s, LegacyUser.newFromString(s).accessLevel.ToString() };
                     crh.respond(this.MessageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
                 }
             }

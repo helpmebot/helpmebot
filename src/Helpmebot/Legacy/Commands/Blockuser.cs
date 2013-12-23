@@ -46,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Blockuser(User source, string channel, string[] args, IMessageService messageService)
+        public Blockuser(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }

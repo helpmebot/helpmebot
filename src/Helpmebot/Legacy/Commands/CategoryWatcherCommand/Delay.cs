@@ -45,7 +45,7 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Delay(User source, string channel, string[] args, IMessageService messageService)
+        public Delay(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
