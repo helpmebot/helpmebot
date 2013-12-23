@@ -23,6 +23,7 @@ namespace helpmebot.Commands.FunStuff
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>

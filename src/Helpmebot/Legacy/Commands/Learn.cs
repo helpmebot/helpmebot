@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 

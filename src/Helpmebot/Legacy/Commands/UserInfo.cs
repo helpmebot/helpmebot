@@ -32,7 +32,7 @@ namespace helpmebot6.Commands
 
     using Microsoft.Practices.ServiceLocation;
 
-    using User = Helpmebot.User;
+    using User = Helpmebot.Legacy.Model.User;
     
 
     /* returns information about a user

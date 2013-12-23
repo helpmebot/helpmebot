@@ -33,6 +33,7 @@ namespace Helpmebot.Legacy.IRC
 
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Threading;
 
     using Microsoft.Practices.ServiceLocation;

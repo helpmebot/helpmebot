@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>

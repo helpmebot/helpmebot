@@ -27,6 +27,7 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;

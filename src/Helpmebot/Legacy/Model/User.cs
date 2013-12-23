@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Legacy.Model
 {
     using System;
 
@@ -231,7 +231,7 @@ namespace Helpmebot
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
 
                 return UserRights.Normal;

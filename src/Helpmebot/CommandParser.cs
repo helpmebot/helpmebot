@@ -30,6 +30,7 @@ namespace Helpmebot
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
     using Helpmebot.Services.Interfaces;

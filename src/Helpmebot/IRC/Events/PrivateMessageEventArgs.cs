@@ -22,6 +22,8 @@ namespace Helpmebot.IRC.Events
 {
     using System;
 
+    using Helpmebot.Legacy.Model;
+
     /// <summary>
     /// The private message event args.
     /// </summary>

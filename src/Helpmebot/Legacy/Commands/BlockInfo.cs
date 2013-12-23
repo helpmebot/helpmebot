@@ -29,7 +29,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
-    using User = Helpmebot.User;
+    using User = Helpmebot.Legacy.Model.User;
 
     /// <summary>
     /// Returns the block information of a wikipedian

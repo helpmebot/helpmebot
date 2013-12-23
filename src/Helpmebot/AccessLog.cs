@@ -25,6 +25,7 @@ namespace Helpmebot
     using System.Collections.Generic;
 
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands;
 

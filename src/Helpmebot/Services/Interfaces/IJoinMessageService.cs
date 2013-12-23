@@ -20,6 +20,8 @@
 
 namespace Helpmebot.Services.Interfaces
 {
+    using Helpmebot.Legacy.Model;
+
     /// <summary>
     /// The JoinMessageService interface.
     /// </summary>

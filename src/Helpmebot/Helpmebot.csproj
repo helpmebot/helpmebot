@@ -213,7 +213,7 @@
     <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
-    <Compile Include="User.cs" />
+    <Compile Include="Legacy\Model\User.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
     <Compile Include="WordLearner.cs" />
   </ItemGroup>

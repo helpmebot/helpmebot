@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Monitoring;
     using Helpmebot.Services.Interfaces;
 
