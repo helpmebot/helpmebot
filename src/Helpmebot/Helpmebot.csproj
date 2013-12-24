@@ -233,7 +233,7 @@
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="Legacy\Model\LegacyUser.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
-    <Compile Include="WordLearner.cs" />
+    <Compile Include="Legacy\WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentNHibernate">
