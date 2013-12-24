@@ -20,17 +20,34 @@
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Globalization;
+    using System.Linq;
+
     using Helpmebot;
-    using Helpmebot.Legacy;
+    using Helpmebot.ExtensionMethods;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Learns a keyword
     /// </summary>
     internal class Learn : GenericCommand
     {
+        /// <summary>
+        /// The keyword service.
+        /// </summary>
+        private readonly IKeywordService keywordService;
+
+        /// <summary>
+        /// The IRC access layer.
+        /// </summary>
+        private readonly IIrcAccessLayer ircAccessLayer;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Learn"/> class.
         /// </summary>
@@ -49,6 +66,9 @@ namespace helpmebot6.Commands
         public Learn(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
+            // TODO: remove me!
+            this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
+            this.ircAccessLayer = ServiceLocator.Current.GetInstance<IIrcAccessLayer>();
         }
 
         /// <summary>
@@ -57,26 +77,36 @@ namespace helpmebot6.Commands
         /// <returns>The response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            bool action = false;
-            string[] args = this.Arguments;
+            var action = false;
+            var args = this.Arguments.ToList();
+
             if (args[0] == "@action")
             {
                 action = true;
-                GlobalFunctions.popFromFront(ref args);
+                args.PopFromFront();
             }
 
-            if (args.Length >= 2)
+            if (args.Count >= 2)
             {
-                bool hasLearntWord = WordLearner.learn(args[0], string.Join(" ", args, 1, args.Length - 1), action);
-                
-                string message = hasLearntWord ? this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null) : this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
+                var keywordName = args.PopFromFront();
+                string message;
 
-                Helpmebot6.irc.IrcNotice(this.Source.Nickname, message);
+                try
+                {
+                    this.keywordService.Create(keywordName, this.Arguments.Implode(), action);
+                    message = this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null);
+                }
+                catch (Exception)
+                {
+                    message = this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
+                }
+
+                this.ircAccessLayer.IrcNotice(this.Source.Nickname, message);
             }
             else
             {
-                string[] messageParameters = { "learn", "2", args.Length.ToString() };
-                Helpmebot6.irc.IrcNotice(
+                string[] messageParameters = { "learn", "2", args.Count.ToString(CultureInfo.InvariantCulture) };
+                this.ircAccessLayer.IrcNotice(
                     this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

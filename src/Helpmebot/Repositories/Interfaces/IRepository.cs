@@ -32,6 +32,7 @@ namespace Helpmebot.Repositories.Interfaces
     /// The model type
     /// </typeparam>
     public interface IRepository<T> : IDisposable
+        where T : class
     {
         /// <summary>
         /// The save.
@@ -88,5 +89,28 @@ namespace Helpmebot.Repositories.Interfaces
         /// The flush.
         /// </summary>
         void Flush();
+
+        /// <summary>
+        /// The begin transaction.
+        /// </summary>
+        void BeginTransaction();
+
+        /// <summary>
+        /// The roll back.
+        /// </summary>
+        void RollBack();
+
+        /// <summary>
+        /// The delete.
+        /// </summary>
+        /// <param name="criterion">
+        /// The criterion.
+        /// </param>
+        void Delete(ICriterion criterion);
+
+        /// <summary>
+        /// The commit.
+        /// </summary>
+        void Commit();
     }
 }

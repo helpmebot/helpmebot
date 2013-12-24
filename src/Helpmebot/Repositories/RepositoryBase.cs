@@ -21,6 +21,7 @@
 namespace Helpmebot.Repositories
 {
     using System.Collections.Generic;
+    using System.Data;
 
     using Castle.Core.Logging;
 
@@ -149,11 +150,46 @@ namespace Helpmebot.Repositories
         }
 
         /// <summary>
+        /// The delete.
+        /// </summary>
+        /// <param name="criterion">
+        /// The criterion.
+        /// </param>
+        public void Delete(ICriterion criterion)
+        {
+            this.session.Delete(this.session.Get<T>(criterion));
+        }
+
+        /// <summary>
         /// The flush.
         /// </summary>
         public void Flush()
         {
             this.session.Flush();
+        }
+
+        /// <summary>
+        /// The begin transaction.
+        /// </summary>
+        public virtual void BeginTransaction()
+        {
+            this.session.BeginTransaction(IsolationLevel.Serializable);
+        }
+
+        /// <summary>
+        /// The roll back.
+        /// </summary>
+        public virtual void RollBack()
+        {
+            this.session.Transaction.Rollback();
+        }
+
+        /// <summary>
+        /// The commit.
+        /// </summary>
+        public virtual void Commit()
+        {
+            this.session.Transaction.Commit();
         }
 
         /// <summary>

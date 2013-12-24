@@ -104,6 +104,7 @@
     <Compile Include="Model\FlagGroupUser.cs" />
     <Compile Include="Model\FlagGroupAssoc.cs" />
     <Compile Include="Model\FlagGroup.cs" />
+    <Compile Include="Model\Keyword.cs" />
     <Compile Include="Model\Messages.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
@@ -111,21 +112,26 @@
     <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupAssocMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
+    <Compile Include="Persistence\Mappings\KeywordMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IKeywordRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
     <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
+    <Compile Include="Repositories\KeywordRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Repositories\WelcomeUserRepository.cs" />
     <Compile Include="Services\AccessLogService.cs" />
+    <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
+    <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\UserFlagService.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Startup\Installers\LegacyInstaller.cs" />
@@ -234,7 +240,6 @@
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="Legacy\Model\LegacyUser.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
-    <Compile Include="Legacy\WordLearner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentNHibernate">

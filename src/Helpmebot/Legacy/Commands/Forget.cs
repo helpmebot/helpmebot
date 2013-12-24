@@ -20,17 +20,32 @@
 
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Globalization;
+
     using Helpmebot;
-    using Helpmebot.Legacy;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Forgets a keyword
     /// </summary>
     internal class Forget : GenericCommand
     {
+        /// <summary>
+        /// The keyword service.
+        /// </summary>
+        private readonly IKeywordService keywordService;
+
+        /// <summary>
+        /// The IRC access layer.
+        /// </summary>
+        private readonly IIrcAccessLayer ircAccessLayer;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Forget"/> class.
         /// </summary>
@@ -49,6 +64,9 @@ namespace helpmebot6.Commands
         public Forget(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
+            // TODO: remove me!
+            this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
+            this.ircAccessLayer = ServiceLocator.Current.GetInstance<IIrcAccessLayer>();
         }
 
         /// <summary>
@@ -59,19 +77,27 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments.Length >= 1)
             {
-                string forgottenMessage = WordLearner.forget(this.Arguments[0])
-                                              ? this.MessageService.RetrieveMessage("cmdForgetDone", this.Channel, null)
-                                              : this.MessageService.RetrieveMessage(
-                                                  "cmdForgetError",
-                                                  this.Channel,
-                                                  null);
+                string forgottenMessage;
+                try
+                {
+                    foreach (var argument in this.Arguments)
+                    {
+                        this.keywordService.Delete(argument);
+                    }
 
-                Helpmebot6.irc.IrcNotice(this.Source.Nickname, forgottenMessage);
+                    forgottenMessage = this.MessageService.RetrieveMessage("cmdForgetDone", this.Channel, null);
+                }
+                catch (Exception)
+                {
+                    forgottenMessage = this.MessageService.RetrieveMessage("cmdForgetError", this.Channel, null);
+                }
+                
+                this.ircAccessLayer.IrcNotice(this.Source.Nickname, forgottenMessage);
             }
             else
             {
-                string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString() };
-                Helpmebot6.irc.IrcNotice(
+                string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
+                this.ircAccessLayer.IrcNotice(
                     this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

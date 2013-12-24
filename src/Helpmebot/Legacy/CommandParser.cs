@@ -22,6 +22,7 @@ namespace Helpmebot.Legacy
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Reflection;
     using System.Text.RegularExpressions;
 
@@ -155,17 +156,23 @@ namespace Helpmebot.Legacy
              * Check for a learned word
              */
             {
-                WordLearner.RemeberedWord rW = WordLearner.remember(command);
-                CommandResponseHandler crh = new CommandResponseHandler();
-                string wordResponse = rW.phrase;
+                // TODO: remove me
+                var keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
+
+                var keyword = keywordService.Get(command);
+
+                var crh = new CommandResponseHandler();
                 string directedTo = string.Empty;
-                if (wordResponse != string.Empty)
+                if (keyword != null)
                 {
                     if (source.AccessLevel < LegacyUser.UserRights.Normal)
                     {
+                        this.Log.InfoFormat("Access denied for keyword retrieval for {0}", source);
+
                         crh.respond(
                             this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
                             CommandResponseDestination.PrivateMessage);
+
                         string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
                         crh.respond(
                             this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
@@ -173,25 +180,25 @@ namespace Helpmebot.Legacy
                     }
                     else
                     {
+                        string wordResponse = keyword.Response;
+
                         IDictionary<string, object> dict = new Dictionary<string, object>();
 
                         dict.Add("username", source.Username);
                         dict.Add("nickname", source.Nickname);
                         dict.Add("hostname", source.Hostname);
-
                         dict.Add("AccessLevel", source.AccessLevel);
-
                         dict.Add("channel", destination);
 
                         for (int i = 0; i < args.Length; i++)
                         {
-                            dict.Add(i.ToString(), args[i]);
-                            dict.Add(i.ToString() + "*", string.Join(" ", args, i, args.Length - i));
+                            dict.Add(i.ToString(CultureInfo.InvariantCulture), args[i]);
+                            dict.Add(i + "*", string.Join(" ", args, i, args.Length - i));
                         }
 
                         wordResponse = wordResponse.FormatWith(dict);
 
-                        if (rW.action)
+                        if (keyword.Action)
                         {
                             crh.respond(wordResponse.SetupForCtcp("ACTION"));
                         }
@@ -200,13 +207,12 @@ namespace Helpmebot.Legacy
                             directedTo = findRedirection(destination, ref args);
                             crh.respond(wordResponse);
                         }
+
                         this.handleCommandResponseHandler(source, destination, directedTo, crh);
                     }
-                    return;
                 }
             }
         }
-
 
         /// <summary>
         /// Finds the redirection.
