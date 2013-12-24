@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot
+namespace Helpmebot.Legacy
 {
     using System;
     using System.Collections.Generic;
@@ -29,7 +29,6 @@ namespace Helpmebot
 
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;

@@ -32,6 +32,7 @@ namespace Helpmebot
     using Castle.Windsor.Installer;
 
     using Helpmebot.IRC.Events;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;

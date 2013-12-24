@@ -214,7 +214,7 @@
     <Compile Include="Linker.cs" />
     <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
-    <Compile Include="CommandParser.cs" />
+    <Compile Include="Legacy\CommandParser.cs" />
     <Compile Include="Legacy\Configuration\LegacyConfig.cs" />
     <Compile Include="Legacy\Configuration\ConfigurationSetting.cs" />
     <Compile Include="Legacy\Database\DAL.cs" />
