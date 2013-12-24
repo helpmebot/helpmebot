@@ -75,6 +75,7 @@
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
+    <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
