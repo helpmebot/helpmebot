@@ -133,6 +133,8 @@
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\UserFlagService.cs" />
+    <Compile Include="Startup\DeferredInstallerAttribute.cs" />
+    <Compile Include="Startup\DeferredWindsorBootstrap.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Startup\Installers\LegacyInstaller.cs" />
     <Compile Include="Startup\Installers\PersistenceInstaller.cs" />

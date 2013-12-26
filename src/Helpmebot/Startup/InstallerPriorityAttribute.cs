@@ -53,6 +53,11 @@ namespace Helpmebot.Startup
         public const int WindsorSetup = 0;
 
         /// <summary>
+        /// The background.
+        /// </summary>
+        public const int Background = 150;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="InstallerPriorityAttribute"/> class.
         /// </summary>
         /// <param name="priority">

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="WindsorBootstrap.cs" company="Helpmebot Development Team">
+// <copyright file="DeferredWindsorBootstrap.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the WindsorBootstrap type.
+//   The deferred windsor bootstrap.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -24,12 +24,10 @@ namespace Helpmebot.Startup
     using System.Collections.Generic;
     using System.Linq;
 
-    using Castle.Windsor.Installer;
-
     /// <summary>
-    /// Bootstraps Windsor's installer to deal with the priority of installers.
+    /// The deferred windsor bootstrap.
     /// </summary>
-    public class WindsorBootstrap : InstallerFactory
+    public class DeferredWindsorBootstrap : WindsorBootstrap
     {
         /// <summary>
         /// The select.
@@ -44,25 +42,8 @@ namespace Helpmebot.Startup
         {
             IOrderedEnumerable<Type> orderedInstallers = installerTypes.OrderBy(this.GetPriority);
             var enumerable = orderedInstallers.Where(
-                x => !x.GetCustomAttributes(typeof(DeferredInstallerAttribute), false).Any());
+                x => x.GetCustomAttributes(typeof(DeferredInstallerAttribute), false).Any());
             return enumerable;
-        }
-
-        /// <summary>
-        /// The get priority.
-        /// </summary>
-        /// <param name="type">
-        /// The type.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
-        protected int GetPriority(Type type)
-        {
-            var attribute =
-                type.GetCustomAttributes(typeof(InstallerPriorityAttribute), false).FirstOrDefault() as
-                InstallerPriorityAttribute;
-            return attribute != null ? attribute.Priority : InstallerPriorityAttribute.Default;
         }
     }
 }

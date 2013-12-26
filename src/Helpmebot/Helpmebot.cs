@@ -172,9 +172,9 @@ namespace Helpmebot
 
             ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
 
-            Trigger = LegacyConfig.singleton()["commandTrigger"];
-
             irc = new IrcAccessLayer(ircNetwork);
+
+            Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             // TODO: remove me!
             container.Register(Component.For<IIrcAccessLayer>().Instance(irc));
@@ -193,6 +193,9 @@ namespace Helpmebot
 
             // ACC notification monitor
             AccNotifications.getInstance();
+
+            // initialise the deferred installers.
+            container.Install(FromAssembly.This(new DeferredWindsorBootstrap()));
         }
 
         /// <summary>

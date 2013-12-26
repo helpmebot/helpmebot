@@ -25,10 +25,14 @@ namespace Helpmebot.Startup.Installers
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
+    using Helpmebot.Background;
+    using Helpmebot.Background.Interfaces;
+
     /// <summary>
     /// The installer for background services.
     /// </summary>
-    [InstallerPriority(InstallerPriorityAttribute.Default)]
+    [InstallerPriority(InstallerPriorityAttribute.Background)]
+    [DeferredInstaller]
     public class StartableInstaller : IWindsorInstaller
     {
         /// <summary>
