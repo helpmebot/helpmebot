@@ -235,6 +235,7 @@
     <Compile Include="Services\Interfaces\IMessageService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\InstallerPriorityAttribute.cs" />
+    <Compile Include="Startup\Installers\StartableInstaller.cs" />
     <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
