@@ -342,11 +342,10 @@ namespace Helpmebot.Monitoring
                 string listString = string.Empty;
                 foreach (string item in items)
                 {
-                    if (!shortenUrls)
-                    {
-                        listString += "[[" + item + "]]";
-                    }
-                    else
+                    // Display [[]]'ied name of the page which requests help
+                    listString += "[[" + item + "]] ";
+                    // Display an http URL to the page, if desired
+                    if(shortenUrls)
                     {
                         try
                         {
