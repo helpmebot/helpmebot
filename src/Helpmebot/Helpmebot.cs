@@ -60,24 +60,24 @@ namespace Helpmebot
         public static readonly DateTime StartupTime = DateTime.Now;
 
         /// <summary>
-        /// The container.
-        /// </summary>
-        private static IWindsorContainer container;
-
-        /// <summary>
         /// The IRC.
         /// </summary>
         public static IrcAccessLayer irc;
 
         /// <summary>
-        /// The DB access layer.
-        /// </summary>
-        private static DAL dbal;
-
-        /// <summary>
         /// The debug channel.
         /// </summary>
         public static string debugChannel;
+
+        /// <summary>
+        /// The container.
+        /// </summary>
+        private static IWindsorContainer container;
+
+        /// <summary>
+        /// The DB access layer.
+        /// </summary>
+        private static DAL dbal;
 
         /// <summary>
         /// The IRC network.
@@ -113,10 +113,7 @@ namespace Helpmebot
         /// <summary>
         /// The main.
         /// </summary>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        private static void Main(string[] args)
+        private static void Main()
         {
             BootstrapContainer();
 

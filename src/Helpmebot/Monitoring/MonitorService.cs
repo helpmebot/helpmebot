@@ -85,7 +85,7 @@ namespace Helpmebot.Monitoring
             {
                 this.ThreadFatalErrorEvent(this, new EventArgs());
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 this.ThreadFatalErrorEvent(this, new EventArgs());
             }
