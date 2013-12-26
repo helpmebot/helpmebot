@@ -1769,7 +1769,7 @@ namespace Helpmebot.Legacy.IRC
         /// </summary>
         public void RegisterInstance()
         {
-            ThreadList.instance().register(this);
+            ThreadList.GetInstance().Register(this);
         }
 
         /// <summary>

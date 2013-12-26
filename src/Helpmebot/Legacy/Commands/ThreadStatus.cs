@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] statuses = ThreadList.instance().getAllThreadStatus();
+            string[] statuses = ThreadList.GetInstance().GetAllThreadStatus();
             CommandResponseHandler crh = new CommandResponseHandler();
             foreach (string item in statuses)
             {

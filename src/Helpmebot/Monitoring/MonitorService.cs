@@ -104,7 +104,7 @@ namespace Helpmebot.Monitoring
 
         public void RegisterInstance()
         {
-            ThreadList.instance().register(this);
+            ThreadList.GetInstance().Register(this);
         }
 
         public string[] GetThreadStatus()

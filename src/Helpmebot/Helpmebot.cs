@@ -107,7 +107,7 @@ namespace Helpmebot
         /// </summary>
         public static void Stop()
         {
-            ThreadList.instance().stop();
+            ThreadList.GetInstance().Stop();
         }
 
         /// <summary>
