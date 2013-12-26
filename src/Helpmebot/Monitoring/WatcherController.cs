@@ -344,8 +344,9 @@ namespace Helpmebot.Monitoring
                 {
                     // Display [[]]'ied name of the page which requests help
                     listString += "[[" + item + "]] ";
+                    
                     // Display an http URL to the page, if desired
-                    if(shortenUrls)
+                    if (shortenUrls)
                     {
                         try
                         {
