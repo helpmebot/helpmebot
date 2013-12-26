@@ -41,5 +41,66 @@ namespace Helpmebot.Model
         /// Gets or sets a value indicating whether action.
         /// </summary>
         public virtual bool Action { get; set; }
+
+        /// <summary>
+        /// The equals.
+        /// </summary>
+        /// <param name="obj">
+        /// The object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (object.ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            return this.Equals((Keyword)obj);
+        }
+
+        /// <summary>
+        /// The get hash code.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = this.Name != null ? this.Name.GetHashCode() : 0;
+                hashCode = (hashCode * 397) ^ (this.Response != null ? this.Response.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ this.Action.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// The equals.
+        /// </summary>
+        /// <param name="other">
+        /// The other.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        protected bool Equals(Keyword other)
+        {
+            return string.Equals(this.Name, other.Name) && string.Equals(this.Response, other.Response)
+                   && this.Action.Equals(other.Action);
+        }
     }
 }
