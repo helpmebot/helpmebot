@@ -22,13 +22,10 @@ namespace Helpmebot
 {
     using System;
     using System.Globalization;
-    using System.Security;
 
     using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
-    using Castle.MicroKernel.Releasers;
     using Castle.Windsor;
-    using Castle.Windsor.Diagnostics;
     using Castle.Windsor.Installer;
 
     using Helpmebot.IRC.Events;
@@ -45,6 +42,12 @@ namespace Helpmebot
     using helpmebot6.Commands;
 
     using Microsoft.Practices.ServiceLocation;
+
+#if PERFCOUNTER
+    using System.Security;
+    using Castle.MicroKernel.Releasers;
+    using Castle.Windsor.Diagnostics;
+#endif
 
     /// <summary>
     /// Helpmebot main class
