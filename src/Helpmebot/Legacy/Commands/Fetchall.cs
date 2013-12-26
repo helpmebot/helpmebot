@@ -59,8 +59,8 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            CommandResponseHandler crh = new CommandResponseHandler();
-            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.Instance().getKeywords();
+            var crh = new CommandResponseHandler();
+            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.Instance().GetKeywords();
             string[] args = this.Arguments;
             if (args.Contains("@cats"))
             {

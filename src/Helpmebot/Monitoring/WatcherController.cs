@@ -23,7 +23,6 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
 
@@ -45,6 +44,11 @@ namespace Helpmebot.Monitoring
     internal class WatcherController
     {
         /// <summary>
+        /// The _instance.
+        /// </summary>
+        private static WatcherController instance;
+
+        /// <summary>
         /// The watchers.
         /// </summary>
         private readonly Dictionary<string, CategoryWatcher> watchers;
@@ -65,7 +69,7 @@ namespace Helpmebot.Monitoring
             this.messageService = messageService;
             this.watchers = new Dictionary<string, CategoryWatcher>();
 
-            DAL.Select q = new DAL.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
+            var q = new DAL.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
             q.addOrder(new DAL.Select.Order("watcher_priority", true));
             q.setFrom("watcher");
             q.addLimit(100, 0);
@@ -83,6 +87,13 @@ namespace Helpmebot.Monitoring
             }
         }
 
+        #region Public methods
+
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
         /// <summary>
         /// The instance.
         /// </summary>
@@ -93,23 +104,12 @@ namespace Helpmebot.Monitoring
         {
             if (instance == null)
             {
-                var ms = ServiceLocator.Current.GetInstance<IMessageService>(); //TODO sort me out
+                var ms = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO sort me out
                 instance = new WatcherController(ms);
             }
 
             return instance;
         }
-
-        /// <summary>
-        /// The _instance.
-        /// </summary>
-        private static WatcherController instance;
-
-
-        /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
 
         /// <summary>
         /// Determines whether the specified word is a valid keyword.
@@ -134,7 +134,7 @@ namespace Helpmebot.Monitoring
             string channelId = LegacyConfig.singleton().getChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
-            DAL.Select q = new DAL.Select("COUNT(*)");
+            var q = new DAL.Select("COUNT(*)");
             q.setFrom("channelwatchers");
             q.addWhere(new DAL.WhereConds("cw_channel", channelId));
             q.addWhere(new DAL.WhereConds("cw_watcher", watcherId));
@@ -180,71 +180,129 @@ namespace Helpmebot.Monitoring
             {
                 List<string> items = cw.DoCategoryCheck().ToList();
                 UpdateDatabaseTable(items, key);
-                return CompileMessage(items, key, destination, true);
+                return this.CompileMessage(items, key, destination, true);
             }
 
             return null;
         }
 
         /// <summary>
-        /// The category has items event.
+        /// Gets the keywords.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private void CategoryHasItemsEvent(object sender, CategoryHasItemsEventArgs e)
+        /// <returns>
+        /// The list of keywords
+        /// </returns>
+        public Dictionary<string, CategoryWatcher>.KeyCollection GetKeywords()
         {
-            List<string> items = e.Items.ToList();
+            return this.watchers.Keys;
+        }
 
-            IEnumerable<string> newItems = UpdateDatabaseTable(items, e.Keyword);
+        /// <summary>
+        /// Sets the delay.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <param name="newDelay">
+        /// The new delay.
+        /// </param>
+        /// <param name="messageContext">
+        /// The message Context.
+        /// </param>
+        /// <returns>
+        /// The <see cref="CommandResponseHandler"/>
+        /// </returns>
+        public CommandResponseHandler SetDelay(string keyword, int newDelay, object messageContext)
+        {
+            if (newDelay < 1)
+            {
+                string message = this.messageService.RetrieveMessage("delayTooShort", messageContext, null);
+                return new CommandResponseHandler(message);
+            }
 
-            DAL.Select q = new DAL.Select("channel_name");
-            q.addJoin(
-                "channelwatchers",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
+            CategoryWatcher cw = this.GetWatcher(keyword);
+            if (cw != null)
+            {
+                var vals = new Dictionary<string, string>
+                                                      {
+                                                          {
+                                                              "watcher_sleeptime",
+                                                              newDelay.ToString(
+                                                                  CultureInfo.InvariantCulture)
+                                                          }
+                                                      };
+                DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
+                cw.SleepTime = newDelay;
+                return new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
+            }
+
+            return new CommandResponseHandler();
+        }
+
+        /// <summary>
+        /// The get delay.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int GetDelay(string keyword)
+        {
+            CategoryWatcher cw = this.GetWatcher(keyword);
+            if (cw != null)
+            {
+                return cw.SleepTime;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Determines whether [is watcher in channel] [the specified channel].
+        /// </summary>
+        /// <param name="channel">The channel.</param>
+        /// <param name="keyword">The keyword.</param>
+        /// <returns>
+        ///     <c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsWatcherInChannel(string channel, string keyword)
+        {
+            var q = new DAL.Select("COUNT(*)");
+            q.setFrom("channelwatchers");
+            q.addWhere(new DAL.WhereConds("channel_name", channel));
+            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
             q.addJoin(
                 "channel",
                 DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "channel_id", "=", false, "cw_channel"));
-            q.setFrom("watcher");
-            q.addWhere(new DAL.WhereConds("watcher_keyword", e.Keyword));
-            q.addLimit(10, 0);
+                new DAL.WhereConds(false, "cw_channel", "=", false, "channel_id"));
+            q.addJoin(
+                "watcher",
+                DAL.Select.JoinTypes.Inner,
+                new DAL.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
 
-            ArrayList channels = DAL.singleton().executeSelect(q);
-            foreach (object[] item in channels)
-            {
-                string channel = (string)item[0];
-
-                string message = CompileMessage(items, e.Keyword, channel, false);
-                if (LegacyConfig.singleton()["silence", channel] == "false")
-                {
-                    Helpmebot6.irc.IrcPrivmsg(channel, message);
-                }
-            }
+            var count = DAL.singleton().executeScalarSelect(q);
+            return count != "0";
         }
+
+        #endregion
 
         /// <summary>
         /// The update database table.
         /// </summary>
         /// <param name="items">
-        /// The items.
+        ///     The items.
         /// </param>
         /// <param name="keyword">
-        /// The keyword.
+        ///     The keyword.
         /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable"/>.
-        /// </returns>
-        private static IEnumerable<string> UpdateDatabaseTable(IEnumerable<string> items, string keyword)
+        private static void UpdateDatabaseTable(IEnumerable<string> items, string keyword)
         {
-            List<string> newItems = new List<string>();
-            foreach (string item in items)
+            var newItems = new List<string>();
+            foreach (var item in items)
             {
-                DAL.Select q = new DAL.Select("COUNT(*)");
+                var q = new DAL.Select("COUNT(*)");
                 q.setFrom("categoryitems");
                 q.addWhere(new DAL.WhereConds("item_name", item));
                 q.addWhere(new DAL.WhereConds("item_keyword", keyword));
@@ -267,7 +325,7 @@ namespace Helpmebot.Monitoring
                 }
                 else
                 {
-                    Dictionary<string, string> v = new Dictionary<string, string> { { "item_updateflag", "1" } };
+                    var v = new Dictionary<string, string> { { "item_updateflag", "1" } };
                     DAL.singleton()
                         .update(
                             "categoryitems",
@@ -284,10 +342,68 @@ namespace Helpmebot.Monitoring
                     0,
                     new DAL.WhereConds("item_updateflag", 0),
                     new DAL.WhereConds("item_keyword", keyword));
-            Dictionary<string, string> val = new Dictionary<string, string> { { "item_updateflag", "0" } };
+            var val = new Dictionary<string, string> { { "item_updateflag", "0" } };
             DAL.singleton().update("categoryitems", val, 0);
+        }
 
-            return newItems;
+        /// <summary>
+        /// The get watcher id.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        private static int GetWatcherId(string keyword)
+        {
+            var q = new DAL.Select("watcher_id");
+            q.setFrom("watcher");
+            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
+            string watcherIdString = DAL.singleton().executeScalarSelect(q);
+
+            return int.Parse(watcherIdString);
+        }
+
+        /// <summary>
+        /// The category has items event.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void CategoryHasItemsEvent(object sender, CategoryHasItemsEventArgs e)
+        {
+            List<string> items = e.Items.ToList();
+
+            UpdateDatabaseTable(items, e.Keyword);
+
+            var q = new DAL.Select("channel_name");
+            q.addJoin(
+                "channelwatchers",
+                DAL.Select.JoinTypes.Inner,
+                new DAL.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
+            q.addJoin(
+                "channel",
+                DAL.Select.JoinTypes.Inner,
+                new DAL.WhereConds(false, "channel_id", "=", false, "cw_channel"));
+            q.setFrom("watcher");
+            q.addWhere(new DAL.WhereConds("watcher_keyword", e.Keyword));
+            q.addLimit(10, 0);
+
+            ArrayList channels = DAL.singleton().executeSelect(q);
+            foreach (object[] item in channels)
+            {
+                var channel = (string)item[0];
+
+                string message = this.CompileMessage(items, e.Keyword, channel, false);
+                if (LegacyConfig.singleton()["silence", channel] == "false")
+                {
+                    Helpmebot6.irc.IrcPrivmsg(channel, message);
+                }
+            }
         }
 
         /// <summary>
@@ -350,7 +466,7 @@ namespace Helpmebot.Monitoring
                     {
                         try
                         {
-                            Uri uri = new Uri(LegacyConfig.singleton()["wikiUrl"] + item);
+                            var uri = new Uri(LegacyConfig.singleton()["wikiUrl"] + item);
                             listString += IsGd.shorten(uri).ToString();
                         }
                         catch (UriFormatException ex)
@@ -362,7 +478,7 @@ namespace Helpmebot.Monitoring
 
                     if (showWaitTime)
                     {
-                        DAL.Select q = new DAL.Select("item_entrytime");
+                        var q = new DAL.Select("item_entrytime");
                         q.addWhere(new DAL.WhereConds("item_name", item));
                         q.addWhere(new DAL.WhereConds("item_keyword", keyword));
                         q.setFrom("categoryitems");
@@ -435,124 +551,6 @@ namespace Helpmebot.Monitoring
             CategoryWatcher cw;
             bool success = this.watchers.TryGetValue(keyword, out cw);
             return success ? cw : null;
-        }
-
-        /// <summary>
-        /// Gets the keywords.
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, CategoryWatcher>.KeyCollection getKeywords()
-        {
-            return this.watchers.Keys;
-        }
-
-        /// <summary>
-        /// Sets the delay.
-        /// </summary>
-        /// <param name="keyword">
-        /// The keyword.
-        /// </param>
-        /// <param name="newDelay">
-        /// The new delay.
-        /// </param>
-        /// <param name="messageContext">
-        /// The message Context.
-        /// </param>
-        /// <returns>
-        /// </returns>
-        public CommandResponseHandler SetDelay(string keyword, int newDelay, object messageContext)
-        {
-            if (newDelay < 1)
-            {
-                string message = this.messageService.RetrieveMessage("delayTooShort", messageContext, null);
-                return new CommandResponseHandler(message);
-            }
-
-            CategoryWatcher cw = this.GetWatcher(keyword);
-            if (cw != null)
-            {
-                Dictionary<string, string> vals = new Dictionary<string, string>
-                                                      {
-                                                          {
-                                                              "watcher_sleeptime",
-                                                              newDelay.ToString(
-                                                                  CultureInfo.InvariantCulture)
-                                                          }
-                                                      };
-                DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
-                cw.SleepTime = newDelay;
-                return new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
-            }
-
-            return new CommandResponseHandler();
-        }
-
-        /// <summary>
-        /// Gets the delay.
-        /// </summary>
-        /// <param name="keyword">The keyword.</param>
-        /// <returns></returns>
-        public int GetDelay(string keyword)
-        {
-            CategoryWatcher cw = this.GetWatcher(keyword);
-            if (cw != null)
-            {
-                return cw.SleepTime;
-            }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// The get watcher id.
-        /// </summary>
-        /// <param name="keyword">
-        /// The keyword.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
-        private static int GetWatcherId(string keyword)
-        {
-            DAL.Select q = new DAL.Select("watcher_id");
-            q.setFrom("watcher");
-            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
-            string watcherIdString = DAL.singleton().executeScalarSelect(q);
-
-            return int.Parse(watcherIdString);
-        }
-
-
-        /// <summary>
-        /// Determines whether [is watcher in channel] [the specified channel].
-        /// </summary>
-        /// <param name="channel">The channel.</param>
-        /// <param name="keyword">The keyword.</param>
-        /// <returns>
-        ///     <c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsWatcherInChannel(string channel, string keyword)
-        {
-            DAL.Select q = new DAL.Select("COUNT(*)");
-            q.setFrom("channelwatchers");
-            q.addWhere(new DAL.WhereConds("channel_name", channel));
-            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
-            q.addJoin(
-                "channel",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "cw_channel", "=", false, "channel_id"));
-            q.addJoin(
-                "watcher",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
-
-            string count = DAL.singleton().executeScalarSelect(q);
-            if (count == "0")
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }
