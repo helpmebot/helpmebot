@@ -1,0 +1,224 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="LegacyUser.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// <summary>
+//   Defines the LegacyUser type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Helpmebot.Legacy.Model
+{
+    using System;
+
+    using Castle.Core.Logging;
+
+    using Helpmebot.Legacy.Database;
+
+    using Microsoft.Practices.ServiceLocation;
+
+    /// <summary>
+    /// The user.
+    /// </summary>
+    public class LegacyUser : ILegacyUser
+    {
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        private readonly DAL _db;
+
+        private UserRights _accessLevel;
+        private bool _retrievedAccessLevel;
+
+        public LegacyUser()
+        {
+            this._db = DAL.singleton();
+        }
+
+        /// <summary>
+        /// Gets or sets the nickname.
+        /// </summary>
+        /// <value>The nickname.</value>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the username.
+        /// </summary>
+        /// <value>The username.</value>
+        public string Username { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname.
+        /// </summary>
+        /// <value>The hostname.</value>
+        public string Hostname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the account.
+        /// </summary>
+        public string Account { get; set; }
+
+        /// <summary>
+        /// Gets or sets the network.
+        /// </summary>
+        /// <value>The network.</value>
+        public uint Network { get; private set; }
+
+        /// <summary>
+        /// News from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns></returns>
+        public static LegacyUser newFromString(string source)
+        {
+            return newFromString(source, 0);
+        }
+
+        /// <summary>
+        /// New user from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="network">The network.</param>
+        /// <returns></returns>
+        public static LegacyUser newFromString(string source, uint network)
+        {
+            string user, host;
+            string nick = user = host = null;
+            try
+            {
+                if ((source.Contains("@")) && (source.Contains("!")))
+                {
+                    char[] splitSeparators = {'!', '@'};
+                    string[] sourceSegment = source.Split(splitSeparators, 3);
+                    nick = sourceSegment[0];
+                    user = sourceSegment[1];
+                    host = sourceSegment[2];
+                }
+                else if (source.Contains("@"))
+                {
+                    char[] splitSeparators = {'@'};
+                    string[] sourceSegment = source.Split(splitSeparators, 2);
+                    nick = sourceSegment[0];
+                    host = sourceSegment[1];
+                }
+                else
+                {
+                    nick = source;
+                }
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
+            }
+
+            LegacyUser ret = new LegacyUser
+                           {
+                               Hostname = host,
+                               Nickname = nick,
+                               Username = user,
+                               Network = network
+                           };
+            return ret;
+        }
+
+        public static LegacyUser newFromStringWithAccessLevel(string source, UserRights accessLevel)
+        {
+            return newFromStringWithAccessLevel(source, 0, accessLevel);
+        }
+
+        public static LegacyUser newFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
+        {
+            LegacyUser u = newFromString(source, network);
+            u._accessLevel = accessLevel;
+            return u;
+        }
+
+        /// <summary>
+        ///   Recompiles the source string
+        /// </summary>
+        /// <returns>nick!user@host, OR nick@host, OR nick</returns>
+        public override string ToString()
+        {
+
+            string endResult = string.Empty;
+
+            if (this.Nickname != null)
+                endResult = this.Nickname;
+
+            if (this.Username != null)
+            {
+                endResult += "!" + this.Username;
+            }
+            if (this.Hostname != null)
+            {
+                endResult += "@" + this.Hostname;
+            }
+
+            return endResult;
+        }
+
+        /// <summary>
+        /// Gets or sets the access level.
+        /// </summary>
+        /// <value>The access level.</value>
+        public UserRights AccessLevel
+        {
+            get
+            {
+                try
+                {
+                    if (this._retrievedAccessLevel == false)
+                    {
+                        DAL.Select q = new DAL.Select("user_accesslevel");
+                        q.addWhere(new DAL.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
+                        q.addWhere(new DAL.WhereConds(true, this.Username, "LIKE", false, "user_username"));
+                        q.addWhere(new DAL.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
+                        q.addOrder(new DAL.Select.Order("user_accesslevel", true));
+                        q.setFrom("user");
+
+                        string accesslevel = this._db.executeScalarSelect(q) ??
+                                             "Normal";
+
+                        UserRights ret =
+                            (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
+
+                        this._accessLevel = ret;
+                        this._retrievedAccessLevel = true;
+                        return ret;
+                    }
+                    return this._accessLevel;
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Error(ex.Message, ex);
+                }
+
+                return UserRights.Normal;
+            }
+            set { throw new NotImplementedException(); }
+        }
+
+        public enum UserRights
+        {
+            Developer = 3,
+            Superuser = 2,
+            Advanced = 1,
+            Normal = 0,
+            Semiignored = -1,
+            Ignored = -2
+        }
+    }
+}

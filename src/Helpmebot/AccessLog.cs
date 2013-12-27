@@ -25,6 +25,7 @@ namespace Helpmebot
     using System.Collections.Generic;
 
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands;
 
@@ -54,7 +55,7 @@ namespace Helpmebot
         /// <param name="logEntry">The log entry.</param>
         public bool save(AccessLogEntry logEntry)
         {
-            return DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.accessLevel.ToString(),
+            return DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.AccessLevel.ToString(),
                                           logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
                                           (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel, logEntry.alParams) != -1;
         }
@@ -67,26 +68,38 @@ namespace Helpmebot
             /// <summary>
             /// Initializes a new instance of the <see cref="AccessLogEntry"/> struct.
             /// </summary>
-            /// <param name="source">The source.</param>
-            /// <param name="command">The command.</param>
-            /// <param name="success">if set to <c>true</c> [success].</param>
-            /// <param name="channel">The channel the command was launched from</param>
-            /// <param name="parameters"></param>
-            public AccessLogEntry(User source, Type command, bool success, string channel, string[] parameters)
+            /// <param name="source">
+            /// The source.
+            /// </param>
+            /// <param name="command">
+            /// The command.
+            /// </param>
+            /// <param name="success">
+            /// if set to <c>true</c> [success].
+            /// </param>
+            /// <param name="channel">
+            /// The channel the command was launched from
+            /// </param>
+            /// <param name="parameters">
+            /// </param>
+            /// <param name="requiredAccessLevel">
+            /// The required Access Level.
+            /// </param>
+            public AccessLogEntry(LegacyUser source, Type command, bool success, string channel, string[] parameters, LegacyUser.UserRights requiredAccessLevel)
             {
                 this._alId = 0;
                 this._alDate = new DateTime(0);
                 this._alUser = source;
                 this._alClass = command;
                 this._alAllowed = success;
-                this._alReqaccesslevel = ((GenericCommand)Activator.CreateInstance(this._alClass, source, channel, parameters)).AccessLevel;
+                this._alReqaccesslevel = requiredAccessLevel;
                 this._channel = channel;
-                this._params = string.Join(" ", parameters) ?? string.Empty;
+                this._params = string.Join(" ", parameters);
             }
 
             private  int _alId;
-            private  User _alUser;
-            private  User.UserRights _alReqaccesslevel;
+            private  LegacyUser _alUser;
+            private  LegacyUser.UserRights _alReqaccesslevel;
             private  Type _alClass;
             private  DateTime _alDate;
             private  bool _alAllowed;
@@ -106,7 +119,7 @@ namespace Helpmebot
             /// Gets the access log user.
             /// </summary>
             /// <value>The al user.</value>
-            public User alUser
+            public LegacyUser alUser
             {
                 get { return this._alUser; }
             }
@@ -115,7 +128,7 @@ namespace Helpmebot
             /// Gets the access log required access level.
             /// </summary>
             /// <value>The al reqaccesslevel.</value>
-            public User.UserRights alReqaccesslevel
+            public LegacyUser.UserRights alReqaccesslevel
             {
                 get { return this._alReqaccesslevel; }
             }
@@ -177,7 +190,7 @@ namespace Helpmebot
                     AccessLogEntry entry = new AccessLogEntry();
 
                     string usermask = string.Empty;
-                    User.UserRights useraccess = User.UserRights.Normal;
+                    LegacyUser.UserRights useraccess = LegacyUser.UserRights.Normal;
                     #region parse
                     for (int i = 0; i < row.Length; i++)
                     {
@@ -191,10 +204,10 @@ namespace Helpmebot
                                 usermask = row[i];
                                 break;
                             case ACCESSLOG_USER_ACCESS:
-                                useraccess = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                useraccess = (LegacyUser.UserRights) Enum.Parse(typeof (LegacyUser.UserRights), row[i]);
                                 break;
                             case ACCESSLOG_COMMAND_ACCESS:
-                                entry._alReqaccesslevel = (User.UserRights) Enum.Parse(typeof (User.UserRights), row[i]);
+                                entry._alReqaccesslevel = (LegacyUser.UserRights) Enum.Parse(typeof (LegacyUser.UserRights), row[i]);
                                 break;
                             case ACCESSLOG_DATE:
                                 entry._alDate = DateTime.Parse(row[i]);
@@ -213,7 +226,7 @@ namespace Helpmebot
                                 break;
                         }
 
-                        entry._alUser = User.newFromStringWithAccessLevel(usermask, useraccess);
+                        entry._alUser = LegacyUser.newFromStringWithAccessLevel(usermask, useraccess);
 
                     }
                     #endregion
@@ -240,7 +253,7 @@ namespace Helpmebot
         /// </summary>
         /// <param name="source">The source.</param>
         /// <returns><c>true</c> if the user is flooding; otherwise <c>false</c></returns>
-        public bool doFloodCheck(User source)
+        public bool doFloodCheck(LegacyUser source)
         {
             //TODO: Implement
             return false;

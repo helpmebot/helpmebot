@@ -28,10 +28,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Helpmebot")]
 [assembly: AssemblyDescription("Helpmebot IRC Bot")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Simon Walker")]
-[assembly: AssemblyProduct("Helpmebot")]
-[assembly: AssemblyCopyright("Copyright Simon Walker (c) 2009 Some Rights Reserved")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -41,15 +37,5 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("00bf5bfa-dd47-425c-965b-9a62406444ff")]
-
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-[assembly: AssemblyVersion("6.2.*")]
-[assembly: NeutralResourcesLanguageAttribute("")]
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("HelpmebotUnitTests")]
 
 [assembly: log4net.Config.XmlConfigurator(Watch = false, ConfigFile = "logger.config")]

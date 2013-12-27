@@ -25,27 +25,27 @@ namespace Helpmebot.Legacy.Database
     using System.Collections.Generic;
     using System.Data;
     using System.Net.Sockets;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
 
     /// <summary>
     /// Database access class
     /// </summary>
-    public sealed class DAL : IDisposable
+    public class DAL : IDisposable, IDAL
     {
-       /// <summary>
-        /// The log4net logger for this class
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         private MySqlConnection _connection;
 
@@ -59,11 +59,13 @@ namespace Helpmebot.Legacy.Database
         /// <returns></returns>
         public static DAL singleton()
         {
-            return _singleton ?? (_singleton = new DAL());
+
+            return _singleton ?? (_singleton = new DAL(ServiceLocator.Current.GetInstance<ILogger>()));
         }
 
-        private DAL()
+        public DAL(ILogger logger)
         {
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.Database.DAL");
         }
         #endregion
 
@@ -449,35 +451,7 @@ namespace Helpmebot.Legacy.Database
             cmd.ExecuteNonQuery();
         }
 
-// ReSharper disable InconsistentNaming
-        public void proc_HMB_UPDATE_BINARYSTORE(byte[] raw, string desc)
-        // ReSharper restore InconsistentNaming
-        {
-            MySqlCommand cmd = new MySqlCommand
-                                   {
-                                       Connection = this._connection,
-                                       CommandType =
-                                           CommandType.StoredProcedure,
-                                       CommandText =
-                                           "HMB_UPDATE_BINARYSTORE"
-                                   };
-            cmd.Parameters.Add("@raw", MySqlDbType.Blob).Value = raw;
-            cmd.Parameters.Add("@desc", MySqlDbType.VarChar).Value = desc;
-            lock (this)
-            {
-                try
-                {
-                    this.runConnectionTest();
-                    cmd.ExecuteNonQuery();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Log.Error(ex.Message, ex);
-                }
-            }
-        }
-
-// ReSharper disable InconsistentNaming
+        // ReSharper disable InconsistentNaming
         public string proc_HMB_GET_LOCAL_OPTION(string option, string channel)
 // ReSharper restore InconsistentNaming
         {
@@ -671,6 +645,12 @@ namespace Helpmebot.Legacy.Database
                 this._from = from;
             }
 
+            public Select From(string from)
+            {
+                this.setFrom(from);
+                return this;
+            }
+
             /// <summary>
             /// Adds a JOIN clause.
             /// </summary>
@@ -692,6 +672,12 @@ namespace Helpmebot.Legacy.Database
                 {
                     this._wheres.AddLast(condition);    
                 }
+            }
+
+            public Select Where(params WhereConds[] conditions)
+            {
+                this.addWhere(conditions);
+                return this;
             }
 
             /// <summary>

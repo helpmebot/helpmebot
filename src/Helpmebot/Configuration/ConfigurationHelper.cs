@@ -39,8 +39,7 @@ namespace Helpmebot.Configuration
         {
             get
             {
-                DatabaseConfiguration databaseConfiguration =
-                    ConfigurationManager.GetSection("database") as DatabaseConfiguration;
+                var databaseConfiguration = ConfigurationManager.GetSection("database") as DatabaseConfiguration;
                 return databaseConfiguration;
             }
         }

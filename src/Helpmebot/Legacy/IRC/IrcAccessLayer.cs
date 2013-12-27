@@ -23,32 +23,27 @@ namespace Helpmebot.Legacy.IRC
 {
     using System;
     using System.Collections;
-    using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Net.Sockets;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
 
+    using Castle.Core.Logging;
+
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Threading;
 
-    using log4net;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   IRC Access Layer - Provides an interface to IRC.
     /// </summary>
-    public sealed class IrcAccessLayer : IThreadedSystem
+    public sealed class IrcAccessLayer : IThreadedSystem, IIrcAccessLayer
     {
         #region Readonly Fields
-
-        /// <summary>
-        /// The log4net logger for this class
-        /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// The names list.
@@ -146,6 +141,10 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         public IrcAccessLayer(uint ircNetwork)
         {
+            // FIXME: Remove me!
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.IRC.IrcAccessLayer");
+
             this.FloodProtectionWaitTime = 500;
             this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
             this.networkId = ircNetwork; 
@@ -215,6 +214,10 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         public IrcAccessLayer(string server, uint port, string nickname, string password, string username, string realname)
         {
+            // FIXME: Remove me!
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+            this.Log = logger.CreateChildLogger("Helpmebot.Legacy.IRC.IrcAccessLayer");
+
             this.LogEvents = true;
             this.FloodProtectionWaitTime = 500;
             this.ClientVersion = "Helpmebot IRC Access Layer 1.0";
@@ -243,6 +246,152 @@ namespace Helpmebot.Legacy.IRC
 
         #endregion
 
+        #region delegates
+
+        /// <summary>
+        /// The ping event handler.
+        /// </summary>
+        /// <param name="datapacket">
+        /// The data packet.
+        /// </param>
+        public delegate void PingEventHandler(string datapacket);
+
+        /// <summary>
+        /// The nickname change event handler.
+        /// </summary>
+        /// <param name="oldnick">
+        /// The old nick.
+        /// </param>
+        /// <param name="newnick">
+        /// The new nick.
+        /// </param>
+        public delegate void NicknameChangeEventHandler(string oldnick, string newnick);
+
+        /// <summary>
+        /// The name reply event handler.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="names">
+        /// The names.
+        /// </param>
+        public delegate void NameReplyEventHandler(string channel, string[] names);
+
+        /// <summary>
+        /// The mode change event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="subject">
+        /// The subject.
+        /// </param>
+        /// <param name="flagchanges">
+        /// The flag changes.
+        /// </param>
+        /// <param name="parameter">
+        /// The parameter.
+        /// </param>
+        public delegate void ModeChangeEventHandler(LegacyUser source, string subject, string flagchanges, string parameter);
+
+        /// <summary>
+        /// The quit event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public delegate void QuitEventHandler(LegacyUser source, string message);
+
+        /// <summary>
+        /// The join event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        public delegate void JoinEventHandler(LegacyUser source, string channel);
+
+        /// <summary>
+        /// The part event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public delegate void PartEventHandler(LegacyUser source, string channel, string message);
+
+        /// <summary>
+        /// The topic event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="topic">
+        /// The topic.
+        /// </param>
+        public delegate void TopicEventHandler(LegacyUser source, string channel, string topic);
+
+        /// <summary>
+        /// The invite event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="nickname">
+        /// The nickname.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        public delegate void InviteEventHandler(LegacyUser source, string nickname, string channel);
+
+        /// <summary>
+        /// The kick event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="nick">
+        /// The nick.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public delegate void KickEventHandler(LegacyUser source, string channel, string nick, string message);
+
+        /// <summary>
+        /// The private message event handler.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public delegate void PrivmsgEventHandler(LegacyUser source, string destination, string message);
+
+        #endregion
+
         #region events
 
         /// <summary>
@@ -254,46 +403,56 @@ namespace Helpmebot.Legacy.IRC
         /// The unrecognised data received event.
         /// </summary>
         public event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
-        
-        public event EventHandler connectionRegistrationSucceededEvent;
 
-        public delegate void PingEventHandler(string datapacket);
+        /// <summary>
+        /// The connection registration succeeded event.
+        /// </summary>
+        public event EventHandler ConnectionRegistrationSucceededEvent;
 
-        public event PingEventHandler pingEvent;
+        /// <summary>
+        /// The ping event.
+        /// </summary>
+        public event PingEventHandler PingEvent;
 
-        public delegate void NicknameChangeEventHandler(string oldnick, string newnick);
+        /// <summary>
+        /// The nickname change event.
+        /// </summary>
+        public event NicknameChangeEventHandler NicknameChangeEvent;
 
-        public event NicknameChangeEventHandler nicknameChangeEvent;
+        /// <summary>
+        /// The mode change event.
+        /// </summary>
+        public event ModeChangeEventHandler ModeChangeEvent;
 
-        public delegate void ModeChangeEventHandler(User source, string subject, string flagchanges, string parameter);
+        /// <summary>
+        /// The quit event.
+        /// </summary>
+        public event QuitEventHandler QuitEvent;
 
-        public event ModeChangeEventHandler modeChangeEvent;
+        /// <summary>
+        /// The join event.
+        /// </summary>
+        public event JoinEventHandler JoinEvent;
 
-        public delegate void QuitEventHandler(User source, string message);
+        /// <summary>
+        /// The part event.
+        /// </summary>
+        public event PartEventHandler PartEvent;
 
-        public event QuitEventHandler quitEvent;
+        /// <summary>
+        /// The topic event.
+        /// </summary>
+        public event TopicEventHandler TopicEvent;
 
-        public delegate void JoinEventHandler(User source, string channel);
+        /// <summary>
+        /// The invite event.
+        /// </summary>
+        public event InviteEventHandler InviteEvent;
 
-        public event JoinEventHandler joinEvent;
-
-        public delegate void PartEventHandler(User source, string channel, string message);
-
-        public event PartEventHandler partEvent;
-
-        public delegate void TopicEventHandler(User source, string channel, string topic);
-
-        public event TopicEventHandler topicEvent;
-
-        public delegate void InviteEventHandler(User source, string nickname, string channel);
-
-        public event InviteEventHandler inviteEvent;
-
-        public delegate void KickEventHandler(User source, string channel, string nick, string message);
-
-        public event KickEventHandler kickEvent;
-
-        public delegate void PrivmsgEventHandler(User source, string destination, string message);
+        /// <summary>
+        /// The kick event.
+        /// </summary>
+        public event KickEventHandler KickEvent;
 
         /// <summary>
         /// The private message event.
@@ -310,15 +469,21 @@ namespace Helpmebot.Legacy.IRC
         /// </summary>
         public event EventHandler<PrivateMessageEventArgs> NoticeEvent;
 
-        public event EventHandler errNicknameInUseEvent;
-        public event EventHandler errUnavailResource;
+        /// <summary>
+        /// The err nickname in use event.
+        /// </summary>
+        public event EventHandler ErrNicknameInUseEvent;
 
-        public delegate void NameReplyEventHandler(string channel, string[] names);
+        /// <summary>
+        /// The err unavailable resource.
+        /// </summary>
+        public event EventHandler ErrUnavailResource;
 
-        // TODO: invoke this event somewhere
-        public event NameReplyEventHandler nameReplyEvent;
-        
-        private event EventHandler connectionRegistrationRequiredEvent;
+        /// <summary>
+        /// The connection registration required event.
+        /// </summary>
+        private event EventHandler ConnectionRegistrationRequiredEvent;
+
         #endregion
 
         #region properties
@@ -445,33 +610,23 @@ namespace Helpmebot.Legacy.IRC
             get
             {
                 Type t = Type.GetType("System.String");
+                if (t == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
                 return (string[])this.channelList.ToArray(t);
             }
         }
-        
+
+        /// <summary>
+        /// Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        private ILogger Log { get; set; }
+
         #endregion
 
         #region Public Methods
-
-        /// <summary>
-        /// The wrap CTCP.
-        /// </summary>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string WrapCTCP(string command, string parameters)
-        {
-            ASCIIEncoding asc = new ASCIIEncoding();
-            byte[] ctcp = { Convert.ToByte(1) };
-            return asc.GetString(ctcp) + command.ToUpper()
-                    + (parameters == string.Empty ? string.Empty : " " + parameters) + asc.GetString(ctcp);
-        }
 
         /// <summary>
         /// The connect.
@@ -501,13 +656,13 @@ namespace Helpmebot.Legacy.IRC
                 this.ircReaderThread.Start();
                 this.ircWriterThread.Start();
 
-                this.connectionRegistrationRequiredEvent(this, new EventArgs());
+                this.ConnectionRegistrationRequiredEvent(this, new EventArgs());
 
                 return true;
             }
             catch (SocketException ex)
             {
-                Log.Error(ex.Message, ex);
+                this.Log.Error(ex.Message, ex);
                 return false;
             }
         }
@@ -806,9 +961,6 @@ namespace Helpmebot.Legacy.IRC
         /// <summary>
         /// The IRC MOTD.
         /// </summary>
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
         public void IrcMotd()
         {
             this.SendLine("MOTD");
@@ -816,10 +968,7 @@ namespace Helpmebot.Legacy.IRC
 
         /// <summary>
         /// The IRC local users.
-        /// </summary>    
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
+        /// </summary>
         public void IrcLusers()
         {
             this.SendLine("LUSERS");
@@ -827,10 +976,7 @@ namespace Helpmebot.Legacy.IRC
 
         /// <summary>
         /// The IRC version.
-        /// </summary>    
-        /// <remarks>
-        /// TODO: Expand for network staff use
-        /// </remarks>
+        /// </summary>
         public void IrcVersion()
         {
             this.SendLine("VERSION");
@@ -1046,16 +1192,16 @@ namespace Helpmebot.Legacy.IRC
                 catch (ThreadAbortException ex)
                 {
                     threadIsAlive = false;
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
                 catch (IOException ex)
                 {
                     threadIsAlive = false;
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
             } 
             while (threadIsAlive);
@@ -1090,7 +1236,7 @@ namespace Helpmebot.Legacy.IRC
 
                     if (line != null)
                     {
-                        Log.Info("< " + line);
+                        this.Log.Info("< " + line);
                         this.ircWriter.WriteLine(line);
                         this.ircWriter.Flush();
                         Thread.Sleep(this.FloodProtectionWaitTime);
@@ -1104,17 +1250,17 @@ namespace Helpmebot.Legacy.IRC
                 catch (ThreadAbortException ex)
                 {
                     threadIsAlive = false;
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                     this.sendQ.Clear();
                 }
                 catch (IOException ex)
                 {
                     threadIsAlive = false;
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex.Message, ex);
+                    this.Log.Error(ex.Message, ex);
                 }
             }
             while (threadIsAlive && this.ircReaderThread.IsAlive);
@@ -1137,23 +1283,22 @@ namespace Helpmebot.Legacy.IRC
         {
             this.DataReceivedEvent += this.IrcDataReceivedEvent;
             this.UnrecognisedDataReceivedEvent += this.UnrecognisedDataReceivedEventHandler;
-            this.connectionRegistrationRequiredEvent += this.RegisterConnection;
-            this.pingEvent += this.IrcPong;
-            this.nicknameChangeEvent += this.IrcNicknameChangeEvent;
-            this.quitEvent += this.IrcQuitEvent;
-            this.joinEvent += this.IrcJoinEvent;
-            this.partEvent += this.IrcPartEvent;
-            this.topicEvent += this.IrcTopicEvent;
-            this.modeChangeEvent += this.IrcModeChangeEvent;
-            this.inviteEvent += this.IrcInviteEvent;
-            this.kickEvent += this.IrcKickEvent;
+            this.ConnectionRegistrationRequiredEvent += this.RegisterConnection;
+            this.PingEvent += this.IrcPong;
+            this.NicknameChangeEvent += this.IrcNicknameChangeEvent;
+            this.QuitEvent += this.IrcQuitEvent;
+            this.JoinEvent += this.IrcJoinEvent;
+            this.PartEvent += this.IrcPartEvent;
+            this.TopicEvent += this.IrcTopicEvent;
+            this.ModeChangeEvent += this.IrcModeChangeEvent;
+            this.InviteEvent += this.IrcInviteEvent;
+            this.KickEvent += this.IrcKickEvent;
             this.PrivateMessageEvent += this.IrcPrivateMessageEvent;
             this.ClientToClientEvent += this.IrcClientToClientEvent;
             this.NoticeEvent += this.IrcNoticeEvent;
-            this.errNicknameInUseEvent += this.AssumeTakenNickname;
-            this.errUnavailResource += this.IrcErrorUnavailResource;
-            this.nameReplyEvent += this.IrcNameReplyEvent;
-            this.connectionRegistrationSucceededEvent += this.IrcConnectionRegistrationSucceededEvent;
+            this.ErrNicknameInUseEvent += this.AssumeTakenNickname;
+            this.ErrUnavailResource += this.IrcErrorUnavailResource;
+            this.ConnectionRegistrationSucceededEvent += this.IrcConnectionRegistrationSucceededEvent;
         }
 
         /// <summary>
@@ -1167,12 +1312,18 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void UnrecognisedDataReceivedEventHandler(object sender, DataReceivedEventArgs e)
         {
-            Log.Debug("DATA RECIEVED EVENT WITH DATA " + e.Data);
+            this.Log.Debug("DATA RECIEVED EVENT WITH DATA " + e.Data);
         }
 
         /// <summary>
         /// The IRC connection registration succeeded event.
         /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         private void IrcConnectionRegistrationSucceededEvent(object sender, EventArgs e)
         {
             this.IrcPrivmsg(this.nickserv, "IDENTIFY " + this.myNickname + " " + this.myPassword);
@@ -1182,6 +1333,12 @@ namespace Helpmebot.Legacy.IRC
         /// <summary>
         /// The IRC error unavailable resource.
         /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
         private void IrcErrorUnavailResource(object sender, EventArgs e)
         {
             if (this.nickserv != string.Empty)
@@ -1208,67 +1365,17 @@ namespace Helpmebot.Legacy.IRC
         }
 
         /// <summary>
-        /// The created reply event.
-        /// </summary>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        private void ReplyCreatedEvent(string parameters)
-        {
-        }
-
-        /// <summary>
-        /// The reply your host event.
-        /// </summary>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        private void ReplyYourHostEvent(string parameters)
-        {
-        }
-
-        /// <summary>
-        /// The IRC name reply event.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="names">
-        /// The names.
-        /// </param>
-        private void IrcNameReplyEvent(string channel, IEnumerable<string> names)
-        {
-            if (!this.namesList.ContainsKey(channel))
-            {
-                return;
-            }
-
-            foreach (string name in names)
-            {
-                ArrayList channelNamesList = (ArrayList)this.namesList[channel];
-                string newName = name.Trim('@', '+');
-                if (!channelNamesList.Contains(newName))
-                {
-                    channelNamesList.Add(newName);
-                }
-            }
-        }
-
-        /// <summary>
         /// The IRC notice event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="message">
-        /// The message.
+        /// <param name="e">
+        /// The e.
         /// </param>
         private void IrcNoticeEvent(object sender, PrivateMessageEventArgs e)
         {
-            Log.Debug("NOTICE EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
+            this.Log.Debug("NOTICE EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
         }
 
         /// <summary>
@@ -1282,20 +1389,20 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcClientToClientEvent(object sender, PrivateMessageEventArgs e)
         {
-            Log.Debug("CTCP EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
+            this.Log.Debug("CTCP EVENT FROM " + e.Sender + " TO " + e.Destination + " MESSAGE " + e.Message);
             switch (e.Message.Split(' ')[0].ToUpper())
             {
                 case "VERSION":
-                    this.CtcpReply(e.Sender.nickname, "VERSION", this.ClientVersion);
+                    this.CtcpReply(e.Sender.Nickname, "VERSION", this.ClientVersion);
                     break;
                 case "TIME":
-                    this.CtcpReply(e.Sender.nickname, "TIME", DateTime.Now.ToString(CultureInfo.InvariantCulture));
+                    this.CtcpReply(e.Sender.Nickname, "TIME", DateTime.Now.ToString(CultureInfo.InvariantCulture));
                     break;
                 case "PING":
-                    this.CtcpReply(e.Sender.nickname, "PING", e.Message.Split(' ')[1]);
+                    this.CtcpReply(e.Sender.Nickname, "PING", e.Message.Split(' ')[1]);
                     break;
                 case "FINGER":
-                    this.CtcpReply(e.Sender.nickname, "FINGER", this.RealName + ", idle " + this.IdleTime);
+                    this.CtcpReply(e.Sender.Nickname, "FINGER", this.RealName + ", idle " + this.IdleTime);
                     break;
             }
         }
@@ -1330,9 +1437,9 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="message">
         /// The message.
         /// </param>
-        private void IrcKickEvent(User source, string channel, string nick, string message)
+        private void IrcKickEvent(LegacyUser source, string channel, string nick, string message)
         {
-            Log.Debug("KICK FROM " + channel + " BY " + source + " AFFECTED " + nick + " REASON " + message);
+            this.Log.Debug("KICK FROM " + channel + " BY " + source + " AFFECTED " + nick + " REASON " + message);
         }
 
         /// <summary>
@@ -1347,9 +1454,9 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="channel">
         /// The channel.
         /// </param>
-        private void IrcInviteEvent(User source, string nickname, string channel)
+        private void IrcInviteEvent(LegacyUser source, string nickname, string channel)
         {
-            Log.Debug("INVITE FROM " + source + " TO " + nickname + " CHANNEL " + channel);
+            this.Log.Debug("INVITE FROM " + source + " TO " + nickname + " CHANNEL " + channel);
         }
 
         /// <summary>
@@ -1367,9 +1474,9 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="parameter">
         /// The parameter.
         /// </param>
-        private void IrcModeChangeEvent(User source, string subject, string flagChanges, string parameter)
+        private void IrcModeChangeEvent(LegacyUser source, string subject, string flagChanges, string parameter)
         {
-            Log.Debug("MODE CHANGE BY " + source + " ON " + subject + " CHANGES " + flagChanges + " PARAMETER " + parameter);
+            this.Log.Debug("MODE CHANGE BY " + source + " ON " + subject + " CHANGES " + flagChanges + " PARAMETER " + parameter);
         }
 
         /// <summary>
@@ -1384,9 +1491,9 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="topic">
         /// The topic.
         /// </param>
-        private void IrcTopicEvent(User source, string channel, string topic)
+        private void IrcTopicEvent(LegacyUser source, string channel, string topic)
         {
-            Log.Debug("TOPIC CHANGED BY " + source + " IN " + channel + " TOPIC " + topic);
+            this.Log.Debug("TOPIC CHANGED BY " + source + " IN " + channel + " TOPIC " + topic);
         }
 
         /// <summary>
@@ -1401,10 +1508,10 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="message">
         /// The message.
         /// </param>
-        private void IrcPartEvent(User source, string channel, string message)
+        private void IrcPartEvent(LegacyUser source, string channel, string message)
         {
-            Log.Debug("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
-            if (source.nickname == this.Nickname)
+            this.Log.Debug("PART BY " + source + " FROM " + channel + " MESSAGE " + message);
+            if (source.Nickname == this.Nickname)
             {
                 this.channelList.Remove(channel);
             }
@@ -1419,10 +1526,10 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="channel">
         /// The channel.
         /// </param>
-        private void IrcJoinEvent(User source, string channel)
+        private void IrcJoinEvent(LegacyUser source, string channel)
         {
-            Log.Debug("JOIN EVENT BY " + source + " INTO " + channel);
-            if (source.nickname == this.Nickname)
+            this.Log.Debug("JOIN EVENT BY " + source + " INTO " + channel);
+            if (source.Nickname == this.Nickname)
             {
                 this.channelList.Add(channel);
             }
@@ -1437,9 +1544,9 @@ namespace Helpmebot.Legacy.IRC
         /// <param name="message">
         /// The message.
         /// </param>
-        private void IrcQuitEvent(User source, string message)
+        private void IrcQuitEvent(LegacyUser source, string message)
         {
-            Log.Debug("QUIT BY " + source + " MESSAGE " + message);
+            this.Log.Debug("QUIT BY " + source + " MESSAGE " + message);
         }
 
         /// <summary>
@@ -1453,7 +1560,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcNicknameChangeEvent(string oldNick, string newNick)
         {
-            Log.Debug("NICK CHANGE BY " + oldNick + " TO " + newNick);
+            this.Log.Debug("NICK CHANGE BY " + oldNick + " TO " + newNick);
         }
 
         #endregion
@@ -1469,7 +1576,7 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void IrcDataReceivedEvent(object sender, DataReceivedEventArgs e)
         {
-            Log.Info(e.Data);
+            this.Log.Info(e.Data);
 
             char[] colonSeparator = { ':' };
 
@@ -1477,11 +1584,11 @@ namespace Helpmebot.Legacy.IRC
             string messagesource = command = parameters = string.Empty;
             BasicParser(e.Data, ref messagesource, ref command, ref parameters);
 
-            User source = new User();
+            LegacyUser source = new LegacyUser();
 
             if (messagesource != null)
             {
-                source = User.newFromString(messagesource, this.networkId);
+                source = LegacyUser.newFromString(messagesource, this.networkId);
             }
 
             switch (command)
@@ -1496,10 +1603,10 @@ namespace Helpmebot.Legacy.IRC
 
                     break;
                 case "PING":
-                    this.pingEvent(parameters);
+                    this.PingEvent(parameters);
                     break;
                 case "NICK":
-                    this.nicknameChangeEvent(source.nickname, parameters.Substring(1));
+                    this.NicknameChangeEvent(source.Nickname, parameters.Substring(1));
                     break;
                 case "MODE":
                     try
@@ -1508,7 +1615,7 @@ namespace Helpmebot.Legacy.IRC
                         string flagchanges = parameters.Split(' ')[1];
                         string param = parameters.Split(' ').Length > 2 ? parameters.Split(' ')[2] : string.Empty;
 
-                        this.modeChangeEvent(source, subject, flagchanges, param);
+                        this.ModeChangeEvent(source, subject, flagchanges, param);
                     }
                     catch (NullReferenceException ex)
                     {
@@ -1517,25 +1624,25 @@ namespace Helpmebot.Legacy.IRC
 
                     break;
                 case "QUIT":
-                    this.quitEvent(source, parameters);
+                    this.QuitEvent(source, parameters);
                     break;
                 case "JOIN":
-                    this.joinEvent(source, parameters);
+                    this.JoinEvent(source, parameters);
                     break;
                 case "PART":
                     string s = parameters.Contains(new string(colonSeparator))
                                    ? parameters.Split(colonSeparator, 2)[1]
                                    : string.Empty;
-                    this.partEvent(source, parameters.Split(' ')[0], s);
+                    this.PartEvent(source, parameters.Split(' ')[0], s);
                     break;
                 case "TOPIC":
-                    this.topicEvent(source, parameters.Split(' ')[0], parameters.Split(colonSeparator, 2)[1]);
+                    this.TopicEvent(source, parameters.Split(' ')[0], parameters.Split(colonSeparator, 2)[1]);
                     break;
                 case "INVITE":
-                    this.inviteEvent(source, parameters.Split(' ')[0], parameters.Split(' ')[1].Substring(1));
+                    this.InviteEvent(source, parameters.Split(' ')[0], parameters.Split(' ')[1].Substring(1));
                     break;
                 case "KICK":
-                    this.kickEvent(
+                    this.KickEvent(
                         source,
                         parameters.Split(' ')[0],
                         parameters.Split(' ')[1],
@@ -1549,7 +1656,7 @@ namespace Helpmebot.Legacy.IRC
                     string destination = parameters.Split(colonSeparator, 2)[0].Trim();
                     if (destination == this.Nickname)
                     {
-                        destination = source.nickname;
+                        destination = source.Nickname;
                     }
 
                     if (message.StartsWith(asc.GetString(ctcp)))
@@ -1572,7 +1679,7 @@ namespace Helpmebot.Legacy.IRC
                     string noticedestination = parameters.Split(colonSeparator, 2)[0].Trim();
                     if (noticedestination == this.Nickname)
                     {
-                        noticedestination = source.nickname;
+                        noticedestination = source.Nickname;
                     }
 
                     this.NoticeEvent(
@@ -1580,22 +1687,16 @@ namespace Helpmebot.Legacy.IRC
                         new PrivateMessageEventArgs(source, noticedestination, parameters.Split(colonSeparator, 2)[1]));
                     break;
                 case "001":
-                    this.connectionRegistrationSucceededEvent(this, new EventArgs());
-                    break;
-                case "002":
-                    this.ReplyYourHostEvent(parameters);
-                    break;
-                case "003":
-                    this.ReplyCreatedEvent(parameters);
+                    this.ConnectionRegistrationSucceededEvent(this, new EventArgs());
                     break;
                 case "004":
                     this.ReplyMyInfoEvent(parameters);
                     break;
                 case "433":
-                    this.errNicknameInUseEvent(this, new EventArgs());
+                    this.ErrNicknameInUseEvent(this, new EventArgs());
                     break;
                 case "437":
-                    this.errUnavailResource(this, new EventArgs());
+                    this.ErrUnavailResource(this, new EventArgs());
                     break;
                 default:
                     var temp = this.UnrecognisedDataReceivedEvent;
@@ -1668,7 +1769,7 @@ namespace Helpmebot.Legacy.IRC
         /// </summary>
         public void RegisterInstance()
         {
-            ThreadList.instance().register(this);
+            ThreadList.GetInstance().Register(this);
         }
 
         /// <summary>

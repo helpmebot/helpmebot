@@ -22,8 +22,16 @@ namespace Helpmebot.Threading
 {
     using System;
 
+    /// <summary>
+    /// The ThreadedSystem interface.
+    /// </summary>
     public interface IThreadedSystem
     {
+        /// <summary>
+        /// The thread fatal error event.
+        /// </summary>
+        event EventHandler ThreadFatalErrorEvent;
+
         /// <summary>
         ///   Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
@@ -35,11 +43,11 @@ namespace Helpmebot.Threading
         void RegisterInstance();
 
         /// <summary>
-        ///   Get the status of thread(s) in this instance.
+        /// Get the status of thread(s) in this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// The string array.
+        /// </returns>
         string[] GetThreadStatus();
-
-        event EventHandler ThreadFatalErrorEvent;
     }
 }

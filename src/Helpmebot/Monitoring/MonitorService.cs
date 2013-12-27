@@ -85,7 +85,7 @@ namespace Helpmebot.Monitoring
             {
                 this.ThreadFatalErrorEvent(this, new EventArgs());
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 this.ThreadFatalErrorEvent(this, new EventArgs());
             }
@@ -104,7 +104,7 @@ namespace Helpmebot.Monitoring
 
         public void RegisterInstance()
         {
-            ThreadList.instance().register(this);
+            ThreadList.GetInstance().Register(this);
         }
 
         public string[] GetThreadStatus()

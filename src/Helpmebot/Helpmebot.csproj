@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B9DDF39F-2C6C-4C0F-9DA4-10C934DD24BD}</ProjectGuid>
@@ -34,34 +35,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>Helpmebot</AssemblyName>
-    <RootNamespace>Helpmebot</RootNamespace>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <OutputType>Exe</OutputType>
-    <AssemblyName>Helpmebot</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>Helpmebot</RootNamespace>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
@@ -74,7 +47,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
@@ -84,121 +57,183 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
+       Other similar extension points exist, see Microsoft.Common.targets.-->
+  <!--<Target Name="BeforeBuild">
   </Target>
   -->
+  <Target Name="AfterBuild" Condition="'$(RunStyleCop)' == 'true'">
+    <Message Text="$(MSBuildExtensionsPath)" />
+    <StyleCopTask ProjectFullPath="$(MSBuildProjectDirectory)" SourceFiles="@(Compile)" ForceFullAnalysis="true" TreatErrorsAsWarnings="true" OutputFile="StyleCopViolations.xml" MaxViolationCount="0">
+      <Output TaskParameter="ViolationCount" PropertyName="StyleCopViolationCount" />
+    </StyleCopTask>
+  </Target>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AccessLog.cs" />
-    <Compile Include="AI\Intelligence.cs" />
-    <Compile Include="BinaryStore.cs" />
+    <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
+    <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
+    <Compile Include="Background\NotificationBackgroundService.cs" />
+    <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="CommandResponse.cs" />
-    <Compile Include="Commands\AccBot\AccCount.cs" />
-    <Compile Include="Commands\AccBot\AccStats.cs" />
-    <Compile Include="Commands\AccBot\AccStatus.cs" />
-    <Compile Include="Commands\AccBot\AccDeploy.cs" />
-    <Compile Include="Commands\Access.cs" />
-    <Compile Include="Commands\Accmon.cs" />
-    <Compile Include="Commands\Afccount.cs" />
-    <Compile Include="Commands\Age.cs" />
-    <Compile Include="Commands\BlockInfo.cs" />
-    <Compile Include="Commands\Date.cs" />
-    <Compile Include="Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
-    <Compile Include="Commands\FunStuff\TargetedFunCommand.cs" />
-    <Compile Include="Commands\Reg.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\Interfaces\ICommand.cs" />
+    <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
+    <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
+    <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
+    <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
+    <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
+    <Compile Include="Legacy\Commands\AccBot\AccDeploy.cs" />
+    <Compile Include="Legacy\Commands\Access.cs" />
+    <Compile Include="Legacy\Commands\Afccount.cs" />
+    <Compile Include="Legacy\Commands\Age.cs" />
+    <Compile Include="Legacy\Commands\BlockInfo.cs" />
+    <Compile Include="Legacy\Commands\Date.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\TargetedFunCommand.cs" />
+    <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="Configuration\ConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\DatabaseConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
+    <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
+    <Compile Include="ExtensionMethods\DateExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
-    <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
-    <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
+    <Compile Include="ExtensionMethods\ListExtensions.cs" />
+    <Compile Include="Legacy\Database\IDAL.cs" />
+    <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
+    <Compile Include="Legacy\Model\ILegacyUser.cs" />
+    <Compile Include="Model\Interfaces\IUser.cs" />
+    <Compile Include="Model\FlagGroupUser.cs" />
+    <Compile Include="Model\FlagGroupAssoc.cs" />
+    <Compile Include="Model\FlagGroup.cs" />
+    <Compile Include="Model\Keyword.cs" />
+    <Compile Include="Model\Messages.cs" />
+    <Compile Include="Model\Notification.cs" />
+    <Compile Include="Model\WelcomeUser.cs" />
+    <Compile Include="Persistence\EntityBase.cs" />
+    <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupAssocMap.cs" />
+    <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
+    <Compile Include="Persistence\Mappings\KeywordMap.cs" />
+    <Compile Include="Persistence\Mappings\NotificationMap.cs" />
+    <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
+    <Compile Include="Persistence\SessionFactoryProvider.cs" />
+    <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\INotificationRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IKeywordRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="IRC\IrcClient.cs" />
     <Compile Include="IRC\Message\IMessage.cs" />
     <Compile Include="IRC\Message\Message.cs" />
     <Compile Include="IRC\NetworkClient.cs" />
+    <Compile Include="Repositories\KeywordRepository.cs" />
+    <Compile Include="Repositories\NotificationRepository.cs" />
+    <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Repositories\WelcomeUserRepository.cs" />
+    <Compile Include="Services\AccessLogService.cs" />
+    <Compile Include="Services\Interfaces\IKeywordService.cs" />
+    <Compile Include="Services\Interfaces\IAccessLogService.cs" />
+    <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
+    <Compile Include="Services\Interfaces\IUserFlagService.cs" />
+    <Compile Include="Services\JoinMessageService.cs" />
+    <Compile Include="Services\KeywordService.cs" />
+    <Compile Include="Services\UserFlagService.cs" />
+    <Compile Include="Startup\DeferredInstallerAttribute.cs" />
+    <Compile Include="Startup\DeferredWindsorBootstrap.cs" />
+    <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
+    <Compile Include="Startup\Installers\LegacyInstaller.cs" />
+    <Compile Include="Startup\Installers\PersistenceInstaller.cs" />
+    <Compile Include="Startup\Installers\LoggerInstaller.cs" />
+    <Compile Include="Startup\Installers\RepositoryInstaller.cs" />
+    <Compile Include="Startup\Installers\ServiceInstaller.cs" />
+    <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
+    <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
+    <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
-    <Compile Include="Commands\Blockuser.cs" />
-    <Compile Include="Commands\CategoryWatcher.cs" />
-    <Compile Include="Commands\CategoryWatcherCommand\Delay.cs" />
-    <Compile Include="Commands\CategoryWatcherCommand\Disable.cs" />
-    <Compile Include="Commands\CategoryWatcherCommand\Enable.cs" />
-    <Compile Include="Commands\Autolink.cs" />
-    <Compile Include="Commands\CategoryWatcherCommand\Status.cs" />
-    <Compile Include="Commands\Configcacheclear.cs" />
-    <Compile Include="Commands\Commandaccess.cs" />
-    <Compile Include="Commands\CategorySize.cs" />
-    <Compile Include="Commands\FunStuff\Beer.cs" />
-    <Compile Include="Commands\FunStuff\Coffee.cs" />
-    <Compile Include="Commands\FunStuff\Charge.cs" />
-    <Compile Include="Commands\FunStuff\Exorcise.cs" />
-    <Compile Include="Commands\FunStuff\Minnow.cs" />
-    <Compile Include="Commands\FunStuff\Nuke.cs" />
-    <Compile Include="Commands\FunStuff\Pat.cs" />
-    <Compile Include="Commands\FunStuff\Pie.cs" />
-    <Compile Include="Commands\FunStuff\Pillow.cs" />
-    <Compile Include="Commands\FunStuff\Stab.cs" />
-    <Compile Include="Commands\FunStuff\Friday.cs" />
-    <Compile Include="Commands\FunStuff\Lick.cs" />
-    <Compile Include="Commands\FunStuff\Tea.cs" />
-    <Compile Include="Commands\FunStuff\Whale.cs" />
-    <Compile Include="Commands\FunStuff\Curl.cs" />
-    <Compile Include="Commands\FunStuff\Drink.cs" />
-    <Compile Include="Commands\FunStuff\Electrocute.cs" />
-    <Compile Include="Commands\FunStuff\Cluebat.cs" />
-    <Compile Include="Commands\FunStuff\FunCommand.cs" />
-    <Compile Include="Commands\FunStuff\Soda.cs" />
-    <Compile Include="Commands\FunStuff\Salmon.cs" />
-    <Compile Include="Commands\FunStuff\Uncurl.cs" />
-    <Compile Include="Commands\FunStuff\Vorticough.cs" />
-    <Compile Include="Commands\FunStuff\Cookie.cs" />
-    <Compile Include="Commands\Gancount.cs" />
-    <Compile Include="Commands\Notify.cs" />
-    <Compile Include="Commands\Editcount.cs" />
-    <Compile Include="Commands\Decode.cs" />
-    <Compile Include="Commands\Fetchall.cs" />
-    <Compile Include="Commands\Forget.cs" />
-    <Compile Include="Commands\Die.cs" />
-    <Compile Include="Commands\FunStuff\Trout.cs" />
-    <Compile Include="Commands\GenericCommand.cs" />
-    <Compile Include="Commands\Geolocate.cs" />
-    <Compile Include="Commands\Helper.cs" />
-    <Compile Include="Commands\Isgd.cs" />
-    <Compile Include="Commands\Join.cs" />
-    <Compile Include="Commands\Learn.cs" />
-    <Compile Include="Commands\Link.cs" />
-    <Compile Include="Commands\MaxLag.cs" />
-    <Compile Include="Commands\MessageCount.cs" />
-    <Compile Include="Commands\Myaccess.cs" />
-    <Compile Include="Commands\Page.cs" />
-    <Compile Include="Commands\Part.cs" />
-    <Compile Include="Commands\Ping.cs" />
-    <Compile Include="Commands\ProtectedCommand.cs" />
-    <Compile Include="Commands\Raw.cs" />
-    <Compile Include="Commands\Rawctcp.cs" />
-    <Compile Include="Commands\Registration.cs" />
-    <Compile Include="Commands\Resolve.cs" />
-    <Compile Include="Commands\Rights.cs" />
-    <Compile Include="Commands\FunStuff\SayHi.cs" />
-    <Compile Include="Commands\Set.cs" />
-    <Compile Include="Commands\Silence.cs" />
-    <Compile Include="Commands\ThreadStatus.cs" />
-    <Compile Include="Commands\Time.cs" />
-    <Compile Include="Commands\Uptime.cs" />
-    <Compile Include="Commands\UserInfo.cs" />
-    <Compile Include="Commands\Version.cs" />
-    <Compile Include="Commands\Welcomer.cs" />
+    <Compile Include="Legacy\Commands\Blockuser.cs" />
+    <Compile Include="Legacy\Commands\CategoryWatcher.cs" />
+    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Delay.cs" />
+    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Disable.cs" />
+    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Enable.cs" />
+    <Compile Include="Legacy\Commands\Autolink.cs" />
+    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Status.cs" />
+    <Compile Include="Legacy\Commands\Configcacheclear.cs" />
+    <Compile Include="Legacy\Commands\Commandaccess.cs" />
+    <Compile Include="Legacy\Commands\CategorySize.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Beer.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Coffee.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Charge.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Exorcise.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Minnow.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Nuke.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Pat.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Pie.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Pillow.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Stab.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Friday.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Lick.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Tea.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Whale.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Curl.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Drink.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Electrocute.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Cluebat.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\FunCommand.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Soda.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Salmon.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Uncurl.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Vorticough.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Cookie.cs" />
+    <Compile Include="Legacy\Commands\Gancount.cs" />
+    <Compile Include="Legacy\Commands\Notify.cs" />
+    <Compile Include="Legacy\Commands\Editcount.cs" />
+    <Compile Include="Legacy\Commands\Decode.cs" />
+    <Compile Include="Legacy\Commands\Fetchall.cs" />
+    <Compile Include="Legacy\Commands\Forget.cs" />
+    <Compile Include="Legacy\Commands\Die.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Trout.cs" />
+    <Compile Include="Legacy\Commands\GenericCommand.cs" />
+    <Compile Include="Legacy\Commands\Geolocate.cs" />
+    <Compile Include="Legacy\Commands\Helper.cs" />
+    <Compile Include="Legacy\Commands\Isgd.cs" />
+    <Compile Include="Legacy\Commands\Join.cs" />
+    <Compile Include="Legacy\Commands\Learn.cs" />
+    <Compile Include="Legacy\Commands\Link.cs" />
+    <Compile Include="Legacy\Commands\MaxLag.cs" />
+    <Compile Include="Legacy\Commands\MessageCount.cs" />
+    <Compile Include="Legacy\Commands\Myaccess.cs" />
+    <Compile Include="Legacy\Commands\Page.cs" />
+    <Compile Include="Legacy\Commands\Part.cs" />
+    <Compile Include="Legacy\Commands\Ping.cs" />
+    <Compile Include="Legacy\Commands\ProtectedCommand.cs" />
+    <Compile Include="Legacy\Commands\Raw.cs" />
+    <Compile Include="Legacy\Commands\Rawctcp.cs" />
+    <Compile Include="Legacy\Commands\Registration.cs" />
+    <Compile Include="Legacy\Commands\Resolve.cs" />
+    <Compile Include="Legacy\Commands\Rights.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\SayHi.cs" />
+    <Compile Include="Legacy\Commands\Set.cs" />
+    <Compile Include="Legacy\Commands\Silence.cs" />
+    <Compile Include="Legacy\Commands\ThreadStatus.cs" />
+    <Compile Include="Legacy\Commands\Time.cs" />
+    <Compile Include="Legacy\Commands\Uptime.cs" />
+    <Compile Include="Legacy\Commands\UserInfo.cs" />
+    <Compile Include="Legacy\Commands\Version.cs" />
+    <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
-    <Compile Include="CommandParser.cs" />
+    <Compile Include="Legacy\CommandParser.cs" />
     <Compile Include="Legacy\Configuration\LegacyConfig.cs" />
     <Compile Include="Legacy\Configuration\ConfigurationSetting.cs" />
     <Compile Include="Legacy\Database\DAL.cs" />
@@ -206,22 +241,51 @@
     <Compile Include="Helpmebot.cs" />
     <Compile Include="Legacy\IRC\IrcAccessLayer.cs" />
     <Compile Include="Monitoring\MonitorService.cs" />
-    <Compile Include="Monitoring\NewbieWelcomer.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializableArrayList.cs" />
+    <Compile Include="Services\Interfaces\IMessageService.cs" />
+    <Compile Include="Services\MessageService.cs" />
+    <Compile Include="Startup\InstallerPriorityAttribute.cs" />
+    <Compile Include="Startup\Installers\StartableInstaller.cs" />
+    <Compile Include="Startup\WindsorBootstrap.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="WordLearner.cs" />
+    <Compile Include="Legacy\Model\LegacyUser.cs" />
+    <Compile Include="Startup\WindsorServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="log4net">
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\lib\fluentnhibernate\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\..\lib\nhibernate\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core">
+      <HintPath>..\..\lib\castle.windsor\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging">
+      <HintPath>..\..\lib\castle.windsor\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Services.Logging.Log4netIntegration">
+      <HintPath>..\..\lib\castle.windsor\Castle.Services.Logging.Log4netIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\..\lib\castle.windsor\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\lib\microsoft.practices.servicelocation\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.6.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\mysql.data\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\..\lib\nhibernate\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -275,5 +339,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Configuration\Mapping\" />
+  </ItemGroup>
 </Project>

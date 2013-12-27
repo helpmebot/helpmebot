@@ -44,7 +44,7 @@ namespace Helpmebot
     /// <summary>
     /// The individual response
     /// </summary>
-    internal struct CommandResponse
+    public struct CommandResponse
     {
         public CommandResponseDestination destination;
         public string message;

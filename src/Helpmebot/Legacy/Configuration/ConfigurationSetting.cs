@@ -21,9 +21,8 @@
 namespace Helpmebot.Legacy.Configuration
 {
     using System;
-    using System.Reflection;
 
-    using log4net;
+    using Castle.Core.Logging;
 
     /// <summary>
     /// Represents a configuration setting
@@ -31,10 +30,9 @@ namespace Helpmebot.Legacy.Configuration
     internal class ConfigurationSetting
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// Gets or sets the Castle.Windsor Logger
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        public ILogger Log { get; set; }
 
         private const double CACHE_TIMEOUT = 5;
 

@@ -22,14 +22,17 @@ namespace Helpmebot.Configuration.XmlSections
 {
     using System.Configuration;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// The database configuration.
     /// </summary>
     public class DatabaseConfiguration : ConfigurationSection
     {
-        public DatabaseConfiguration()
-        {
-        }
+        /// <summary>
+        /// The connection string.
+        /// </summary>
+        private MySqlConnectionStringBuilder connectionString;
 
         /// <summary>
         /// Gets the hostname.
@@ -88,6 +91,30 @@ namespace Helpmebot.Configuration.XmlSections
             get
             {
                 return (string)base["password"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        public MySqlConnectionStringBuilder ConnectionString
+        {
+            get
+            {
+                if (this.connectionString == null)
+                {
+                    this.connectionString =
+                        new MySqlConnectionStringBuilder
+                            {
+                                Database = this.Schema,
+                                Password = this.Password,
+                                Server = this.Hostname,
+                                UserID = this.Username,
+                                Port = (uint)this.Port
+                            };
+                }
+                
+                return this.connectionString;
             }
         }
     }

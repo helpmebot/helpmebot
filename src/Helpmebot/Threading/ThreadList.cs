@@ -22,10 +22,11 @@ namespace Helpmebot.Threading
 {
     using System;
     using System.Collections;
-    using System.Reflection;
     using System.Threading;
 
-    using log4net;
+    using Castle.Core.Logging;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Maintains a list of all the available threads the bot is running
@@ -33,75 +34,73 @@ namespace Helpmebot.Threading
     internal class ThreadList
     {
         /// <summary>
-        /// The log4net logger for this class
+        /// The _instance.
         /// </summary>
-        private static readonly ILog Log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static ThreadList singletonInstance;
 
-        private static ThreadList _instance;
+        /// <summary>
+        /// The log.
+        /// </summary>
+        private readonly ILogger log;
 
-        public static ThreadList instance()
-        {
-            return _instance ?? ( _instance = new ThreadList( ) );
-        }
-
+        /// <summary>
+        /// Initialises a new instance of the <see cref="ThreadList"/> class.
+        /// </summary>
         protected ThreadList()
         {
-            this._threadedObjects = new ArrayList();
+            this.ThreadedObjects = new ArrayList();
+
+            // TODO: remove me!
+            this.log = ServiceLocator.Current.GetInstance<ILogger>();
         }
 
-        private readonly ArrayList _threadedObjects;
-        public ArrayList ThreadedObjects { get { return this._threadedObjects; } }
+        /// <summary>
+        /// Gets the threaded objects.
+        /// </summary>
+        public ArrayList ThreadedObjects { get; private set; }
 
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="ThreadList"/>.
+        /// </returns>
+        public static ThreadList GetInstance()
+        {
+            return singletonInstance ?? (singletonInstance = new ThreadList());
+        }
+        
         /// <summary>
         /// Registers the specified sender.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        public void register(IThreadedSystem sender)
+        public void Register(IThreadedSystem sender)
         {
-            this._threadedObjects.Add(sender);
+            this.ThreadedObjects.Add(sender);
         }
 
         /// <summary>
         /// Creates a new thread to start shutting down other threads
         /// </summary>
-        public void stop()
+        public void Stop()
         {
-            Thread shutdownControllerThread
-                = new Thread(this.shutdownMethod);
+            var shutdownControllerThread = new Thread(this.ShutdownMethod);
 
             shutdownControllerThread.Start();
         }
 
-        private void shutdownMethod()
-        {
-
-            foreach (object obj in this._threadedObjects)
-            {
-                try
-                {
-                    Log.Info("Attempting to shut down threaded system: " + obj.GetType());
-                    ((IThreadedSystem) obj).Stop();
-                }
-                catch (NotImplementedException ex)
-                {
-                    Log.Error(ex.Message, ex);
-                }
-            }
-
-            Log.Info("All threaded systems have been shut down.");
-        }
-
         /// <summary>
-        /// Gets all thread status.
+        /// The get all thread status.
         /// </summary>
-        /// <returns></returns>
-        public string[] getAllThreadStatus()
+        /// <returns>
+        /// The array of strings.
+        /// </returns>
+        public string[] GetAllThreadStatus()
         {
-            ArrayList responses = new ArrayList();
-            foreach (IThreadedSystem item in this._threadedObjects)
+            var responses = new ArrayList();
+            foreach (IThreadedSystem item in this.ThreadedObjects)
             {
-                string status = item.GetType() + ": ";
+                var status = item.GetType() + ": ";
                 try
                 {
                     foreach (string i in item.GetThreadStatus())
@@ -116,11 +115,32 @@ namespace Helpmebot.Threading
                 }
             }
 
-            string[] responseArray = new string[responses.Count];
+            var responseArray = new string[responses.Count];
 
             responses.CopyTo(responseArray);
 
             return responseArray;
+        }
+
+        /// <summary>
+        /// The shutdown method.
+        /// </summary>
+        private void ShutdownMethod()
+        {
+            foreach (var obj in this.ThreadedObjects)
+            {
+                try
+                {
+                    this.log.Info("Attempting to shut down threaded system: " + obj.GetType());
+                    ((IThreadedSystem)obj).Stop();
+                }
+                catch (NotImplementedException ex)
+                {
+                    this.log.Error(ex.Message, ex);
+                }
+            }
+
+            this.log.Info("All threaded systems have been shut down.");
         }
     }
 }
