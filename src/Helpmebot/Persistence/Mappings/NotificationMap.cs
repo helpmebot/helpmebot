@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IThreadedSystem.cs" company="Helpmebot Development Team">
+// <copyright file="NotificationMap.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,40 +14,31 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the IThreadedSystem type.
+//   The notification map.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Threading
+namespace Helpmebot.Persistence.Mappings
 {
-    using System;
+    using FluentNHibernate.Mapping;
+
+    using Helpmebot.Model;
 
     /// <summary>
-    /// The ThreadedSystem interface.
+    /// The notification map.
     /// </summary>
-    public interface IThreadedSystem
+    public class NotificationMap : ClassMap<Notification>
     {
         /// <summary>
-        /// The thread fatal error event.
+        /// Initialises a new instance of the <see cref="NotificationMap"/> class.
         /// </summary>
-        event EventHandler ThreadFatalErrorEvent;
-
-        /// <summary>
-        ///   Stop all threads in this instance to allow for a clean shutdown.
-        /// </summary>
-        void Stop();
-
-        /// <summary>
-        ///   Register this instance of the threaded class with the global list
-        /// </summary>
-        void RegisterInstance();
-
-        /// <summary>
-        /// Get the status of thread(s) in this instance.
-        /// </summary>
-        /// <returns>
-        /// The string array.
-        /// </returns>
-        string[] GetThreadStatus();
+        public NotificationMap()
+        {
+            this.Table("acc_notifications");
+            this.Id(x => x.Id).Column("notif_id");
+            this.Map(x => x.Text).Column("notif_text");
+            this.Map(x => x.Type).Column("notif_type");
+            this.Map(x => x.Date).Column("notif_date");
+        }
     }
 }

@@ -20,12 +20,15 @@
 
 namespace Helpmebot.Background
 {
+    using System.Linq;
+    using System.Threading;
     using System.Timers;
 
     using Castle.Core.Logging;
 
     using Helpmebot.Background.Interfaces;
     using Helpmebot.Legacy.IRC;
+    using Helpmebot.Repositories.Interfaces;
 
     /// <summary>
     /// The notification service.
@@ -38,6 +41,16 @@ namespace Helpmebot.Background
         private readonly IIrcAccessLayer ircClient;
 
         /// <summary>
+        /// The notification repository.
+        /// </summary>
+        private readonly INotificationRepository notificationRepository;
+
+        /// <summary>
+        /// The sync point.
+        /// </summary>
+        private int syncPoint;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="NotificationBackgroundService"/> class.
         /// </summary>
         /// <param name="ircClient">
@@ -46,10 +59,14 @@ namespace Helpmebot.Background
         /// <param name="logger">
         /// The logger.
         /// </param>
-        public NotificationBackgroundService(IIrcAccessLayer ircClient, ILogger logger)
+        /// <param name="notificationRepository">
+        /// The notification Repository.
+        /// </param>
+        public NotificationBackgroundService(IIrcAccessLayer ircClient, ILogger logger, INotificationRepository notificationRepository)
             : base(logger, 5 * 1000)
         {
             this.ircClient = ircClient;
+            this.notificationRepository = notificationRepository;
         }
 
         /// <summary>
@@ -62,7 +79,31 @@ namespace Helpmebot.Background
         /// The elapsed event args.
         /// </param>
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {    
+        {
+            if (Interlocked.CompareExchange(ref this.syncPoint, 1, 0) == 0)
+            {
+                var list = this.notificationRepository.RetrieveLatest().ToList();
+                foreach (var notification in list)
+                {
+                    var destination = "##helpmebot";
+
+                    // TODO: move me to a separate table or something
+                    switch (notification.Type)
+                    {
+                        case 1:
+                            destination = "#wikipedia-en-accounts";
+                            break;
+
+                        case 2:
+                            destination = "#wikipedia-en-accounts-devs";
+                            break;
+                    }
+
+                    this.ircClient.IrcPrivmsg(destination, notification.Text);
+                }
+
+                this.syncPoint = 0; 
+            }
         }
     }
 }

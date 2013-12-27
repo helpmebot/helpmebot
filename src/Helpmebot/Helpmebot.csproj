@@ -109,6 +109,7 @@
     <Compile Include="Model\FlagGroup.cs" />
     <Compile Include="Model\Keyword.cs" />
     <Compile Include="Model\Messages.cs" />
+    <Compile Include="Model\Notification.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
@@ -116,15 +117,18 @@
     <Compile Include="Persistence\Mappings\FlagGroupAssocMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
     <Compile Include="Persistence\Mappings\KeywordMap.cs" />
+    <Compile Include="Persistence\Mappings\NotificationMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\INotificationRepository.cs" />
     <Compile Include="Repositories\Interfaces\IKeywordRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
     <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Repositories\KeywordRepository.cs" />
+    <Compile Include="Repositories\NotificationRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Repositories\WelcomeUserRepository.cs" />
@@ -224,7 +228,6 @@
     <Compile Include="HttpRequest.cs" />
     <Compile Include="IsGd.cs" />
     <Compile Include="Linker.cs" />
-    <Compile Include="Monitoring\AccNotifications.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="Legacy\CommandParser.cs" />
     <Compile Include="Legacy\Configuration\LegacyConfig.cs" />

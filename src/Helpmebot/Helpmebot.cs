@@ -189,9 +189,6 @@ namespace Helpmebot
 
             new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
-            // ACC notification monitor
-            AccNotifications.getInstance();
-
             // initialise the deferred installers.
             container.Install(FromAssembly.This(new DeferredWindsorBootstrap()));
         }

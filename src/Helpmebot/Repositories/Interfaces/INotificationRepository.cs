@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IThreadedSystem.cs" company="Helpmebot Development Team">
+// <copyright file="INotificationRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,40 +14,27 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the IThreadedSystem type.
+//   Defines the INotificationRepository type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Threading
+namespace Helpmebot.Repositories.Interfaces
 {
-    using System;
+    using System.Collections.Generic;
+
+    using Helpmebot.Model;
 
     /// <summary>
-    /// The ThreadedSystem interface.
+    /// The NotificationRepository interface.
     /// </summary>
-    public interface IThreadedSystem
+    public interface INotificationRepository
     {
         /// <summary>
-        /// The thread fatal error event.
-        /// </summary>
-        event EventHandler ThreadFatalErrorEvent;
-
-        /// <summary>
-        ///   Stop all threads in this instance to allow for a clean shutdown.
-        /// </summary>
-        void Stop();
-
-        /// <summary>
-        ///   Register this instance of the threaded class with the global list
-        /// </summary>
-        void RegisterInstance();
-
-        /// <summary>
-        /// Get the status of thread(s) in this instance.
+        /// Retrieves the latest notifications from the database, and then removes them from the database.
         /// </summary>
         /// <returns>
-        /// The string array.
+        /// The <see cref="IEnumerable{Notification}"/>.
         /// </returns>
-        string[] GetThreadStatus();
+        IEnumerable<Notification> RetrieveLatest();
     }
 }
