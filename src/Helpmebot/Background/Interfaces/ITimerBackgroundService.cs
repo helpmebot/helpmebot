@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IKeepAliveService.cs" company="Helpmebot Development Team">
+// <copyright file="ITimerBackgroundServiceBase.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,16 +14,22 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   The KeepAliveService interface.
+//   Defines the ITimerBackgroundServiceBase type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Helpmebot.Background.Interfaces
 {
+    using Castle.Core;
+
     /// <summary>
-    /// The KeepAliveService interface.
+    /// The TimerBackgroundServiceBase interface.
     /// </summary>
-    public interface IKeepAliveService : ITimerBackgroundService
+    public interface ITimerBackgroundService : IStartable
     {
+        /// <summary>
+        /// Gets or sets the interval.
+        /// </summary>
+        int Interval { get; set; }
     }
 }
