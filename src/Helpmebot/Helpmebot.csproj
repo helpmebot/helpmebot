@@ -72,7 +72,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessLog.cs" />
+    <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
     <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
+    <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\CommandBase.cs" />
