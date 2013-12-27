@@ -86,7 +86,6 @@
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccDeploy.cs" />
     <Compile Include="Legacy\Commands\Access.cs" />
-    <Compile Include="Legacy\Commands\Accmon.cs" />
     <Compile Include="Legacy\Commands\Afccount.cs" />
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
