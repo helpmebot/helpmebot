@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.IRC.Message
+namespace Helpmebot.IRC.Messages
 {
     using System;
     using System.Collections.Generic;

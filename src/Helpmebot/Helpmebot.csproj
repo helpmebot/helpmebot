@@ -129,8 +129,8 @@
     <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="IRC\IrcClient.cs" />
-    <Compile Include="IRC\Message\IMessage.cs" />
-    <Compile Include="IRC\Message\Message.cs" />
+    <Compile Include="IRC\Messages\IMessage.cs" />
+    <Compile Include="IRC\Messages\Message.cs" />
     <Compile Include="IRC\NetworkClient.cs" />
     <Compile Include="Repositories\KeywordRepository.cs" />
     <Compile Include="Repositories\NotificationRepository.cs" />

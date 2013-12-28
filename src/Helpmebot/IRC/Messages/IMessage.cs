@@ -18,12 +18,28 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.IRC.Message
+namespace Helpmebot.IRC.Messages
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// The Message interface.
     /// </summary>
     public interface IMessage
     {
+        /// <summary>
+        /// Gets or sets the command.
+        /// </summary>
+        string Command { get; set; }
+
+        /// <summary>
+        /// Gets or sets the prefix.
+        /// </summary>
+        string Prefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parameters.
+        /// </summary>
+        IEnumerable<string> Parameters { get; set; }
     }
 }

@@ -18,11 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Tests.IRC.Message
+namespace Helpmebot.Tests.IRC.Messages
 {
     using System.Collections.Generic;
 
-    using Helpmebot.IRC.Message;
+    using Helpmebot.IRC.Messages;
 
     using NUnit.Framework;
 
