@@ -85,10 +85,7 @@ namespace Helpmebot.IRC.Messages
                 }
                 else
                 {
-                    var parameterList =
-                        parameters.Substring(0, parameters.IndexOf(":", StringComparison.Ordinal))
-                            .Split(separator, StringSplitOptions.RemoveEmptyEntries)
-                            .ToList();
+                    var parameterList = parameters.Split(separator, StringSplitOptions.RemoveEmptyEntries).ToList();
                     message.Parameters = parameterList;
                 }
             }

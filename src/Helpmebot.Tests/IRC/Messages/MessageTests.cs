@@ -65,6 +65,9 @@ namespace Helpmebot.Tests.IRC.Messages
             this.DoParseTest(message, expected);
         }
 
+        /// <summary>
+        /// The should parse correctly 3.
+        /// </summary>
         [Test]
         public void ShouldParseCorrectly3()
         {
@@ -73,6 +76,23 @@ namespace Helpmebot.Tests.IRC.Messages
             var expected = new Message
             {
                 Command = "PRSDS",
+            };
+
+            this.DoParseTest(message, expected);
+        }
+
+        /// <summary>
+        /// The should parse correctly 4.
+        /// </summary>
+        [Test]
+        public void ShouldParseCorrectly4()
+        {
+            // arrange
+            string message = "PRSDS foo bar baz";
+            var expected = new Message
+            {
+                Command = "PRSDS",
+                Parameters = new List<string> { "foo", "bar", "baz" }
             };
 
             this.DoParseTest(message, expected);
