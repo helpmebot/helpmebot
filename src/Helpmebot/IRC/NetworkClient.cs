@@ -26,7 +26,10 @@ namespace Helpmebot.IRC
     using System.Net.Sockets;
     using System.Threading;
 
+    using Castle.Core.Logging;
+
     using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Interfaces;
 
     /// <summary>
     /// The TCP client.
@@ -34,7 +37,7 @@ namespace Helpmebot.IRC
     /// <para>
     /// This is an event-based asynchronous TCP client
     /// </para>
-    public class NetworkClient
+    public class NetworkClient : INetworkClient
     {
         /// <summary>
         /// The client.
@@ -77,6 +80,11 @@ namespace Helpmebot.IRC
         private readonly int port;
 
         /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="NetworkClient"/> class.
         /// </summary>
         /// <param name="hostname">
@@ -85,10 +93,17 @@ namespace Helpmebot.IRC
         /// <param name="port">
         /// The port.
         /// </param>
-        public NetworkClient(string hostname, int port)
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        public NetworkClient(string hostname, int port, ILogger logger)
         {
             this.hostname = hostname;
             this.port = port;
+            this.logger = logger;
+
+            this.logger.InfoFormat("Connecting to socket {0}:{1} ...", hostname, port);
+
             this.client = new TcpClient(this.hostname, this.port);
 
             this.reader = new StreamReader(this.client.GetStream());
@@ -97,8 +112,10 @@ namespace Helpmebot.IRC
 
             this.writerThreadResetEvent = new AutoResetEvent(true);
 
-            Thread readerThread = new Thread(this.ReaderThreadTask);
-            Thread writerThread = new Thread(this.WriterThreadTask);
+            var readerThread = new Thread(this.ReaderThreadTask);
+            var writerThread = new Thread(this.WriterThreadTask);
+
+            this.logger.InfoFormat("Initialising reader/writer threads", hostname, port);
 
             readerThread.Start();
             writerThread.Start();
@@ -171,6 +188,7 @@ namespace Helpmebot.IRC
         /// </summary>
         public void Disconnect()
         {
+            this.logger.Info("Disconnecting network socket.");
             this.writer.Flush();
             this.writer.Close();
             this.client.Close();
@@ -202,6 +220,7 @@ namespace Helpmebot.IRC
 
                 if (data != null)
                 {
+                    this.logger.DebugFormat("> {0}", data);
                     this.OnDataReceived(new DataReceivedEventArgs(data));
                 }
             }
@@ -232,6 +251,7 @@ namespace Helpmebot.IRC
                 }
                 else
                 {
+                    this.logger.DebugFormat("< {0}", item);
                     this.writer.WriteLine(item);
                     this.writer.Flush();
 

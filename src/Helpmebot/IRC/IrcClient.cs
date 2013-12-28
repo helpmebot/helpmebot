@@ -22,20 +22,19 @@ namespace Helpmebot.IRC
 {
     using System;
     using System.Collections.Generic;
-    using System.Web.UI;
 
     using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Interfaces;
 
     /// <summary>
     /// The IRC client.
     /// </summary>
     public class IrcClient
     {
-
         /// <summary>
         /// The network client.
         /// </summary>
-        private readonly NetworkClient networkClient;
+        private readonly INetworkClient networkClient;
 
         /// <summary>
         /// The data interception function.
@@ -45,32 +44,61 @@ namespace Helpmebot.IRC
         /// <summary>
         /// Initialises a new instance of the <see cref="IrcClient"/> class.
         /// </summary>
-        /// <param name="hostname">
-        /// The hostname.
+        /// <param name="client">
+        /// The client.
         /// </param>
-        /// <param name="port">
-        /// The port.
+        /// <param name="nickname">
+        /// The nickname.
         /// </param>
-        public IrcClient(string hostname, int port, string nickname, string username, string realName, string password)
+        /// <param name="username">
+        /// The username.
+        /// </param>
+        /// <param name="realName">
+        /// The real Name.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
+        public IrcClient(INetworkClient client, string nickname, string username, string realName, string password)
         {
             this.Nickname = nickname;
-            this.networkClient = new NetworkClient(hostname, port);
+            this.networkClient = client;
             this.networkClient.DataReceived += this.NetworkClientOnDataReceived;
 
             this.RegisterConnection(username, realName, password);
         }
-
 
         /// <summary>
         /// Gets or sets the nickname.
         /// </summary>
         public string Nickname { get; set; }
 
+        /// <summary>
+        /// The network client on data received.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="dataReceivedEventArgs">
+        /// The data received event args.
+        /// </param>
         private void NetworkClientOnDataReceived(object sender, DataReceivedEventArgs dataReceivedEventArgs)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// The register connection.
+        /// </summary>
+        /// <param name="username">
+        /// The username.
+        /// </param>
+        /// <param name="realName">
+        /// The real name.
+        /// </param>
+        /// <param name="password">
+        /// The password.
+        /// </param>
         private void RegisterConnection(string username, string realName, string password)
         {
             var registrationMessages = new List<string>
@@ -83,6 +111,5 @@ namespace Helpmebot.IRC
 
             this.networkClient.Send(registrationMessages);
         }
-
     }
 }
