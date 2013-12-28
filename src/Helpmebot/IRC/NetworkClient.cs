@@ -251,6 +251,11 @@ namespace Helpmebot.IRC
                 }
                 else
                 {
+                    if (string.IsNullOrEmpty(item))
+                    {
+                        continue;
+                    }
+
                     this.logger.DebugFormat("< {0}", item);
                     this.writer.WriteLine(item);
                     this.writer.Flush();

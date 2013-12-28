@@ -28,6 +28,7 @@ namespace Helpmebot
     using Castle.Windsor;
     using Castle.Windsor.Installer;
 
+    using Helpmebot.IRC;
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
@@ -68,6 +69,11 @@ namespace Helpmebot
         /// The debug channel.
         /// </summary>
         public static string debugChannel;
+
+        /// <summary>
+        /// The new irc.
+        /// </summary>
+        private static IrcClient newIrc;
 
         /// <summary>
         /// The container.
@@ -172,6 +178,20 @@ namespace Helpmebot
 
             irc = new IrcAccessLayer(ircNetwork);
 
+#if DEBUG
+            newIrc =
+                new IrcClient(
+                    new NetworkClient(
+                        "chat.freenode.net",
+                        6667,
+                        container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
+                    container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
+                    "hmb-newirc",
+                    "hmb-newirc",
+                    "hmb-newirc",
+                    string.Empty);
+#endif
+            
             Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             // TODO: remove me!

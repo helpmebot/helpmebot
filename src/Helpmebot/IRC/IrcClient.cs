@@ -22,19 +22,66 @@ namespace Helpmebot.IRC
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
+    using Castle.Core.Logging;
+
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.IRC.Interfaces;
+    using Helpmebot.IRC.Messages;
 
     /// <summary>
     /// The IRC client.
     /// </summary>
     public class IrcClient
     {
+        #region fields
+
         /// <summary>
         /// The network client.
         /// </summary>
         private readonly INetworkClient networkClient;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
+        /// The username.
+        /// </summary>
+        private readonly string username;
+
+        /// <summary>
+        /// The real name.
+        /// </summary>
+        private readonly string realName;
+
+        /// <summary>
+        /// The password.
+        /// </summary>
+        private readonly string password;
+
+        /// <summary>
+        /// The cap multi prefix.
+        /// </summary>
+        private bool capMultiPrefix;
+
+        /// <summary>
+        /// The cap extended join.
+        /// </summary>
+        private bool capExtendedJoin;
+
+        /// <summary>
+        /// The cap account notify.
+        /// </summary>
+        private bool capAccountNotify;
+
+        /// <summary>
+        /// The SASL capability.
+        /// </summary>
+        private bool capSasl;
 
         /// <summary>
         /// The data interception function.
@@ -42,10 +89,22 @@ namespace Helpmebot.IRC
         private bool connectionRegistered = false;
 
         /// <summary>
+        /// The client's possible capabilities.
+        /// </summary>
+        private List<string> clientCapabilities;
+
+        private string nickname;
+
+        #endregion
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="IrcClient"/> class.
         /// </summary>
         /// <param name="client">
         /// The client.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
         /// </param>
         /// <param name="nickname">
         /// The nickname.
@@ -59,19 +118,48 @@ namespace Helpmebot.IRC
         /// <param name="password">
         /// The password.
         /// </param>
-        public IrcClient(INetworkClient client, string nickname, string username, string realName, string password)
+        public IrcClient(INetworkClient client, ILogger logger, string nickname, string username, string realName, string password)
         {
-            this.Nickname = nickname;
+            this.nickname = nickname;
             this.networkClient = client;
+            this.logger = logger;
+            this.username = username;
+            this.realName = realName;
+            this.password = password;
             this.networkClient.DataReceived += this.NetworkClientOnDataReceived;
 
-            this.RegisterConnection(username, realName, password);
+            this.clientCapabilities = new List<string> { /*"sasl", "account-notify", "extended-join", "multi-prefix"*/ };
+
+            this.RegisterConnection(null);
         }
 
         /// <summary>
         /// Gets or sets the nickname.
         /// </summary>
-        public string Nickname { get; set; }
+        public string Nickname
+        {
+            get
+            {
+                return this.nickname;
+            }
+
+            set
+            {
+                this.nickname = value;
+                this.Send(new Message { Command = "NICK", Parameters = value.ToEnumerable() });
+            }
+        }
+
+        /// <summary>
+        /// The send.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public void Send(Message message)
+        {
+            this.networkClient.Send(message.ToString());
+        }
 
         /// <summary>
         /// The network client on data received.
@@ -84,32 +172,155 @@ namespace Helpmebot.IRC
         /// </param>
         private void NetworkClientOnDataReceived(object sender, DataReceivedEventArgs dataReceivedEventArgs)
         {
-            throw new NotImplementedException();
+            var message = Message.Parse(dataReceivedEventArgs.Data);
+
+            if (this.connectionRegistered)
+            {
+                this.RaiseDataEvent(message);
+            }
+            else
+            {
+                this.RegisterConnection(message);
+            }
+        }
+
+        /// <summary>
+        /// The raise data event.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        private void RaiseDataEvent(IMessage message)
+        {
         }
 
         /// <summary>
         /// The register connection.
         /// </summary>
-        /// <param name="username">
-        /// The username.
+        /// <param name="message">
+        /// The message.
         /// </param>
-        /// <param name="realName">
-        /// The real name.
-        /// </param>
-        /// <param name="password">
-        /// The password.
-        /// </param>
-        private void RegisterConnection(string username, string realName, string password)
+        private void RegisterConnection(IMessage message)
         {
-            var registrationMessages = new List<string>
-                                           {
-                                               string.Format("CAP LS"),
-                                               string.Format("USER {0} * * :{1}", username, realName),
-                                               string.Format("PASS {0}", password),
-                                               string.Format("NICK {0}", this.Nickname)
-                                           };
+            // initial request
+            if (message == null)
+            {
+                this.Send(new Message { Command = "CAP", Parameters = new List<string> { "LS" } });
+                return;
+            }
 
-            this.networkClient.Send(registrationMessages);
+            // welcome to IRC!
+            if (message.Command == Numerics.Welcome)
+            {
+                this.logger.Info("Connection registration succeeded");
+                this.connectionRegistered = true;
+                this.RaiseDataEvent(message);
+                return;
+            }
+
+            // nickname in use
+            if (message.Command == Numerics.NicknameInUse)
+            {
+                this.logger.Warn("Nickname in use, retrying.");
+                this.Nickname = this.Nickname + "_";
+            }
+
+            // we've recieved a reply to our CAP commands
+            if (message.Command == "CAP")
+            {
+                var list = message.Parameters.ToList();
+                
+                if (list[1] == "LS")
+                {
+                    var serverCapabilities = list[2].Split(' ');
+                    this.logger.InfoFormat("Server Capabilities: {0}", serverCapabilities.Implode(", "));
+                    this.logger.DebugFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
+
+                    var caps = serverCapabilities.Intersect(this.clientCapabilities).ToList();
+
+                    if (caps.Count == 0)
+                    {
+                        // nothing is suitable for us, so downgrade to 1459
+                        this.logger.InfoFormat("Requesting no capabilities.");
+
+                        this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                        this.Send1459Registration();
+
+                        return;
+                    }
+
+                    this.logger.InfoFormat("Requesting capabilities: {0}", caps.Implode(", "));
+
+                    this.Send(
+                        new Message { Command = "CAP", Parameters = new List<string> { "REQ", caps.Implode() } });
+
+                    return;
+                }
+
+                if (list[1] == "ACK")
+                {
+                    var caps = list[2].Split(' ');
+                    this.logger.InfoFormat("Acknowledged capabilities: {0}", caps.Implode(", "));
+
+                    foreach (var cap in caps)
+                    {
+                        if (cap == "account-notify")
+                        {
+                            this.capAccountNotify = true;
+                        }
+
+                        if (cap == "sasl")
+                        {
+                            this.capSasl = true;
+                        }
+
+                        if (cap == "extended-join")
+                        {
+                            this.capExtendedJoin = true;
+                        }
+
+                        if (cap == "multi-prefix")
+                        {
+                            this.capMultiPrefix = true;
+                        }
+                    }
+
+                    // TODO: Add SASL support in here somewhere.
+                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+
+                    this.Send1459Registration();
+                }
+
+                if (list[1] == "NAK")
+                {
+                    // something went wrong, so downgrade to 1459.
+                    var caps = list[2].Split(' ');
+                    this.logger.WarnFormat("NOT Acked capabilities: {0}", caps.Implode(", "));
+                    
+                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                    this.Send1459Registration();
+                }
+            }
+        }
+
+        /// <summary>
+        /// The send 1459 registration.
+        /// </summary>
+        private void Send1459Registration()
+        {
+            if (!this.capSasl && !string.IsNullOrEmpty(this.password))
+            {
+                this.Send(new Message { Command = "PASS", Parameters = this.password.ToEnumerable() });
+            }
+
+            this.Send(
+                new Message
+                    {
+                        Command = "USER",
+                        Parameters = new List<string> { this.username, "*", "*", this.realName }
+                    });
+
+            this.Send(new Message { Command = "NICK", Parameters = this.Nickname.ToEnumerable() });
         }
     }
 }
