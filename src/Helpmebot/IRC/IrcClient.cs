@@ -20,7 +20,6 @@
 
 namespace Helpmebot.IRC
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -64,6 +63,11 @@ namespace Helpmebot.IRC
         private readonly string password;
 
         /// <summary>
+        /// The client's possible capabilities.
+        /// </summary>
+        private readonly List<string> clientCapabilities;
+
+        /// <summary>
         /// The cap multi prefix.
         /// </summary>
         private bool capMultiPrefix;
@@ -86,13 +90,11 @@ namespace Helpmebot.IRC
         /// <summary>
         /// The data interception function.
         /// </summary>
-        private bool connectionRegistered = false;
+        private bool connectionRegistered;
 
         /// <summary>
-        /// The client's possible capabilities.
+        /// The nickname.
         /// </summary>
-        private List<string> clientCapabilities;
-
         private string nickname;
 
         #endregion
@@ -128,7 +130,7 @@ namespace Helpmebot.IRC
             this.password = password;
             this.networkClient.DataReceived += this.NetworkClientOnDataReceived;
 
-            this.clientCapabilities = new List<string> { /*"sasl", "account-notify", "extended-join", "multi-prefix"*/ };
+            this.clientCapabilities = new List<string> { "sasl"/*, "account-notify", "extended-join", "multi-prefix"*/ };
 
             this.RegisterConnection(null);
         }
@@ -205,7 +207,20 @@ namespace Helpmebot.IRC
             // initial request
             if (message == null)
             {
-                this.Send(new Message { Command = "CAP", Parameters = new List<string> { "LS" } });
+                if (this.clientCapabilities.Count == 0)
+                {
+                    // we don't support capabilities, so don't go through the CAP cycle.
+                    this.logger.InfoFormat("I support no capabilities.");
+
+                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                    this.Send1459Registration();
+                }
+                else
+                {
+                    // we support capabilities, use them!
+                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "LS" } });    
+                }
+                
                 return;
             }
 
@@ -223,6 +238,13 @@ namespace Helpmebot.IRC
             {
                 this.logger.Warn("Nickname in use, retrying.");
                 this.Nickname = this.Nickname + "_";
+                return;
+            }
+
+            // do sasl auth
+            if (message.Command == "AUTHENTICATE")
+            {
+                this.SaslAuth(message);
             }
 
             // we've recieved a reply to our CAP commands
@@ -234,7 +256,7 @@ namespace Helpmebot.IRC
                 {
                     var serverCapabilities = list[2].Split(' ');
                     this.logger.InfoFormat("Server Capabilities: {0}", serverCapabilities.Implode(", "));
-                    this.logger.DebugFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
+                    this.logger.InfoFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
 
                     var caps = serverCapabilities.Intersect(this.clientCapabilities).ToList();
 
@@ -285,10 +307,17 @@ namespace Helpmebot.IRC
                         }
                     }
 
-                    // TODO: Add SASL support in here somewhere.
-                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                    if (this.capSasl)
+                    {
+                        this.SaslAuth(null);
+                    }
+                    else
+                    {
+                        this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                        this.Send1459Registration();  
+                    }
 
-                    this.Send1459Registration();
+                    return;
                 }
 
                 if (list[1] == "NAK")
@@ -299,7 +328,52 @@ namespace Helpmebot.IRC
                     
                     this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
                     this.Send1459Registration();
+                    return;
                 }
+            }
+
+            if (message.Command == Numerics.SaslLoggedIn)
+            {
+                this.logger.InfoFormat("SASL Login succeeded.");
+
+                // logged in, continue with registration
+                this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                this.Send1459Registration();
+                return;
+            }
+
+            if (message.Command == Numerics.SaslAuthFailed)
+            {
+                this.logger.WarnFormat("SASL Login failed.");
+
+                this.capSasl = false;
+
+                // not logged in, continue with registration
+                this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                this.Send1459Registration();
+                return;
+            }
+        }
+
+        /// <summary>
+        /// The SASL authentication.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        private void SaslAuth(IMessage message)
+        {
+            if (message == null)
+            {
+                this.Send(new Message { Command = "AUTHENTICATE", Parameters = "PLAIN".ToEnumerable() });
+                return;
+            }
+
+            var list = message.Parameters.ToList();
+            if (list[0] == "+")
+            {
+                var authdata = string.Format("\0{0}\0{1}", this.username, this.password).ToBase64();
+                this.Send(new Message { Command = "AUTHENTICATE", Parameters = authdata.ToEnumerable() });
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Numerics.cs" company="Helpmebot Development Team">
+// <copyright file="StringExtensions.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,32 +14,32 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Numerics type.
+//   Defines the StringExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.IRC.Messages
+namespace Helpmebot.ExtensionMethods
 {
+    using System;
+    using System.Text;
+
     /// <summary>
-    /// The IRC numeric commands.
+    /// The string extensions.
     /// </summary>
-    public class Numerics
+    public static class StringExtensions
     {
-        public const string SaslAuthFailed = "904";
-
         /// <summary>
-        /// The nickname in use.
+        /// The to base 64.
         /// </summary>
-        public const string NicknameInUse = "433";
-
-        /// <summary>
-        /// The welcome.
-        /// </summary>
-        public const string Welcome = "001";
-
-        /// <summary>
-        /// The SASL logged in.
-        /// </summary>
-        public const string SaslLoggedIn = "900";
+        /// <param name="data">
+        /// The data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string ToBase64(this string data)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
+        }
     }
 }
