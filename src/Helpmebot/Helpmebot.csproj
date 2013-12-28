@@ -304,6 +304,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="database.config" />
+    <None Include="logger.release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="logger.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
