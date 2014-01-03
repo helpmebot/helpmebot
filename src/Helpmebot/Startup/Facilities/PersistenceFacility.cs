@@ -94,7 +94,7 @@ namespace Helpmebot.Startup.Facilities
         {
             var connectionString = ConfigurationHelper.DatabaseConfiguration.ConnectionString;
 
-            return MySQLConfiguration.Standard.ConnectionString(connectionString.ConnectionString).ShowSql();
+            return MySQLConfiguration.Standard.ConnectionString(connectionString.ConnectionString);
         }
     }
 }
