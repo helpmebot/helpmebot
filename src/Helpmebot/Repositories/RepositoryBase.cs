@@ -157,7 +157,8 @@ namespace Helpmebot.Repositories
         /// </param>
         public void Delete(ICriterion criterion)
         {
-            this.session.Delete(this.session.Get<T>(criterion));
+            var deleteList = this.session.CreateCriteria<T>().Add(criterion).List<T>();
+            this.Delete(deleteList);
         }
 
         /// <summary>

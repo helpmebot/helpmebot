@@ -76,7 +76,9 @@ namespace Helpmebot.Services
         /// </param>
         public void Create(string name, string response, bool action)
         {
-            var existing = this.repository.GetByName(name).First() ?? new Keyword { Name = name };
+            Keyword existing = this.repository.GetByName(name).Any()
+                                   ? this.repository.GetByName(name).First()
+                                   : new Keyword { Name = name };
 
             existing.Action = action;
             existing.Response = response;

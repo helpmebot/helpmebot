@@ -93,12 +93,13 @@ namespace helpmebot6.Commands
 
                 try
                 {
-                    this.keywordService.Create(keywordName, this.Arguments.Implode(), action);
+                    this.keywordService.Create(keywordName, args.Implode(), action);
                     message = this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     message = this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
+                    this.Log.Error("Error learning command", ex);
                 }
 
                 this.ircAccessLayer.IrcNotice(this.Source.Nickname, message);

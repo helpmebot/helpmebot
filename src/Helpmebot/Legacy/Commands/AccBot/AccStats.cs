@@ -93,12 +93,12 @@ namespace helpmebot6.Commands
                 string[] messageParams =
                     {
                         username, // username
-                        xpni.Current.GetAttribute("user_level", string.Empty), // accesslevel
-                        xpni.Current.GetAttribute("user_lastactive", string.Empty),
-                        xpni.Current.GetAttribute("user_welcome_templateid", string.Empty) == "0"
+                        xpni.Current.GetAttribute("status", string.Empty), // accesslevel
+                        xpni.Current.GetAttribute("lastactive", string.Empty),
+                        xpni.Current.GetAttribute("welcome_template", string.Empty) == "0"
                             ? "disabled"
                             : "enabled",
-                        xpni.Current.GetAttribute("user_onwikiname", string.Empty)
+                        xpni.Current.GetAttribute("onwikiname", string.Empty)
                     };
 
                 string message = this.MessageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);

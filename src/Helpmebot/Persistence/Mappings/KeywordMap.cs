@@ -34,6 +34,7 @@ namespace Helpmebot.Persistence.Mappings
         /// </summary>
         public KeywordMap()
         {
+            this.Table("keywords");
             this.Id(keyword => keyword.Id).Column("keyword_id");
             this.Map(k => k.Name).Column("keyword_name");
             this.Map(k => k.Response).Column("keyword_response");
