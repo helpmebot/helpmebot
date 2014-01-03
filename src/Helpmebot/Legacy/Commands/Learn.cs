@@ -93,7 +93,7 @@ namespace helpmebot6.Commands
 
                 try
                 {
-                    this.keywordService.Create(keywordName, this.Arguments.Implode(), action);
+                    this.keywordService.Create(keywordName, args.Implode(), action);
                     message = this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null);
                 }
                 catch (Exception ex)
