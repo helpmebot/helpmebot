@@ -87,8 +87,9 @@ namespace helpmebot6.Commands
 
                     forgottenMessage = this.MessageService.RetrieveMessage("cmdForgetDone", this.Channel, null);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    this.Log.Error("Error forgetting keyword", ex);
                     forgottenMessage = this.MessageService.RetrieveMessage("cmdForgetError", this.Channel, null);
                 }
                 
