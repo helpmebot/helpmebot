@@ -35,7 +35,7 @@ namespace Helpmebot.IRC
     /// </summary>
     public class IrcClient
     {
-        #region fields
+        #region Fields
 
         /// <summary>
         /// The network client.
@@ -158,7 +158,7 @@ namespace Helpmebot.IRC
         /// <param name="message">
         /// The message.
         /// </param>
-        public void Send(Message message)
+        private void Send(Message message)
         {
             this.networkClient.Send(message.ToString());
         }

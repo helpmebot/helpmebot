@@ -102,7 +102,7 @@ namespace Helpmebot.IRC
             this.port = port;
             this.logger = logger;
 
-            this.logger.InfoFormat("Connecting to socket {0}:{1} ...", hostname, port);
+            this.logger.InfoFormat("Connecting to socket tcp://{0}:{1}/ ...", hostname, port);
 
             this.client = new TcpClient(this.hostname, this.port);
 
@@ -216,12 +216,19 @@ namespace Helpmebot.IRC
         {
             while (this.client.Connected)
             {
-                string data = this.reader.ReadLine();
-
-                if (data != null)
+                try
                 {
-                    this.logger.DebugFormat("> {0}", data);
-                    this.OnDataReceived(new DataReceivedEventArgs(data));
+                    string data = this.reader.ReadLine();
+
+                    if (data != null)
+                    {
+                        this.logger.DebugFormat("> {0}", data);
+                        this.OnDataReceived(new DataReceivedEventArgs(data));
+                    }
+                }
+                catch (IOException ex)
+                {
+                    this.logger.Error("IO error on read from network stream", ex);
                 }
             }
         }
