@@ -72,7 +72,7 @@ namespace Helpmebot.IRC.Messages
             {
                 var parameters = strings[1];
 
-                if (parameters.Contains(":"))
+                if (parameters.Contains(" :") || parameters.StartsWith(":"))
                 {
                     var paramend = parameters.Substring(parameters.IndexOf(":", StringComparison.Ordinal) + 1);
                     var parameterList =
