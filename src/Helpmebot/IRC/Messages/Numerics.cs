@@ -25,8 +25,6 @@ namespace Helpmebot.IRC.Messages
     /// </summary>
     public class Numerics
     {
-        public const string SaslAuthFailed = "904";
-
         /// <summary>
         /// The nickname in use.
         /// </summary>
@@ -37,9 +35,58 @@ namespace Helpmebot.IRC.Messages
         /// </summary>
         public const string Welcome = "001";
 
+        #region SASL
+
+        /// <summary>
+        /// The SASL authentication failed.
+        /// </summary>
+        public const string SaslAuthFailed = "904";
+
         /// <summary>
         /// The SASL logged in.
         /// </summary>
         public const string SaslLoggedIn = "900";
+
+        /// <summary>
+        /// The SASL authentication succeeded.
+        /// </summary>
+        public const string SaslSuccess = "903";
+
+        /// <summary>
+        /// The SASL authentication was aborted.
+        /// </summary>
+        public const string SaslAborted = "906";
+
+        #endregion
+
+        /// <summary>
+        /// The no channel topic.
+        /// </summary>
+        public const string NoChannelTopic = "331";
+
+        /// <summary>
+        /// The channel topic.
+        /// </summary>
+        public const string ChannelTopic = "332";
+
+        /// <summary>
+        /// The name reply.
+        /// </summary>
+        public const string NameReply = "353";
+
+        /// <summary>
+        /// The end of names.
+        /// </summary>
+        public const string EndOfNames = "366";
+
+        /// <summary>
+        /// The end of who.
+        /// </summary>
+        public const string EndOfWho = "315";
+
+        /// <summary>
+        /// The who x reply.
+        /// </summary>
+        public const string WhoXReply = "354";
     }
 }
