@@ -99,6 +99,24 @@ namespace Helpmebot.Tests.IRC.Messages
         }
 
         /// <summary>
+        /// The should parse correctly 4.
+        /// </summary>
+        [Test]
+        public void ShouldParseCorrectly5()
+        {
+            // arrange
+            string message = ":hobana.freenode.net 354 stwalker|test 001 #wikipedia-en ~Marco 2a00:1158:2:7700::16 Gnumarcoo_ G 0";
+            var expected = new Message
+            {
+                Prefix = "hobana.freenode.net",
+                Command = "354",
+                Parameters = new List<string> { "stwalker|test", "001", "#wikipedia-en", "~Marco", "2a00:1158:2:7700::16", "Gnumarcoo_", "G", "0" }
+            };
+
+            this.DoParseTest(message, expected);
+        }
+
+        /// <summary>
         /// The do parse test.
         /// </summary>
         /// <param name="message">
