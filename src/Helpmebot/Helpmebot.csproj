@@ -83,8 +83,13 @@
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="IRC\Model\Channel.cs" />
+    <Compile Include="IRC\Events\MessageReceivedEventArgs.cs" />
     <Compile Include="IRC\Interfaces\INetworkClient.cs" />
     <Compile Include="IRC\Messages\Numerics.cs" />
+    <Compile Include="IRC\Model\ChannelUser.cs" />
+    <Compile Include="IRC\Model\IrcUser.cs" />
+    <Compile Include="IRC\Model\ServerUser.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
