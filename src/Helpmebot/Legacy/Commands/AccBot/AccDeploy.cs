@@ -93,7 +93,7 @@ namespace helpmebot6.Commands
 
             revision = HttpUtility.UrlEncode(revision);
 
-            string requestUri = "http://toolserver.org/~acc/deploy/deploy.php?r=" + revision + "&k=" + key;
+            string requestUri = "http://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
 
             var r = new StreamReader(HttpRequest.get(requestUri, 1000 * 30 /* 30 sec timeout */));
 
