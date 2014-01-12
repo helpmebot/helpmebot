@@ -88,6 +88,11 @@ namespace Helpmebot.IRC
         private readonly Semaphore connectionRegistrationSemaphore;
 
         /// <summary>
+        /// The lock object for operations on the user/channel lists.
+        /// </summary>
+        private readonly object userOperationLock = new object();
+
+        /// <summary>
         /// The cap multi prefix.
         /// </summary>
         private bool capMultiPrefix;
@@ -126,6 +131,11 @@ namespace Helpmebot.IRC
         /// The server prefix.
         /// </summary>
         private string serverPrefix;
+
+        /// <summary>
+        /// The nick tracking valid.
+        /// </summary>
+        private bool nickTrackingValid = true;
 
         #endregion
 
@@ -195,6 +205,39 @@ namespace Helpmebot.IRC
             }
         }
 
+        /// <summary>
+        /// Gets the channels.
+        /// </summary>
+        public Dictionary<string, Channel> Channels
+        {
+            get
+            {
+                return this.channels;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the nick tracking is valid.
+        /// </summary>
+        public bool NickTrackingValid
+        {
+            get
+            {
+                return this.nickTrackingValid;
+            }
+        }
+
+        /// <summary>
+        /// Gets the user cache.
+        /// </summary>
+        public Dictionary<string, IrcUser> UserCache
+        {
+            get
+            {
+                return this.userCache;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -212,8 +255,7 @@ namespace Helpmebot.IRC
                 return;
             }
 
-            this.connectionRegistrationSemaphore.WaitOne();
-
+            // request to join
             this.Send(new Message { Command = "JOIN", Parameters = channel.ToEnumerable() });
         }
 
@@ -307,32 +349,12 @@ namespace Helpmebot.IRC
 
             if (e.Message.Command == "JOIN" && user != null)
             {
-                // this is a client join to a channel.
-                // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster
-                var parametersList = e.Message.Parameters.ToList();
-                
-                if (this.capExtendedJoin)
-                {
-                    // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster accountname :realname
-                    user.Account = parametersList[1];
-                }
+                this.OnJoinReceived(e, user);
+            }
 
-                var channelName = parametersList[0];
-                if (user.Nickname == this.Nickname)
-                {
-                    this.logger.InfoFormat("Joining channel {0}", channelName);
-                    this.logger.Debug("Requesting WHOX a information");
-                    this.Send(new Message { Command = "WHO", Parameters = new[] { channelName, "%uhnatfc,001" } });
-
-                    // add the channel to the list of channels I'm in.
-                    this.channels.Add(channelName, new Channel(channelName));
-                }
-                else
-                {
-                    this.logger.DebugFormat("Seen {0} join channel {1}.", user, channelName);
-                    this.userCache.AddOrReplace(user.Nickname, (IrcUser)user);
-                    this.channels[channelName].Users.Add(user.Nickname, new ChannelUser((IrcUser)user, channelName));
-                }
+            if (e.Message.Command == Numerics.NameReply)
+            {
+                this.OnNameReplyReceived(e);
             }
 
             if (e.Message.Command == Numerics.WhoXReply)
@@ -346,6 +368,309 @@ namespace Helpmebot.IRC
                 this.logger.Debug("End of who list.");
                 this.connectionRegistrationSemaphore.Release();
             }
+
+            if (e.Message.Command == "QUIT" && user != null)
+            {
+                this.logger.InfoFormat("{0} has left IRC.", user);
+
+                lock (this.userOperationLock)
+                {
+                    this.UserCache.Remove(user.Nickname);
+
+                    foreach (var channel in this.channels)
+                    {
+                        channel.Value.Users.Remove(user.Nickname);
+                    }
+                }
+            }
+
+            if (e.Message.Command == "MODE" && user != null)
+            {
+                var parameters = e.Message.Parameters.ToList();
+                var target = parameters[0];
+                if (target.StartsWith("#"))
+                {
+                    this.OnChannelModeReceived(parameters);
+                }
+                else
+                {
+                    // User mode message
+                    this.logger.Info("Received user mode message. ?");
+                }
+            }
+
+            if (e.Message.Command == "PART" && user != null)
+            {
+                var parameters = e.Message.Parameters.ToList();
+                var channel = parameters[0];
+
+                lock (this.userOperationLock)
+                {
+                    this.channels[channel].Users.Remove(user.Nickname);
+                }
+
+                this.logger.InfoFormat("{0} has left channel {1}.", user, channel);
+            }
+
+            if (e.Message.Command == "ACCOUNT" && user != null)
+            {
+                var parameters = e.Message.Parameters.ToList();
+
+                lock (this.userOperationLock)
+                {
+                    if (this.UserCache.ContainsKey(user.Nickname))
+                    {
+                        this.UserCache[user.Nickname].Account = parameters[0];
+                    }
+                    else
+                    {
+                        this.UserCache.Add(user.Nickname, (IrcUser)user);
+                        user.Account = parameters[0];
+                    }
+                }
+            }
+
+            if (e.Message.Command == "NICK" && user != null)
+            {
+                this.OnNickChangeReceived(e, user);
+            }
+        }
+
+        /// <summary>
+        /// The on nick change received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnNickChangeReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            var parameters = e.Message.Parameters.ToList();
+            var newNickname = parameters[0];
+            var oldNickname = user.Nickname;
+            lock (this.userOperationLock)
+            {
+                // firstly, update the user cache.
+                var ircUser = this.UserCache[oldNickname];
+                this.UserCache.Remove(oldNickname);
+
+                ircUser.Nickname = newNickname;
+
+                this.UserCache.Add(newNickname, ircUser);
+
+                // secondly, update the channels this user is in.
+                foreach (KeyValuePair<string, Channel> channelPair in this.channels)
+                {
+                    if (channelPair.Value.Users.ContainsKey(oldNickname))
+                    {
+                        var channelUser = channelPair.Value.Users[oldNickname];
+
+                        if (!channelUser.User.Equals(ircUser))
+                        {
+                            this.logger.ErrorFormat(
+                                "Channel user {0} doesn't match irc user {1} for NICK in {2}",
+                                channelUser.User,
+                                ircUser,
+                                channelPair.Value.Name);
+
+                            this.logger.Error("Nick tracking is no longer valid.");
+                            this.nickTrackingValid = false;
+
+                            throw new Exception("Channel user doesn't match irc user");
+                        }
+
+                        channelPair.Value.Users.Remove(oldNickname);
+                        channelPair.Value.Users.Add(newNickname, channelUser);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on name reply received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void OnNameReplyReceived(MessageReceivedEventArgs e)
+        {
+            var parameters = e.Message.Parameters.ToList();
+
+            var channel = parameters[2];
+            var names = parameters[3];
+
+            this.logger.WarnFormat("Names on {0}: {1}", channel, names);
+            
+            foreach (string name in names.Split(' '))
+            {
+                var parsedName = name;
+                var voice = false;
+                var op = false;
+
+                if (parsedName.StartsWith("+"))
+                {
+                    parsedName = parsedName.Substring(1);
+                    voice = true;
+                }
+
+                if (parsedName.StartsWith("@"))
+                {
+                    parsedName = parsedName.Substring(1);
+                    op = true;
+                }
+
+                lock (this.userOperationLock)
+                {
+                    if (this.channels[channel].Users.ContainsKey(parsedName))
+                    {
+                        var channelUser = this.channels[channel].Users[parsedName];
+                        channelUser.Operator = op;
+                        channelUser.Voice = voice;
+                    }
+                    else
+                    {
+                        var ircUser = new IrcUser { Nickname = parsedName };
+                        if (this.UserCache.ContainsKey(parsedName))
+                        {
+                            ircUser = this.UserCache[parsedName];
+                        }
+                        else
+                        {
+                            this.UserCache.Add(parsedName, ircUser);
+                        }
+
+                        var channelUser = new ChannelUser(ircUser, channel) { Voice = voice, Operator = op };
+
+                        this.channels[channel].Users.Add(parsedName, channelUser);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on channel mode received.
+        /// </summary>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        private void OnChannelModeReceived(List<string> parameters)
+        {
+            // Channel Mode message
+            var channel = parameters[0];
+            var modechange = parameters[1];
+
+            var addMode = true;
+            var position = 2;
+
+            foreach (char c in modechange)
+            {
+                if (c == '-')
+                {
+                    addMode = false;
+                }
+
+                if (c == '+')
+                {
+                    addMode = true;
+                }
+
+                if (c == 'o')
+                {
+                    var nick = parameters[position];
+
+                    lock (this.userOperationLock)
+                    {
+                        var channelUser = this.channels[channel].Users[nick];
+                        channelUser.Operator = addMode;
+
+                        position++;
+
+                        this.logger.InfoFormat("Setting {0}o on {1} in {2}.", addMode ? "+" : "-", channelUser, channel);
+                    }
+                }
+
+                if (c == 'v')
+                {
+                    var nick = parameters[position];
+
+                    lock (this.userOperationLock)
+                    {
+                        var channelUser = this.channels[channel].Users[nick];
+                        channelUser.Voice = addMode;
+
+                        position++;
+
+                        this.logger.InfoFormat("Setting {0}v on {1} in {2}.", addMode ? "+" : "-", channelUser, channel);
+                    }
+                }
+
+                if ("eIbqkflj".Contains(c))
+                {
+                    position++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on join received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnJoinReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            // this is a client join to a channel.
+            // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster
+            var parametersList = e.Message.Parameters.ToList();
+
+            lock (this.userOperationLock)
+            {
+                if (this.userCache.ContainsKey(user.Nickname))
+                {
+                    user = this.userCache[user.Nickname];
+                }
+                else
+                {
+                    this.userCache.Add(user.Nickname, (IrcUser)user);
+                }
+            }
+
+            if (this.capExtendedJoin)
+            {
+                // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster accountname :realname
+                user.Account = parametersList[1];
+            }
+
+            var channelName = parametersList[0];
+            if (user.Nickname == this.Nickname)
+            {
+                // we're joining this, so rate-limit from here.
+                this.connectionRegistrationSemaphore.WaitOne();
+
+                this.logger.InfoFormat("Joining channel {0}", channelName);
+                this.logger.Debug("Requesting WHOX a information");
+                this.Send(new Message { Command = "WHO", Parameters = new[] { channelName, "%uhnatfc,001" } });
+
+                lock (this.userOperationLock)
+                {
+                    // add the channel to the list of channels I'm in.
+                    this.Channels.Add(channelName, new Channel(channelName));
+                }
+            }
+            else
+            {
+                this.logger.DebugFormat("Seen {0} join channel {1}.", user, channelName);
+
+                lock (this.userOperationLock)
+                {
+                    this.Channels[channelName].Users.Add(user.Nickname, new ChannelUser((IrcUser)user, channelName));
+                }
+            }
         }
 
         /// <summary>
@@ -356,48 +681,75 @@ namespace Helpmebot.IRC
         /// </param>
         private void HandleWhoXReply(IMessage message)
         {
-            if (message.Command != Numerics.WhoXReply)
+            try
             {
-                throw new ArgumentException("Expected WHOX reply message", "message");
-            }
+                if (message.Command != Numerics.WhoXReply)
+                {
+                    throw new ArgumentException("Expected WHOX reply message", "message");
+                }
 
-            var parameters = message.Parameters.ToList();
-            if (parameters.Count() != 8)
+                var parameters = message.Parameters.ToList();
+                if (parameters.Count() != 8)
+                {
+                    throw new ArgumentException("Expected 8 WHOX parameters.", "message");
+                }
+
+                /* >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ChanServ services.           ChanServ       H@  0
+                 * >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ~jamesur wikimedia/Jamesofur Jamesofur|away G  jamesofur
+                 *                             .            t   c                      u        h                   n              f  a
+                 *     prefix              cmd    0         1   2                      3        4                   5              6  7
+                 */
+                var channel = parameters[2];
+                var user = parameters[3];
+                var host = parameters[4];
+                var nick = parameters[5];
+                var flags = parameters[6];
+                var away = flags[0] == 'G'; // H (here) / G (gone)
+                var modes = flags.Substring(1);
+                var account = parameters[7];
+
+                lock (this.userOperationLock)
+                {
+                    var ircUser = new IrcUser();
+                    if (this.UserCache.ContainsKey(nick))
+                    {
+                        ircUser = this.UserCache[nick];
+                    }
+                    else
+                    {
+                        ircUser.Nickname = nick;
+                        this.UserCache.Add(nick, ircUser);
+                    }
+
+                    ircUser.Account = account;
+                    ircUser.Username = user;
+                    ircUser.Hostname = host;
+                    ircUser.Away = away;
+
+                    if (this.channels[channel].Users.ContainsKey(ircUser.Nickname))
+                    {
+                        var channelUser = this.channels[channel].Users[ircUser.Nickname];
+                        channelUser.Operator = modes.Contains("@");
+                        channelUser.Voice = modes.Contains("+");
+                    }
+                    else
+                    {
+                        var channelUser = new ChannelUser(ircUser, channel)
+                                              {
+                                                  Operator = modes.Contains("@"),
+                                                  Voice = modes.Contains("+")
+                                              };
+
+                        this.channels[channel].Users.Add(ircUser.Nickname, channelUser);
+                    }
+                }
+            }
+            catch (Exception ex)
             {
-                throw new ArgumentException("Expected 8 WHOX parameters.", "message");
+                this.nickTrackingValid = false;
+                this.logger.Error("Nick tracking for authentication is no longer valid.", ex);
+                throw;
             }
-
-            /* >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ChanServ services.           ChanServ       H@  0
-             * >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ~jamesur wikimedia/Jamesofur Jamesofur|away G  jamesofur
-             *                             .            t   c                      u        h                   n              f  a
-             *     prefix              cmd    0         1   2                      3        4                   5              6  7
-             */
-            var channel = parameters[2];
-            var user = parameters[3];
-            var host = parameters[4];
-            var nick = parameters[5];
-            var flags = parameters[6];
-            var away = flags[0] == 'G'; // H (here) / G (gone)
-            var modes = flags.Substring(1);
-            var account = parameters[7] == "0" ? "*" : parameters[7];
-
-            var ircUser = new IrcUser();
-            if (this.userCache.ContainsKey(nick))
-            {
-                ircUser = this.userCache[nick];
-            }
-            else
-            {
-                ircUser.Nickname = nick;
-                this.userCache.Add(nick, ircUser);
-            }
-
-            ircUser.Account = account;
-            ircUser.Username = user;
-            ircUser.Hostname = host;
-            ircUser.Away = away;
-
-         // TODO:   this.channels[channel].Users.Add();
         }
 
         #region Connection Registration

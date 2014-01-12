@@ -51,7 +51,6 @@ namespace Helpmebot.Tests
         /// </summary>
         public virtual void LocalSetup()
         {
-            
         }
     }
 }

@@ -28,6 +28,11 @@ namespace Helpmebot.IRC.Model
     public class IrcUser : IUser
     {
         /// <summary>
+        /// The account.
+        /// </summary>
+        private string account;
+
+        /// <summary>
         /// Gets or sets the nickname.
         /// </summary>
         public string Nickname { get; set; }
@@ -45,7 +50,25 @@ namespace Helpmebot.IRC.Model
         /// <summary>
         /// Gets or sets the account.
         /// </summary>
-        public string Account { get; set; }
+        public string Account
+        {
+            get
+            {
+                return this.account;
+            }
+
+            set
+            {
+                if (value == "*" || value == "0")
+                {
+                    this.account = null;
+                }
+                else
+                {
+                    this.account = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether away.
@@ -99,7 +122,7 @@ namespace Helpmebot.IRC.Model
         /// </returns>
         public override string ToString()
         {
-            if (string.IsNullOrEmpty(this.Account) || this.Account == "*")
+            if (string.IsNullOrEmpty(this.Account))
             {
                 return string.Format("{0}!{1}@{2}", this.Nickname, this.Username, this.Hostname);
             }

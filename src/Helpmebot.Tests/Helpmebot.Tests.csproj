@@ -67,6 +67,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\ListExtensionsTests.cs" />
+    <Compile Include="IRC\IrcClientStateTests.cs" />
     <Compile Include="IRC\Messages\MessageTests.cs" />
     <Compile Include="IRC\Model\IrcUserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
