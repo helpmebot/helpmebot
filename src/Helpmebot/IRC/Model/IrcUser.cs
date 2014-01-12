@@ -68,15 +68,19 @@ namespace Helpmebot.IRC.Model
             string host = null;
             if (prefix.Contains("@"))
             {
-                host = prefix.Substring(prefix.IndexOf('@') + 1);
+                var indexOfAt = prefix.IndexOf('@');
+
+                host = prefix.Substring(indexOfAt + 1);
                 if (prefix.Contains("!"))
                 {
-                    user = prefix.Substring(prefix.IndexOf('!') + 1, prefix.IndexOf('@'));
-                    nick = prefix.Substring(0, prefix.IndexOf('!'));
+                    var indexOfBang = prefix.IndexOf('!');
+
+                    user = prefix.Substring(indexOfBang + 1, indexOfAt - (indexOfBang + 1));
+                    nick = prefix.Substring(0, indexOfBang);
                 }
                 else
                 {
-                    nick = prefix.Substring(0, prefix.IndexOf('@'));
+                    nick = prefix.Substring(0, indexOfAt);
                 }
             }
             else
