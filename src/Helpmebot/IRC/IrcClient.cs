@@ -85,6 +85,11 @@ namespace Helpmebot.IRC
         /// <summary>
         /// The connection registration semaphore.
         /// </summary>
+        private readonly Semaphore channelJoinSemaphore;
+
+        /// <summary>
+        /// The connection registration semaphore.
+        /// </summary>
         private readonly Semaphore connectionRegistrationSemaphore;
 
         /// <summary>
@@ -176,6 +181,7 @@ namespace Helpmebot.IRC
             this.userCache = new Dictionary<string, IrcUser>();
             this.channels = new Dictionary<string, Channel>();
 
+            this.channelJoinSemaphore = new Semaphore(1, 1);
             this.connectionRegistrationSemaphore = new Semaphore(0, 1);
 
             this.RegisterConnection(null);
@@ -254,6 +260,8 @@ namespace Helpmebot.IRC
             {
                 return;
             }
+
+            this.connectionRegistrationSemaphore.WaitOne();
 
             // request to join
             this.Send(new Message { Command = "JOIN", Parameters = channel.ToEnumerable() });
@@ -366,7 +374,7 @@ namespace Helpmebot.IRC
             if (e.Message.Command == Numerics.EndOfWho)
             {
                 this.logger.Debug("End of who list.");
-                this.connectionRegistrationSemaphore.Release();
+                this.channelJoinSemaphore.Release();
             }
 
             if (e.Message.Command == "QUIT" && user != null)
@@ -650,7 +658,7 @@ namespace Helpmebot.IRC
             if (user.Nickname == this.Nickname)
             {
                 // we're joining this, so rate-limit from here.
-                this.connectionRegistrationSemaphore.WaitOne();
+                this.channelJoinSemaphore.WaitOne();
 
                 this.logger.InfoFormat("Joining channel {0}", channelName);
                 this.logger.Debug("Requesting WHOX a information");

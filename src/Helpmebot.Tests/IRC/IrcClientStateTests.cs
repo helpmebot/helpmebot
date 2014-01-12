@@ -203,6 +203,19 @@ namespace Helpmebot.Tests.IRC
 #if ! PARSERTESTS
         [Ignore("Parser tests disabled.")]
 #endif
+        public void ParserTest7()
+        {
+            // run the test file from \\DORADO\store
+            this.RunTestFile(@"A:\home\helpmebot\parsertests\test7.log", "stwalkerster___");
+        }
+
+        /// <summary>
+        /// Just throwing data at this...
+        /// </summary>
+        [Test]
+#if ! PARSERTESTS
+        [Ignore("Parser tests disabled.")]
+#endif
         public void ParserTestNickChange()
         {
             // run the test file from \\DORADO\store
