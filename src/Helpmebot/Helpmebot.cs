@@ -31,6 +31,7 @@ namespace Helpmebot
 
     using Helpmebot.IRC;
     using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
@@ -176,9 +177,7 @@ namespace Helpmebot
             debugChannel = LegacyConfig.singleton()["channelDebug"];
 
             ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
-#if OLDIRC
-            irc = new IrcAccessLayer(ircNetwork);           
-#else
+
             DAL db = DAL.singleton();
 
             var q = new DAL.Select(
@@ -215,13 +214,13 @@ namespace Helpmebot
 
             irc = new LegacyIrcProxy(newIrc);
 
-            JoinChannels(null, EventArgs.Empty);
-#endif
+            JoinChannels();
 
             Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             // TODO: remove me!
             container.Register(Component.For<IIrcAccessLayer>().Instance(irc));
+            container.Register(Component.For<IIrcClient>().Instance(newIrc));
 
             joinMessageService = container.Resolve<IJoinMessageService>();
 
@@ -244,9 +243,6 @@ namespace Helpmebot
         /// </summary>
         private static void SetupEvents()
         {
-#if OLDIRC
-            irc.ConnectionRegistrationSucceededEvent += JoinChannels;
-#endif
             irc.JoinEvent += WelcomeNewbieOnJoinEvent;
 
             irc.JoinEvent += NotifyOnJoinEvent;
@@ -356,13 +352,7 @@ namespace Helpmebot
         /// <summary>
         /// The join channels.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private static void JoinChannels(object sender, EventArgs e)
+        private static void JoinChannels()
         {
             irc.IrcJoin(debugChannel);
 
