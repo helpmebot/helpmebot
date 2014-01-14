@@ -41,6 +41,8 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Model;
     using Helpmebot.Model.Interfaces;
 
+    using NHibernate.Proxy;
+
     using IMessage = Helpmebot.IRC.Messages.IMessage;
 
     /// <summary>
@@ -496,6 +498,7 @@ namespace Helpmebot.IRC
 
             lock (this.userOperationLock)
             {
+                this.logger.DebugFormat("Seen {0} change account name to {1}", user, parameters[0]);
                 if (this.UserCache.ContainsKey(user.Nickname))
                 {
                     this.UserCache[user.Nickname].Account = parameters[0];
@@ -790,7 +793,7 @@ namespace Helpmebot.IRC
             }
             else
             {
-                this.logger.DebugFormat("Seen {0} join channel {1}.", user, channelName);
+                this.logger.InfoFormat("Seen {0} join channel {1}.", user, channelName);
 
                 lock (this.userOperationLock)
                 {
