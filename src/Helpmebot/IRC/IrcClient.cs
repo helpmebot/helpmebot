@@ -19,6 +19,7 @@
 // <remarks>
 // TODO: +Q user mode for no forwarding.
 // TODO: automatic CTCP replies
+// TODO: kick tracking
 // </remarks>
 // --------------------------------------------------------------------------------------------------------------------
 
