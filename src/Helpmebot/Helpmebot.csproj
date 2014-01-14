@@ -217,7 +217,6 @@
     <Compile Include="Legacy\Commands\Learn.cs" />
     <Compile Include="Legacy\Commands\Link.cs" />
     <Compile Include="Legacy\Commands\MaxLag.cs" />
-    <Compile Include="Legacy\Commands\MessageCount.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="Legacy\Commands\Part.cs" />

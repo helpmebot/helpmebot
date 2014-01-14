@@ -16,6 +16,10 @@
 // <summary>
 //   Defines the IrcClient type.
 // </summary>
+// <remarks>
+// TODO: +Q user mode for no forwarding.
+// TODO: automatic CTCP replies
+// </remarks>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Helpmebot.IRC

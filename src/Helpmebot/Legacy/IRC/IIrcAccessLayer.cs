@@ -60,15 +60,10 @@ namespace Helpmebot.Legacy.IRC
         event EventHandler ThreadFatalErrorEvent;
 
         /// <summary>
-        /// Gets or sets the nickname.
+        /// Gets the nickname.
         /// </summary>
-        string Nickname { get; set; }
+        string Nickname { get; }
 
-        /// <summary>
-        /// Gets the message count.
-        /// </summary>
-        int MessageCount { get; }
-        
         /// <summary>
         /// The connect.
         /// </summary>
