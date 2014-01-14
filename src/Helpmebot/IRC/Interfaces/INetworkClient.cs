@@ -28,7 +28,7 @@ namespace Helpmebot.IRC.Interfaces
     /// <summary>
     /// The NetworkClient interface.
     /// </summary>
-    public interface INetworkClient
+    public interface INetworkClient : IDisposable
     {
         /// <summary>
         /// The data received.

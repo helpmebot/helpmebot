@@ -46,7 +46,7 @@ namespace Helpmebot.IRC
     /// <summary>
     /// The IRC client.
     /// </summary>
-    public class IrcClient : IIrcClient
+    public class IrcClient : IIrcClient, IDisposable
     {
         #region Fields
 
@@ -321,7 +321,31 @@ namespace Helpmebot.IRC
             this.networkClient.Send(message.ToString());
         }
 
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.networkClient.Disconnect();
+                this.networkClient.Dispose();
+                ((IDisposable)this.connectionRegistrationSemaphore).Dispose();
+            }
+        }
 
         /// <summary>
         /// The network client on data received.

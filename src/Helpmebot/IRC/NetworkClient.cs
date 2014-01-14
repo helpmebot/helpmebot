@@ -37,7 +37,7 @@ namespace Helpmebot.IRC
     /// <para>
     /// This is an event-based asynchronous TCP client
     /// </para>
-    public class NetworkClient : INetworkClient
+    public class NetworkClient : INetworkClient, IDisposable
     {
         /// <summary>
         /// The client.
@@ -207,6 +207,15 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
+        /// The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         /// The on data received.
         /// </summary>
         /// <param name="e">
@@ -218,6 +227,23 @@ namespace Helpmebot.IRC
             if (handler != null)
             {
                 handler(this, e);
+            }
+        }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.reader.Dispose();
+                this.writer.Dispose();
+                ((IDisposable)this.writerThreadResetEvent).Dispose();
+                this.client.Close();
             }
         }
 
