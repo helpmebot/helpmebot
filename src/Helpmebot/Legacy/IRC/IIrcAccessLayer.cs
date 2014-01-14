@@ -30,89 +30,29 @@ namespace Helpmebot.Legacy.IRC
     public interface IIrcAccessLayer
     {
         /// <summary>
-        /// The data received event.
-        /// </summary>
-        event EventHandler<DataReceivedEventArgs> DataReceivedEvent;
-
-        /// <summary>
-        /// The unrecognised data received event.
-        /// </summary>
-        event EventHandler<DataReceivedEventArgs> UnrecognisedDataReceivedEvent;
-
-        /// <summary>
         /// The connection registration succeeded event.
         /// </summary>
         event EventHandler ConnectionRegistrationSucceededEvent;
 
         /// <summary>
-        /// The ping event.
-        /// </summary>
-        event IrcAccessLayer.PingEventHandler PingEvent;
-
-        /// <summary>
-        /// The nickname change event.
-        /// </summary>
-        event IrcAccessLayer.NicknameChangeEventHandler NicknameChangeEvent;
-
-        /// <summary>
-        /// The mode change event.
-        /// </summary>
-        event IrcAccessLayer.ModeChangeEventHandler ModeChangeEvent;
-
-        /// <summary>
-        /// The quit event.
-        /// </summary>
-        event IrcAccessLayer.QuitEventHandler QuitEvent;
-
-        /// <summary>
         /// The join event.
         /// </summary>
         event IrcAccessLayer.JoinEventHandler JoinEvent;
-
-        /// <summary>
-        /// The part event.
-        /// </summary>
-        event IrcAccessLayer.PartEventHandler PartEvent;
-
-        /// <summary>
-        /// The topic event.
-        /// </summary>
-        event IrcAccessLayer.TopicEventHandler TopicEvent;
-
+        
         /// <summary>
         /// The invite event.
         /// </summary>
         event IrcAccessLayer.InviteEventHandler InviteEvent;
-
-        /// <summary>
-        /// The kick event.
-        /// </summary>
-        event IrcAccessLayer.KickEventHandler KickEvent;
-
+        
         /// <summary>
         /// The private message event.
         /// </summary>
         event EventHandler<PrivateMessageEventArgs> PrivateMessageEvent;
 
         /// <summary>
-        /// The client to client event.
-        /// </summary>
-        event EventHandler<PrivateMessageEventArgs> ClientToClientEvent;
-
-        /// <summary>
         /// The notice event.
         /// </summary>
         event EventHandler<PrivateMessageEventArgs> NoticeEvent;
-
-        /// <summary>
-        /// The err nickname in use event.
-        /// </summary>
-        event EventHandler ErrNicknameInUseEvent;
-
-        /// <summary>
-        /// The err unavailable resource.
-        /// </summary>
-        event EventHandler ErrUnavailResource;
 
         /// <summary>
         /// The thread fatal error event.
@@ -181,16 +121,5 @@ namespace Helpmebot.Legacy.IRC
         /// The message.
         /// </param>
         void IrcNotice(string destination, string message);
-
-        /// <summary>
-        /// Checks if nickname is on channel
-        /// </summary>
-        /// <param name = "channel">channel to check</param>
-        /// <param name = "nickname">nickname to check</param>
-        /// <returns>1 if nickname is on channel
-        /// 0 if nickname is not on channel
-        /// -1 if it cannot be checked at the moment
-        /// </returns>
-        int IsOnChannel(string channel, string nickname);
     }
 }

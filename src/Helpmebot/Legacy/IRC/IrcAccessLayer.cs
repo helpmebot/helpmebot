@@ -1141,26 +1141,6 @@ namespace Helpmebot.Legacy.IRC
             return channelName.StartsWith("#");
         }
 
-        /// <summary>
-        /// Checks if nickname is on channel
-        /// </summary>
-        /// <param name = "channel">channel to check</param>
-        /// <param name = "nickname">nickname to check</param>
-        /// <returns>1 if nickname is on channel
-        /// 0 if nickname is not on channel
-        /// -1 if it cannot be checked at the moment
-        /// </returns>
-        public int IsOnChannel(string channel, string nickname)
-        {
-            if (this.namesList.ContainsKey(channel))
-            {
-                return ((ArrayList)this.namesList[channel]).Contains(nickname) ? 1 : 0;
-            }
-
-            this.IrcNames(channel);
-            return -1;
-        }
-
         #endregion
 
         #region Threads

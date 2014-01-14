@@ -63,7 +63,7 @@ namespace Helpmebot
         /// <summary>
         /// The IRC.
         /// </summary>
-        public static IrcAccessLayer irc;
+        public static IIrcAccessLayer irc;
 
         /// <summary>
         /// The debug channel.
