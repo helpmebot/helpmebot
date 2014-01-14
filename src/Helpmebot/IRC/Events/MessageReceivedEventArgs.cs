@@ -41,8 +41,8 @@ namespace Helpmebot.IRC.Events
         }
 
         /// <summary>
-        /// Gets or sets the message.
+        /// Gets the message.
         /// </summary>
-        public IMessage Message { get; set; }
+        public IMessage Message { get; private set; }
     }
 }

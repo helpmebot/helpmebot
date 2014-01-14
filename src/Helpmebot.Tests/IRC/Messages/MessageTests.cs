@@ -40,27 +40,20 @@ namespace Helpmebot.Tests.IRC.Messages
         { 
             // arrange
             string message = ":server 001 :Welcome!";
-            var expected = new Message
-                               {
-                                   Prefix = "server",
-                                   Command = "001",
-                                   Parameters = new List<string> { "Welcome!" }
-                               };
+            var expected = new Message("server", "001", new[] { "Welcome!" });
 
             this.DoParseTest(message, expected);
         }
 
+        /// <summary>
+        /// The should parse correctly 2.
+        /// </summary>
         [Test]
         public void ShouldParseCorrectly2()
         {
             // arrange
             string message = ":bla MODE foo bar :do something!";
-            var expected = new Message
-            {
-                Prefix = "bla",
-                Command = "MODE",
-                Parameters = new List<string> { "foo", "bar", "do something!" }
-            };
+            var expected = new Message("bla", "MODE", new List<string> { "foo", "bar", "do something!" });
 
             this.DoParseTest(message, expected);
         }
@@ -73,10 +66,7 @@ namespace Helpmebot.Tests.IRC.Messages
         {
             // arrange
             string message = "PRSDS";
-            var expected = new Message
-            {
-                Command = "PRSDS",
-            };
+            var expected = new Message("PRSDS");
 
             this.DoParseTest(message, expected);
         }
@@ -89,11 +79,7 @@ namespace Helpmebot.Tests.IRC.Messages
         {
             // arrange
             string message = "PRSDS foo bar baz";
-            var expected = new Message
-            {
-                Command = "PRSDS",
-                Parameters = new List<string> { "foo", "bar", "baz" }
-            };
+            var expected = new Message("PRSDS", new[] { "foo", "bar", "baz" });
 
             this.DoParseTest(message, expected);
         }
@@ -106,12 +92,20 @@ namespace Helpmebot.Tests.IRC.Messages
         {
             // arrange
             string message = ":hobana.freenode.net 354 stwalker|test 001 #wikipedia-en ~Marco 2a00:1158:2:7700::16 Gnumarcoo_ G 0";
-            var expected = new Message
-            {
-                Prefix = "hobana.freenode.net",
-                Command = "354",
-                Parameters = new List<string> { "stwalker|test", "001", "#wikipedia-en", "~Marco", "2a00:1158:2:7700::16", "Gnumarcoo_", "G", "0" }
-            };
+            var expected = new Message(
+                "hobana.freenode.net",
+                "354",
+                new List<string>
+                    {
+                        "stwalker|test",
+                        "001",
+                        "#wikipedia-en",
+                        "~Marco",
+                        "2a00:1158:2:7700::16",
+                        "Gnumarcoo_",
+                        "G",
+                        "0"
+                    });
 
             this.DoParseTest(message, expected);
         }

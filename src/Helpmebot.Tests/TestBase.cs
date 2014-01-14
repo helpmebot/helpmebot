@@ -43,6 +43,7 @@ namespace Helpmebot.Tests
         public void CommonSetup()
         {
             this.Logger = new Mock<ILogger>();
+            this.Logger.Setup(x => x.CreateChildLogger(It.IsAny<string>())).Returns(this.Logger.Object);
             this.LocalSetup();
         }
 

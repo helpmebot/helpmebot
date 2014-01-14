@@ -28,18 +28,18 @@ namespace Helpmebot.IRC.Messages
     public interface IMessage
     {
         /// <summary>
-        /// Gets or sets the command.
+        /// Gets the command.
         /// </summary>
-        string Command { get; set; }
+        string Command { get; }
 
         /// <summary>
-        /// Gets or sets the prefix.
+        /// Gets the prefix.
         /// </summary>
-        string Prefix { get; set; }
+        string Prefix { get; }
 
         /// <summary>
-        /// Gets or sets the parameters.
+        /// Gets the parameters.
         /// </summary>
-        IEnumerable<string> Parameters { get; set; }
+        IEnumerable<string> Parameters { get; }
     }
 }

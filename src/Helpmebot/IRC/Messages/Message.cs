@@ -24,25 +24,118 @@ namespace Helpmebot.IRC.Messages
     using System.Collections.Generic;
     using System.Linq;
 
+    using Helpmebot.ExtensionMethods;
+
     /// <summary>
     /// The message.
     /// </summary>
     public class Message : IMessage
     {
         /// <summary>
-        /// Gets or sets the command.
+        /// The command.
         /// </summary>
-        public string Command { get; set; }
+        private readonly string command;
 
         /// <summary>
-        /// Gets or sets the prefix.
+        /// The prefix.
         /// </summary>
-        public string Prefix { get; set; }
+        private readonly string prefix;
 
         /// <summary>
-        /// Gets or sets the parameters.
+        /// The parameters.
         /// </summary>
-        public IEnumerable<string> Parameters { get; set; }
+        private readonly IEnumerable<string> parameters;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        public Message(string command)
+            : this(null, command, null)
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="parameter">
+        /// The parameters.
+        /// </param>
+        public Message(string command, string parameter)
+            : this(null, command, parameter.ToEnumerable())
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        public Message(string command, IEnumerable<string> parameters)
+            : this(null, command, parameters)
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="prefix">
+        /// The prefix.
+        /// </param>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        public Message(string prefix, string command, IEnumerable<string> parameters)
+        {
+            this.prefix = prefix;
+            this.command = command;
+            this.parameters = parameters;
+        }
+
+        /// <summary>
+        /// Gets the command.
+        /// </summary>
+        public string Command
+        {
+            get
+            {
+                return this.command;
+            }
+        }
+
+        /// <summary>
+        /// Gets the prefix.
+        /// </summary>
+        public string Prefix
+        {
+            get
+            {
+                return this.prefix;
+            }
+        }
+
+        /// <summary>
+        /// Gets the parameters.
+        /// </summary>
+        public IEnumerable<string> Parameters
+        {
+            get
+            {
+                return this.parameters == null ? null : this.parameters.ToArray();
+            }
+        }
 
         /// <summary>
         /// The parse.
@@ -55,18 +148,19 @@ namespace Helpmebot.IRC.Messages
         /// </returns>
         public static IMessage Parse(string data)
         {
-            var message = new Message();
             var separator = new[] { ' ' };
+            string prefix = null, command;
+            List<string> messageParameters = null;
 
             if (data.StartsWith(":"))
             {
                 var prefixstrings = data.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
                 data = prefixstrings[1];
-                message.Prefix = prefixstrings[0].Substring(1); // strip the leading : too
+                prefix = prefixstrings[0].Substring(1); // strip the leading : too
             }
 
             var strings = data.Split(separator, 2, StringSplitOptions.RemoveEmptyEntries);
-            message.Command = strings[0];
+            command = strings[0];
 
             if (strings.Length == 2)
             {
@@ -81,16 +175,15 @@ namespace Helpmebot.IRC.Messages
                             .ToList();
 
                     parameterList.Add(paramend);
-                    message.Parameters = parameterList;
+                    messageParameters = parameterList;
                 }
                 else
                 {
-                    var parameterList = parameters.Split(separator, StringSplitOptions.RemoveEmptyEntries).ToList();
-                    message.Parameters = parameterList;
+                    messageParameters = parameters.Split(separator, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
             }
 
-            return message;
+            return new Message(prefix, command, messageParameters);
         }
 
         /// <summary>

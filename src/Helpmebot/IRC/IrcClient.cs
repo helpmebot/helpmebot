@@ -24,6 +24,7 @@ namespace Helpmebot.IRC
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Security;
     using System.Threading;
 
     using Castle.Core.Logging;
@@ -34,6 +35,8 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Messages;
     using Helpmebot.IRC.Model;
     using Helpmebot.Model.Interfaces;
+
+    using IMessage = Helpmebot.IRC.Messages.IMessage;
 
     /// <summary>
     /// The IRC client.
@@ -51,6 +54,11 @@ namespace Helpmebot.IRC
         /// The logger.
         /// </summary>
         private readonly ILogger logger;
+
+        /// <summary>
+        /// The sync logger.
+        /// </summary>
+        private readonly ILogger syncLogger;
 
         /// <summary>
         /// The username.
@@ -85,11 +93,6 @@ namespace Helpmebot.IRC
         /// <summary>
         /// The connection registration semaphore.
         /// </summary>
-        private readonly Semaphore channelJoinSemaphore;
-
-        /// <summary>
-        /// The connection registration semaphore.
-        /// </summary>
         private readonly Semaphore connectionRegistrationSemaphore;
 
         /// <summary>
@@ -98,19 +101,9 @@ namespace Helpmebot.IRC
         private readonly object userOperationLock = new object();
 
         /// <summary>
-        /// The cap multi prefix.
-        /// </summary>
-        private bool capMultiPrefix;
-
-        /// <summary>
         /// The cap extended join.
         /// </summary>
         private bool capExtendedJoin;
-
-        /// <summary>
-        /// The cap account notify.
-        /// </summary>
-        private bool capAccountNotify;
 
         /// <summary>
         /// The SASL capability.
@@ -130,7 +123,7 @@ namespace Helpmebot.IRC
         /// <summary>
         /// Is the client logged in to a nickserv account?
         /// </summary>
-        private bool loggedIn;
+        private bool servicesLoggedIn;
 
         /// <summary>
         /// The server prefix.
@@ -170,6 +163,7 @@ namespace Helpmebot.IRC
             this.nickname = nickname;
             this.networkClient = client;
             this.logger = logger;
+            this.syncLogger = logger.CreateChildLogger("Sync");
             this.username = username;
             this.realName = realName;
             this.password = password;
@@ -181,8 +175,8 @@ namespace Helpmebot.IRC
             this.userCache = new Dictionary<string, IrcUser>();
             this.channels = new Dictionary<string, Channel>();
 
-            this.channelJoinSemaphore = new Semaphore(1, 1);
             this.connectionRegistrationSemaphore = new Semaphore(0, 1);
+            this.syncLogger.Debug("ctor() acquired connectionRegistration semaphore.");
 
             this.RegisterConnection(null);
         }
@@ -207,7 +201,7 @@ namespace Helpmebot.IRC
             set
             {
                 this.nickname = value;
-                this.Send(new Message { Command = "NICK", Parameters = value.ToEnumerable() });
+                this.Send(new Message("NICK", value));
             }
         }
 
@@ -244,6 +238,17 @@ namespace Helpmebot.IRC
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the client logged in to a nickserv account
+        /// </summary>
+        public bool ServicesLoggedIn
+        {
+            get
+            {
+                return this.servicesLoggedIn;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -258,13 +263,17 @@ namespace Helpmebot.IRC
         {
             if (channel == "0")
             {
-                return;
+                throw new SecurityException("Not allowed to part all with JOIN 0");
             }
 
+            this.syncLogger.DebugFormat("Join({0}) waiting on connectionRegistration semaphore.", channel);
             this.connectionRegistrationSemaphore.WaitOne();
-
+            this.syncLogger.DebugFormat("Join({0}) acquired on connectionRegistration semaphore.", channel);
+            this.connectionRegistrationSemaphore.Release();
+            this.syncLogger.DebugFormat("Join({0}) released connectionRegistration semaphore.", channel);
+            
             // request to join
-            this.Send(new Message { Command = "JOIN", Parameters = channel.ToEnumerable() });
+            this.Send(new Message("JOIN", channel));
         }
 
         #endregion
@@ -303,7 +312,7 @@ namespace Helpmebot.IRC
 
             if (message.Command == "PING")
             {
-                this.Send(new Message { Command = "PONG", Parameters = message.Parameters });
+                this.Send(new Message("PONG", message.Parameters));
             }
 
             if (this.connectionRegistered)
@@ -324,10 +333,10 @@ namespace Helpmebot.IRC
         /// </param>
         private void RaiseDataEvent(IMessage message)
         {
-            EventHandler<MessageReceivedEventArgs> temp = this.ReceivedMessage;
-            if (temp != null)
+            EventHandler<MessageReceivedEventArgs> receivedMessageEvent = this.ReceivedMessage;
+            if (receivedMessageEvent != null)
             {
-                temp(this, new MessageReceivedEventArgs(message));
+                receivedMessageEvent(this, new MessageReceivedEventArgs(message));
             }
         }
 
@@ -367,14 +376,13 @@ namespace Helpmebot.IRC
 
             if (e.Message.Command == Numerics.WhoXReply)
             {
-                this.logger.WarnFormat("WHOX Reply:{0}", e.Message.Parameters.Implode());
+                this.logger.DebugFormat("WHOX Reply:{0}", e.Message.Parameters.Implode());
                 this.HandleWhoXReply(e.Message);
             }
 
             if (e.Message.Command == Numerics.EndOfWho)
             {
                 this.logger.Debug("End of who list.");
-                this.channelJoinSemaphore.Release();
             }
 
             if (e.Message.Command == "QUIT" && user != null)
@@ -403,7 +411,7 @@ namespace Helpmebot.IRC
                 else
                 {
                     // User mode message
-                    this.logger.Info("Received user mode message. ?");
+                    this.logger.Warn("Received user mode message. Not processing.");
                 }
             }
 
@@ -509,7 +517,7 @@ namespace Helpmebot.IRC
             var channel = parameters[2];
             var names = parameters[3];
 
-            this.logger.WarnFormat("Names on {0}: {1}", channel, names);
+            this.logger.DebugFormat("Names on {0}: {1}", channel, names);
             
             foreach (string name in names.Split(' '))
             {
@@ -591,11 +599,12 @@ namespace Helpmebot.IRC
                     lock (this.userOperationLock)
                     {
                         var channelUser = this.channels[channel].Users[nick];
+                     
+                        this.logger.InfoFormat("Seen {0}o on {1}.", addMode ? "+" : "-", channelUser);
+
                         channelUser.Operator = addMode;
 
                         position++;
-
-                        this.logger.InfoFormat("Setting {0}o on {1} in {2}.", addMode ? "+" : "-", channelUser, channel);
                     }
                 }
 
@@ -606,11 +615,12 @@ namespace Helpmebot.IRC
                     lock (this.userOperationLock)
                     {
                         var channelUser = this.channels[channel].Users[nick];
+
+                        this.logger.InfoFormat("Seen {0}v on {1}.", addMode ? "+" : "-", channelUser, channel);
+
                         channelUser.Voice = addMode;
 
                         position++;
-
-                        this.logger.InfoFormat("Setting {0}v on {1} in {2}.", addMode ? "+" : "-", channelUser, channel);
                     }
                 }
 
@@ -658,11 +668,9 @@ namespace Helpmebot.IRC
             if (user.Nickname == this.Nickname)
             {
                 // we're joining this, so rate-limit from here.
-                this.channelJoinSemaphore.WaitOne();
-
                 this.logger.InfoFormat("Joining channel {0}", channelName);
                 this.logger.Debug("Requesting WHOX a information");
-                this.Send(new Message { Command = "WHO", Parameters = new[] { channelName, "%uhnatfc,001" } });
+                this.Send(new Message("WHO", new[] { channelName, "%uhnatfc,001" }));
 
                 lock (this.userOperationLock)
                 {
@@ -778,13 +786,13 @@ namespace Helpmebot.IRC
                     // we don't support capabilities, so don't go through the CAP cycle.
                     this.logger.InfoFormat("I support no capabilities.");
 
-                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                    this.Send(new Message("CAP", "END"));
                     this.Send1459Registration();
                 }
                 else
                 {
                     // we support capabilities, use them!
-                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "LS" } });    
+                    this.Send(new Message("CAP", "LS"));
                 }
                 
                 return;
@@ -803,6 +811,7 @@ namespace Helpmebot.IRC
                 this.serverPrefix = message.Prefix;
                 this.connectionRegistered = true;
                 this.connectionRegistrationSemaphore.Release();
+                this.syncLogger.Debug("RegisterConnection() released connectionRegistration semaphore.");
 
                 this.RaiseDataEvent(message);
                 return;
@@ -831,17 +840,26 @@ namespace Helpmebot.IRC
                 if (list[1] == "LS")
                 {
                     var serverCapabilities = list[2].Split(' ');
-                    this.logger.InfoFormat("Server Capabilities: {0}", serverCapabilities.Implode(", "));
-                    this.logger.InfoFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
+                    this.logger.DebugFormat("Server Capabilities: {0}", serverCapabilities.Implode(", "));
+                    this.logger.DebugFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
 
                     var caps = serverCapabilities.Intersect(this.clientCapabilities).ToList();
+
+                    // We don't support one without the other!
+                    if (caps.Intersect(new[] { "account-notify", "extended-join" }).Count() == 1)
+                    {
+                        this.logger.Warn(
+                            "Dropping account-notify and extended-join support since server only supports one of them!");
+                        caps.Remove("account-notify");
+                        caps.Remove("extended-join");
+                    }
 
                     if (caps.Count == 0)
                     {
                         // nothing is suitable for us, so downgrade to 1459
                         this.logger.InfoFormat("Requesting no capabilities.");
 
-                        this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                        this.Send(new Message("CAP", "END"));
                         this.Send1459Registration();
 
                         return;
@@ -849,8 +867,7 @@ namespace Helpmebot.IRC
 
                     this.logger.InfoFormat("Requesting capabilities: {0}", caps.Implode(", "));
 
-                    this.Send(
-                        new Message { Command = "CAP", Parameters = new List<string> { "REQ", caps.Implode() } });
+                    this.Send(new Message("CAP", new[] { "REQ", caps.Implode() }));
 
                     return;
                 }
@@ -862,11 +879,6 @@ namespace Helpmebot.IRC
 
                     foreach (var cap in caps)
                     {
-                        if (cap == "account-notify")
-                        {
-                            this.capAccountNotify = true;
-                        }
-
                         if (cap == "sasl")
                         {
                             this.capSasl = true;
@@ -874,13 +886,12 @@ namespace Helpmebot.IRC
 
                         if (cap == "extended-join")
                         {
+                            // This includes account-notify since both are required.
                             this.capExtendedJoin = true;
                         }
 
-                        if (cap == "multi-prefix")
-                        {
-                            this.capMultiPrefix = true;
-                        }
+                        // We don't care about multi-prefix, since the code to 
+                        // handle it works nicely for those without it.
                     }
 
                     if (this.capSasl)
@@ -889,7 +900,7 @@ namespace Helpmebot.IRC
                     }
                     else
                     {
-                        this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                        this.Send(new Message("CAP", "END"));
                         this.Send1459Registration();  
                     }
 
@@ -901,8 +912,8 @@ namespace Helpmebot.IRC
                     // something went wrong, so downgrade to 1459.
                     var caps = list[2].Split(' ');
                     this.logger.WarnFormat("NOT Acked capabilities: {0}", caps.Implode(", "));
-                    
-                    this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+
+                    this.Send(new Message("CAP", "END"));
                     this.Send1459Registration();
                     return;
                 }
@@ -910,8 +921,9 @@ namespace Helpmebot.IRC
 
             if (message.Command == Numerics.SaslLoggedIn)
             {
-                this.logger.InfoFormat("You are now logged in as {2} ({1})", message.Parameters.ToArray());
-                this.loggedIn = true;
+                var strings = message.Parameters.ToArray();
+                this.logger.InfoFormat("You are now logged in as {1} ({0})", strings[1], strings[2]);
+                this.servicesLoggedIn = true;
                 return;
             }
 
@@ -920,7 +932,7 @@ namespace Helpmebot.IRC
                 this.logger.InfoFormat("SASL Login succeeded.");
 
                 // logged in, continue with registration
-                this.Send(new Message { Command = "CAP", Parameters = new List<string> { "END" } });
+                this.Send(new Message("CAP", "END"));
                 this.Send1459Registration();
                 return;
             }
@@ -930,7 +942,7 @@ namespace Helpmebot.IRC
                 this.logger.WarnFormat("SASL Login failed.");
 
                 // not logged in, cancel sasl auth.
-                this.Send(new Message { Command = "AUTHENTICATE", Parameters = "*".ToEnumerable() });
+                this.Send(new Message("AUTHENTICATE", "*"));
                 return;
             }
 
@@ -939,7 +951,7 @@ namespace Helpmebot.IRC
                 this.logger.WarnFormat("SASL Login aborted.");
 
                 // not logged in, cancel sasl auth.
-                this.Send(new Message { Command = "CAP", Parameters = "END".ToEnumerable() });
+                this.Send(new Message("CAP", "END"));
                 this.Send1459Registration();
                 return;
             }
@@ -957,7 +969,7 @@ namespace Helpmebot.IRC
         {
             if (message == null)
             {
-                this.Send(new Message { Command = "AUTHENTICATE", Parameters = "PLAIN".ToEnumerable() });
+                this.Send(new Message("AUTHENTICATE", "PLAIN"));
                 return;
             }
 
@@ -965,7 +977,7 @@ namespace Helpmebot.IRC
             if (list[0] == "+")
             {
                 var authdata = string.Format("\0{0}\0{1}", this.username, this.password).ToBase64();
-                this.Send(new Message { Command = "AUTHENTICATE", Parameters = authdata.ToEnumerable() });
+                this.Send(new Message("AUTHENTICATE", authdata));
             }
         }
 
@@ -976,17 +988,12 @@ namespace Helpmebot.IRC
         {
             if (!this.capSasl && !string.IsNullOrEmpty(this.password))
             {
-                this.Send(new Message { Command = "PASS", Parameters = this.password.ToEnumerable() });
+                this.Send(new Message("PASS", this.password));
             }
 
-            this.Send(
-                new Message
-                    {
-                        Command = "USER",
-                        Parameters = new List<string> { this.username, "*", "*", this.realName }
-                    });
+            this.Send(new Message("USER", new[] { this.username, "*", "*", this.realName }));
 
-            this.Send(new Message { Command = "NICK", Parameters = this.Nickname.ToEnumerable() });
+            this.Send(new Message("NICK", this.nickname));
         }
 
         #endregion
