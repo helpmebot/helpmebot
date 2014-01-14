@@ -87,7 +87,12 @@ namespace Helpmebot.IRC
         /// <summary>
         /// The network logger.
         /// </summary>
-        private readonly ILogger networkLogger;
+        private readonly ILogger inboundLogger;
+
+        /// <summary>
+        /// The outbound logger.
+        /// </summary>
+        private readonly ILogger outboundLogger;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="NetworkClient"/> class.
@@ -106,7 +111,8 @@ namespace Helpmebot.IRC
             this.hostname = hostname;
             this.port = port;
             this.logger = logger;
-            this.networkLogger = logger.CreateChildLogger("Network");
+            this.inboundLogger = logger.CreateChildLogger("Inbound");
+            this.outboundLogger = logger.CreateChildLogger("Outbound");
 
             this.logger.InfoFormat("Connecting to socket tcp://{0}:{1}/ ...", hostname, port);
 
@@ -228,7 +234,7 @@ namespace Helpmebot.IRC
 
                     if (data != null)
                     {
-                        this.networkLogger.DebugFormat("> {0}", data);
+                        this.inboundLogger.Debug(data);
                         this.OnDataReceived(new DataReceivedEventArgs(data));
                     }
                 }
@@ -269,7 +275,7 @@ namespace Helpmebot.IRC
                         continue;
                     }
 
-                    this.networkLogger.DebugFormat("< {0}", item);
+                    this.outboundLogger.Debug(item);
                     this.writer.WriteLine(item);
                     this.writer.Flush();
 

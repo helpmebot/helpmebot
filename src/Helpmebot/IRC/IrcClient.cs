@@ -411,7 +411,7 @@ namespace Helpmebot.IRC
                 else
                 {
                     // User mode message
-                    this.logger.Warn("Received user mode message. Not processing.");
+                    this.logger.Debug("Received user mode message. Not processing.");
                 }
             }
 
