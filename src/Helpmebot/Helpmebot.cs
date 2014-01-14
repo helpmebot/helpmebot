@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Collections;
     using System.Globalization;
 
     using Castle.Core.Logging;
@@ -175,10 +176,31 @@ namespace Helpmebot
             debugChannel = LegacyConfig.singleton()["channelDebug"];
 
             ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
+#if OLDIRC
+            irc = new IrcAccessLayer(ircNetwork);           
+#else
+            DAL db = DAL.singleton();
 
-            irc = new IrcAccessLayer(ircNetwork);
+            var q = new DAL.Select(
+                "in_host",
+                "in_port",
+                "in_nickname",
+                "in_password",
+                "in_username",
+                "in_realname",
+                "in_log",
+                "in_nickserv");
+            q.setFrom("ircnetwork");
+            q.addLimit(1, 0);
+            q.addWhere(new DAL.WhereConds("in_id", ircNetwork.ToString(CultureInfo.InvariantCulture)));
 
-#if DEBUG
+            ArrayList configSettings = db.executeSelect(q);
+
+            var myNickname = (string)((object[])configSettings[0])[2];
+            var myPassword = (string)((object[])configSettings[0])[3];
+            var myUsername = (string)((object[])configSettings[0])[4];
+            var myRealname = (string)((object[])configSettings[0])[5];
+
             newIrc =
                 new IrcClient(
                     new NetworkClient(
@@ -186,12 +208,16 @@ namespace Helpmebot
                         6667,
                         container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
-                    "hmb-newirc",
-                    "hmb-newirc",
-                    "hmb-newirc",
-                    string.Empty);
+                    myNickname,
+                    myUsername,
+                    myRealname,
+                    myPassword);
+
+            irc = new LegacyIrcProxy(newIrc);
+
+            JoinChannels(null, EventArgs.Empty);
 #endif
-            
+
             Trigger = LegacyConfig.singleton()["commandTrigger"];
 
             // TODO: remove me!
@@ -218,8 +244,9 @@ namespace Helpmebot
         /// </summary>
         private static void SetupEvents()
         {
+#if OLDIRC
             irc.ConnectionRegistrationSucceededEvent += JoinChannels;
-
+#endif
             irc.JoinEvent += WelcomeNewbieOnJoinEvent;
 
             irc.JoinEvent += NotifyOnJoinEvent;

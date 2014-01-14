@@ -46,7 +46,7 @@ namespace Helpmebot.IRC
     /// <summary>
     /// The IRC client.
     /// </summary>
-    public class IrcClient
+    public class IrcClient : IIrcClient
     {
         #region Fields
 
@@ -264,7 +264,7 @@ namespace Helpmebot.IRC
         /// <param name="channel">
         /// The channel.
         /// </param>
-        public void Join(string channel)
+        public void JoinChannel(string channel)
         {
             if (channel == "0")
             {
@@ -281,7 +281,34 @@ namespace Helpmebot.IRC
             this.Send(new Message("JOIN", channel));
         }
 
-        #endregion
+        /// <summary>
+        /// The part channel.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public void PartChannel(string channel, string message)
+        {
+            // request to join
+            this.Send(new Message("PART", new[] { channel, message }));
+        }
+
+        /// <summary>
+        /// The send message.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public void SendMessage(string destination, string message)
+        {
+            this.Send(new Message("PRIVMSG", new[] { destination, message }));
+        }
 
         /// <summary>
         /// The send.
@@ -289,10 +316,12 @@ namespace Helpmebot.IRC
         /// <param name="message">
         /// The message.
         /// </param>
-        private void Send(Message message)
+        public void Send(IMessage message)
         {
             this.networkClient.Send(message.ToString());
         }
+
+        #endregion
 
         /// <summary>
         /// The network client on data received.
@@ -392,17 +421,7 @@ namespace Helpmebot.IRC
 
             if (e.Message.Command == "QUIT" && user != null)
             {
-                this.logger.InfoFormat("{0} has left IRC.", user);
-
-                lock (this.userOperationLock)
-                {
-                    this.UserCache.Remove(user.Nickname);
-
-                    foreach (var channel in this.channels)
-                    {
-                        channel.Value.Users.Remove(user.Nickname);
-                    }
-                }
+                this.OnQuitMessageReceived(user);
             }
 
             if (e.Message.Command == "MODE" && user != null)
@@ -422,9 +441,73 @@ namespace Helpmebot.IRC
 
             if (e.Message.Command == "PART" && user != null)
             {
-                var parameters = e.Message.Parameters.ToList();
-                var channel = parameters[0];
+                this.OnPartMessageReceived(e, user);
+            }
 
+            if (e.Message.Command == "ACCOUNT" && user != null)
+            {
+                this.OnAccountMessageReceived(e, user);
+            }
+
+            if (e.Message.Command == "NICK" && user != null)
+            {
+                this.OnNickChangeReceived(e, user);
+            }
+        }
+
+        #region Message received event handlers
+
+        /// <summary>
+        /// The on account message received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnAccountMessageReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            var parameters = e.Message.Parameters.ToList();
+
+            lock (this.userOperationLock)
+            {
+                if (this.UserCache.ContainsKey(user.Nickname))
+                {
+                    this.UserCache[user.Nickname].Account = parameters[0];
+                }
+                else
+                {
+                    this.UserCache.Add(user.Nickname, (IrcUser)user);
+                    user.Account = parameters[0];
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on part message received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnPartMessageReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            var parameters = e.Message.Parameters.ToList();
+            var channel = parameters[0];
+            if (user.Nickname == this.Nickname)
+            {
+                this.logger.InfoFormat("Leaving channel {1}.", user, channel);
+
+                lock (this.userOperationLock)
+                {
+                    this.channels.Remove(channel);
+                }
+            }
+            else
+            {
                 lock (this.userOperationLock)
                 {
                     this.channels[channel].Users.Remove(user.Nickname);
@@ -432,28 +515,26 @@ namespace Helpmebot.IRC
 
                 this.logger.InfoFormat("{0} has left channel {1}.", user, channel);
             }
+        }
 
-            if (e.Message.Command == "ACCOUNT" && user != null)
+        /// <summary>
+        /// The on quit message received.
+        /// </summary>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnQuitMessageReceived(IUser user)
+        {
+            this.logger.InfoFormat("{0} has left IRC.", user);
+
+            lock (this.userOperationLock)
             {
-                var parameters = e.Message.Parameters.ToList();
+                this.UserCache.Remove(user.Nickname);
 
-                lock (this.userOperationLock)
+                foreach (var channel in this.channels)
                 {
-                    if (this.UserCache.ContainsKey(user.Nickname))
-                    {
-                        this.UserCache[user.Nickname].Account = parameters[0];
-                    }
-                    else
-                    {
-                        this.UserCache.Add(user.Nickname, (IrcUser)user);
-                        user.Account = parameters[0];
-                    }
+                    channel.Value.Users.Remove(user.Nickname);
                 }
-            }
-
-            if (e.Message.Command == "NICK" && user != null)
-            {
-                this.OnNickChangeReceived(e, user);
             }
         }
 
@@ -693,6 +774,8 @@ namespace Helpmebot.IRC
                 }
             }
         }
+
+        #endregion
 
         /// <summary>
         /// The handle who x reply.
@@ -944,10 +1027,10 @@ namespace Helpmebot.IRC
 
             if (message.Command == Numerics.SaslAuthFailed)
             {
-                this.logger.WarnFormat("SASL Login failed.");
+                this.logger.Fatal("SASL Login failed.");
 
                 // not logged in, cancel sasl auth.
-                this.Send(new Message("AUTHENTICATE", "*"));
+                this.Send(new Message("QUIT"));
                 return;
             }
 

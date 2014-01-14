@@ -83,6 +83,7 @@
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="IRC\Interfaces\IIrcClient.cs" />
     <Compile Include="IRC\Model\Channel.cs" />
     <Compile Include="IRC\Events\MessageReceivedEventArgs.cs" />
     <Compile Include="IRC\Interfaces\INetworkClient.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Database\IDAL.cs" />
     <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
+    <Compile Include="Legacy\IRC\LegacyIrcProxy.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
     <Compile Include="Model\Interfaces\IUser.cs" />
     <Compile Include="Model\FlagGroupUser.cs" />
