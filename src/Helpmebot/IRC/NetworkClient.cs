@@ -37,7 +37,7 @@ namespace Helpmebot.IRC
     /// <para>
     /// This is an event-based asynchronous TCP client
     /// </para>
-    public class NetworkClient : INetworkClient, IDisposable
+    public class NetworkClient : INetworkClient
     {
         /// <summary>
         /// The client.
