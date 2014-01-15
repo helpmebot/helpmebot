@@ -83,7 +83,10 @@
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="IRC\Events\JoinEventArgs.cs" />
+    <Compile Include="IRC\Events\UserEventArgsBase.cs" />
     <Compile Include="IRC\Interfaces\IIrcClient.cs" />
+    <Compile Include="IRC\Events\InviteEventArgs.cs" />
     <Compile Include="IRC\Model\Channel.cs" />
     <Compile Include="IRC\Events\MessageReceivedEventArgs.cs" />
     <Compile Include="IRC\Interfaces\INetworkClient.cs" />
@@ -249,7 +252,6 @@
     <Compile Include="Legacy\Database\DAL.cs" />
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="Helpmebot.cs" />
-    <Compile Include="Legacy\IRC\IrcAccessLayer.cs" />
     <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

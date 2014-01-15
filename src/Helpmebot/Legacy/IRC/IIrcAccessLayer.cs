@@ -37,12 +37,12 @@ namespace Helpmebot.Legacy.IRC
         /// <summary>
         /// The join event.
         /// </summary>
-        event IrcAccessLayer.JoinEventHandler JoinEvent;
+        event EventHandler<JoinEventArgs> JoinEvent;
         
         /// <summary>
         /// The invite event.
         /// </summary>
-        event IrcAccessLayer.InviteEventHandler InviteEvent;
+        event EventHandler<InviteEventArgs> InviteEvent;
         
         /// <summary>
         /// The private message event.

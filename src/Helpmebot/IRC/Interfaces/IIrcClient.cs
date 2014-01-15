@@ -27,6 +27,8 @@ namespace Helpmebot.IRC.Interfaces
     using Helpmebot.IRC.Messages;
     using Helpmebot.IRC.Model;
 
+    using NHibernate.Loader;
+
     /// <summary>
     /// The IRC Client interface.
     /// </summary>
@@ -36,6 +38,16 @@ namespace Helpmebot.IRC.Interfaces
         /// The received message.
         /// </summary>
         event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
+
+        /// <summary>
+        /// The join received event.
+        /// </summary>
+        event EventHandler<JoinEventArgs> JoinReceivedEvent;
+
+        /// <summary>
+        /// The invite received event.
+        /// </summary>
+        event EventHandler<InviteEventArgs> InviteReceivedEvent;
 
         /// <summary>
         /// Gets or sets the nickname.

@@ -21,10 +21,12 @@
 namespace Helpmebot.Legacy.Model
 {
     using System;
+    using System.Linq;
 
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -125,6 +127,30 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         /// <value>The network.</value>
         public uint Network { get; private set; }
+
+        /// <summary>
+        /// The new from other user.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromOtherUser(IUser source)
+        {
+            if (source.GetType() == typeof(LegacyUser))
+            {
+                return (LegacyUser)source;
+            }
+
+            if (source.GetType().GetInterfaces().Contains(typeof(ILegacyUser)))
+            {
+                return (LegacyUser)source;
+            }
+
+            return newFromString(string.Format("{0}!{1}@{2}", source.Nickname, source.Username, source.Hostname));
+        }
 
         /// <summary>
         /// New from string.

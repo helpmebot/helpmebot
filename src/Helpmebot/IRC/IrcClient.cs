@@ -41,8 +41,6 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Model;
     using Helpmebot.Model.Interfaces;
 
-    using NHibernate.Proxy;
-
     using IMessage = Helpmebot.IRC.Messages.IMessage;
 
     /// <summary>
@@ -192,6 +190,16 @@ namespace Helpmebot.IRC
         /// The received message.
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
+
+        /// <summary>
+        /// The join received event.
+        /// </summary>
+        public event EventHandler<JoinEventArgs> JoinReceivedEvent;
+
+        /// <summary>
+        /// The invite received event.
+        /// </summary>
+        public event EventHandler<InviteEventArgs> InviteReceivedEvent;
 
         #region Properties
 
@@ -478,6 +486,16 @@ namespace Helpmebot.IRC
             if (e.Message.Command == "NICK" && user != null)
             {
                 this.OnNickChangeReceived(e, user);
+            }
+
+            if (e.Message.Command == "INVITE")
+            {
+                EventHandler<InviteEventArgs> inviteReceivedEvent = this.InviteReceivedEvent;
+                if (inviteReceivedEvent != null)
+                {
+                    var parameters = e.Message.Parameters.ToList();
+                    inviteReceivedEvent(this, new InviteEventArgs(e.Message, user, parameters[1], parameters[0]));
+                }
             }
         }
 
@@ -799,6 +817,12 @@ namespace Helpmebot.IRC
                 {
                     this.Channels[channelName].Users.Add(user.Nickname, new ChannelUser((IrcUser)user, channelName));
                 }
+            }
+
+            EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
+            if (temp != null)
+            {
+                temp(this, new JoinEventArgs(e.Message, user, channelName));
             }
         }
 

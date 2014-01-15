@@ -49,6 +49,8 @@ namespace Helpmebot.Legacy.IRC
         {
             this.realClient = realClient;
             this.realClient.ReceivedMessage += this.OnReceivedMessage;
+            this.realClient.JoinReceivedEvent += this.OnJoinReceived;
+            this.realClient.InviteReceivedEvent += this.OnInviteReceived;
 
             var temp = this.ConnectionRegistrationSucceededEvent;
             if (temp != null)
@@ -65,12 +67,12 @@ namespace Helpmebot.Legacy.IRC
         /// <summary>
         /// The join event.
         /// </summary>
-        public event IrcAccessLayer.JoinEventHandler JoinEvent;
+        public event EventHandler<JoinEventArgs> JoinEvent;
 
         /// <summary>
         /// The invite event.
         /// </summary>
-        public event IrcAccessLayer.InviteEventHandler InviteEvent;
+        public event EventHandler<InviteEventArgs> InviteEvent;
 
         /// <summary>
         /// The private message event.
@@ -211,25 +213,6 @@ namespace Helpmebot.Legacy.IRC
         /// </param>
         private void OnReceivedMessage(object sender, MessageReceivedEventArgs e)
         {
-            if (e.Message.Command == "JOIN")
-            {
-                IrcAccessLayer.JoinEventHandler joinEventHandler = this.JoinEvent;
-                if (joinEventHandler != null)
-                {
-                    joinEventHandler(LegacyUser.newFromString(e.Message.Prefix), e.Message.Parameters.First());
-                }
-            }
-
-            if (e.Message.Command == "INVITE")
-            {
-                IrcAccessLayer.InviteEventHandler inviteEventHandler = this.InviteEvent;
-                if (inviteEventHandler != null)
-                {
-                    var parameters = e.Message.Parameters.ToList();
-                    inviteEventHandler(LegacyUser.newFromString(e.Message.Prefix), parameters[0], parameters[1]);
-                }
-            }
-
             if (e.Message.Command == "PRIVMSG")
             {
                 EventHandler<PrivateMessageEventArgs> privateMessageEvent = this.PrivateMessageEvent;
@@ -248,6 +231,42 @@ namespace Helpmebot.Legacy.IRC
                     var parameters = e.Message.Parameters.ToList();
                     noticeEvent(this, new PrivateMessageEventArgs(LegacyUser.newFromString(e.Message.Prefix), parameters[0], parameters[1]));
                 }
+            }
+        }
+
+        /// <summary>
+        /// The on join received.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void OnJoinReceived(object sender, JoinEventArgs e)
+        {
+            EventHandler<JoinEventArgs> temp = this.JoinEvent;
+            if (temp != null)
+            {
+                temp(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// The on invite received.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void OnInviteReceived(object sender, InviteEventArgs e)
+        {
+            EventHandler<InviteEventArgs> inviteEventHandler = this.InviteEvent;
+            if (inviteEventHandler != null)
+            {
+                inviteEventHandler(sender, e);
             }
         }
     }

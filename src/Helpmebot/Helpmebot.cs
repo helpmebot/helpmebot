@@ -73,7 +73,7 @@ namespace Helpmebot
         public static string debugChannel;
 
         /// <summary>
-        /// The new irc.
+        /// The new IRC client.
         /// </summary>
         private static IrcClient newIrc;
 
@@ -271,48 +271,52 @@ namespace Helpmebot
         /// <summary>
         /// The IRC invite event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="nickname">
-        /// The nickname.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        private static void IrcInviteEvent(LegacyUser source, string nickname, string channel)
+        private static void IrcInviteEvent(object sender, InviteEventArgs e)
         {
             // FIXME: Remove service locator!
-            new Join(source, nickname, new[] { channel }, ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
+            new Join(
+                LegacyUser.NewFromOtherUser(e.User),
+                e.Nickname,
+                new[] { e.Channel },
+                ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
         }
 
         /// <summary>
         /// The welcome newbie on join event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        private static void WelcomeNewbieOnJoinEvent(LegacyUser source, string channel)
+        private static void WelcomeNewbieOnJoinEvent(object sender, JoinEventArgs e)
         {
-            joinMessageService.Welcome(source, channel);
+            joinMessageService.Welcome(e.User, e.Channel);
         }
 
         /// <summary>
         /// The notify on join event.
         /// </summary>
-        /// <param name="source">
-        /// The source.
+        /// <param name="sender">
+        /// The sender.
         /// </param>
-        /// <param name="channel">
-        /// The channel.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        private static void NotifyOnJoinEvent(LegacyUser source, string channel)
+        private static void NotifyOnJoinEvent(object sender, JoinEventArgs e)
         {
             // FIXME: Remove service locator!
-            new Notify(source, channel, new string[0], ServiceLocator.Current.GetInstance<IMessageService>()).NotifyJoin(source, channel);
+            var messageService = ServiceLocator.Current.GetInstance<IMessageService>();
+
+            var legacyUser = LegacyUser.NewFromOtherUser(e.User);
+            new Notify(legacyUser, e.Channel, new string[0], messageService).NotifyJoin(legacyUser, e.Channel);
         }
 
         /// <summary>
