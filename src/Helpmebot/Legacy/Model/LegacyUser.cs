@@ -34,19 +34,68 @@ namespace Helpmebot.Legacy.Model
     public class LegacyUser : ILegacyUser
     {
         /// <summary>
+        /// The database.
+        /// </summary>
+        private readonly DAL db;
+
+        /// <summary>
+        /// The _access level.
+        /// </summary>
+        private UserRights accessLevel;
+
+        /// <summary>
+        /// The retrieved access level.
+        /// </summary>
+        private bool retrievedAccessLevel;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="LegacyUser"/> class.
+        /// </summary>
+        public LegacyUser()
+        {
+            this.db = DAL.singleton();
+        }
+
+        /// <summary>
+        /// The user rights.
+        /// </summary>
+        public enum UserRights
+        {
+            /// <summary>
+            /// The developer.
+            /// </summary>
+            Developer = 3,
+
+            /// <summary>
+            /// The super user.
+            /// </summary>
+            Superuser = 2,
+
+            /// <summary>
+            /// The advanced.
+            /// </summary>
+            Advanced = 1,
+
+            /// <summary>
+            /// The normal.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// The semi-ignored.
+            /// </summary>
+            Semiignored = -1,
+
+            /// <summary>
+            /// The ignored.
+            /// </summary>
+            Ignored = -2
+        }
+
+        /// <summary>
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public ILogger Log { get; set; }
-
-        private readonly DAL _db;
-
-        private UserRights _accessLevel;
-        private bool _retrievedAccessLevel;
-
-        public LegacyUser()
-        {
-            this._db = DAL.singleton();
-        }
 
         /// <summary>
         /// Gets or sets the nickname.
@@ -72,16 +121,16 @@ namespace Helpmebot.Legacy.Model
         public string Account { get; set; }
 
         /// <summary>
-        /// Gets or sets the network.
+        /// Gets the network.
         /// </summary>
         /// <value>The network.</value>
         public uint Network { get; private set; }
 
         /// <summary>
-        /// News from string.
+        /// New from string.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <returns></returns>
+        /// <returns>The legacy user</returns>
         public static LegacyUser newFromString(string source)
         {
             return newFromString(source, 0);
@@ -92,7 +141,7 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="network">The network.</param>
-        /// <returns></returns>
+        /// <returns>The legacy user</returns>
         public static LegacyUser newFromString(string source, uint network)
         {
             string user, host;
@@ -134,15 +183,42 @@ namespace Helpmebot.Legacy.Model
             return ret;
         }
 
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
         public static LegacyUser newFromStringWithAccessLevel(string source, UserRights accessLevel)
         {
             return newFromStringWithAccessLevel(source, 0, accessLevel);
         }
 
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="network">
+        /// The network.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
         public static LegacyUser newFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
         {
             LegacyUser u = newFromString(source, network);
-            u._accessLevel = accessLevel;
+            u.accessLevel = accessLevel;
             return u;
         }
 
@@ -180,26 +256,26 @@ namespace Helpmebot.Legacy.Model
             {
                 try
                 {
-                    if (this._retrievedAccessLevel == false)
+                    if (this.retrievedAccessLevel == false)
                     {
-                        DAL.Select q = new DAL.Select("user_accesslevel");
+                        var q = new DAL.Select("user_accesslevel");
                         q.addWhere(new DAL.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
                         q.addWhere(new DAL.WhereConds(true, this.Username, "LIKE", false, "user_username"));
                         q.addWhere(new DAL.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
                         q.addOrder(new DAL.Select.Order("user_accesslevel", true));
                         q.setFrom("user");
 
-                        string accesslevel = this._db.executeScalarSelect(q) ??
+                        string accesslevel = this.db.executeScalarSelect(q) ??
                                              "Normal";
 
-                        UserRights ret =
-                            (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
+                        var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);
 
-                        this._accessLevel = ret;
-                        this._retrievedAccessLevel = true;
+                        this.accessLevel = ret;
+                        this.retrievedAccessLevel = true;
                         return ret;
                     }
-                    return this._accessLevel;
+
+                    return this.accessLevel;
                 }
                 catch (Exception ex)
                 {
@@ -208,17 +284,8 @@ namespace Helpmebot.Legacy.Model
 
                 return UserRights.Normal;
             }
-            set { throw new NotImplementedException(); }
-        }
 
-        public enum UserRights
-        {
-            Developer = 3,
-            Superuser = 2,
-            Advanced = 1,
-            Normal = 0,
-            Semiignored = -1,
-            Ignored = -2
+            set { throw new NotImplementedException(); }
         }
     }
 }
