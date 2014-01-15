@@ -30,6 +30,11 @@ namespace Helpmebot.IRC.Events
     public class MessageReceivedEventArgs : EventArgs
     {
         /// <summary>
+        /// The message.
+        /// </summary>
+        private readonly IMessage message;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="MessageReceivedEventArgs"/> class.
         /// </summary>
         /// <param name="message">
@@ -37,12 +42,18 @@ namespace Helpmebot.IRC.Events
         /// </param>
         public MessageReceivedEventArgs(IMessage message)
         {
-            this.Message = message;
+            this.message = message;
         }
 
         /// <summary>
         /// Gets the message.
         /// </summary>
-        public IMessage Message { get; private set; }
+        public IMessage Message
+        {
+            get
+            {
+                return this.message;
+            }
+        }
     }
 }
