@@ -219,7 +219,7 @@ namespace Helpmebot.Legacy.IRC
                 if (privateMessageEvent != null)
                 {
                     var parameters = e.Message.Parameters.ToList();
-                    privateMessageEvent(this, new PrivateMessageEventArgs(LegacyUser.newFromString(e.Message.Prefix), parameters[0], parameters[1]));
+                    privateMessageEvent(this, new PrivateMessageEventArgs(LegacyUser.NewFromString(e.Message.Prefix), parameters[0], parameters[1]));
                 }
             }
 
@@ -229,7 +229,7 @@ namespace Helpmebot.Legacy.IRC
                 if (noticeEvent != null)
                 {
                     var parameters = e.Message.Parameters.ToList();
-                    noticeEvent(this, new PrivateMessageEventArgs(LegacyUser.newFromString(e.Message.Prefix), parameters[0], parameters[1]));
+                    noticeEvent(this, new PrivateMessageEventArgs(LegacyUser.NewFromString(e.Message.Prefix), parameters[0], parameters[1]));
                 }
             }
         }

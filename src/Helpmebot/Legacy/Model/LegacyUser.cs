@@ -129,150 +129,6 @@ namespace Helpmebot.Legacy.Model
         public uint Network { get; private set; }
 
         /// <summary>
-        /// The new from other user.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <returns>
-        /// The <see cref="LegacyUser"/>.
-        /// </returns>
-        public static LegacyUser NewFromOtherUser(IUser source)
-        {
-            if (source.GetType() == typeof(LegacyUser))
-            {
-                return (LegacyUser)source;
-            }
-
-            if (source.GetType().GetInterfaces().Contains(typeof(ILegacyUser)))
-            {
-                return (LegacyUser)source;
-            }
-
-            return newFromString(string.Format("{0}!{1}@{2}", source.Nickname, source.Username, source.Hostname));
-        }
-
-        /// <summary>
-        /// New from string.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The legacy user</returns>
-        public static LegacyUser newFromString(string source)
-        {
-            return newFromString(source, 0);
-        }
-
-        /// <summary>
-        /// New user from string.
-        /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="network">The network.</param>
-        /// <returns>The legacy user</returns>
-        public static LegacyUser newFromString(string source, uint network)
-        {
-            string user, host;
-            string nick = user = host = null;
-            try
-            {
-                if ((source.Contains("@")) && (source.Contains("!")))
-                {
-                    char[] splitSeparators = {'!', '@'};
-                    string[] sourceSegment = source.Split(splitSeparators, 3);
-                    nick = sourceSegment[0];
-                    user = sourceSegment[1];
-                    host = sourceSegment[2];
-                }
-                else if (source.Contains("@"))
-                {
-                    char[] splitSeparators = {'@'};
-                    string[] sourceSegment = source.Split(splitSeparators, 2);
-                    nick = sourceSegment[0];
-                    host = sourceSegment[1];
-                }
-                else
-                {
-                    nick = source;
-                }
-            }
-            catch (IndexOutOfRangeException ex)
-            {
-                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
-            }
-
-            LegacyUser ret = new LegacyUser
-                           {
-                               Hostname = host,
-                               Nickname = nick,
-                               Username = user,
-                               Network = network
-                           };
-            return ret;
-        }
-
-        /// <summary>
-        /// The new from string with access level.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="accessLevel">
-        /// The access level.
-        /// </param>
-        /// <returns>
-        /// The <see cref="LegacyUser"/>.
-        /// </returns>
-        public static LegacyUser newFromStringWithAccessLevel(string source, UserRights accessLevel)
-        {
-            return newFromStringWithAccessLevel(source, 0, accessLevel);
-        }
-
-        /// <summary>
-        /// The new from string with access level.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="network">
-        /// The network.
-        /// </param>
-        /// <param name="accessLevel">
-        /// The access level.
-        /// </param>
-        /// <returns>
-        /// The <see cref="LegacyUser"/>.
-        /// </returns>
-        public static LegacyUser newFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
-        {
-            LegacyUser u = newFromString(source, network);
-            u.accessLevel = accessLevel;
-            return u;
-        }
-
-        /// <summary>
-        ///   Recompiles the source string
-        /// </summary>
-        /// <returns>nick!user@host, OR nick@host, OR nick</returns>
-        public override string ToString()
-        {
-
-            string endResult = string.Empty;
-
-            if (this.Nickname != null)
-                endResult = this.Nickname;
-
-            if (this.Username != null)
-            {
-                endResult += "!" + this.Username;
-            }
-            if (this.Hostname != null)
-            {
-                endResult += "@" + this.Hostname;
-            }
-
-            return endResult;
-        }
-
-        /// <summary>
         /// Gets or sets the access level.
         /// </summary>
         /// <value>The access level.</value>
@@ -311,7 +167,156 @@ namespace Helpmebot.Legacy.Model
                 return UserRights.Normal;
             }
 
-            set { throw new NotImplementedException(); }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// The new from other user.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromOtherUser(IUser source)
+        {
+            if (source.GetType() == typeof(LegacyUser))
+            {
+                return (LegacyUser)source;
+            }
+
+            if (source.GetType().GetInterfaces().Contains(typeof(ILegacyUser)))
+            {
+                return (LegacyUser)source;
+            }
+
+            return NewFromString(string.Format("{0}!{1}@{2}", source.Nickname, source.Username, source.Hostname));
+        }
+
+        /// <summary>
+        /// New from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>The legacy user</returns>
+        public static LegacyUser NewFromString(string source)
+        {
+            return NewFromString(source, 0);
+        }
+
+        /// <summary>
+        /// New user from string.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="network">The network.</param>
+        /// <returns>The legacy user</returns>
+        public static LegacyUser NewFromString(string source, uint network)
+        {
+            string user, host;
+            string nick = user = host = null;
+            try
+            {
+                if (source.Contains("@") && source.Contains("!"))
+                {
+                    char[] splitSeparators = { '!', '@' };
+                    string[] sourceSegment = source.Split(splitSeparators, 3);
+                    nick = sourceSegment[0];
+                    user = sourceSegment[1];
+                    host = sourceSegment[2];
+                }
+                else if (source.Contains("@"))
+                {
+                    char[] splitSeparators = { '@' };
+                    string[] sourceSegment = source.Split(splitSeparators, 2);
+                    nick = sourceSegment[0];
+                    host = sourceSegment[1];
+                }
+                else
+                {
+                    nick = source;
+                }
+            }
+            catch (IndexOutOfRangeException ex)
+            {
+                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
+            }
+
+            var ret = new LegacyUser
+                           {
+                               Hostname = host,
+                               Nickname = nick,
+                               Username = user,
+                               Network = network
+                           };
+            return ret;
+        }
+
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromStringWithAccessLevel(string source, UserRights accessLevel)
+        {
+            return NewFromStringWithAccessLevel(source, 0, accessLevel);
+        }
+
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="network">
+        /// The network.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
+        {
+            LegacyUser u = NewFromString(source, network);
+            u.accessLevel = accessLevel;
+            return u;
+        }
+
+        /// <summary>
+        ///   Recompiles the source string
+        /// </summary>
+        /// <returns>nick!user@host, OR nick@host, OR nick</returns>
+        public override string ToString()
+        {
+            string endResult = string.Empty;
+
+            if (this.Nickname != null)
+            {
+                endResult = this.Nickname;
+            }
+
+            if (this.Username != null)
+            {
+                endResult += "!" + this.Username;
+            }
+            
+            if (this.Hostname != null)
+            {
+                endResult += "@" + this.Hostname;
+            }
+
+            return endResult;
         }
     }
 }
