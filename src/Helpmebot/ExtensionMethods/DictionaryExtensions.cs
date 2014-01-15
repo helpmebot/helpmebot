@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EnumerableExtensions.cs" company="Helpmebot Development Team">
+// <copyright file="DictionaryExtensions.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,55 +14,48 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the EnumerableExtensions type.
+//   Defines the DictionaryExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace Helpmebot.ExtensionMethods
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
+
+    using Helpmebot.Model.Interfaces;
 
     /// <summary>
-    /// The enumerable extensions.
+    /// The dictionary extensions.
     /// </summary>
-    public static class EnumerableExtensions
+    public static class DictionaryExtensions
     {
         /// <summary>
-        /// The implode.
+        /// The add or replace.
         /// </summary>
-        /// <param name="value">
-        /// The list.
+        /// <param name="dict">
+        /// The dictionary.
         /// </param>
-        /// <param name="separator">
-        /// The separator.
+        /// <param name="key">
+        /// The key.
         /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string Implode(this IEnumerable<string> value, string separator = " ")
-        {
-            return string.Join(separator, value.ToArray());
-        }
-
-        /// <summary>
-        /// The apply.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of enumerable
-        /// </typeparam>
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="action">
-        /// The action.
-        /// </param>
-        public static void Apply<T>(this IEnumerable<T> value, Action<T> action)
+        /// <typeparam name="T">
+        /// The key type.
+        /// </typeparam>
+        /// <typeparam name="TR">
+        /// The value type.
+        /// </typeparam>
+        public static void AddOrReplace<T, TR>(this IDictionary<T, TR> dict, T key, TR value)
         {
-            foreach (var x in value)
+            if (dict.ContainsKey(key))
             {
-                action(x);
+                dict[key] = value;
+            }
+            else
+            {
+                dict.Add(key, value);
             }
         }
     }

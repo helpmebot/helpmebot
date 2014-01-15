@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EnumerableExtensions.cs" company="Helpmebot Development Team">
+// <copyright file="JoinEventArgs.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,55 +14,51 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the EnumerableExtensions type.
+//   Defines the JoinEventArgs type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.IRC.Events
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
+    using Helpmebot.IRC.Messages;
+    using Helpmebot.Model.Interfaces;
 
     /// <summary>
-    /// The enumerable extensions.
+    /// The join event args.
     /// </summary>
-    public static class EnumerableExtensions
+    public class JoinEventArgs : UserEventArgsBase
     {
         /// <summary>
-        /// The implode.
+        /// The channel.
         /// </summary>
-        /// <param name="value">
-        /// The list.
+        private readonly string channel;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="JoinEventArgs"/> class.
+        /// </summary>
+        /// <param name="message">
+        ///     The message.
         /// </param>
-        /// <param name="separator">
-        /// The separator.
+        /// <param name="user">
+        ///     The user.
         /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string Implode(this IEnumerable<string> value, string separator = " ")
+        /// <param name="channel">
+        ///     The channel.
+        /// </param>
+        public JoinEventArgs(IMessage message, IUser user, string channel)
+            : base(message, user)
         {
-            return string.Join(separator, value.ToArray());
+            this.channel = channel;
         }
 
         /// <summary>
-        /// The apply.
+        /// Gets the channel.
         /// </summary>
-        /// <typeparam name="T">
-        /// The type of enumerable
-        /// </typeparam>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="action">
-        /// The action.
-        /// </param>
-        public static void Apply<T>(this IEnumerable<T> value, Action<T> action)
+        public string Channel
         {
-            foreach (var x in value)
+            get
             {
-                action(x);
+                return this.channel;
             }
         }
     }

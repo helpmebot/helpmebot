@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EnumerableExtensions.cs" company="Helpmebot Development Team">
+// <copyright file="INetworkClient.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,56 +14,56 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the EnumerableExtensions type.
+//   Defines the INetworkClient type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.IRC.Interfaces
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+
+    using Helpmebot.IRC.Events;
 
     /// <summary>
-    /// The enumerable extensions.
+    /// The NetworkClient interface.
     /// </summary>
-    public static class EnumerableExtensions
+    public interface INetworkClient : IDisposable
     {
         /// <summary>
-        /// The implode.
+        /// The data received.
         /// </summary>
-        /// <param name="value">
-        /// The list.
-        /// </param>
-        /// <param name="separator">
-        /// The separator.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string Implode(this IEnumerable<string> value, string separator = " ")
-        {
-            return string.Join(separator, value.ToArray());
-        }
+        event EventHandler<DataReceivedEventArgs> DataReceived;
 
         /// <summary>
-        /// The apply.
+        /// Gets the hostname.
         /// </summary>
-        /// <typeparam name="T">
-        /// The type of enumerable
-        /// </typeparam>
-        /// <param name="value">
-        /// The value.
+        string Hostname { get; }
+
+        /// <summary>
+        /// Gets the port.
+        /// </summary>
+        int Port { get; }
+
+        /// <summary>
+        /// The send.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
         /// </param>
-        /// <param name="action">
-        /// The action.
+        void Send(string message);
+
+        /// <summary>
+        /// The send.
+        /// </summary>
+        /// <param name="messages">
+        /// The messages.
         /// </param>
-        public static void Apply<T>(this IEnumerable<T> value, Action<T> action)
-        {
-            foreach (var x in value)
-            {
-                action(x);
-            }
-        }
+        void Send(IEnumerable<string> messages);
+
+        /// <summary>
+        /// The disconnect.
+        /// </summary>
+        void Disconnect();
     }
 }

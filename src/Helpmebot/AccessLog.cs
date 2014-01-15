@@ -226,7 +226,7 @@ namespace Helpmebot
                                 break;
                         }
 
-                        entry._alUser = LegacyUser.newFromStringWithAccessLevel(usermask, useraccess);
+                        entry._alUser = LegacyUser.NewFromStringWithAccessLevel(usermask, useraccess);
 
                     }
                     #endregion

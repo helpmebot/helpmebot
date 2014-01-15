@@ -111,7 +111,7 @@ namespace helpmebot6.Commands
                                     break;
                             }
 
-                            crh = AddAccessEntry(LegacyUser.newFromString(this.Arguments[1]), aL);
+                            crh = AddAccessEntry(LegacyUser.NewFromString(this.Arguments[1]), aL);
                         }
                         else
                         {

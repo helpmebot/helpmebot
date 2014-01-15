@@ -21,10 +21,12 @@
 namespace Helpmebot.Legacy.Model
 {
     using System;
+    using System.Linq;
 
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -34,19 +36,68 @@ namespace Helpmebot.Legacy.Model
     public class LegacyUser : ILegacyUser
     {
         /// <summary>
+        /// The database.
+        /// </summary>
+        private readonly DAL db;
+
+        /// <summary>
+        /// The _access level.
+        /// </summary>
+        private UserRights accessLevel;
+
+        /// <summary>
+        /// The retrieved access level.
+        /// </summary>
+        private bool retrievedAccessLevel;
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="LegacyUser"/> class.
+        /// </summary>
+        public LegacyUser()
+        {
+            this.db = DAL.singleton();
+        }
+
+        /// <summary>
+        /// The user rights.
+        /// </summary>
+        public enum UserRights
+        {
+            /// <summary>
+            /// The developer.
+            /// </summary>
+            Developer = 3,
+
+            /// <summary>
+            /// The super user.
+            /// </summary>
+            Superuser = 2,
+
+            /// <summary>
+            /// The advanced.
+            /// </summary>
+            Advanced = 1,
+
+            /// <summary>
+            /// The normal.
+            /// </summary>
+            Normal = 0,
+
+            /// <summary>
+            /// The semi-ignored.
+            /// </summary>
+            Semiignored = -1,
+
+            /// <summary>
+            /// The ignored.
+            /// </summary>
+            Ignored = -2
+        }
+
+        /// <summary>
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public ILogger Log { get; set; }
-
-        private readonly DAL _db;
-
-        private UserRights _accessLevel;
-        private bool _retrievedAccessLevel;
-
-        public LegacyUser()
-        {
-            this._db = DAL.singleton();
-        }
 
         /// <summary>
         /// Gets or sets the nickname.
@@ -72,19 +123,88 @@ namespace Helpmebot.Legacy.Model
         public string Account { get; set; }
 
         /// <summary>
-        /// Gets or sets the network.
+        /// Gets the network.
         /// </summary>
         /// <value>The network.</value>
         public uint Network { get; private set; }
 
         /// <summary>
-        /// News from string.
+        /// Gets or sets the access level.
+        /// </summary>
+        /// <value>The access level.</value>
+        public UserRights AccessLevel
+        {
+            get
+            {
+                try
+                {
+                    if (this.retrievedAccessLevel == false)
+                    {
+                        var q = new DAL.Select("user_accesslevel");
+                        q.addWhere(new DAL.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
+                        q.addWhere(new DAL.WhereConds(true, this.Username, "LIKE", false, "user_username"));
+                        q.addWhere(new DAL.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
+                        q.addOrder(new DAL.Select.Order("user_accesslevel", true));
+                        q.setFrom("user");
+
+                        string accesslevel = this.db.executeScalarSelect(q) ??
+                                             "Normal";
+
+                        var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);
+
+                        this.accessLevel = ret;
+                        this.retrievedAccessLevel = true;
+                        return ret;
+                    }
+
+                    return this.accessLevel;
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Error(ex.Message, ex);
+                }
+
+                return UserRights.Normal;
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// The new from other user.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromOtherUser(IUser source)
+        {
+            if (source.GetType() == typeof(LegacyUser))
+            {
+                return (LegacyUser)source;
+            }
+
+            if (source.GetType().GetInterfaces().Contains(typeof(ILegacyUser)))
+            {
+                return (LegacyUser)source;
+            }
+
+            return NewFromString(string.Format("{0}!{1}@{2}", source.Nickname, source.Username, source.Hostname));
+        }
+
+        /// <summary>
+        /// New from string.
         /// </summary>
         /// <param name="source">The source.</param>
-        /// <returns></returns>
-        public static LegacyUser newFromString(string source)
+        /// <returns>The legacy user</returns>
+        public static LegacyUser NewFromString(string source)
         {
-            return newFromString(source, 0);
+            return NewFromString(source, 0);
         }
 
         /// <summary>
@@ -92,16 +212,16 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="network">The network.</param>
-        /// <returns></returns>
-        public static LegacyUser newFromString(string source, uint network)
+        /// <returns>The legacy user</returns>
+        public static LegacyUser NewFromString(string source, uint network)
         {
             string user, host;
             string nick = user = host = null;
             try
             {
-                if ((source.Contains("@")) && (source.Contains("!")))
+                if (source.Contains("@") && source.Contains("!"))
                 {
-                    char[] splitSeparators = {'!', '@'};
+                    char[] splitSeparators = { '!', '@' };
                     string[] sourceSegment = source.Split(splitSeparators, 3);
                     nick = sourceSegment[0];
                     user = sourceSegment[1];
@@ -109,7 +229,7 @@ namespace Helpmebot.Legacy.Model
                 }
                 else if (source.Contains("@"))
                 {
-                    char[] splitSeparators = {'@'};
+                    char[] splitSeparators = { '@' };
                     string[] sourceSegment = source.Split(splitSeparators, 2);
                     nick = sourceSegment[0];
                     host = sourceSegment[1];
@@ -124,7 +244,7 @@ namespace Helpmebot.Legacy.Model
                 ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
             }
 
-            LegacyUser ret = new LegacyUser
+            var ret = new LegacyUser
                            {
                                Hostname = host,
                                Nickname = nick,
@@ -134,15 +254,42 @@ namespace Helpmebot.Legacy.Model
             return ret;
         }
 
-        public static LegacyUser newFromStringWithAccessLevel(string source, UserRights accessLevel)
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromStringWithAccessLevel(string source, UserRights accessLevel)
         {
-            return newFromStringWithAccessLevel(source, 0, accessLevel);
+            return NewFromStringWithAccessLevel(source, 0, accessLevel);
         }
 
-        public static LegacyUser newFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
+        /// <summary>
+        /// The new from string with access level.
+        /// </summary>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="network">
+        /// The network.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// The <see cref="LegacyUser"/>.
+        /// </returns>
+        public static LegacyUser NewFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
         {
-            LegacyUser u = newFromString(source, network);
-            u._accessLevel = accessLevel;
+            LegacyUser u = NewFromString(source, network);
+            u.accessLevel = accessLevel;
             return u;
         }
 
@@ -152,73 +299,24 @@ namespace Helpmebot.Legacy.Model
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
         public override string ToString()
         {
-
             string endResult = string.Empty;
 
             if (this.Nickname != null)
+            {
                 endResult = this.Nickname;
+            }
 
             if (this.Username != null)
             {
                 endResult += "!" + this.Username;
             }
+            
             if (this.Hostname != null)
             {
                 endResult += "@" + this.Hostname;
             }
 
             return endResult;
-        }
-
-        /// <summary>
-        /// Gets or sets the access level.
-        /// </summary>
-        /// <value>The access level.</value>
-        public UserRights AccessLevel
-        {
-            get
-            {
-                try
-                {
-                    if (this._retrievedAccessLevel == false)
-                    {
-                        DAL.Select q = new DAL.Select("user_accesslevel");
-                        q.addWhere(new DAL.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
-                        q.addWhere(new DAL.WhereConds(true, this.Username, "LIKE", false, "user_username"));
-                        q.addWhere(new DAL.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
-                        q.addOrder(new DAL.Select.Order("user_accesslevel", true));
-                        q.setFrom("user");
-
-                        string accesslevel = this._db.executeScalarSelect(q) ??
-                                             "Normal";
-
-                        UserRights ret =
-                            (UserRights)Enum.Parse( typeof( UserRights ), accesslevel );
-
-                        this._accessLevel = ret;
-                        this._retrievedAccessLevel = true;
-                        return ret;
-                    }
-                    return this._accessLevel;
-                }
-                catch (Exception ex)
-                {
-                    this.Log.Error(ex.Message, ex);
-                }
-
-                return UserRights.Normal;
-            }
-            set { throw new NotImplementedException(); }
-        }
-
-        public enum UserRights
-        {
-            Developer = 3,
-            Superuser = 2,
-            Advanced = 1,
-            Normal = 0,
-            Semiignored = -1,
-            Ignored = -2
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Helpmebot.Legacy
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
 
@@ -222,15 +223,15 @@ namespace Helpmebot.Legacy
         /// <returns></returns>
         private static string findRedirection(string destination, ref string[] args)
         {
-            string directedTo = "";
-            foreach (string arg in args)
-            {
-                if (!arg.StartsWith(">")) continue;
-                if (Helpmebot6.irc.IsOnChannel(destination, arg.Substring(1)) != 0)
-                    directedTo = arg.Substring(1);
+            var directedTo = string.Empty;
+            
+            foreach (string arg in args.Where(x => x.StartsWith(">")))
+            {                
+                directedTo = arg.Substring(1);
 
                 GlobalFunctions.removeItemFromArray(arg, ref args);
             }
+            
             return directedTo;
         }
 
@@ -308,7 +309,7 @@ namespace Helpmebot.Legacy
             if( m.Length > 0 )
             {
                 message = m.Groups[ "cmd" ].Value +
-                          ( m.Groups[ "args" ].Length > 0 ? " " + m.Groups[ "args" ].Value : "" );
+                          ( m.Groups[ "args" ].Length > 0 ? " " + m.Groups[ "args" ].Value : string.Empty );
                 return true;
             }
 
