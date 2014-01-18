@@ -41,7 +41,7 @@ namespace Helpmebot.Services
         /// <summary>
         /// The legacy database.
         /// </summary>
-        private readonly IDAL legacyDatabase;
+        private readonly ILegacyDatabase legacyDatabase;
 
         /// <summary>
         /// The random generator.
@@ -59,7 +59,7 @@ namespace Helpmebot.Services
         /// <param name="legacyDatabase">
         /// The legacy database.
         /// </param>
-        public MessageService(IDAL legacyDatabase)
+        public MessageService(ILegacyDatabase legacyDatabase)
         {
             this.legacyDatabase = legacyDatabase;
             this.random = new Random();
@@ -250,9 +250,9 @@ namespace Helpmebot.Services
         /// </returns>
         private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
         {
-            DAL.Select query =
-                new DAL.Select("message_text").From("messages").Where(new DAL.WhereConds("message_name", messageKey));
-            var result = this.legacyDatabase.executeSelect(query);
+            LegacyDatabase.Select query =
+                new LegacyDatabase.Select("message_text").From("messages").Where(new LegacyDatabase.WhereConds("message_name", messageKey));
+            var result = this.legacyDatabase.ExecuteSelect(query);
 
             if (result.Count == 1)
             {

@@ -38,7 +38,7 @@ namespace Helpmebot.Legacy.Model
         /// <summary>
         /// The database.
         /// </summary>
-        private readonly DAL db;
+        private readonly LegacyDatabase db;
 
         /// <summary>
         /// The _access level.
@@ -55,7 +55,7 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         public LegacyUser()
         {
-            this.db = DAL.singleton();
+            this.db = LegacyDatabase.Singleton();
         }
 
         /// <summary>
@@ -140,14 +140,14 @@ namespace Helpmebot.Legacy.Model
                 {
                     if (this.retrievedAccessLevel == false)
                     {
-                        var q = new DAL.Select("user_accesslevel");
-                        q.addWhere(new DAL.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
-                        q.addWhere(new DAL.WhereConds(true, this.Username, "LIKE", false, "user_username"));
-                        q.addWhere(new DAL.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
-                        q.addOrder(new DAL.Select.Order("user_accesslevel", true));
-                        q.setFrom("user");
+                        var q = new LegacyDatabase.Select("user_accesslevel");
+                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
+                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Username, "LIKE", false, "user_username"));
+                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
+                        q.AddOrder(new LegacyDatabase.Select.Order("user_accesslevel", true));
+                        q.SetFrom("user");
 
-                        string accesslevel = this.db.executeScalarSelect(q) ??
+                        string accesslevel = this.db.ExecuteScalarSelect(q) ??
                                              "Normal";
 
                         var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);

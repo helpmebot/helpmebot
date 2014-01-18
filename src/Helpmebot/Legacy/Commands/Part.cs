@@ -60,13 +60,13 @@ namespace helpmebot6.Commands
         {
             Helpmebot6.irc.IrcPart(this.Channel, this.Source.ToString());
             Dictionary<string, string> vals = new Dictionary<string, string> { { "channel_enabled", "0" } };
-            DAL.singleton()
-                .update(
+            LegacyDatabase.Singleton()
+                .Update(
                     "channel",
                     vals,
                     0,
-                    new DAL.WhereConds("channel_name", this.Channel),
-                    new DAL.WhereConds("channel_network", this.Source.Network.ToString()));
+                    new LegacyDatabase.WhereConds("channel_name", this.Channel),
+                    new LegacyDatabase.WhereConds("channel_network", this.Source.Network.ToString()));
             return null;
         }
     }

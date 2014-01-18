@@ -89,10 +89,10 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
 
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
+            q.SetFrom("site");
+            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
+            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             XmlTextReader creader =
                 new XmlTextReader(

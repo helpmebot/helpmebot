@@ -38,7 +38,7 @@ namespace Helpmebot.Legacy.Configuration
         /// </summary>
         public ILogger Log { get; set; }
 
-        private readonly DAL _dbal = DAL.singleton();
+        private readonly LegacyDatabase _dbal = LegacyDatabase.Singleton();
 
         private static LegacyConfig _singleton;
 
@@ -79,7 +79,7 @@ namespace Helpmebot.Legacy.Configuration
         {
             get
             {
-                return this._dbal.proc_HMB_GET_LOCAL_OPTION(localOption, locality);
+                return this._dbal.ProcHmbGetLocalOption(localOption, locality);
             }
             set
             {
@@ -128,12 +128,12 @@ namespace Helpmebot.Legacy.Configuration
         {
             try
             {
-                DAL.Select q = new DAL.Select("configuration_value");
-                q.setFrom("configuration");
-                q.addLimit(1, 0);
-                q.addWhere(new DAL.WhereConds("configuration_name", optionName));
+                LegacyDatabase.Select q = new LegacyDatabase.Select("configuration_value");
+                q.SetFrom("configuration");
+                q.AddLimit(1, 0);
+                q.AddWhere(new LegacyDatabase.WhereConds("configuration_name", optionName));
 
-                string result = this._dbal.executeScalarSelect(q) ?? "";
+                string result = this._dbal.ExecuteScalarSelect(q) ?? "";
                 return result;
             }
             catch (Exception ex)
@@ -152,7 +152,7 @@ namespace Helpmebot.Legacy.Configuration
                                                           newValue
                                                           }
                                                   };
-            this._dbal.update("configuration", vals, 1, new DAL.WhereConds("configuration_name", optionName));
+            this._dbal.Update("configuration", vals, 1, new LegacyDatabase.WhereConds("configuration_name", optionName));
         }
 
         private void setLocalOption( string channel, string optionName, string newValue )
@@ -167,51 +167,51 @@ namespace Helpmebot.Legacy.Configuration
 
             if(newValue == null)
             {
-                this._dbal.delete( "channelconfig", 1, new DAL.WhereConds( "cc_config", this.getOptionId( optionName ) ),
-                                   new DAL.WhereConds( "cc_channel", this.getChannelId( channelId ) ) );
+                this._dbal.Delete( "channelconfig", 1, new LegacyDatabase.WhereConds( "cc_config", this.getOptionId( optionName ) ),
+                                   new LegacyDatabase.WhereConds( "cc_channel", this.getChannelId( channelId ) ) );
                 return;
             }
 
-            DAL.Select q = new DAL.Select("COUNT(*)");
-            q.setFrom("channelconfig");
-            q.addWhere(new DAL.WhereConds("cc_channel", channelId));
-            q.addWhere(new DAL.WhereConds("cc_config", configId));
-            string count = this._dbal.executeScalarSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("COUNT(*)");
+            q.SetFrom("channelconfig");
+            q.AddWhere(new LegacyDatabase.WhereConds("cc_channel", channelId));
+            q.AddWhere(new LegacyDatabase.WhereConds("cc_config", configId));
+            string count = this._dbal.ExecuteScalarSelect(q);
 
             if (count == "1")
             {
-                //yes: update
+                //yes: Update
                 Dictionary<string, string> vals = new Dictionary<string, string>
                                                       {
                                                           { "cc_value", newValue }
                                                       };
-                this._dbal.update("channelconfig", vals, 1, new DAL.WhereConds("cc_channel", channelId),
-                                  new DAL.WhereConds("cc_config", configId));
+                this._dbal.Update("channelconfig", vals, 1, new LegacyDatabase.WhereConds("cc_channel", channelId),
+                                  new LegacyDatabase.WhereConds("cc_config", configId));
             }
             else
             {
-                // no: insert
-                this._dbal.insert("channelconfig", channelId, configId, newValue);
+                // no: Insert
+                this._dbal.Insert("channelconfig", channelId, configId, newValue);
             }
         }
 
         private string getOptionId(string optionName)
         {
-            DAL.Select q = new DAL.Select("configuration_id");
-            q.setFrom("configuration");
-            q.addWhere(new DAL.WhereConds("configuration_name", optionName));
+            LegacyDatabase.Select q = new LegacyDatabase.Select("configuration_id");
+            q.SetFrom("configuration");
+            q.AddWhere(new LegacyDatabase.WhereConds("configuration_name", optionName));
 
-            return this._dbal.executeScalarSelect(q);
+            return this._dbal.ExecuteScalarSelect(q);
         }
 
         public string getChannelId(string channel)
         {
 
-            DAL.Select q = new DAL.Select("channel_id");
-            q.setFrom("channel");
-            q.addWhere(new DAL.WhereConds("channel_name", channel));
+            LegacyDatabase.Select q = new LegacyDatabase.Select("channel_id");
+            q.SetFrom("channel");
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
 
-            return this._dbal.executeScalarSelect(q);
+            return this._dbal.ExecuteScalarSelect(q);
         }
 
         /// <summary>

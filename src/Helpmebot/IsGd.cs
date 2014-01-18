@@ -48,17 +48,17 @@ namespace Helpmebot
         /// <returns></returns>
         public static Uri shorten(Uri longUrl)
         {
-            DAL.Select q = new DAL.Select("suc_shorturl");
-            q.setFrom("shorturlcache");
-            q.addWhere(new DAL.WhereConds("suc_fullurl", longUrl.ToString()));
-            string cachelookup = DAL.singleton().executeScalarSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("suc_shorturl");
+            q.SetFrom("shorturlcache");
+            q.AddWhere(new LegacyDatabase.WhereConds("suc_fullurl", longUrl.ToString()));
+            string cachelookup = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             if (cachelookup == "")
             {
                 try
                 {
                     string shorturl = getShortUrl(longUrl);
-                    DAL.singleton().insert("shorturlcache", "", longUrl.ToString(), shorturl);
+                    LegacyDatabase.Singleton().Insert("shorturlcache", "", longUrl.ToString(), shorturl);
                     return new Uri(shorturl);
                 }
                 catch(WebException ex)

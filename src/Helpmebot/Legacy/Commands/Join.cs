@@ -69,12 +69,12 @@ namespace helpmebot6.Commands
         /// TODO: this should probably be elsewhere
         public static CommandResponseHandler JoinChannel(string args, uint network)
         {
-            DAL.Select q = new DAL.Select("count(*)");
-            q.addWhere(new DAL.WhereConds("channel_name", args));
-            q.addWhere(new DAL.WhereConds("channel_network", network.ToString(CultureInfo.InvariantCulture)));
-            q.setFrom("channel");
+            LegacyDatabase.Select q = new LegacyDatabase.Select("count(*)");
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", args));
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_network", network.ToString(CultureInfo.InvariantCulture)));
+            q.SetFrom("channel");
 
-            string count = DAL.singleton().executeScalarSelect(q);
+            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             if (count == "1")
             {
@@ -86,13 +86,13 @@ namespace helpmebot6.Commands
                                                               "1"
                                                               }
                                                       };
-                DAL.singleton().update("channel", vals, 1, new DAL.WhereConds("channel_name", args));
+                LegacyDatabase.Singleton().Update("channel", vals, 1, new LegacyDatabase.WhereConds("channel_name", args));
 
                 Helpmebot6.irc.IrcJoin(args);
             }
             else
             {
-                DAL.singleton().insert("channel", string.Empty, args, string.Empty, "1", network.ToString(CultureInfo.InvariantCulture));
+                LegacyDatabase.Singleton().Insert("channel", string.Empty, args, string.Empty, "1", network.ToString(CultureInfo.InvariantCulture));
                 Helpmebot6.irc.IrcJoin(args);
             }
 

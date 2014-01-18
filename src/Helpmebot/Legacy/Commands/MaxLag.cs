@@ -64,10 +64,10 @@ namespace helpmebot6.Commands
             string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
              
             // get api
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            string api = DAL.singleton().executeScalarSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
+            q.SetFrom("site");
+            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
+            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             XmlTextReader mlreader =
                 new XmlTextReader(HttpRequest.get(api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));

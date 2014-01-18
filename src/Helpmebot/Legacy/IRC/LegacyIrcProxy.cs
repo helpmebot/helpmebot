@@ -128,7 +128,7 @@ namespace Helpmebot.Legacy.IRC
         }
 
         /// <summary>
-        /// The connect.
+        /// The Connect.
         /// </summary>
         /// <returns>
         /// The <see cref="bool"/>.

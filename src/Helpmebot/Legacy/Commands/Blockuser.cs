@@ -83,7 +83,7 @@ namespace helpmebot6.Commands
                 name = parts[1];
                 prefix = parts[0];
 
-                if (DAL.singleton().proc_HMB_GET_IW_URL(prefix) == string.Empty)
+                if (LegacyDatabase.Singleton().ProcHmbGetIwUrl(prefix) == string.Empty)
                 {
                     name = origname;
                     prefix = string.Empty;

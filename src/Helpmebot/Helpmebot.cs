@@ -85,7 +85,7 @@ namespace Helpmebot
         /// <summary>
         /// The DB access layer.
         /// </summary>
-        private static DAL dbal;
+        private static LegacyDatabase dbal;
 
         /// <summary>
         /// The IRC network.
@@ -164,11 +164,11 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
-            dbal = DAL.singleton();
+            dbal = LegacyDatabase.Singleton();
 
-            if (!dbal.connect())
+            if (!dbal.Connect())
             {
-                // can't connect to database, DIE
+                // can't Connect to database, DIE
                 return;
             }
 
@@ -178,9 +178,9 @@ namespace Helpmebot
 
             ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
 
-            DAL db = DAL.singleton();
+            LegacyDatabase db = LegacyDatabase.Singleton();
 
-            var q = new DAL.Select(
+            var q = new LegacyDatabase.Select(
                 "in_host",
                 "in_port",
                 "in_nickname",
@@ -189,11 +189,11 @@ namespace Helpmebot
                 "in_realname",
                 "in_log",
                 "in_nickserv");
-            q.setFrom("ircnetwork");
-            q.addLimit(1, 0);
-            q.addWhere(new DAL.WhereConds("in_id", ircNetwork.ToString(CultureInfo.InvariantCulture)));
+            q.SetFrom("ircnetwork");
+            q.AddLimit(1, 0);
+            q.AddWhere(new LegacyDatabase.WhereConds("in_id", ircNetwork.ToString(CultureInfo.InvariantCulture)));
 
-            ArrayList configSettings = db.executeSelect(q);
+            ArrayList configSettings = db.ExecuteSelect(q);
 
             var myNickname = (string)((object[])configSettings[0])[2];
             var myPassword = (string)((object[])configSettings[0])[3];
@@ -228,7 +228,7 @@ namespace Helpmebot
 
             if (!irc.Connect())
             {
-                // if can't connect to irc, die
+                // if can't Connect to irc, die
                 return;
             }
 
@@ -360,11 +360,11 @@ namespace Helpmebot
         {
             irc.IrcJoin(debugChannel);
 
-            var q = new DAL.Select("channel_name");
-            q.setFrom("channel");
-            q.addWhere(new DAL.WhereConds("channel_enabled", 1));
-            q.addWhere(new DAL.WhereConds("channel_network", ircNetwork.ToString(CultureInfo.InvariantCulture)));
-            foreach (object[] item in dbal.executeSelect(q))
+            var q = new LegacyDatabase.Select("channel_name");
+            q.SetFrom("channel");
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_enabled", 1));
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_network", ircNetwork.ToString(CultureInfo.InvariantCulture)));
+            foreach (object[] item in dbal.ExecuteSelect(q))
             {
                 irc.IrcJoin((string)item[0]);
             }

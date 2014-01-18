@@ -40,7 +40,7 @@ namespace Helpmebot.Tests.Services
         /// <summary>
         /// The database access layer.
         /// </summary>
-        private Mock<IDAL> databaseAccessLayer;
+        private Mock<ILegacyDatabase> databaseAccessLayer;
 
         /// <summary>
         /// The message service.
@@ -56,8 +56,8 @@ namespace Helpmebot.Tests.Services
             const string Value = "test {0} {1}";
             byte[] data = Encoding.UTF8.GetBytes(Value);
 
-            this.databaseAccessLayer = new Mock<IDAL>();
-            this.databaseAccessLayer.Setup(x => x.executeSelect(It.IsAny<DAL.Select>()))
+            this.databaseAccessLayer = new Mock<ILegacyDatabase>();
+            this.databaseAccessLayer.Setup(x => x.ExecuteSelect(It.IsAny<LegacyDatabase.Select>()))
                 .Returns(new ArrayList { new object[] { data } });
 
             this.messageService = new MessageService(this.databaseAccessLayer.Object);

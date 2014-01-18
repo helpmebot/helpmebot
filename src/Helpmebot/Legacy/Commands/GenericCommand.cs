@@ -93,12 +93,12 @@ namespace helpmebot6.Commands
             {
                 string command = GetType().ToString();
 
-                var q = new DAL.Select("accesslevel");
-                q.setFrom("command");
-                q.addLimit(1, 0);
-                q.addWhere(new DAL.WhereConds("typename", command));
+                var q = new LegacyDatabase.Select("accesslevel");
+                q.SetFrom("command");
+                q.AddLimit(1, 0);
+                q.AddWhere(new LegacyDatabase.WhereConds("typename", command));
 
-                string al = DAL.singleton().executeScalarSelect(q);
+                string al = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
                 try
                 {
                     return (LegacyUser.UserRights)Enum.Parse(typeof(LegacyUser.UserRights), al, true);

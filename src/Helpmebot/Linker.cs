@@ -140,7 +140,7 @@ namespace Helpmebot
             string iwprefix = link.Split(':')[0];
 
             
-           string url = DAL.singleton().proc_HMB_GET_IW_URL(iwprefix);
+           string url = LegacyDatabase.Singleton().ProcHmbGetIwUrl(iwprefix);
 
 
             if (link.Split(':').Length == 1 || url == string.Empty)

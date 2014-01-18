@@ -102,7 +102,7 @@ namespace helpmebot6.Commands
                     response.respond(this.MessageService.Done(this.Channel));
                     break;
                 case "del":
-                case "delete":
+                case "Delete":
                 case "remove":
 
                     this.Log.Debug("Getting list of welcomeusers ready for deletion!");
@@ -114,7 +114,7 @@ namespace helpmebot6.Commands
 
                     var welcomeUsers = repository.Get(criteria);
 
-                    this.Log.Debug("Got list of WelcomeUsers, proceeding to delete...");
+                    this.Log.Debug("Got list of WelcomeUsers, proceeding to Delete...");
 
                     repository.Delete(welcomeUsers);
 

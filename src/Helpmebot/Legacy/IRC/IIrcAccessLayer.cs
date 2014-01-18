@@ -65,7 +65,7 @@ namespace Helpmebot.Legacy.IRC
         string Nickname { get; }
 
         /// <summary>
-        /// The connect.
+        /// The Connect.
         /// </summary>
         /// <returns>
         /// The <see cref="bool"/>.

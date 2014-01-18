@@ -55,7 +55,7 @@ namespace Helpmebot
         /// <param name="logEntry">The log entry.</param>
         public bool save(AccessLogEntry logEntry)
         {
-            return DAL.singleton().insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.AccessLevel.ToString(),
+            return LegacyDatabase.Singleton().Insert("accesslog", "", logEntry.alUser.ToString(), logEntry.alUser.AccessLevel.ToString(),
                                           logEntry.alReqaccesslevel.ToString(), "", logEntry.alClass.ToString(),
                                           (logEntry.alAllowed ? "1" : "0"), logEntry.alChannel, logEntry.alParams) != -1;
         }
@@ -170,14 +170,14 @@ namespace Helpmebot
                 get { return this._params; }
             }
 
-            public static AccessLogEntry[] get(params DAL.WhereConds[] conditions)
+            public static AccessLogEntry[] get(params LegacyDatabase.WhereConds[] conditions)
             {
-                DAL.Select q = new DAL.Select("*");
-                q.addWhere(conditions);
-                q.setFrom("accesslog");
+                LegacyDatabase.Select q = new LegacyDatabase.Select("*");
+                q.AddWhere(conditions);
+                q.SetFrom("accesslog");
 
                 List<string> columns;
-                ArrayList al = DAL.singleton().executeSelect(q, out columns);
+                ArrayList al = LegacyDatabase.Singleton().ExecuteSelect(q, out columns);
 
                 AccessLogEntry[] entries = new AccessLogEntry[al.Count];
 
@@ -261,7 +261,7 @@ namespace Helpmebot
 
 
 
-        public AccessLogEntry[] get(params DAL.WhereConds[] conditions)
+        public AccessLogEntry[] get(params LegacyDatabase.WhereConds[] conditions)
         {
             return AccessLogEntry.get(conditions);
         }

@@ -155,8 +155,8 @@ namespace helpmebot6.Commands
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
 
-            DAL.singleton()
-                .insert(
+            LegacyDatabase.Singleton()
+                .Insert(
                     "user",
                     string.Empty,
                     newEntry.Nickname,
@@ -180,7 +180,7 @@ namespace helpmebot6.Commands
 
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Removing access entry #{0}", id));
 
-            DAL.singleton().delete("user", 1, new DAL.WhereConds("user_id", id.ToString(CultureInfo.InvariantCulture)));
+            LegacyDatabase.Singleton().Delete("user", 1, new LegacyDatabase.WhereConds("user_id", id.ToString(CultureInfo.InvariantCulture)));
 
             return new CommandResponseHandler(message);
         }

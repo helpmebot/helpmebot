@@ -69,11 +69,11 @@ namespace Helpmebot.Monitoring
             this.messageService = messageService;
             this.watchers = new Dictionary<string, CategoryWatcher>();
 
-            var q = new DAL.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
-            q.addOrder(new DAL.Select.Order("watcher_priority", true));
-            q.setFrom("watcher");
-            q.addLimit(100, 0);
-            ArrayList watchersInDb = DAL.singleton().executeSelect(q);
+            var q = new LegacyDatabase.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
+            q.AddOrder(new LegacyDatabase.Select.Order("watcher_priority", true));
+            q.SetFrom("watcher");
+            q.AddLimit(100, 0);
+            ArrayList watchersInDb = LegacyDatabase.Singleton().ExecuteSelect(q);
             foreach (object[] item in watchersInDb)
             {
                 this.watchers.Add(
@@ -134,15 +134,15 @@ namespace Helpmebot.Monitoring
             string channelId = LegacyConfig.singleton().getChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
-            var q = new DAL.Select("COUNT(*)");
-            q.setFrom("channelwatchers");
-            q.addWhere(new DAL.WhereConds("cw_channel", channelId));
-            q.addWhere(new DAL.WhereConds("cw_watcher", watcherId));
-            string count = DAL.singleton().executeScalarSelect(q);
+            var q = new LegacyDatabase.Select("COUNT(*)");
+            q.SetFrom("channelwatchers");
+            q.AddWhere(new LegacyDatabase.WhereConds("cw_channel", channelId));
+            q.AddWhere(new LegacyDatabase.WhereConds("cw_watcher", watcherId));
+            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             if (count == "0")
             {
-                DAL.singleton().insert("channelwatchers", channelId, watcherId.ToString(CultureInfo.InvariantCulture));
+                LegacyDatabase.Singleton().Insert("channelwatchers", channelId, watcherId.ToString(CultureInfo.InvariantCulture));
                 return true;
             }
 
@@ -159,12 +159,12 @@ namespace Helpmebot.Monitoring
             string channelId = LegacyConfig.singleton().getChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
-            DAL.singleton()
-                .delete(
+            LegacyDatabase.Singleton()
+                .Delete(
                     "channelwatchers",
                     0,
-                    new DAL.WhereConds("cw_channel", channelId),
-                    new DAL.WhereConds("cw_watcher", watcherId));
+                    new LegacyDatabase.WhereConds("cw_channel", channelId),
+                    new LegacyDatabase.WhereConds("cw_watcher", watcherId));
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Helpmebot.Monitoring
                                                                   CultureInfo.InvariantCulture)
                                                           }
                                                       };
-                DAL.singleton().update("watcher", vals, 0, new DAL.WhereConds("watcher_keyword", keyword));
+                LegacyDatabase.Singleton().Update("watcher", vals, 0, new LegacyDatabase.WhereConds("watcher_keyword", keyword));
                 cw.SleepTime = newDelay;
                 return new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
             }
@@ -269,20 +269,20 @@ namespace Helpmebot.Monitoring
         /// </returns>
         public bool IsWatcherInChannel(string channel, string keyword)
         {
-            var q = new DAL.Select("COUNT(*)");
-            q.setFrom("channelwatchers");
-            q.addWhere(new DAL.WhereConds("channel_name", channel));
-            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
-            q.addJoin(
+            var q = new LegacyDatabase.Select("COUNT(*)");
+            q.SetFrom("channelwatchers");
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
+            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
+            q.AddJoin(
                 "channel",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "cw_channel", "=", false, "channel_id"));
-            q.addJoin(
+                LegacyDatabase.Select.JoinTypes.Inner,
+                new LegacyDatabase.WhereConds(false, "cw_channel", "=", false, "channel_id"));
+            q.AddJoin(
                 "watcher",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
+                LegacyDatabase.Select.JoinTypes.Inner,
+                new LegacyDatabase.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
 
-            var count = DAL.singleton().executeScalarSelect(q);
+            var count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
             return count != "0";
         }
 
@@ -302,15 +302,15 @@ namespace Helpmebot.Monitoring
             var newItems = new List<string>();
             foreach (var item in items)
             {
-                var q = new DAL.Select("COUNT(*)");
-                q.setFrom("categoryitems");
-                q.addWhere(new DAL.WhereConds("item_name", item));
-                q.addWhere(new DAL.WhereConds("item_keyword", keyword));
+                var q = new LegacyDatabase.Select("COUNT(*)");
+                q.SetFrom("categoryitems");
+                q.AddWhere(new LegacyDatabase.WhereConds("item_name", item));
+                q.AddWhere(new LegacyDatabase.WhereConds("item_keyword", keyword));
 
                 string databaseResult;
                 try
                 {
-                    databaseResult = DAL.singleton().executeScalarSelect(q);
+                    databaseResult = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
                 }
                 catch (MySqlException ex)
                 {
@@ -320,30 +320,30 @@ namespace Helpmebot.Monitoring
 
                 if (databaseResult == "0")
                 {
-                    DAL.singleton().insert("categoryitems", string.Empty, item, string.Empty, keyword, "1");
+                    LegacyDatabase.Singleton().Insert("categoryitems", string.Empty, item, string.Empty, keyword, "1");
                     newItems.Add(item);
                 }
                 else
                 {
                     var v = new Dictionary<string, string> { { "item_updateflag", "1" } };
-                    DAL.singleton()
-                        .update(
+                    LegacyDatabase.Singleton()
+                        .Update(
                             "categoryitems",
                             v,
                             1,
-                            new DAL.WhereConds("item_name", item),
-                            new DAL.WhereConds("item_keyword", keyword));
+                            new LegacyDatabase.WhereConds("item_name", item),
+                            new LegacyDatabase.WhereConds("item_keyword", keyword));
                 }
             }
 
-            DAL.singleton()
-                .delete(
+            LegacyDatabase.Singleton()
+                .Delete(
                     "categoryitems",
                     0,
-                    new DAL.WhereConds("item_updateflag", 0),
-                    new DAL.WhereConds("item_keyword", keyword));
+                    new LegacyDatabase.WhereConds("item_updateflag", 0),
+                    new LegacyDatabase.WhereConds("item_keyword", keyword));
             var val = new Dictionary<string, string> { { "item_updateflag", "0" } };
-            DAL.singleton().update("categoryitems", val, 0);
+            LegacyDatabase.Singleton().Update("categoryitems", val, 0);
         }
 
         /// <summary>
@@ -357,10 +357,10 @@ namespace Helpmebot.Monitoring
         /// </returns>
         private static int GetWatcherId(string keyword)
         {
-            var q = new DAL.Select("watcher_id");
-            q.setFrom("watcher");
-            q.addWhere(new DAL.WhereConds("watcher_keyword", keyword));
-            string watcherIdString = DAL.singleton().executeScalarSelect(q);
+            var q = new LegacyDatabase.Select("watcher_id");
+            q.SetFrom("watcher");
+            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
+            string watcherIdString = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             return int.Parse(watcherIdString);
         }
@@ -380,20 +380,20 @@ namespace Helpmebot.Monitoring
 
             UpdateDatabaseTable(items, e.Keyword);
 
-            var q = new DAL.Select("channel_name");
-            q.addJoin(
+            var q = new LegacyDatabase.Select("channel_name");
+            q.AddJoin(
                 "channelwatchers",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
-            q.addJoin(
+                LegacyDatabase.Select.JoinTypes.Inner,
+                new LegacyDatabase.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
+            q.AddJoin(
                 "channel",
-                DAL.Select.JoinTypes.Inner,
-                new DAL.WhereConds(false, "channel_id", "=", false, "cw_channel"));
-            q.setFrom("watcher");
-            q.addWhere(new DAL.WhereConds("watcher_keyword", e.Keyword));
-            q.addLimit(10, 0);
+                LegacyDatabase.Select.JoinTypes.Inner,
+                new LegacyDatabase.WhereConds(false, "channel_id", "=", false, "cw_channel"));
+            q.SetFrom("watcher");
+            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", e.Keyword));
+            q.AddLimit(10, 0);
 
-            ArrayList channels = DAL.singleton().executeSelect(q);
+            ArrayList channels = LegacyDatabase.Singleton().ExecuteSelect(q);
             foreach (object[] item in channels)
             {
                 var channel = (string)item[0];
@@ -478,12 +478,12 @@ namespace Helpmebot.Monitoring
 
                     if (showWaitTime)
                     {
-                        var q = new DAL.Select("item_entrytime");
-                        q.addWhere(new DAL.WhereConds("item_name", item));
-                        q.addWhere(new DAL.WhereConds("item_keyword", keyword));
-                        q.setFrom("categoryitems");
+                        var q = new LegacyDatabase.Select("item_entrytime");
+                        q.AddWhere(new LegacyDatabase.WhereConds("item_name", item));
+                        q.AddWhere(new LegacyDatabase.WhereConds("item_keyword", keyword));
+                        q.SetFrom("categoryitems");
 
-                        string insertDate = DAL.singleton().executeScalarSelect(q);
+                        string insertDate = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
                         DateTime realInsertDate;
                         if (!DateTime.TryParse(insertDate, out realInsertDate))
                         {

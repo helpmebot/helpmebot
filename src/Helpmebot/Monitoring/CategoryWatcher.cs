@@ -90,10 +90,10 @@ namespace Helpmebot.Monitoring
             // look up site id
             string baseWiki = LegacyConfig.singleton()["baseWiki"];
 
-            DAL.Select q = new DAL.Select("site_api");
-            q.setFrom("site");
-            q.addWhere(new DAL.WhereConds("site_id", baseWiki));
-            this.site = DAL.singleton().executeScalarSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
+            q.SetFrom("site");
+            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
+            this.site = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             this.category = category;
             this.key = key;
@@ -250,9 +250,9 @@ namespace Helpmebot.Monitoring
         /// </returns>
         private static List<string> RemoveBlacklistedItems(List<string> pageList)
         {
-            DAL.Select q = new DAL.Select("ip_title");
-            q.setFrom("ignoredpages");
-            ArrayList blacklist = DAL.singleton().executeSelect(q);
+            LegacyDatabase.Select q = new LegacyDatabase.Select("ip_title");
+            q.SetFrom("ignoredpages");
+            ArrayList blacklist = LegacyDatabase.Singleton().ExecuteSelect(q);
 
             foreach (object[] item in blacklist)
             {
