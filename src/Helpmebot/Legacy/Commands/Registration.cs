@@ -84,7 +84,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
             if (registrationCache.ContainsKey(baseWiki + "||" + username))
             {

@@ -172,11 +172,11 @@ namespace Helpmebot
                 return;
             }
 
-            LegacyConfig.singleton();
+            LegacyConfig.Singleton();
 
-            debugChannel = LegacyConfig.singleton()["channelDebug"];
+            debugChannel = LegacyConfig.Singleton()["channelDebug"];
 
-            ircNetwork = uint.Parse(LegacyConfig.singleton()["ircNetwork"]);
+            ircNetwork = uint.Parse(LegacyConfig.Singleton()["ircNetwork"]);
 
             LegacyDatabase db = LegacyDatabase.Singleton();
 
@@ -216,7 +216,7 @@ namespace Helpmebot
 
             JoinChannels();
 
-            Trigger = LegacyConfig.singleton()["commandTrigger"];
+            Trigger = LegacyConfig.Singleton()["commandTrigger"];
 
             // TODO: remove me!
             container.Register(Component.For<IIrcAccessLayer>().Instance(irc));

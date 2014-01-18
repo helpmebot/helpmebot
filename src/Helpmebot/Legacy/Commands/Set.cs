@@ -58,11 +58,11 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments[0] == "global")
             {
-                LegacyConfig.singleton()[this.Arguments[1]] = this.Arguments[2];
+                LegacyConfig.Singleton()[this.Arguments[1]] = this.Arguments[2];
             }
             else
             {
-                LegacyConfig.singleton()[this.Arguments[1], this.Arguments[0]] = this.Arguments[2];
+                LegacyConfig.Singleton()[this.Arguments[1], this.Arguments[0]] = this.Arguments[2];
             }
 
             return null;

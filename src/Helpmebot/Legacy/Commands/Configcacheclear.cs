@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            LegacyConfig.singleton().clearCache();
+            LegacyConfig.Singleton().ClearCache();
             return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
         }
     }

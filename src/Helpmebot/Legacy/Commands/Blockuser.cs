@@ -59,7 +59,7 @@ namespace helpmebot6.Commands
         {
             string[] args = this.Arguments;
 
-            bool secure = bool.Parse(LegacyConfig.singleton()["useSecureWikiServer", this.Channel]);
+            bool secure = bool.Parse(LegacyConfig.Singleton()["useSecureWikiServer", this.Channel]);
             if (args.Length > 0)
             {
                 if (args[0] == "@secure")
@@ -94,7 +94,7 @@ namespace helpmebot6.Commands
                 }
             }
 
-            string url = Linker.getRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
+            string url = Linker.GetRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
 
             return new CommandResponseHandler(url);
         }

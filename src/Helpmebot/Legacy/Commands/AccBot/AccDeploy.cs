@@ -87,7 +87,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentException();
             }
             
-            string apiDeployPassword = LegacyConfig.singleton()["accDeployPassword"];
+            string apiDeployPassword = LegacyConfig.Singleton()["accDeployPassword"];
 
             string key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
 

@@ -61,7 +61,7 @@ namespace helpmebot6.Commands
         public static string GetMaxLag(string channel)
         {
             // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
              
             // get api
             LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");

@@ -63,7 +63,7 @@ namespace helpmebot6.Commands.FunStuff
                 Messages.HedgehogAccessDenied,
                 this.Channel,
                 null);
-            return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" ? 
+            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false" ? 
                 base.OnAccessDenied() : 
                 new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
         }
@@ -76,7 +76,7 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override bool TestAccess()
         {
-            return LegacyConfig.singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
+            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
         }
     }
 }

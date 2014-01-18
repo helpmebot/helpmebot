@@ -88,7 +88,7 @@ namespace Helpmebot.Monitoring
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
 
             // look up site id
-            string baseWiki = LegacyConfig.singleton()["baseWiki"];
+            string baseWiki = LegacyConfig.Singleton()["baseWiki"];
 
             LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
             q.SetFrom("site");

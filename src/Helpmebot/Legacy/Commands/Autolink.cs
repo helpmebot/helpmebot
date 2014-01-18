@@ -72,7 +72,7 @@ namespace helpmebot6.Commands
 
             bool oldValue =
                 bool.Parse(
-                    !global ? LegacyConfig.singleton()["autoLink", this.Channel] : LegacyConfig.singleton()["autoLink"]);
+                    !global ? LegacyConfig.Singleton()["autoLink", this.Channel] : LegacyConfig.Singleton()["autoLink"]);
 
             if (args.Length > 0)
             {
@@ -99,7 +99,7 @@ namespace helpmebot6.Commands
 
                 if (newValue == "global")
                 {
-                    LegacyConfig.singleton()["autoLink", this.Channel] = null;
+                    LegacyConfig.Singleton()["autoLink", this.Channel] = null;
                     return new CommandResponseHandler(
                         this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
@@ -107,11 +107,11 @@ namespace helpmebot6.Commands
 
                 if (!global)
                 {
-                    LegacyConfig.singleton()["autoLink", this.Channel] = newValue;
+                    LegacyConfig.Singleton()["autoLink", this.Channel] = newValue;
                 }
                 else
                 {
-                    LegacyConfig.singleton()["autoLink"] = newValue;
+                    LegacyConfig.Singleton()["autoLink"] = newValue;
                 }
 
                 return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);

@@ -71,7 +71,7 @@ namespace helpmebot6.Commands
 
             bool oldValue =
                 bool.Parse(
-                    !global ? LegacyConfig.singleton()["silence", this.Channel] : LegacyConfig.singleton()["silence"]);
+                    !global ? LegacyConfig.Singleton()["silence", this.Channel] : LegacyConfig.Singleton()["silence"]);
 
             if (args.Length > 0)
             {
@@ -98,7 +98,7 @@ namespace helpmebot6.Commands
 
                 if (newValue == "global")
                 {
-                    LegacyConfig.singleton()["silence", this.Channel] = null;
+                    LegacyConfig.Singleton()["silence", this.Channel] = null;
                     return new CommandResponseHandler(
                         this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
                         CommandResponseDestination.PrivateMessage);
@@ -106,13 +106,13 @@ namespace helpmebot6.Commands
 
                 if (!global)
                 {
-                    LegacyConfig.singleton()["silence", this.Channel] = newValue;
+                    LegacyConfig.Singleton()["silence", this.Channel] = newValue;
                 }
                 else
                 {
                     if (this.Source.AccessLevel >= LegacyUser.UserRights.Superuser)
                     {
-                        LegacyConfig.singleton()["silence"] = newValue;
+                        LegacyConfig.Singleton()["silence"] = newValue;
                     }
                 }
 

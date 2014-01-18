@@ -131,7 +131,7 @@ namespace Helpmebot.Monitoring
         /// <returns>The bool</returns>
         public bool AddWatcherToChannel(string keyword, string channel)
         {
-            string channelId = LegacyConfig.singleton().getChannelId(channel);
+            string channelId = LegacyConfig.Singleton().GetChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
             var q = new LegacyDatabase.Select("COUNT(*)");
@@ -156,7 +156,7 @@ namespace Helpmebot.Monitoring
         /// <param name="channel">The channel.</param>
         public void RemoveWatcherFromChannel(string keyword, string channel)
         {
-            string channelId = LegacyConfig.singleton().getChannelId(channel);
+            string channelId = LegacyConfig.Singleton().GetChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
             LegacyDatabase.Singleton()
@@ -399,7 +399,7 @@ namespace Helpmebot.Monitoring
                 var channel = (string)item[0];
 
                 string message = this.CompileMessage(items, e.Keyword, channel, false);
-                if (LegacyConfig.singleton()["silence", channel] == "false")
+                if (LegacyConfig.Singleton()["silence", channel] == "false")
                 {
                     Helpmebot6.irc.IrcPrivmsg(channel, message);
                 }
@@ -435,16 +435,16 @@ namespace Helpmebot.Monitoring
 
             string fakedestination = destination;
 
-            bool showWaitTime = fakedestination != string.Empty && (LegacyConfig.singleton()["showWaitTime", destination] == "true");
+            bool showWaitTime = fakedestination != string.Empty && (LegacyConfig.Singleton()["showWaitTime", destination] == "true");
 
             TimeSpan minimumWaitTime;
-            if (!TimeSpan.TryParse(LegacyConfig.singleton()["minimumWaitTime", destination], out minimumWaitTime))
+            if (!TimeSpan.TryParse(LegacyConfig.Singleton()["minimumWaitTime", destination], out minimumWaitTime))
             {
                 minimumWaitTime = new TimeSpan(0);
             }
 
-            bool shortenUrls = fakedestination != string.Empty && (LegacyConfig.singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true");
-            bool showDelta = fakedestination != string.Empty && (LegacyConfig.singleton()["catWatcherShowDelta", destination] == "true");
+            bool shortenUrls = fakedestination != string.Empty && (LegacyConfig.Singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true");
+            bool showDelta = fakedestination != string.Empty && (LegacyConfig.Singleton()["catWatcherShowDelta", destination] == "true");
 
             if (forceShowAll)
             {
@@ -466,12 +466,12 @@ namespace Helpmebot.Monitoring
                     {
                         try
                         {
-                            var uri = new Uri(LegacyConfig.singleton()["wikiUrl"] + item);
+                            var uri = new Uri(LegacyConfig.Singleton()["wikiUrl"] + item);
                             listString += IsGd.shorten(uri).ToString();
                         }
                         catch (UriFormatException ex)
                         {
-                            listString += LegacyConfig.singleton()["wikiUrl"] + item;
+                            listString += LegacyConfig.Singleton()["wikiUrl"] + item;
                             ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                         }
                     }

@@ -86,7 +86,7 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            bool useLongInfo = bool.Parse(LegacyConfig.singleton()["useLongUserInfo", this.Channel]);
+            bool useLongInfo = bool.Parse(LegacyConfig.Singleton()["useLongUserInfo", this.Channel]);
 
             if (args.Length > 0)
             {
@@ -149,7 +149,7 @@ namespace helpmebot6.Commands
         /// <returns>the user page url</returns>
         private static string GetUserPageUrl(string userName, string channel)
         {
-            return Linker.getRealLink(channel, "User:" + userName, true);
+            return Linker.GetRealLink(channel, "User:" + userName, true);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            return Linker.getRealLink(channel, "User_talk:" + userName, true);
+            return Linker.GetRealLink(channel, "User_talk:" + userName, true);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             
-            return Linker.getRealLink(channel, "Special:Contributions/" + userName, true);
+            return Linker.GetRealLink(channel, "Special:Contributions/" + userName, true);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace helpmebot6.Commands
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            return Linker.getRealLink(channel, "Special:Log?type=block&page=User:" + userName, true);
+            return Linker.GetRealLink(channel, "Special:Log?type=block&page=User:" + userName, true);
         }
 
         // TODO: tidy up! why return a value when it's passed by ref anyway?

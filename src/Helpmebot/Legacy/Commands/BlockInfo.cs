@@ -65,7 +65,7 @@ namespace helpmebot6.Commands
         {
             IPAddress ip;
 
-            string baseWiki = LegacyConfig.singleton()["baseWiki", channel];
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
             LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
             q.SetFrom("site");

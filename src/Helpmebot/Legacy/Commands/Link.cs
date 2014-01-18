@@ -60,7 +60,7 @@ namespace helpmebot6.Commands
         /// <returns>The result</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            bool secure = bool.Parse(LegacyConfig.singleton()["useSecureWikiServer", this.Channel]);
+            bool secure = bool.Parse(LegacyConfig.Singleton()["useSecureWikiServer", this.Channel]);
             string[] args = this.Arguments;
             if (args.Length > 0)
             {
@@ -73,20 +73,20 @@ namespace helpmebot6.Commands
 
             if (args.SmartLength() > 0)
             {
-                ArrayList links = Linker.instance().reallyParseMessage(string.Join(" ", args));
+                ArrayList links = Linker.Instance().ReallyParseMessage(string.Join(" ", args));
 
                 if (links.Count == 0)
                 {
-                    links = Linker.instance().reallyParseMessage("[[" + string.Join(" ", args) + "]]");
+                    links = Linker.Instance().ReallyParseMessage("[[" + string.Join(" ", args) + "]]");
                 }
 
                 string message = links.Cast<string>()
-                    .Aggregate(string.Empty, (current, link) => current + " " + Linker.getRealLink(this.Channel, link, secure));
+                    .Aggregate(string.Empty, (current, link) => current + " " + Linker.GetRealLink(this.Channel, link, secure));
 
                 return new CommandResponseHandler(message);
             }
 
-            return new CommandResponseHandler(Linker.instance().getLink(this.Channel, secure));
+            return new CommandResponseHandler(Linker.Instance().GetLink(this.Channel, secure));
         }
     }
 }

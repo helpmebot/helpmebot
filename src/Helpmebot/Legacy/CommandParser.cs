@@ -260,7 +260,7 @@ namespace Helpmebot.Legacy
                     {
                         case CommandResponseDestination.Default:
                             if (this.OverrideBotSilence ||
-                                LegacyConfig.singleton()["silence",destination] != "true")
+                                LegacyConfig.Singleton()["silence",destination] != "true")
                             {
                                 Helpmebot6.irc.IrcPrivmsg(destination, message);
                             }

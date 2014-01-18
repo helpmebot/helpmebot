@@ -74,7 +74,7 @@ namespace Helpmebot
         private static string getShortUrl(Uri longUrl)
         {
             HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
-            wrq.UserAgent = LegacyConfig.singleton()["useragent"];
+            wrq.UserAgent = LegacyConfig.Singleton()["useragent"];
             HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

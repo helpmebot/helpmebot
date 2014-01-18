@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Linker and link parser
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot
 {
     using System.Collections;
@@ -30,17 +26,36 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
 
     /// <summary>
-    /// Linker and link parser
+    ///     Linker and link parser
     /// </summary>
     public class Linker
     {
-        private readonly Dictionary<string, string> _lastLink;
+        #region Static Fields
 
-        private static Linker _singleton;
+        /// <summary>
+        /// The _singleton.
+        /// </summary>
+        private static Linker singleton;
 
+        #endregion
+
+        #region Fields
+
+        /// <summary>
+        /// The _last link.
+        /// </summary>
+        private readonly Dictionary<string, string> lastLink;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="Linker"/> class.
+        /// </summary>
         protected Linker()
         {
-            this._lastLink = new Dictionary<string, string>();
+            this.lastLink = new Dictionary<string, string>();
             if (Helpmebot6.irc != null)
             {
                 Helpmebot6.irc.PrivateMessageEvent += this.IrcPrivateMessageEvent;
@@ -48,112 +63,168 @@ namespace Helpmebot
             }
         }
 
-        private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Gets the real link.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="link">
+        /// The link.
+        /// </param>
+        /// <param name="useSecureServer">
+        /// if set to <c>true</c> [use secure server].
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string GetRealLink(string destination, string link, bool useSecureServer)
         {
-            this.parseMessage(e.Message, e.Destination);
+            string iwprefix = link.Split(':')[0];
+
+            string url = LegacyDatabase.Singleton().ProcHmbGetIwUrl(iwprefix);
+
+            if (link.Split(':').Length == 1 || url == string.Empty)
+            {
+                url = LegacyConfig.Singleton()[useSecureServer ? "wikiSecureUrl" : "wikiUrl", destination];
+                return url + Antispace(link);
+            }
+
+            return url.Replace("$1", Antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
         }
 
-        public static Linker instance()
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Linker"/>.
+        /// </returns>
+        public static Linker Instance()
         {
-            return _singleton ?? ( _singleton = new Linker( ) );
+            return singleton ?? (singleton = new Linker());
+        }
+
+        /// <summary>
+        /// Gets the link.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string GetLink(string destination)
+        {
+            return this.GetLink(destination, false);
+        }
+
+        /// <summary>
+        /// Gets the link.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="useSecureServer">
+        /// if set to <c>true</c> [use secure server].
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string GetLink(string destination, bool useSecureServer)
+        {
+            string lastLinkedLine;
+            bool success = this.lastLink.TryGetValue(destination, out lastLinkedLine);
+            if (!success)
+            {
+                return string.Empty;
+            }
+
+            ArrayList links = this.ReallyParseMessage(lastLinkedLine);
+
+            return links.Cast<string>()
+                .Aggregate(string.Empty, (current, link) => current + " " + GetRealLink(destination, link, useSecureServer));
         }
 
         /// <summary>
         /// Parses the message.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="channel">The channel.</param>
-        public void parseMessage(string message, string channel)
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        public void ParseMessage(string message, string channel)
         {
-            ArrayList newLink = this.reallyParseMessage(message);
+            ArrayList newLink = this.ReallyParseMessage(message);
             if (newLink.Count == 0)
-                return;
-            if (this._lastLink.ContainsKey(channel))
             {
-                this._lastLink.Remove(channel);
+                return;
             }
-            this._lastLink.Add(channel, message);
-            this.sendLink(channel, message);
+
+            if (this.lastLink.ContainsKey(channel))
+            {
+                this.lastLink.Remove(channel);
+            }
+
+            this.lastLink.Add(channel, message);
+            this.SendLink(channel, message);
         }
 
         /// <summary>
         /// Really parses the message.
         /// </summary>
-        /// <param name="message">The message.</param>
-        /// <returns></returns>
-        public ArrayList reallyParseMessage(string message)
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ArrayList"/>.
+        /// </returns>
+        public ArrayList ReallyParseMessage(string message)
         {
-            ArrayList newLinks = new ArrayList();
+            var newLinks = new ArrayList();
 
-            Regex linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{([^{}\|]*)(?:}}|\|)");
-            Match m = linkRegex.Match( message );
+            var linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{([^{}\|]*)(?:}}|\|)");
+            Match m = linkRegex.Match(message);
             while (m.Length > 0)
             {
-                if ( m.Groups[ 1 ].Length > 0 )
-                    newLinks.Add( m.Groups[ 1 ].Value );
-                if ( m.Groups[ 2 ].Length > 0 )
-                    newLinks.Add( "Template:" + m.Groups[ 2 ].Value );
+                if (m.Groups[1].Length > 0)
+                {
+                    newLinks.Add(m.Groups[1].Value);
+                }
 
-                m = m.NextMatch( );
+                if (m.Groups[2].Length > 0)
+                {
+                    newLinks.Add("Template:" + m.Groups[2].Value);
+                }
+
+                m = m.NextMatch();
             }
 
             return newLinks;
         }
 
-        /// <summary>
-        /// Gets the link.
-        /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <returns></returns>
-        public string getLink(string destination)
-        {
-            return this.getLink(destination, false);
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Gets the link.
+        /// The anti-space.
         /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <param name="useSecureServer">if set to <c>true</c> [use secure server].</param>
-        /// <returns></returns>
-        public string getLink(string destination, bool useSecureServer)
-        {
-            string lastLinkedLine;
-            bool success = this._lastLink.TryGetValue(destination, out lastLinkedLine);
-            if (!success) return "";
-
-            ArrayList links = this.reallyParseMessage(lastLinkedLine);
-
-            return links.Cast<string>().Aggregate("", (current, link) => current + " " + getRealLink(destination, link, useSecureServer));
-
-        }
-
-        /// <summary>
-        /// Gets the real link.
-        /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <param name="link">The link.</param>
-        /// <param name="useSecureServer">if set to <c>true</c> [use secure server].</param>
-        /// <returns></returns>
-        public static string getRealLink( string destination, string link, bool useSecureServer )
-        {
-            string iwprefix = link.Split(':')[0];
-
-            
-           string url = LegacyDatabase.Singleton().ProcHmbGetIwUrl(iwprefix);
-
-
-            if (link.Split(':').Length == 1 || url == string.Empty)
-            {
-                url =
-                    LegacyConfig.singleton( )[
-                        ( useSecureServer ? "wikiSecureUrl" : "wikiUrl" ), destination ];
-                return url + antispace( link );
-            }
-            return url.Replace("$1", antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
-        }
-
-        private static string antispace(string source)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        /// <remarks>
+        /// FIXME: UrlEncode?
+        /// </remarks>
+        private static string Antispace(string source)
         {
             return source.Replace(' ', '_')
                 .Replace("%", "%25")
@@ -163,28 +234,50 @@ namespace Helpmebot
                 .Replace("(", "%28")
                 .Replace(")", "%29")
                 .Replace(";", "%3B")
-            //    .Replace(":", "%3A")
+                
+                // .Replace(":", "%3A")
                 .Replace("@", "%40")
                 .Replace("&", "%26")
                 .Replace("=", "%3D")
                 .Replace("+", "%2B")
                 .Replace("$", "%24")
                 .Replace(",", "%2C")
-            //    .Replace("/", "%2F")
-                .Replace("?", "%3F")
-                .Replace("#", "%23")
-                .Replace("[", "%5B")
-                .Replace("]", "%5D")
-                ;
-
+                
+                // .Replace("/", "%2F")
+                .Replace("?", "%3F").Replace("#", "%23").Replace("[", "%5B").Replace("]", "%5D");
         }
 
-        private void sendLink(string channel, string link)
+        /// <summary>
+        /// The IRC private message event.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
         {
-            if (LegacyConfig.singleton()["autoLink",channel] == "true")
-                Helpmebot6.irc.IrcPrivmsg(channel, this.getLink(link, false));
+            this.ParseMessage(e.Message, e.Destination);
         }
-    
 
+        /// <summary>
+        /// The send link.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="link">
+        /// The link.
+        /// </param>
+        private void SendLink(string channel, string link)
+        {
+            if (LegacyConfig.Singleton()["autoLink", channel] == "true")
+            {
+                Helpmebot6.irc.IrcPrivmsg(channel, this.GetLink(link, false));
+            }
+        }
+
+        #endregion
     }
 }
