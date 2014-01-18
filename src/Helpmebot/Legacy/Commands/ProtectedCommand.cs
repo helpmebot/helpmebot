@@ -61,8 +61,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ReallyRunCommand()
         {
             if (
-                !AccessLog.instance()
-                     .save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
+                !AccessLog.Instance()
+                     .Save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
             {
                 var errorResponse = new CommandResponseHandler();
                 errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);

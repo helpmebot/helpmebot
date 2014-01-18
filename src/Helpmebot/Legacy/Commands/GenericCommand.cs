@@ -176,7 +176,7 @@ namespace helpmebot6.Commands
         /// <returns>The response to the command</returns>
         protected virtual CommandResponseHandler ReallyRunCommand()
         {
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
+            if (!AccessLog.Instance().Save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
             {
                 var errorResponse = new CommandResponseHandler();
                 var message = this.MessageService.RetrieveMessage("AccessDeniedAccessListFailure", this.Channel, null);
@@ -213,7 +213,7 @@ namespace helpmebot6.Commands
 
             response.respond(message, CommandResponseDestination.PrivateMessage);
             this.Log.Info("Access denied to command.");
-            if (!AccessLog.instance().save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments, this.AccessLevel)))
+            if (!AccessLog.Instance().Save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments, this.AccessLevel)))
             {
                 response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }
