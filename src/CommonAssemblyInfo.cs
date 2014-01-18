@@ -25,5 +25,5 @@ using System.Resources;
 [assembly: AssemblyProduct("Helpmebot")]
 [assembly: AssemblyCopyright("Copyright Simon Walker (c) 2009-2013 Some Rights Reserved")]
 [assembly: AssemblyTrademark("")]
-[assembly: AssemblyVersion("6.3.*")]
+[assembly: AssemblyVersion("6.4.*")]
 [assembly: NeutralResourcesLanguage("en-GB")]

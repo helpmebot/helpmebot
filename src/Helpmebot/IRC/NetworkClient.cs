@@ -306,7 +306,7 @@ namespace Helpmebot.IRC
                     this.writer.Flush();
 
                     // Flood protection
-                    Thread.Sleep(100);
+                    Thread.Sleep(500);
                 }
             }
         }
