@@ -93,7 +93,7 @@ namespace Helpmebot.IRC
         /// <summary>
         /// The channels.
         /// </summary>
-        private readonly Dictionary<string, Channel> channels;
+        private readonly Dictionary<string, IrcChannel> channels;
 
         /// <summary>
         /// The connection registration semaphore.
@@ -178,7 +178,7 @@ namespace Helpmebot.IRC
             this.clientCapabilities = new List<string> { "sasl", "account-notify", "extended-join", "multi-prefix" };
 
             this.userCache = new Dictionary<string, IrcUser>();
-            this.channels = new Dictionary<string, Channel>();
+            this.channels = new Dictionary<string, IrcChannel>();
 
             this.connectionRegistrationSemaphore = new Semaphore(0, 1);
             this.syncLogger.Debug("ctor() acquired connectionRegistration semaphore.");
@@ -223,7 +223,7 @@ namespace Helpmebot.IRC
         /// <summary>
         /// Gets the channels.
         /// </summary>
-        public Dictionary<string, Channel> Channels
+        public Dictionary<string, IrcChannel> Channels
         {
             get
             {
@@ -608,7 +608,7 @@ namespace Helpmebot.IRC
                 this.UserCache.Add(newNickname, ircUser);
 
                 // secondly, update the channels this user is in.
-                foreach (KeyValuePair<string, Channel> channelPair in this.channels)
+                foreach (KeyValuePair<string, IrcChannel> channelPair in this.channels)
                 {
                     if (channelPair.Value.Users.ContainsKey(oldNickname))
                     {
@@ -688,7 +688,7 @@ namespace Helpmebot.IRC
                             this.UserCache.Add(parsedName, ircUser);
                         }
 
-                        var channelUser = new ChannelUser(ircUser, channel) { Voice = voice, Operator = op };
+                        var channelUser = new IrcChannelUser(ircUser, channel) { Voice = voice, Operator = op };
 
                         this.channels[channel].Users.Add(parsedName, channelUser);
                     }
@@ -806,7 +806,7 @@ namespace Helpmebot.IRC
                 lock (this.userOperationLock)
                 {
                     // add the channel to the list of channels I'm in.
-                    this.Channels.Add(channelName, new Channel(channelName));
+                    this.Channels.Add(channelName, new IrcChannel(channelName));
                 }
             }
             else
@@ -815,7 +815,7 @@ namespace Helpmebot.IRC
 
                 lock (this.userOperationLock)
                 {
-                    this.Channels[channelName].Users.Add(user.Nickname, new ChannelUser((IrcUser)user, channelName));
+                    this.Channels[channelName].Users.Add(user.Nickname, new IrcChannelUser((IrcUser)user, channelName));
                 }
 
                 EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
@@ -889,7 +889,7 @@ namespace Helpmebot.IRC
                     }
                     else
                     {
-                        var channelUser = new ChannelUser(ircUser, channel)
+                        var channelUser = new IrcChannelUser(ircUser, channel)
                                               {
                                                   Operator = modes.Contains("@"),
                                                   Voice = modes.Contains("+")

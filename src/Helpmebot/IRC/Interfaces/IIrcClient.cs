@@ -55,7 +55,7 @@ namespace Helpmebot.IRC.Interfaces
         /// <summary>
         /// Gets the channels.
         /// </summary>
-        Dictionary<string, Channel> Channels { get; }
+        Dictionary<string, IrcChannel> Channels { get; }
 
         /// <summary>
         /// Gets a value indicating whether the nick tracking is valid.

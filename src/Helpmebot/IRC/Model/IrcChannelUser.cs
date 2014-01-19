@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ChannelUser.cs" company="Helpmebot Development Team">
+// <copyright file="IrcChannelUser.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the ChannelUser type.
+//   Defines the IrcChannelUser type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ namespace Helpmebot.IRC.Model
     /// <summary>
     /// The channel user.
     /// </summary>
-    public class ChannelUser
+    public class IrcChannelUser
     {
         /// <summary>
         /// The user.
@@ -36,7 +36,7 @@ namespace Helpmebot.IRC.Model
         private readonly string channel;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="ChannelUser"/> class.
+        /// Initialises a new instance of the <see cref="IrcChannelUser"/> class.
         /// </summary>
         /// <param name="user">
         /// The user.
@@ -44,7 +44,7 @@ namespace Helpmebot.IRC.Model
         /// <param name="channel">
         /// The channel.
         /// </param>
-        public ChannelUser(IrcUser user, string channel)
+        public IrcChannelUser(IrcUser user, string channel)
         {
             this.user = user;
             this.channel = channel;
@@ -124,7 +124,7 @@ namespace Helpmebot.IRC.Model
                 return false;
             }
 
-            return this.Equals((ChannelUser)obj);
+            return this.Equals((IrcChannelUser)obj);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Helpmebot.IRC.Model
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool Equals(ChannelUser other)
+        protected bool Equals(IrcChannelUser other)
         {
             return object.Equals(this.User, other.User) && string.Equals(this.Channel, other.Channel);
         }

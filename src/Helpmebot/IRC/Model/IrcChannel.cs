@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Channel.cs" company="Helpmebot Development Team">
+// <copyright file="IrcChannel.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the Channel type.
+//   Defines the IrcChannel type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ namespace Helpmebot.IRC.Model
     using System.Collections.Generic;
 
     /// <summary>
-    /// The channel.
+    /// The IRC channel.
     /// </summary>
-    public class Channel
+    public class IrcChannel
     {
         /// <summary>
         /// The name.
@@ -35,24 +35,24 @@ namespace Helpmebot.IRC.Model
         /// <summary>
         /// The users.
         /// </summary>
-        private readonly Dictionary<string, ChannelUser> users;
+        private readonly Dictionary<string, IrcChannelUser> users;
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Channel"/> class.
+        /// Initialises a new instance of the <see cref="IrcChannel"/> class.
         /// </summary>
         /// <param name="name">
         /// The name.
         /// </param>
-        public Channel(string name)
+        public IrcChannel(string name)
         {
             this.name = name;
-            this.users = new Dictionary<string, ChannelUser>();
+            this.users = new Dictionary<string, IrcChannelUser>();
         }
 
         /// <summary>
         /// Gets the users.
         /// </summary>
-        public Dictionary<string, ChannelUser> Users
+        public Dictionary<string, IrcChannelUser> Users
         {
             get
             {
@@ -97,7 +97,7 @@ namespace Helpmebot.IRC.Model
                 return false;
             }
 
-            return this.Equals((Channel)obj);
+            return this.Equals((IrcChannel)obj);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Helpmebot.IRC.Model
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
-        protected bool Equals(Channel other)
+        protected bool Equals(IrcChannel other)
         {
             return string.Equals(this.Name, other.Name);
         }
