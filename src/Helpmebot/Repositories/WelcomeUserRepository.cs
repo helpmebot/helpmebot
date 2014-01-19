@@ -77,5 +77,16 @@ namespace Helpmebot.Repositories
         {
             throw new System.NotImplementedException();
         }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
+        }
     }
 }

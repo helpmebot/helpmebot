@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Repositories
 {
+    using System;
     using System.Collections.Generic;
     using System.Data;
 
@@ -196,11 +197,26 @@ namespace Helpmebot.Repositories
         /// <summary>
         /// The dispose.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
-            this.Flush();
-            this.session.Close();
-            this.session.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Flush();
+                this.session.Close();
+                this.session.Dispose();
+            }
         }
 
         /// <summary>

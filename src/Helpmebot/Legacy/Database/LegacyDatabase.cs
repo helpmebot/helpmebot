@@ -186,7 +186,8 @@ namespace Helpmebot.Legacy.Database
         /// </summary>
         public void Dispose()
         {
-            this.connection.Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -525,6 +526,20 @@ namespace Helpmebot.Legacy.Database
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.connection.Dispose();
+            }
+        }
 
         /// <summary>
         /// Sanitises the specified raw data.

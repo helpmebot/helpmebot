@@ -62,5 +62,16 @@ namespace Helpmebot.Repositories
         {
             return this.Get(Restrictions.Eq("Name", name));
         }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
+        }
     }
 }

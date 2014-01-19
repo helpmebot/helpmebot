@@ -45,5 +45,16 @@ namespace Helpmebot.Repositories
             : base(session, logger)
         {
         }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
+        }
     }
 }

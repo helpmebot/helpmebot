@@ -20,6 +20,8 @@
 
 namespace Helpmebot.Persistence
 {
+    using System;
+
     using Helpmebot.Persistence.Interfaces;
 
     using NHibernate;
@@ -62,9 +64,24 @@ namespace Helpmebot.Persistence
         /// <summary>
         /// The dispose.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
-            this.SessionFactory.Close();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.SessionFactory.Close();
+            }
         }
     }
 }
