@@ -27,8 +27,6 @@ namespace Helpmebot.IRC.Interfaces
     using Helpmebot.IRC.Messages;
     using Helpmebot.IRC.Model;
 
-    using NHibernate.Loader;
-
     /// <summary>
     /// The IRC Client interface.
     /// </summary>

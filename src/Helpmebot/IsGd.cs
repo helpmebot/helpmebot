@@ -28,7 +28,7 @@ namespace Helpmebot
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    ///     http://is.gd wrapper class
+    /// Shortens URLs
     /// </summary>
     internal class IsGd
     {
@@ -97,12 +97,19 @@ namespace Helpmebot
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {
-                var sr = new StreamReader(wrs.GetResponseStream());
+                Stream responseStream = wrs.GetResponseStream();
+
+                if (responseStream == null)
+                {
+                    throw new WebException("Response stream is null.");
+                }
+
+                var sr = new StreamReader(responseStream);
                 string shorturl = sr.ReadLine();
                 return shorturl;
             }
 
-            throw new WebException();
+            throw new WebException(wrs.StatusDescription);
         }
 
         #endregion

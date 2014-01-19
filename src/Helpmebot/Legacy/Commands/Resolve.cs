@@ -20,6 +20,7 @@
 
 namespace helpmebot6.Commands
 {
+    using System.Globalization;
     using System.Net;
     using System.Net.Sockets;
 
@@ -48,7 +49,7 @@ namespace helpmebot6.Commands
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Resolve(LegacyUser source, string channel, string[] args, IMessageService messageService )
+        public Resolve(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
         }
@@ -61,7 +62,7 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments.Length == 0)
             {
-                string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString() };
+                string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
                 return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 

@@ -108,5 +108,4 @@ namespace Helpmebot.Model
                 estimatedLocation);
         }
     }
-
 }

@@ -255,7 +255,6 @@
     <Compile Include="Monitoring\MonitorService.cs" />
     <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerializableArrayList.cs" />
     <Compile Include="Services\Interfaces\IMessageService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\InstallerPriorityAttribute.cs" />

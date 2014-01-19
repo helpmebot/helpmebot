@@ -22,8 +22,6 @@ namespace Helpmebot.ExtensionMethods
 {
     using System.Collections.Generic;
 
-    using Helpmebot.Model.Interfaces;
-
     /// <summary>
     /// The dictionary extensions.
     /// </summary>

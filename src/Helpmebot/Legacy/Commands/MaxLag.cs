@@ -64,12 +64,12 @@ namespace helpmebot6.Commands
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
              
             // get api
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
+            var q = new LegacyDatabase.Select("site_api");
             q.SetFrom("site");
             q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
             string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
-            XmlTextReader mlreader =
+            var mlreader =
                 new XmlTextReader(HttpRequest.Get(api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
             do
             {
@@ -89,7 +89,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageParameters = { this.Source.Nickname, GetMaxLag(this.Channel) };
-            string message = this.MessageService.RetrieveMessage("cmdMaxLag",this.Channel, messageParameters);
+            string message = this.MessageService.RetrieveMessage("cmdMaxLag", this.Channel, messageParameters);
             return new CommandResponseHandler(message);
         }
     }

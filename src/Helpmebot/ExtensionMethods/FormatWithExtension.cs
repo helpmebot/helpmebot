@@ -22,7 +22,6 @@ namespace Helpmebot.ExtensionMethods
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// The format with extension.
@@ -44,14 +43,21 @@ namespace Helpmebot.ExtensionMethods
         /// <exception cref="ArgumentNullException">
         /// Thrown when the format is null.
         /// </exception>
-        public static string FormatWith(this string format, IDictionary<string,object> source)
+        public static string FormatWith(this string format, IDictionary<string, object> source)
         {
             if (format == null)
             {
                 throw new ArgumentNullException("format");
             }
 
-            return source.Aggregate(format, (current, keyValuePair) => current.Replace("{" + keyValuePair.Key + "}", keyValuePair.Value.ToString()));
+            string result = format;
+
+            foreach (KeyValuePair<string, object> o in source)
+            {
+                result = result.Replace("{" + o.Key + "}", o.Value.ToString());
+            }
+
+            return result;
         }
     }
 }
