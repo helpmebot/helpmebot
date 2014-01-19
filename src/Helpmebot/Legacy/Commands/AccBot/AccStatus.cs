@@ -62,7 +62,7 @@ namespace helpmebot6.Commands
         {
             XPathDocument xpd =
                 new XPathDocument(
-                    HttpRequest.get("http://accounts.wmflabs.org/api.php?action=status"));
+                    HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status"));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//status");
 

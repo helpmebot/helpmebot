@@ -96,7 +96,7 @@ namespace helpmebot6.Commands
 
             XmlTextReader creader =
                 new XmlTextReader(
-                    HttpRequest.get(api + "?action=query&format=xml&prop=categoryinfo&titles=Category:" +
+                    HttpRequest.Get(api + "?action=query&format=xml&prop=categoryinfo&titles=Category:" +
                                     categoryName));
             do
             {

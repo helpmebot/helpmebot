@@ -43,7 +43,7 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static GeolocateResult GetLocation(this IPAddress ip)
         {
-            Stream s = HttpRequest.get("http://api.ipinfodb.com/v3/ip-city/?key=" + LegacyConfig.Singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
+            Stream s = HttpRequest.Get("http://api.ipinfodb.com/v3/ip-city/?key=" + LegacyConfig.Singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
             XmlTextReader xtr = new XmlTextReader(s);
             GeolocateResult result = new GeolocateResult();
 

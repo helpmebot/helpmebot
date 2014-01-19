@@ -67,7 +67,7 @@ namespace helpmebot6.Commands
                 if (args[0] == "@secure")
                 {
                     secure = true;
-                    GlobalFunctions.popFromFront(ref args);
+                    GlobalFunctions.PopFromFront(ref args);
                 }
             }
 

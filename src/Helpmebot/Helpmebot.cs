@@ -336,7 +336,7 @@ namespace Helpmebot
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;
-                if (CommandParser.isRecognisedMessage(ref message, ref overrideSilence))
+                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence))
                 {
                     cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
@@ -344,7 +344,7 @@ namespace Helpmebot
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.handleCommand(e.Sender, e.Destination, command, commandArgs);
+                    cmd.HandleCommand(e.Sender, e.Destination, command, commandArgs);
                 }
             }
             catch (Exception ex)

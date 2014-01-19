@@ -75,7 +75,7 @@ namespace helpmebot6.Commands
             if (args[0].ToLower() == "@url")
             {
                 showUrl = true;
-                GlobalFunctions.popFromFront(ref args);
+                GlobalFunctions.PopFromFront(ref args);
             }
 
             if (args.Length > 0 && args[0] != string.Empty)
@@ -95,17 +95,17 @@ namespace helpmebot6.Commands
 
             string requestUri = "http://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
 
-            var r = new StreamReader(HttpRequest.get(requestUri, 1000 * 30 /* 30 sec timeout */));
+            var r = new StreamReader(HttpRequest.Get(requestUri, 1000 * 30 /* 30 sec timeout */));
 
             var crh = new CommandResponseHandler();
             if (showUrl)
             {
-                crh.respond(requestUri, CommandResponseDestination.PrivateMessage);
+                crh.Respond(requestUri, CommandResponseDestination.PrivateMessage);
             }
 
             foreach (var x in r.ReadToEnd().Split('\n', '\r'))
             {
-                crh.respond(x);
+                crh.Respond(x);
             }
 
             return crh;

@@ -65,7 +65,7 @@ namespace helpmebot6.Commands
                 if (args[0].ToLower() == "@global")
                 {
                     global = true;
-                    GlobalFunctions.popFromFront(ref args);
+                    GlobalFunctions.PopFromFront(ref args);
                 }
             }
 

@@ -81,7 +81,7 @@ namespace helpmebot6.Commands
 
             XPathDocument xpd =
                 new XPathDocument(
-                    HttpRequest.get(
+                    HttpRequest.Get(
                         api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers=" + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");

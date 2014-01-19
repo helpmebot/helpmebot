@@ -13,51 +13,60 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Class holding globally accessible functions
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot
 {
+    using System.Linq;
+
     /// <summary>
-    /// Class holding globally accessible functions
+    ///     Class holding globally accessible functions
     /// </summary>
     public class GlobalFunctions
     {
+        #region Public Methods and Operators
+
         /// <summary>
-        ///   Remove the first item from an array, and return the item
+        /// Remove the first item from an array, and return the item
         /// </summary>
-        /// <param name = "list">The array in question</param>
-        /// <returns>The first item from the array</returns>
-        public static string popFromFront(ref string[] list)
+        /// <param name="list">
+        /// The array in question
+        /// </param>
+        /// <returns>
+        /// The first item from the array
+        /// </returns>
+        public static string PopFromFront(ref string[] list)
         {
             string firstItem = list[0];
             list = string.Join(" ", list, 1, list.Length - 1).Split(' ');
             return firstItem;
         }
 
-        public static void removeItemFromArray(string item, ref string[] array)
+        /// <summary>
+        /// The remove item from array.
+        /// </summary>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        public static void RemoveItemFromArray(string item, ref string[] array)
         {
-            int count = 0;
-            foreach (string i in array)
+            var count = array.Count(i => i == item);
+
+            var newArray = new string[array.Length - count];
+
+            var nextAddition = 0;
+
+            foreach (var i in array.Where(i => i != item))
             {
-                if (i == item)
-                    count++;
-            }
-
-            string[] newArray = new string[array.Length - count];
-
-            int nextAddition = 0;
-
-            foreach (string  i in array)
-            {
-                if (i == item) continue;
                 newArray[nextAddition] = i;
                 nextAddition++;
             }
 
             array = newArray;
         }
+
+        #endregion
     }
 }

@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   is.gd wrapper class
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot
 {
     using System;
@@ -32,36 +28,46 @@ namespace Helpmebot
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    /// is.gd wrapper class
+    ///     http://is.gd wrapper class
     /// </summary>
     internal class IsGd
     {
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
+        ///     Gets or sets the Castle.Windsor Logger
         /// </summary>
         public ILogger Log { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// Shortens the specified long URL.
         /// </summary>
-        /// <param name="longUrl">The long URL.</param>
-        /// <returns></returns>
-        public static Uri shorten(Uri longUrl)
+        /// <param name="longUrl">
+        /// The long URL.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Uri"/>.
+        /// </returns>
+        public static Uri Shorten(Uri longUrl)
         {
-            LegacyDatabase.Select q = new LegacyDatabase.Select("suc_shorturl");
+            var q = new LegacyDatabase.Select("suc_shorturl");
             q.SetFrom("shorturlcache");
             q.AddWhere(new LegacyDatabase.WhereConds("suc_fullurl", longUrl.ToString()));
             string cachelookup = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
-            if (cachelookup == "")
+            if (cachelookup == string.Empty)
             {
                 try
                 {
-                    string shorturl = getShortUrl(longUrl);
-                    LegacyDatabase.Singleton().Insert("shorturlcache", "", longUrl.ToString(), shorturl);
+                    string shorturl = GetShortUrl(longUrl);
+                    LegacyDatabase.Singleton().Insert("shorturlcache", string.Empty, longUrl.ToString(), shorturl);
                     return new Uri(shorturl);
                 }
-                catch(WebException ex)
+                catch (WebException ex)
                 {
                     ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
                     return longUrl;
@@ -71,19 +77,34 @@ namespace Helpmebot
             return new Uri(cachelookup);
         }
 
-        private static string getShortUrl(Uri longUrl)
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The get short url.
+        /// </summary>
+        /// <param name="longUrl">
+        /// The long url.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private static string GetShortUrl(Uri longUrl)
         {
-            HttpWebRequest wrq = (HttpWebRequest) WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
+            var wrq = (HttpWebRequest)WebRequest.Create("http://is.gd/api.php?longurl=" + longUrl);
             wrq.UserAgent = LegacyConfig.Singleton()["useragent"];
-            HttpWebResponse wrs = (HttpWebResponse) wrq.GetResponse();
+            var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {
-                StreamReader sr = new StreamReader(wrs.GetResponseStream());
+                var sr = new StreamReader(wrs.GetResponseStream());
                 string shorturl = sr.ReadLine();
                 return shorturl;
             }
-            
+
             throw new WebException();
         }
+
+        #endregion
     }
 }

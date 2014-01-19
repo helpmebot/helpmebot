@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
             string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
             XmlTextReader mlreader =
-                new XmlTextReader(HttpRequest.get(api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
+                new XmlTextReader(HttpRequest.Get(api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
             do
             {
                 mlreader.Read();

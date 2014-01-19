@@ -77,7 +77,7 @@ namespace helpmebot6.Commands
             username = HttpUtility.UrlEncode(username);
 
             XPathDocument xpd =
-                new XPathDocument(HttpRequest.get("http://accounts.wmflabs.org/api.php?action=stats&user=" + username));
+                new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=stats&user=" + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
 

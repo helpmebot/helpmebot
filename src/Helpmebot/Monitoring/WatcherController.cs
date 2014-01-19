@@ -467,7 +467,7 @@ namespace Helpmebot.Monitoring
                         try
                         {
                             var uri = new Uri(LegacyConfig.Singleton()["wikiUrl"] + item);
-                            listString += IsGd.shorten(uri).ToString();
+                            listString += IsGd.Shorten(uri).ToString();
                         }
                         catch (UriFormatException ex)
                         {

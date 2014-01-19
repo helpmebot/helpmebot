@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Category watcher thread
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Monitoring
 {
     using System;
@@ -36,39 +32,40 @@ namespace Helpmebot.Monitoring
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    /// Category watcher thread
+    ///     Category watcher thread
     /// </summary>
     public class CategoryWatcher : IThreadedSystem
     {
-        /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
+        #region Fields
 
         /// <summary>
-        /// The site.
-        /// </summary>
-        private readonly string site;
-
-        /// <summary>
-        /// The category.
+        ///     The category.
         /// </summary>
         private readonly string category;
 
         /// <summary>
-        /// The key.
+        ///     The key.
         /// </summary>
         private readonly string key;
 
         /// <summary>
-        /// The watcher thread.
+        ///     The site.
+        /// </summary>
+        private readonly string site;
+
+        /// <summary>
+        ///     The sleep time.
+        /// </summary>
+        private int sleepTime = 180;
+
+        /// <summary>
+        ///     The watcher thread.
         /// </summary>
         private Thread watcherThread;
 
-        /// <summary>
-        /// The sleep time.
-        /// </summary>
-        private int sleepTime = 180;
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="CategoryWatcher"/> class.
@@ -90,7 +87,7 @@ namespace Helpmebot.Monitoring
             // look up site id
             string baseWiki = LegacyConfig.Singleton()["baseWiki"];
 
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
+            var q = new LegacyDatabase.Select("site_api");
             q.SetFrom("site");
             q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
             this.site = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
@@ -105,18 +102,31 @@ namespace Helpmebot.Monitoring
             this.watcherThread.Start();
         }
 
+        #endregion
+
+        #region Public Events
+
         /// <summary>
-        /// The category has items event.
+        ///     The category has items event.
         /// </summary>
         public event EventHandler<CategoryHasItemsEventArgs> CategoryHasItemsEvent;
 
         /// <summary>
-        /// The thread fatal error event.
+        ///     The thread fatal error event.
         /// </summary>
         public event EventHandler ThreadFatalErrorEvent;
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
-        ///  Gets or sets the time to sleep, in seconds.
+        ///     Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the time to sleep, in seconds.
         /// </summary>
         public int SleepTime
         {
@@ -128,7 +138,7 @@ namespace Helpmebot.Monitoring
             set
             {
                 this.sleepTime = value;
-                Log.Info("Restarting watcher...");
+                this.Log.Info("Restarting watcher...");
                 this.watcherThread.Abort();
                 Thread.Sleep(500);
                 this.watcherThread = new Thread(this.WatcherThreadMethod);
@@ -136,67 +146,32 @@ namespace Helpmebot.Monitoring
             }
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        ///     Does the category check.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return this.key;
-        }
-
-        /// <summary>
-        /// The register instance.
-        /// </summary>
-        public void RegisterInstance()
-        {
-            ThreadList.GetInstance().Register(this);
-        }
-
-        /// <summary>
-        /// The stop.
-        /// </summary>
-        public void Stop()
-        {
-            Log.Info("Stopping Watcher Thread for " + this.category + " ...");
-            this.watcherThread.Abort();
-        }
-
-        /// <summary>
-        /// The get thread status.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public string[] GetThreadStatus()
-        {
-            string[] statuses = { this.key + " " + this.watcherThread.ThreadState };
-            return statuses;
-        }
-
-        /// <summary>
-        /// Does the category check.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        ///     The <see cref="IEnumerable" />.
         /// </returns>
         public IEnumerable<string> DoCategoryCheck()
         {
-            Log.Info("Getting items in category " + this.key);
-            List<string> pages = new List<string>();
+            this.Log.Info("Getting items in category " + this.key);
+            var pages = new List<string>();
             try
             {
                 // Create the XML Reader
-                XmlTextReader xmlreader =
+                var xmlreader =
                     new XmlTextReader(
-                        HttpRequest.get(this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle=" +
-                                        this.category))
-                    {
-                        // Disable whitespace so that you don't have to read over whitespaces
-                        WhitespaceHandling = WhitespaceHandling.None
-                    };
+                        HttpRequest.Get(
+                            this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
+                            + this.category))
+                        {
+                            // Disable whitespace so that you don't have to read over whitespaces
+                            WhitespaceHandling = WhitespaceHandling.None
+                        };
 
                 // read the xml declaration and advance to api tag
                 xmlreader.Read();
@@ -231,13 +206,57 @@ namespace Helpmebot.Monitoring
             }
             catch (Exception ex)
             {
-                Log.Error("Error contacting API (" + this.site + ") ", ex);
+                this.Log.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
             pages = RemoveBlacklistedItems(pages);
 
             return pages;
         }
+
+        /// <summary>
+        ///     The get thread status.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="string" />.
+        /// </returns>
+        public string[] GetThreadStatus()
+        {
+            string[] statuses = { this.key + " " + this.watcherThread.ThreadState };
+            return statuses;
+        }
+
+        /// <summary>
+        ///     The register instance.
+        /// </summary>
+        public void RegisterInstance()
+        {
+            ThreadList.GetInstance().Register(this);
+        }
+
+        /// <summary>
+        ///     The stop.
+        /// </summary>
+        public void Stop()
+        {
+            this.Log.Info("Stopping Watcher Thread for " + this.category + " ...");
+            this.watcherThread.Abort();
+        }
+
+        /// <summary>
+        ///     Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.key;
+        }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The remove blacklisted items.
@@ -250,7 +269,7 @@ namespace Helpmebot.Monitoring
         /// </returns>
         private static List<string> RemoveBlacklistedItems(List<string> pageList)
         {
-            LegacyDatabase.Select q = new LegacyDatabase.Select("ip_title");
+            var q = new LegacyDatabase.Select("ip_title");
             q.SetFrom("ignoredpages");
             ArrayList blacklist = LegacyDatabase.Singleton().ExecuteSelect(q);
 
@@ -266,11 +285,11 @@ namespace Helpmebot.Monitoring
         }
 
         /// <summary>
-        /// The watcher thread method.
+        ///     The watcher thread method.
         /// </summary>
         private void WatcherThreadMethod()
         {
-            Log.Info("Starting category watcher for '" + this.key + "'...");
+            this.Log.Info("Starting category watcher for '" + this.key + "'...");
             try
             {
                 while (true)
@@ -292,7 +311,9 @@ namespace Helpmebot.Monitoring
                 }
             }
 
-            Log.Warn("Category watcher for '" + this.key + "' died.");
+            this.Log.Warn("Category watcher for '" + this.key + "' died.");
         }
+
+        #endregion
     }
 }

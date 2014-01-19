@@ -78,7 +78,7 @@ namespace helpmebot6.Commands
             int rightsCount = 0;
             XmlTextReader creader =
                 new XmlTextReader(
-                    HttpRequest.get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
+                    HttpRequest.Get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
             do
             {
                 creader.Read();
@@ -140,7 +140,7 @@ namespace helpmebot6.Commands
                 message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
-            crh.respond(message);
+            crh.Respond(message);
             return crh;
         }
     }

@@ -59,8 +59,8 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            string cmd = GlobalFunctions.popFromFront(ref args);
-            string dst = GlobalFunctions.popFromFront(ref args);
+            string cmd = GlobalFunctions.PopFromFront(ref args);
+            string dst = GlobalFunctions.PopFromFront(ref args);
 
             Helpmebot6.irc.IrcPrivmsg(dst, string.Join(" ", args).SetupForCtcp(cmd));
 

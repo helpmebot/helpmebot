@@ -172,8 +172,8 @@ namespace Helpmebot.Commands
         {
             var response = new CommandResponse
                                {
-                                   destination = CommandResponseDestination.PrivateMessage,
-                                   message = this.MessageService.RetrieveMessage(Messages.OnAccessDenied, this.CommandSource, null)
+                                   Destination = CommandResponseDestination.PrivateMessage,
+                                   Message = this.MessageService.RetrieveMessage(Messages.OnAccessDenied, this.CommandSource, null)
                                };
 
             return response.ToEnumerable();

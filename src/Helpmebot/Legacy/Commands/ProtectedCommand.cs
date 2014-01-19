@@ -65,12 +65,12 @@ namespace helpmebot6.Commands
                      .Save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
             {
                 var errorResponse = new CommandResponseHandler();
-                errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
+                errorResponse.Respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
                 string message = this.MessageService.RetrieveMessage(
                     "AccessDeniedAccessListFailure",
                     this.Channel,
                     null);
-                errorResponse.respond(message, CommandResponseDestination.Default);
+                errorResponse.Respond(message, CommandResponseDestination.Default);
                 return errorResponse;
             }
 

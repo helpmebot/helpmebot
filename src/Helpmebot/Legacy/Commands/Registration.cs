@@ -97,7 +97,7 @@ namespace helpmebot6.Commands
             string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
             XmlTextReader creader =
                 new XmlTextReader(
-                    HttpRequest.get(api + "?action=query&list=users&usprop=registration&format=xml&ususers=" + username));
+                    HttpRequest.Get(api + "?action=query&list=users&usprop=registration&format=xml&ususers=" + username));
             do
             {
                 creader.Read();
@@ -139,7 +139,7 @@ namespace helpmebot6.Commands
                 {
                     string[] messageParams = { userName };
                     string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
-                    crh.respond(message);
+                    crh.Respond(message);
                 }
                 else
                 {
@@ -149,7 +149,7 @@ namespace helpmebot6.Commands
                             registrationDate.ToString("d MMMM yyyy")
                         };
                     string message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters);
-                    crh.respond(message);
+                    crh.Respond(message);
                 }
             }
             else

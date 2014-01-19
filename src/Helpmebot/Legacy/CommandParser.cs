@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   A command parser
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Legacy
 {
     using System;
@@ -43,27 +39,32 @@ namespace Helpmebot.Legacy
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
     /// <summary>
-    /// A command parser
+    ///     A command parser
     /// </summary>
     internal class CommandParser
     {
-        /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
+        #region Constants
 
         /// <summary>
-        /// The message service.
-        /// </summary>
-        private readonly IMessageService messageService;
-
-        /// <summary>
-        /// The allowed command name chars.
+        ///     The allowed command name chars.
         /// </summary>
         private const string AllowedCommandNameChars = "0-9a-z-_";
 
+        #endregion
+
+        #region Fields
+
         /// <summary>
-        /// Initialises a new instance of the <see cref="CommandParser"/> class. 
+        ///     The message service.
+        /// </summary>
+        private readonly IMessageService messageService;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        ///     Initialises a new instance of the <see cref="CommandParser" /> class.
         /// </summary>
         public CommandParser()
         {
@@ -74,20 +75,67 @@ namespace Helpmebot.Legacy
             this.OverrideBotSilence = false;
         }
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets a value indicating whether [override bot silence].
+        ///     Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [override bot silence].
         /// </summary>
         /// <value><c>true</c> if [override bot silence]; otherwise, <c>false</c>.</value>
         public bool OverrideBotSilence { get; set; }
 
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// Tests against recognised message formats
+        /// </summary>
+        /// <param name="message">
+        /// the message received
+        /// </param>
+        /// <param name="overrideSilence">
+        /// ref: whether this message format overrides any imposed silence
+        /// </param>
+        /// <returns>
+        /// true if the message is in a recognised format
+        /// </returns>
+        /// <remarks>
+        /// Allowed formats:
+        ///     !command
+        ///     !helpmebot command
+        ///     Helpmebot: command
+        ///     Helpmebot command
+        ///     Helpmebot, command
+        ///     Helpmebot&gt; command
+        /// </remarks>
+        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence)
+        {
+            return ParseRawLineForMessage(ref message, Helpmebot6.irc.Nickname, Helpmebot6.Trigger);
+        }
+
         /// <summary>
         /// Handles the command.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="destination">The destination.</param>
-        /// <param name="command">The command.</param>
-        /// <param name="args">The args.</param>
-        public void handleCommand(LegacyUser source, string destination, string command, string[] args)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        public void HandleCommand(LegacyUser source, string destination, string command, string[] args)
         {
             this.Log.Debug("Handling recieved message...");
 
@@ -110,7 +158,7 @@ namespace Helpmebot.Legacy
             {
                 int argsLength = args.SmartLength();
 
-                string[] newArgs = new string[argsLength + 1];
+                var newArgs = new string[argsLength + 1];
                 int newArrayPos = 1;
                 foreach (string t in args)
                 {
@@ -123,9 +171,10 @@ namespace Helpmebot.Legacy
                 }
 
                 newArgs[0] = command;
-                string directedTo = findRedirection(destination, ref newArgs);
-                CommandResponseHandler crh = new CategoryWatcher(source, destination, newArgs, this.messageService).RunCommand();
-                this.handleCommandResponseHandler(source, destination, directedTo, crh);
+                string directedTo = FindRedirection(ref newArgs);
+                CommandResponseHandler crh =
+                    new CategoryWatcher(source, destination, newArgs, this.messageService).RunCommand();
+                this.HandleCommandResponseHandler(source, destination, directedTo, crh);
                 return;
             }
 
@@ -137,19 +186,22 @@ namespace Helpmebot.Legacy
             // Create a new object which holds the type of the command handler, if it exists.
             // if the command handler doesn't exist, then this won't be set to a value
             Type commandHandler =
-                Type.GetType("helpmebot6.Commands." + command.Substring(0, 1).ToUpper() + command.Substring(1).ToLower());
+                Type.GetType(
+                    "helpmebot6.Commands." + command.Substring(0, 1).ToUpper() + command.Substring(1).ToLower());
 
             // check the type exists
             if (commandHandler != null)
             {
-                string directedTo = findRedirection(destination, ref args);
+                string directedTo = FindRedirection(ref args);
 
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
                 CommandResponseHandler response =
-                    ((GenericCommand)Activator.CreateInstance(commandHandler, source, destination, args, this.messageService)).RunCommand();
-                this.handleCommandResponseHandler(source, destination, directedTo, response);
+                    ((GenericCommand)
+                     Activator.CreateInstance(commandHandler, source, destination, args, this.messageService))
+                        .RunCommand();
+                this.HandleCommandResponseHandler(source, destination, directedTo, response);
                 return;
             }
 
@@ -160,7 +212,7 @@ namespace Helpmebot.Legacy
                 // TODO: remove me
                 var keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
 
-                var keyword = keywordService.Get(command);
+                Keyword keyword = keywordService.Get(command);
 
                 var crh = new CommandResponseHandler();
                 string directedTo = string.Empty;
@@ -170,13 +222,13 @@ namespace Helpmebot.Legacy
                     {
                         this.Log.InfoFormat("Access denied for keyword retrieval for {0}", source);
 
-                        crh.respond(
-                            this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null),
+                        crh.Respond(
+                            this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null), 
                             CommandResponseDestination.PrivateMessage);
 
                         string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
-                        crh.respond(
-                            this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
+                        crh.Respond(
+                            this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments), 
                             CommandResponseDestination.ChannelDebug);
                     }
                     else
@@ -201,69 +253,122 @@ namespace Helpmebot.Legacy
 
                         if (keyword.Action)
                         {
-                            crh.respond(wordResponse.SetupForCtcp("ACTION"));
+                            crh.Respond(wordResponse.SetupForCtcp("ACTION"));
                         }
                         else
                         {
-                            directedTo = findRedirection(destination, ref args);
-                            crh.respond(wordResponse);
+                            directedTo = FindRedirection(ref args);
+                            crh.Respond(wordResponse);
                         }
 
-                        this.handleCommandResponseHandler(source, destination, directedTo, crh);
+                        this.HandleCommandResponseHandler(source, destination, directedTo, crh);
                     }
                 }
             }
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Finds the redirection.
         /// </summary>
-        /// <param name="destination">The destination.</param>
-        /// <param name="args">The args.</param>
-        /// <returns></returns>
-        private static string findRedirection(string destination, ref string[] args)
+        /// <param name="args">
+        /// The args.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private static string FindRedirection(ref string[] args)
         {
-            var directedTo = string.Empty;
-            
+            string directedTo = string.Empty;
+
             foreach (string arg in args.Where(x => x.StartsWith(">")))
-            {                
+            {
                 directedTo = arg.Substring(1);
 
-                GlobalFunctions.removeItemFromArray(arg, ref args);
+                GlobalFunctions.RemoveItemFromArray(arg, ref args);
             }
-            
+
             return directedTo;
+        }
+
+        /// <summary>
+        /// The parse raw line for message.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        /// <param name="nickname">
+        /// The nickname.
+        /// </param>
+        /// <param name="trigger">
+        /// The trigger.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        private static bool ParseRawLineForMessage(ref string message, string nickname, string trigger)
+        {
+            var validCommand =
+                new Regex(
+                    @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() + @") )?(?<cmd>["
+                    + AllowedCommandNameChars + "]+)|(?<botname>" + nickname.ToLower() + @")[ ,>:](?: )?(?<cmd>["
+                    + AllowedCommandNameChars + "]+))(?: )?(?<args>.*?)(?:\r)?$");
+
+            Match m = validCommand.Match(message);
+
+            if (m.Length > 0)
+            {
+                message = m.Groups["cmd"].Value
+                          + (m.Groups["args"].Length > 0 ? " " + m.Groups["args"].Value : string.Empty);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Handles the command response handler.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="destination">The destination.</param>
-        /// <param name="directedTo">The directed to.</param>
-        /// <param name="response">The response.</param>
-        private void handleCommandResponseHandler(LegacyUser source, string destination, string directedTo,
-                                                  CommandResponseHandler response)
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="directedTo">
+        /// The directed to.
+        /// </param>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        private void HandleCommandResponseHandler(
+            LegacyUser source, 
+            string destination, 
+            string directedTo, 
+            CommandResponseHandler response)
         {
             if (response != null)
             {
-                foreach (CommandResponse item in response.getResponses())
+                foreach (CommandResponse item in response.GetResponses())
                 {
-                    string message = item.message;
+                    string message = item.Message;
 
-                    if (directedTo != String.Empty)
+                    if (directedTo != string.Empty)
                     {
                         message = directedTo + ": " + message;
                     }
 
-                    switch (item.destination)
+                    switch (item.Destination)
                     {
                         case CommandResponseDestination.Default:
-                            if (this.OverrideBotSilence ||
-                                LegacyConfig.Singleton()["silence",destination] != "true")
+                            if (this.OverrideBotSilence || LegacyConfig.Singleton()["silence", destination] != "true")
                             {
                                 Helpmebot6.irc.IrcPrivmsg(destination, message);
                             }
+
                             break;
                         case CommandResponseDestination.ChannelDebug:
                             Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, message);
@@ -276,44 +381,6 @@ namespace Helpmebot.Legacy
             }
         }
 
-        /// <summary>
-        ///   Tests against recognised message formats
-        /// </summary>
-        /// <param name = "message">the message recieved</param>
-        /// <param name = "overrideSilence">ref: whether this message format overrides any imposed silence</param>
-        /// <returns>true if the message is in a recognised format</returns>
-        /// <remarks>
-        ///   Allowed formats:
-        ///   !command
-        ///   !helpmebot command
-        ///   Helpmebot: command
-        ///   Helpmebot command
-        ///   Helpmebot, command
-        ///   Helpmebot> command
-        /// </remarks>
-        public static bool isRecognisedMessage(ref string message, ref bool overrideSilence)
-        {
-            return parseRawLineForMessage(ref message, Helpmebot6.irc.Nickname, Helpmebot6.Trigger);
-        }
-
-        private static bool parseRawLineForMessage(ref string message, string nickname, string trigger)
-        {
-            Regex validCommand =
-                new Regex(
-                    @"^(?:" + trigger + @"(?:(?<botname>" + nickname.ToLower() +
-                    @") )?(?<cmd>[" + AllowedCommandNameChars + "]+)|(?<botname>" + nickname.ToLower() +
-                    @")[ ,>:](?: )?(?<cmd>[" + AllowedCommandNameChars + "]+))(?: )?(?<args>.*?)(?:\r)?$");
-
-            Match m = validCommand.Match(message);
-
-            if( m.Length > 0 )
-            {
-                message = m.Groups[ "cmd" ].Value +
-                          ( m.Groups[ "args" ].Length > 0 ? " " + m.Groups[ "args" ].Value : string.Empty );
-                return true;
-            }
-
-            return false;
-        }
+        #endregion
     }
 }

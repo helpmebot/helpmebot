@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Nagios monitoring service
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Monitoring
 {
     using System;
@@ -29,54 +25,125 @@ namespace Helpmebot.Monitoring
     using Helpmebot.Threading;
 
     /// <summary>
-    /// Nagios monitoring service
+    /// Monitoring service
     /// </summary>
     internal class MonitorService : IThreadedSystem
     {
-        private readonly TcpListener _service;
-
-        private bool _alive;
-
-        private readonly Thread _monitorthread;
-
-        private readonly string _message;
+        #region Fields
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MonitorService"/> class.
+        /// The _message.
         /// </summary>
-        /// <param name="port">The port.</param>
-        /// <param name="message">The message.</param>
+        private readonly string message;
+
+        /// <summary>
+        /// The _monitor thread.
+        /// </summary>
+        private readonly Thread monitorthread;
+
+        /// <summary>
+        /// The _service.
+        /// </summary>
+        private readonly TcpListener service;
+
+        /// <summary>
+        /// The _alive.
+        /// </summary>
+        private bool alive;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="MonitorService"/> class. 
+        /// </summary>
+        /// <param name="port">
+        /// The port.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         public MonitorService(int port, string message)
         {
-            this._monitorthread = new Thread(this.threadMethod);
+            this.monitorthread = new Thread(this.ThreadMethod);
 
-            this._message = message;
+            this.message = message;
 
-            this._service = new TcpListener(IPAddress.Any, port);
+            this.service = new TcpListener(IPAddress.Any, port);
             this.RegisterInstance();
-            this._monitorthread.Start();
+            this.monitorthread.Start();
         }
 
-        private void threadMethod()
+        #endregion
+
+        #region Public Events
+
+        /// <summary>
+        /// The thread fatal error event.
+        /// </summary>
+        public event EventHandler ThreadFatalErrorEvent;
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The get thread status.
+        /// </summary>
+        /// <returns>
+        /// The thread status.
+        /// </returns>
+        public string[] GetThreadStatus()
+        {
+            string[] status = { "NagiosMonitor thread: " + this.monitorthread.ThreadState };
+            return status;
+        }
+
+        /// <summary>
+        /// The register instance.
+        /// </summary>
+        public void RegisterInstance()
+        {
+            ThreadList.GetInstance().Register(this);
+        }
+
+        /// <summary>
+        ///     Stop all threads in this instance to allow for a clean shutdown.
+        /// </summary>
+        public void Stop()
+        {
+            this.service.Stop();
+            this.alive = false;
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The thread method.
+        /// </summary>
+        private void ThreadMethod()
         {
             try
             {
-                this._alive = true;
-                this._service.Start();
+                this.alive = true;
+                this.service.Start();
 
-                while (this._alive)
+                while (this.alive)
                 {
-                    if (!this._service.Pending())
+                    if (!this.service.Pending())
                     {
                         Thread.Sleep(10);
                         continue;
                     }
 
-                    TcpClient client = this._service.AcceptTcpClient();
+                    TcpClient client = this.service.AcceptTcpClient();
 
-                    StreamWriter sw = new StreamWriter(client.GetStream());
+                    var sw = new StreamWriter(client.GetStream());
 
-                    sw.WriteLine(this._message);
+                    sw.WriteLine(this.message);
                     sw.Flush();
                     client.Close();
                 }
@@ -90,30 +157,6 @@ namespace Helpmebot.Monitoring
                 this.ThreadFatalErrorEvent(this, new EventArgs());
             }
         }
-
-        /// <summary>
-        /// Stop all threads in this instance to allow for a clean shutdown.
-        /// </summary>
-        public void Stop()
-        {
-            this._service.Stop();
-            this._alive = false;
-        }
-
-        #region IThreadedSystem Members
-
-        public void RegisterInstance()
-        {
-            ThreadList.GetInstance().Register(this);
-        }
-
-        public string[] GetThreadStatus()
-        {
-            string[] status = {"NagiosMonitor thread: " + this._monitorthread.ThreadState};
-            return status;
-        }
-
-        public event EventHandler ThreadFatalErrorEvent;
 
         #endregion
     }

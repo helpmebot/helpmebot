@@ -60,7 +60,7 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh = new CommandResponseHandler();
             foreach (string item in statuses)
             {
-                crh.respond(item);
+                crh.Respond(item);
             }
 
             return crh;

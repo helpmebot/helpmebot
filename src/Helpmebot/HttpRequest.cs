@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the HttpRequest type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot
 {
     using System.IO;
@@ -25,22 +21,35 @@ namespace Helpmebot
 
     using Helpmebot.Legacy.Configuration;
 
+    /// <summary>
+    /// The http request.
+    /// </summary>
     internal static class HttpRequest
     {
+        #region Public Methods and Operators
+
         /// <summary>
         /// Gets the specified URI, passing the UserAgent.
         /// </summary>
-        /// <param name="uri">The URI.</param>
-        /// <param name="timeout">optional. will default to httpTimeout config option </param>
-        /// <returns></returns>
-        public static Stream get(string uri, int timeout = -1)
+        /// <param name="uri">
+        /// The URI.
+        /// </param>
+        /// <param name="timeout">
+        /// optional. will default to httpTimeout config option 
+        /// </param>
+        /// <returns>
+        /// The <see cref="Stream"/>.
+        /// </returns>
+        public static Stream Get(string uri, int timeout = -1)
         {
-            HttpWebRequest hwr = (HttpWebRequest) WebRequest.Create(uri);
+            var hwr = (HttpWebRequest)WebRequest.Create(uri);
             hwr.UserAgent = LegacyConfig.Singleton()["useragent"];
             hwr.Timeout = timeout == -1 ? int.Parse(LegacyConfig.Singleton()["httpTimeout"]) : timeout;
-            HttpWebResponse resp = (HttpWebResponse) hwr.GetResponse();
+            var resp = (HttpWebResponse)hwr.GetResponse();
 
             return resp.GetResponseStream();
         }
+
+        #endregion
     }
 }

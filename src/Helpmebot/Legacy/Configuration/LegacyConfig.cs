@@ -194,19 +194,19 @@ namespace Helpmebot.Legacy.Configuration
                         throw new ArgumentOutOfRangeException();
                     }
 
-                    if (setting.isValid())
+                    if (setting.IsValid())
                     {
-                        return setting.value;
+                        return setting.Value;
                     }
 
                     // option cache is not valid
                     // fetch new item from database
                     string optionValue1 = this.RetrieveOptionFromDatabase(optionName);
 
-                    setting.value = optionValue1;
+                    setting.Value = optionValue1;
                     this.configurationCache.Remove(optionName);
                     this.configurationCache.Add(optionName, setting);
-                    return setting.value;
+                    return setting.Value;
                 }
             }
 

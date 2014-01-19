@@ -111,18 +111,17 @@ namespace helpmebot6.Commands
                                     break;
                             }
 
-                            crh = AddAccessEntry(LegacyUser.NewFromString(this.Arguments[1]), aL);
+                            crh = this.AddAccessEntry(LegacyUser.NewFromString(this.Arguments[1]), aL);
                         }
                         else
                         {
-                            string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString() };
+                            string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
                             return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
-
                         }
 
                         break;
                     case "del":
-                        crh = DeleteAccessEntry(int.Parse(this.Arguments[1]));
+                        crh = this.DeleteAccessEntry(int.Parse(this.Arguments[1]));
                         break;
                 }
 
@@ -134,7 +133,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = { "access", "2", this.Arguments.Length.ToString() };
+                string[] messageParameters = { "access", "2", this.Arguments.Length.ToString(CultureInfo.InstalledUICulture) };
                 return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
             }
 

@@ -70,7 +70,7 @@ namespace helpmebot6.Commands
 
             if (this.Arguments.Length == 0)
             {
-                response.respond(this.MessageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
+                response.Respond(this.MessageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
                 return response;
             }
 
@@ -84,7 +84,7 @@ namespace helpmebot6.Commands
             {
                 case "enable":
                 case "disable":
-                    response.respond(
+                    response.Respond(
                         this.MessageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
                         CommandResponseDestination.PrivateMessage);
                     break;
@@ -99,7 +99,7 @@ namespace helpmebot6.Commands
                                           };
                     repository.Save(welcomeUser);
 
-                    response.respond(this.MessageService.Done(this.Channel));
+                    response.Respond(this.MessageService.Done(this.Channel));
                     break;
                 case "del":
                 case "Delete":
@@ -120,11 +120,11 @@ namespace helpmebot6.Commands
 
                     this.Log.Debug("All done, cleaning up and sending message to IRC");
 
-                    response.respond(this.MessageService.Done(this.Channel));
+                    response.Respond(this.MessageService.Done(this.Channel));
                     break;
                 case "list":
                     var welcomeForChannel = repository.GetWelcomeForChannel(this.Channel);
-                    welcomeForChannel.ForEach(x => response.respond(x.Host));
+                    welcomeForChannel.ForEach(x => response.Respond(x.Host));
                     break;
             }
             

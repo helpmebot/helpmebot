@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Holds the block information of a specific user
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Model
 {
     using Helpmebot.Services.Interfaces;
@@ -25,83 +21,115 @@ namespace Helpmebot.Model
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    /// Holds the block information of a specific user
+    ///     Holds the block information of a specific user
     /// </summary>
     public struct BlockInformation
     {
-        private string id;
-
-        public string target;
-
-        public string blockedBy;
-
-        public string blockReason;
-
-        public string expiry;
-
-        public string start;
-
-        public bool nocreate;
-
-        public bool autoblock;
-
-        public bool noemail;
-
-        public bool allowusertalk;
-
-        public string Id
-        {
-            get
-            {
-                return this.id;
-            }
-            set
-            {
-                this.id = value;
-            }
-        }
+        #region Fields
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this block.
+        /// The allow user talk.
+        /// </summary>
+        public bool AllowUserTalk;
+
+        /// <summary>
+        /// The auto-block.
+        /// </summary>
+        public bool AutoBlock;
+
+        /// <summary>
+        /// The block reason.
+        /// </summary>
+        public string BlockReason;
+
+        /// <summary>
+        /// The blocked by.
+        /// </summary>
+        public string BlockedBy;
+
+        /// <summary>
+        /// The expiry.
+        /// </summary>
+        public string Expiry;
+
+        /// <summary>
+        /// The no create.
+        /// </summary>
+        public bool NoCreate;
+
+        /// <summary>
+        /// The no email.
+        /// </summary>
+        public bool NoEmail;
+
+        /// <summary>
+        /// The start.
+        /// </summary>
+        public string Start;
+
+        /// <summary>
+        /// The target.
+        /// </summary>
+        public string Target;
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        public string Id { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     Returns a <see cref="System.String" /> that represents this block.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this block.
+        ///     A <see cref="System.String" /> that represents this block.
         /// </returns>
         /// <remarks>
-        /// TODO: fixes for context, localisation, etc,
+        ///     TODO: fixes for context, localisation, etc,
         /// </remarks>
         public override string ToString()
         {
             var ms = ServiceLocator.Current.GetInstance<IMessageService>();
 
-            string[] emptyMessageParams = { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+            string[] emptyMessageParams =
+                {
+                    string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, 
+                    string.Empty, string.Empty
+                };
             string emptyMessage = ms.RetrieveMessage("blockInfoShort", null, emptyMessageParams);
 
             string info = string.Empty;
 
-            if (this.nocreate)
+            if (this.NoCreate)
             {
                 info += "NOCREATE ";
             }
 
-            if (this.autoblock)
+            if (this.AutoBlock)
             {
                 info += "AUTOBLOCK ";
             }
 
-            if (this.noemail)
+            if (this.NoEmail)
             {
                 info += "NOEMAIL ";
             }
 
-            if (this.allowusertalk)
+            if (this.AllowUserTalk)
             {
                 info += "ALLOWUSERTALK ";
             }
 
             string[] messageParams =
                 {
-                    this.Id, this.target, this.blockedBy, this.expiry, this.start, this.blockReason,
+                    this.Id, this.Target, this.BlockedBy, this.Expiry, this.Start, this.BlockReason, 
                     info
                 };
             string message = ms.RetrieveMessage("blockInfoShort", null, messageParams);
@@ -113,5 +141,7 @@ namespace Helpmebot.Model
 
             return message;
         }
+
+        #endregion
     }
 }

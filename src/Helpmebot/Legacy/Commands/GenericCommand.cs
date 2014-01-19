@@ -180,8 +180,8 @@ namespace helpmebot6.Commands
             {
                 var errorResponse = new CommandResponseHandler();
                 var message = this.MessageService.RetrieveMessage("AccessDeniedAccessListFailure", this.Channel, null);
-                errorResponse.respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
-                errorResponse.respond(message, CommandResponseDestination.Default);
+                errorResponse.Respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
+                errorResponse.Respond(message, CommandResponseDestination.Default);
                 return errorResponse;
             }
 
@@ -211,11 +211,11 @@ namespace helpmebot6.Commands
 
             string message = this.MessageService.RetrieveMessage("OnAccessDenied", this.Channel, null);
 
-            response.respond(message, CommandResponseDestination.PrivateMessage);
+            response.Respond(message, CommandResponseDestination.PrivateMessage);
             this.Log.Info("Access denied to command.");
             if (!AccessLog.Instance().Save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments, this.AccessLevel)))
             {
-                response.respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
+                response.Respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }
 
             return response;

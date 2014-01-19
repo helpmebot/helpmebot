@@ -82,7 +82,7 @@ namespace helpmebot6.Commands
                 apiParams += "users";
             }
             apiParams += "=" + userName + "&format=xml";
-            XmlTextReader creader = new XmlTextReader(HttpRequest.get(api + apiParams));
+            XmlTextReader creader = new XmlTextReader(HttpRequest.Get(api + apiParams));
 
             while (creader.Name != "blocks")
             {
@@ -98,15 +98,15 @@ namespace helpmebot6.Commands
             BlockInformation bi = new BlockInformation
                                       {
                                           Id = creader.GetAttribute("id"),
-                                          target = creader.GetAttribute("user"),
-                                          blockedBy = creader.GetAttribute("by"),
-                                          start = creader.GetAttribute("timestamp"),
-                                          expiry = creader.GetAttribute("expiry"),
-                                          blockReason = creader.GetAttribute("reason"),
-                                          autoblock = creader.GetAttribute("autoblock") == string.Empty,
-                                          nocreate = creader.GetAttribute("nocreate") == string.Empty,
-                                          noemail = creader.GetAttribute("noemail") == string.Empty,
-                                          allowusertalk =
+                                          Target = creader.GetAttribute("user"),
+                                          BlockedBy = creader.GetAttribute("by"),
+                                          Start = creader.GetAttribute("timestamp"),
+                                          Expiry = creader.GetAttribute("expiry"),
+                                          BlockReason = creader.GetAttribute("reason"),
+                                          AutoBlock = creader.GetAttribute("autoblock") == string.Empty,
+                                          NoCreate = creader.GetAttribute("nocreate") == string.Empty,
+                                          NoEmail = creader.GetAttribute("noemail") == string.Empty,
+                                          AllowUserTalk =
                                               creader.GetAttribute("allowusertalk") == string.Empty
                                       };
 

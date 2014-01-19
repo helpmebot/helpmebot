@@ -93,13 +93,13 @@ namespace helpmebot6.Commands
                 if (args[0].ToLower() == "@long")
                 {
                     useLongInfo = true;
-                    GlobalFunctions.popFromFront(ref args);
+                    GlobalFunctions.PopFromFront(ref args);
                 }
 
                 if (args[0].ToLower() == "@short")
                 {
                     useLongInfo = false;
-                    GlobalFunctions.popFromFront(ref args);
+                    GlobalFunctions.PopFromFront(ref args);
                 }
             }
 
@@ -115,7 +115,7 @@ namespace helpmebot6.Commands
                 if (userInformation.EditCount == -1)
                 {
                     string[] mparams = { userName };
-                    this.response.respond(this.MessageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
+                    this.response.Respond(this.MessageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
                     return this.response;
                 }
 
@@ -278,7 +278,7 @@ namespace helpmebot6.Commands
 
             string message = this.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
 
-            this.response.respond(message);
+            this.response.Respond(message);
         }
 
         /// <summary>
@@ -287,11 +287,11 @@ namespace helpmebot6.Commands
         /// <param name="userInformation">The user information.</param>
         private void SendLongUserInfo(UserInformation userInformation)
         {
-            this.response.respond(userInformation.UserPage);
-            this.response.respond(userInformation.TalkPage);
-            this.response.respond(userInformation.UserContributions);
-            this.response.respond(userInformation.UserBlockLog);
-            this.response.respond(userInformation.BlockInformation);
+            this.response.Respond(userInformation.UserPage);
+            this.response.Respond(userInformation.TalkPage);
+            this.response.Respond(userInformation.UserContributions);
+            this.response.Respond(userInformation.UserBlockLog);
+            this.response.Respond(userInformation.BlockInformation);
             string message;
             if (userInformation.UserGroups != string.Empty)
             {
@@ -304,11 +304,11 @@ namespace helpmebot6.Commands
                 message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
-            this.response.respond(message);
+            this.response.Respond(message);
 
             string[] messageParameters2 = { userInformation.EditCount.ToString(), userInformation.UserName };
             message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
-            this.response.respond(message);
+            this.response.Respond(message);
 
             string[] messageParameters3 =
                 {
@@ -317,10 +317,10 @@ namespace helpmebot6.Commands
                     userInformation.RegistrationDate.ToString("d MMMM yyyy")
                 };
             message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
-            this.response.respond(message);
+            this.response.Respond(message);
             string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString() };
             message = this.MessageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
-            this.response.respond(message);
+            this.response.Respond(message);
         }
 
         /// <summary>

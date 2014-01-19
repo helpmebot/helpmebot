@@ -80,7 +80,7 @@ namespace helpmebot6.Commands
 
             XPathDocument xpd =
                 new XPathDocument(
-                    HttpRequest.get("http://accounts.wmflabs.org/api.php?action=count&user=" + username));
+                    HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=count&user=" + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
 

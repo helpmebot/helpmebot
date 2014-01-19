@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
                 return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
-            return new CommandResponseHandler(IsGd.shorten(new Uri(this.Arguments[0])).ToString());
+            return new CommandResponseHandler(IsGd.Shorten(new Uri(this.Arguments[0])).ToString());
         }
     }
 }

@@ -62,7 +62,7 @@ namespace helpmebot6.Commands
         {
             // TODO: link to basewiki
             Stream rawDataStream =
-                HttpRequest.get(
+                HttpRequest.Get(
                     "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
                     + string.Join(" ", this.Arguments));
 
@@ -123,11 +123,11 @@ namespace helpmebot6.Commands
             if (redirects != null)
             {
                 string[] redirArgs = { redirects, title };
-                crh.respond(this.MessageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
+                crh.Respond(this.MessageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
             }
 
             string[] margs = { title, user, touched.ToString(), comment, size };
-            crh.respond(this.MessageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
+            crh.Respond(this.MessageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
 
             foreach (PageProtection p in protection)
             {
@@ -136,7 +136,7 @@ namespace helpmebot6.Commands
                         title, p.Type, p.Level,
                         p.Expiry == DateTime.MaxValue ? "infinity" : p.Expiry.ToString()
                     };
-                crh.respond(this.MessageService.RetrieveMessage("pageProtected", this.Channel, pargs));
+                crh.Respond(this.MessageService.RetrieveMessage("pageProtected", this.Channel, pargs));
             }
 
             return crh;

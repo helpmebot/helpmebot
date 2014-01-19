@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
             string[] args = this.Arguments;
             if (args.Contains("@cats"))
             {
-                GlobalFunctions.removeItemFromArray("@cats", ref args);
+                GlobalFunctions.RemoveItemFromArray("@cats", ref args);
                 string listSep = this.MessageService.RetrieveMessage("listSeparator", this.Channel, null);
                 string list = this.MessageService.RetrieveMessage("allCategoryCodes", this.Channel, null);
                 foreach (string item in kc)
@@ -73,13 +73,13 @@ namespace helpmebot6.Commands
                     list += listSep;
                 }
 
-                crh.respond(list.TrimEnd(listSep.ToCharArray()));
+                crh.Respond(list.TrimEnd(listSep.ToCharArray()));
             }
             else
             {
                 foreach (string key in kc)
                 {
-                    crh.respond(WatcherController.Instance().ForceUpdate(key, this.Channel), CommandResponseDestination.PrivateMessage);
+                    crh.Respond(WatcherController.Instance().ForceUpdate(key, this.Channel), CommandResponseDestination.PrivateMessage);
                 }
             }
             
