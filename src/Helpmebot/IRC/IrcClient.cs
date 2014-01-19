@@ -815,7 +815,12 @@ namespace Helpmebot.IRC
 
                 lock (this.userOperationLock)
                 {
-                    this.Channels[channelName].Users.Add(user.Nickname, new IrcChannelUser((IrcUser)user, channelName));
+                    if (!this.Channels[channelName].Users.ContainsKey(user.Nickname))
+                    {
+                        this.Channels[channelName].Users.Add(
+                            user.Nickname,
+                            new IrcChannelUser((IrcUser)user, channelName));
+                    }
                 }
 
                 EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;

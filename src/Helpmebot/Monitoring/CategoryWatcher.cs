@@ -198,7 +198,11 @@ namespace Helpmebot.Monitoring
 
                     // Get the title Attribute Value
                     string titleAttribute = xmlreader.GetAttribute("title");
-                    pages.Add(titleAttribute);
+
+                    if (!pages.Contains(titleAttribute))
+                    {
+                        pages.Add(titleAttribute);
+                    }
                 }
 
                 // close the reader
