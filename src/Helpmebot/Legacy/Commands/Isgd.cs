@@ -20,18 +20,27 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
+    using System.Globalization;
+    using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Shortens a URL
     /// </summary>
     internal class Isgd : GenericCommand
     {
+        /// <summary>
+        /// The shortening service.
+        /// </summary>
+        private readonly IUrlShorteningService shortener;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Isgd"/> class.
         /// </summary>
@@ -50,6 +59,8 @@ namespace helpmebot6.Commands
         public Isgd(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
+            // FIXME: remove service locator;
+            this.shortener = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
         }
 
         /// <summary>
@@ -60,11 +71,16 @@ namespace helpmebot6.Commands
         {
             if (this.Arguments.Length == 0)
             {
-                string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString() };
+                string[] messageParameters = { "isgd", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
                 return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
-            return new CommandResponseHandler(IsGd.Shorten(new Uri(this.Arguments[0])).ToString());
+            // shorten the urls
+            var shortUrls = this.Arguments.Select(this.shortener.Shorten);
+
+            // construct the message
+            var message = shortUrls.Implode();
+            return new CommandResponseHandler(message);
         }
     }
 }

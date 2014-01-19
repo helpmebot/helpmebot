@@ -125,6 +125,7 @@
     <Compile Include="Model\Keyword.cs" />
     <Compile Include="Model\Messages.cs" />
     <Compile Include="Model\Notification.cs" />
+    <Compile Include="Model\ShortUrlCacheEntry.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
     <Compile Include="Persistence\Mappings\KeywordMap.cs" />
     <Compile Include="Persistence\Mappings\NotificationMap.cs" />
+    <Compile Include="Persistence\Mappings\ShortUrlCacheEntryMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
@@ -149,9 +151,11 @@
     <Compile Include="IRC\Messages\IMessage.cs" />
     <Compile Include="IRC\Messages\Message.cs" />
     <Compile Include="IRC\NetworkClient.cs" />
+    <Compile Include="Repositories\Interfaces\IShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\KeywordRepository.cs" />
     <Compile Include="Repositories\NotificationRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Repositories\WelcomeUserRepository.cs" />
     <Compile Include="Services\AccessLogService.cs" />
@@ -159,6 +163,7 @@
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
+    <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\UserFlagService.cs" />
@@ -247,7 +252,7 @@
     <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
-    <Compile Include="IsGd.cs" />
+    <Compile Include="Services\UrlShorteningService.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="Legacy\CommandParser.cs" />

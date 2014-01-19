@@ -32,6 +32,7 @@ namespace Helpmebot.Monitoring
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
+    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
@@ -59,14 +60,20 @@ namespace Helpmebot.Monitoring
         private readonly IMessageService messageService;
 
         /// <summary>
+        /// The url shortening service.
+        /// </summary>
+        private readonly IUrlShorteningService urlShorteningService;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="WatcherController"/> class.
         /// </summary>
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        protected WatcherController(IMessageService messageService)
+        protected WatcherController(IMessageService messageService, IUrlShorteningService urlShorteningService)
         {
             this.messageService = messageService;
+            this.urlShorteningService = urlShorteningService;
             this.watchers = new Dictionary<string, CategoryWatcher>();
 
             var q = new LegacyDatabase.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
@@ -104,8 +111,11 @@ namespace Helpmebot.Monitoring
         {
             if (instance == null)
             {
-                var ms = ServiceLocator.Current.GetInstance<IMessageService>(); // TODO sort me out
-                instance = new WatcherController(ms);
+                // FIXME: ServiceLocator usages
+                var ms = ServiceLocator.Current.GetInstance<IMessageService>();
+                var ss = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
+
+                instance = new WatcherController(ms, ss);
             }
 
             return instance;
@@ -463,16 +473,8 @@ namespace Helpmebot.Monitoring
                     // Display an http URL to the page, if desired
                     if (shortenUrls)
                     {
-                        try
-                        {
-                            var uri = new Uri(LegacyConfig.Singleton()["wikiUrl"] + item);
-                            listString += IsGd.Shorten(uri).ToString();
-                        }
-                        catch (UriFormatException ex)
-                        {
-                            listString += LegacyConfig.Singleton()["wikiUrl"] + item;
-                            ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
-                        }
+                        var uriString = LegacyConfig.Singleton()["wikiUrl"] + item;
+                        listString += this.urlShorteningService.Shorten(uriString);
                     }
 
                     if (showWaitTime)
