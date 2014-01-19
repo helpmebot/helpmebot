@@ -191,31 +191,6 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Executes the stored procedure.
-        /// </summary>
-        /// <param name="name">
-        /// The procedure name.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        public void ExecuteProcedure(string name, params string[] args)
-        {
-            var cmd = new MySqlCommand { CommandType = CommandType.StoredProcedure, CommandText = name };
-
-            foreach (string item in args)
-            {
-                cmd.Parameters.Add(new MySqlParameter(item, MySqlDbType.Int16));
-            }
-
-            cmd.Connection = this.connection;
-
-            this.RunConnectionTest();
-
-            cmd.ExecuteNonQuery();
-        }
-
-        /// <summary>
         /// Executes the scalar select.
         /// </summary>
         /// <param name="query">

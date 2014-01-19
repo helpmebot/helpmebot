@@ -104,13 +104,6 @@ namespace Helpmebot.Legacy.Database
         string ExecuteScalarSelect(LegacyDatabase.Select query);
 
         /// <summary>
-        /// Executes the stored procedure.
-        /// </summary>
-        /// <param name="name">The procedure name.</param>
-        /// <param name="args">The args.</param>
-        void ExecuteProcedure(string name, params string[] args);
-
-        /// <summary>
         /// Call the HMB_GET_LOCAL_OPTION stored procedure.
         /// </summary>
         /// <param name="option">
