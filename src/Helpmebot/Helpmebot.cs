@@ -296,9 +296,16 @@ namespace Helpmebot
         /// <param name="e">
         /// The e.
         /// </param>
-        private static void WelcomeNewbieOnJoinEvent(object sender, JoinEventArgs e)
+        private void WelcomeNewbieOnJoinEvent(object sender, JoinEventArgs e)
         {
-            joinMessageService.Welcome(e.User, e.Channel);
+            try
+            {
+                joinMessageService.Welcome(e.User, e.Channel);
+            }
+            catch (Exception exception)
+            {
+                this.Log.Error("Exception encountered in WelcomeNewbieOnJoinEvent", exception);
+            }
         }
 
         /// <summary>
@@ -310,13 +317,20 @@ namespace Helpmebot
         /// <param name="e">
         /// The e.
         /// </param>
-        private static void NotifyOnJoinEvent(object sender, JoinEventArgs e)
+        private void NotifyOnJoinEvent(object sender, JoinEventArgs e)
         {
-            // FIXME: Remove service locator!
-            var messageService = ServiceLocator.Current.GetInstance<IMessageService>();
+            try
+            {
+                // FIXME: Remove service locator!
+                var messageService = ServiceLocator.Current.GetInstance<IMessageService>();
 
-            var legacyUser = LegacyUser.NewFromOtherUser(e.User);
-            new Notify(legacyUser, e.Channel, new string[0], messageService).NotifyJoin(legacyUser, e.Channel);
+                var legacyUser = LegacyUser.NewFromOtherUser(e.User);
+                new Notify(legacyUser, e.Channel, new string[0], messageService).NotifyJoin(legacyUser, e.Channel);
+            }
+            catch (Exception exception)
+            {
+                this.Log.Error("Exception encountered in NotifyOnJoinEvent", exception);
+            }
         }
 
         /// <summary>
@@ -328,7 +342,7 @@ namespace Helpmebot
         /// <param name="e">
         /// The e.
         /// </param>
-        private static void ReceivedMessage(object sender, PrivateMessageEventArgs e)
+        private void ReceivedMessage(object sender, PrivateMessageEventArgs e)
         {
             string message = e.Message;
 
@@ -349,24 +363,24 @@ namespace Helpmebot
             }
             catch (Exception ex)
             {
-                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
+                this.Log.Error(ex.Message, ex);
             }
         }
 
         /// <summary>
         /// The join channels.
         /// </summary>
-        private static void JoinChannels()
+        private void JoinChannels()
         {
-            irc.IrcJoin(debugChannel);
-
+            // FIXME: change me to use a repository
             var q = new LegacyDatabase.Select("channel_name");
             q.SetFrom("channel");
             q.AddWhere(new LegacyDatabase.WhereConds("channel_enabled", 1));
             q.AddWhere(new LegacyDatabase.WhereConds("channel_network", ircNetwork.ToString(CultureInfo.InvariantCulture)));
+
             foreach (object[] item in dbal.ExecuteSelect(q))
             {
-                irc.IrcJoin((string)item[0]);
+                newIrc.JoinChannel((string)item[0]);
             }
         }
     }
