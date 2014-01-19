@@ -140,12 +140,12 @@ namespace Helpmebot.Legacy.Database
         /// <summary>
         /// The execute command.
         /// </summary>
-        /// <param name="deleteCommand">
+        /// <param name="command">
         /// The delete command.
         /// </param>
-        public void ExecuteCommand(MySqlCommand deleteCommand)
+        public void ExecuteCommand(MySqlCommand command)
         {
-            this.ExecuteNonQuery(ref deleteCommand);
+            this.ExecuteNonQuery(ref command);
         }
 
         /// <summary>
