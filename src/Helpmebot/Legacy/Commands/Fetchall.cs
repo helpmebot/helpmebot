@@ -61,12 +61,16 @@ namespace helpmebot6.Commands
         {
             var crh = new CommandResponseHandler();
             Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.Instance().GetKeywords();
-            string[] args = this.Arguments;
+
+            List<string> args = this.Arguments.ToList();
+
             if (args.Contains("@cats"))
             {
-                GlobalFunctions.RemoveItemFromArray("@cats", ref args);
+                args.Remove("@cats");
+
                 string listSep = this.MessageService.RetrieveMessage("listSeparator", this.Channel, null);
                 string list = this.MessageService.RetrieveMessage("allCategoryCodes", this.Channel, null);
+
                 foreach (string item in kc)
                 {
                     list += item;

@@ -288,7 +288,19 @@ namespace Helpmebot.Legacy
             {
                 directedTo = arg.Substring(1);
 
-                GlobalFunctions.RemoveItemFromArray(arg, ref args);
+                var count = args.Count(i => i == arg);
+
+                var newArray = new string[args.Length - count];
+
+                var nextAddition = 0;
+
+                foreach (var i in args.Where(i => i != arg))
+                {
+                    newArray[nextAddition] = i;
+                    nextAddition++;
+                }
+
+                args = newArray;
             }
 
             return directedTo;

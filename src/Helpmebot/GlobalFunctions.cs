@@ -16,8 +16,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot
 {
-    using System.Linq;
-
     /// <summary>
     ///     Class holding globally accessible functions
     /// </summary>
@@ -39,32 +37,6 @@ namespace Helpmebot
             string firstItem = list[0];
             list = string.Join(" ", list, 1, list.Length - 1).Split(' ');
             return firstItem;
-        }
-
-        /// <summary>
-        /// The remove item from array.
-        /// </summary>
-        /// <param name="item">
-        /// The item.
-        /// </param>
-        /// <param name="array">
-        /// The array.
-        /// </param>
-        public static void RemoveItemFromArray(string item, ref string[] array)
-        {
-            var count = array.Count(i => i == item);
-
-            var newArray = new string[array.Length - count];
-
-            var nextAddition = 0;
-
-            foreach (var i in array.Where(i => i != item))
-            {
-                newArray[nextAddition] = i;
-                nextAddition++;
-            }
-
-            array = newArray;
         }
 
         #endregion
