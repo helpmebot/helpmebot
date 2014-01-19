@@ -32,7 +32,6 @@ namespace Helpmebot.Monitoring
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
-    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
@@ -69,6 +68,9 @@ namespace Helpmebot.Monitoring
         /// </summary>
         /// <param name="messageService">
         /// The message Service.
+        /// </param>
+        /// <param name="urlShorteningService">
+        /// The url Shortening Service.
         /// </param>
         protected WatcherController(IMessageService messageService, IUrlShorteningService urlShorteningService)
         {
