@@ -50,6 +50,9 @@ namespace helpmebot6.Commands
         {
         }
 
+        /// <summary>
+        /// Gets the target message.
+        /// </summary>
         protected override string TargetMessage
         {
             get
