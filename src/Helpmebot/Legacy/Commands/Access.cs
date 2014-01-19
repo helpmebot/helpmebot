@@ -31,6 +31,8 @@ namespace helpmebot6.Commands
 
     using Microsoft.Practices.ServiceLocation;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// Modifies the bot's access list
     /// </summary>
@@ -179,7 +181,9 @@ namespace helpmebot6.Commands
 
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Removing access entry #{0}", id));
 
-            LegacyDatabase.Singleton().Delete("user", 1, new LegacyDatabase.WhereConds("user_id", id.ToString(CultureInfo.InvariantCulture)));
+            var deleteCommand = new MySqlCommand("DELETE FROM user WHERE user_id = @userid LIMIT 1;");
+            deleteCommand.Parameters.AddWithValue("@userid", id);
+            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
 
             return new CommandResponseHandler(message);
         }

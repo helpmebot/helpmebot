@@ -45,23 +45,6 @@ namespace Helpmebot.Legacy.Database
         long Insert(string table, params string[] values);
 
         /// <summary>
-        /// Deletes from the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="limit">
-        /// The limit.
-        /// </param>
-        /// <param name="conditions">
-        /// The conditions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool Delete(string table, int limit, params LegacyDatabase.WhereConds[] conditions);
-
-        /// <summary>
         /// Updates rows in the specified table.
         /// </summary>
         /// <param name="table">

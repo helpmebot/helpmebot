@@ -159,12 +159,11 @@ namespace Helpmebot.Monitoring
             string channelId = LegacyConfig.Singleton().GetChannelId(channel);
             int watcherId = GetWatcherId(keyword);
 
-            LegacyDatabase.Singleton()
-                .Delete(
-                    "channelwatchers",
-                    0,
-                    new LegacyDatabase.WhereConds("cw_channel", channelId),
-                    new LegacyDatabase.WhereConds("cw_watcher", watcherId));
+            var deleteCommand =
+                new MySqlCommand("DELETE FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
+            deleteCommand.Parameters.AddWithValue("@channel", channelId);
+            deleteCommand.Parameters.AddWithValue("@watcher", watcherId);
+            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
         }
 
         /// <summary>
@@ -336,12 +335,12 @@ namespace Helpmebot.Monitoring
                 }
             }
 
-            LegacyDatabase.Singleton()
-                .Delete(
-                    "categoryitems",
-                    0,
-                    new LegacyDatabase.WhereConds("item_updateflag", 0),
-                    new LegacyDatabase.WhereConds("item_keyword", keyword));
+            var deleteCommand =
+                new MySqlCommand("DELETE FROM categoryitems WHERE item_updateflag = 0 AND item_keyword = @keyword;");
+            deleteCommand.Parameters.AddWithValue("@update", 0);
+            deleteCommand.Parameters.AddWithValue("@keyword", keyword);
+            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
+
             var val = new Dictionary<string, string> { { "item_updateflag", "0" } };
             LegacyDatabase.Singleton().Update("categoryitems", val, 0);
         }

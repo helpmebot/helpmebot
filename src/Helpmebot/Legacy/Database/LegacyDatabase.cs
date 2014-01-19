@@ -27,6 +27,7 @@ namespace Helpmebot.Legacy.Database
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -98,7 +99,7 @@ namespace Helpmebot.Legacy.Database
         /// </returns>
         public bool Connect()
         {
-            var databaseConfiguration = ConfigurationHelper.DatabaseConfiguration;
+            DatabaseConfiguration databaseConfiguration = ConfigurationHelper.DatabaseConfiguration;
 
             try
             {
@@ -128,66 +129,23 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Deletes from the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="limit">
-        /// The limit.
-        /// </param>
-        /// <param name="conditions">
-        /// The conditions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        public bool Delete(string table, int limit, params WhereConds[] conditions)
-        {
-            bool succeed = false;
-
-            string query = "DELETE FROM `" + Sanitise(table) + "`";
-            for (int i = 0; i < conditions.Length; i++)
-            {
-                if (i == 0)
-                {
-                    query += " WHERE ";
-                }
-                else
-                {
-                    query += " AND ";
-                }
-
-                query += conditions[i].ToString();
-            }
-
-            if (limit > 0)
-            {
-                query += " LIMIT " + limit;
-            }
-
-            query += ";";
-            try
-            {
-                var deleteCommand = new MySqlCommand(query);
-                this.ExecuteNonQuery(ref deleteCommand);
-                succeed = true;
-            }
-            catch (MySqlException ex)
-            {
-                this.Log.Error(ex.Message, ex);
-            }
-
-            return succeed;
-        }
-
-        /// <summary>
         ///     The dispose.
         /// </summary>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <param name="deleteCommand">
+        /// The delete command.
+        /// </param>
+        public void ExecuteCommand(MySqlCommand deleteCommand)
+        {
+            this.ExecuteNonQuery(ref deleteCommand);
         }
 
         /// <summary>
@@ -238,7 +196,7 @@ namespace Helpmebot.Legacy.Database
             var resultSet = new ArrayList();
             lock (this)
             {
-                var dr = this.ExecuteReaderQuery(query.ToString());
+                MySqlDataReader dr = this.ExecuteReaderQuery(query.ToString());
 
                 if (dr == null)
                 {
@@ -258,7 +216,7 @@ namespace Helpmebot.Legacy.Database
                     while (dr.Read())
                     {
                         var row = new object[dr.FieldCount];
-                        
+
                         dr.GetValues(row);
                         resultSet.Add(row);
                     }
@@ -320,77 +278,6 @@ namespace Helpmebot.Legacy.Database
             }
 
             return lastInsertedId;
-        }
-
-        /// <summary>
-        /// Updates rows in the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="items">
-        /// The items.
-        /// </param>
-        /// <param name="limit">
-        /// The limit.
-        /// </param>
-        /// <param name="conditions">
-        /// The conditions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        public bool Update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
-        {
-            var succeed = false;
-
-            if (items.Count < 1)
-            {
-                return true;
-            }
-
-            var query = "UPDATE `" + Sanitise(table) + "` SET ";
-
-            foreach (var col in items)
-            {
-                query += "`" + Sanitise(col.Key) + "` = \"" + Sanitise(col.Value) + "\", ";
-            }
-
-            query = query.TrimEnd(',', ' ');
-
-            for (var i = 0; i < conditions.Length; i++)
-            {
-                if (i == 0)
-                {
-                    query += " WHERE ";
-                }
-                else
-                {
-                    query += " AND ";
-                }
-
-                query += conditions[i].ToString();
-            }
-
-            if (limit > 0)
-            {
-                query += " LIMIT " + limit;
-            }
-
-            query += ";";
-
-            try
-            {
-                var updateCommand = new MySqlCommand(query);
-                this.ExecuteNonQuery(ref updateCommand);
-                succeed = true;
-            }
-            catch (MySqlException ex)
-            {
-                this.Log.Error(ex.Message, ex);
-            }
-
-            return succeed;
         }
 
         /// <summary>
@@ -496,6 +383,77 @@ namespace Helpmebot.Legacy.Database
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Updates rows in the specified table.
+        /// </summary>
+        /// <param name="table">
+        /// The table.
+        /// </param>
+        /// <param name="items">
+        /// The items.
+        /// </param>
+        /// <param name="limit">
+        /// The limit.
+        /// </param>
+        /// <param name="conditions">
+        /// The conditions.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        public bool Update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
+        {
+            bool succeed = false;
+
+            if (items.Count < 1)
+            {
+                return true;
+            }
+
+            string query = "UPDATE `" + Sanitise(table) + "` SET ";
+
+            foreach (var col in items)
+            {
+                query += "`" + Sanitise(col.Key) + "` = \"" + Sanitise(col.Value) + "\", ";
+            }
+
+            query = query.TrimEnd(',', ' ');
+
+            for (int i = 0; i < conditions.Length; i++)
+            {
+                if (i == 0)
+                {
+                    query += " WHERE ";
+                }
+                else
+                {
+                    query += " AND ";
+                }
+
+                query += conditions[i].ToString();
+            }
+
+            if (limit > 0)
+            {
+                query += " LIMIT " + limit;
+            }
+
+            query += ";";
+
+            try
+            {
+                var updateCommand = new MySqlCommand(query);
+                this.ExecuteNonQuery(ref updateCommand);
+                succeed = true;
+            }
+            catch (MySqlException ex)
+            {
+                this.Log.Error(ex.Message, ex);
+            }
+
+            return succeed;
         }
 
         #endregion
@@ -650,19 +608,14 @@ namespace Helpmebot.Legacy.Database
             #region Fields
 
             /// <summary>
-            ///     The _a.
-            /// </summary>
-            private readonly string left;
-
-            /// <summary>
-            ///     The _b.
-            /// </summary>
-            private readonly string right;
-
-            /// <summary>
             ///     The _comparer.
             /// </summary>
             private readonly string comparer;
+
+            /// <summary>
+            ///     The _a.
+            /// </summary>
+            private readonly string left;
 
             /// <summary>
             ///     The _quote a.
@@ -673,6 +626,11 @@ namespace Helpmebot.Legacy.Database
             ///     The _quote b.
             /// </summary>
             private readonly bool quoteRight;
+
+            /// <summary>
+            ///     The _b.
+            /// </summary>
+            private readonly string right;
 
             #endregion
 
@@ -879,178 +837,6 @@ namespace Helpmebot.Legacy.Database
             #region Public Methods and Operators
 
             /// <summary>
-            /// Sets the from clause
-            /// </summary>
-            /// <param name="from">
-            /// The table to pull from
-            /// </param>
-            /// <returns>
-            /// The <see cref="Select"/>.
-            /// </returns>
-            public Select From(string from)
-            {
-                this.SetFrom(from);
-                return this;
-            }
-
-            /// <summary>
-            ///     Returns a <see cref="System.String" /> that represents this instance.
-            /// </summary>
-            /// <returns>
-            ///     A <see cref="System.String" /> that represents this instance.
-            /// </returns>
-            public override string ToString()
-            {
-                string query = "SELECT ";
-                bool firstField = true;
-                foreach (string f in this.fields)
-                {
-                    if (!firstField)
-                    {
-                        query += ", ";
-                    }
-
-                    string fok = MySqlHelper.EscapeString(f);
-                    if (!this.shallIEscapeSelects)
-                    {
-                        fok = f;
-                    }
-
-                    firstField = false;
-
-                    query += fok;
-                }
-
-                if (this.fromTable != string.Empty)
-                {
-                    query += " FROM " + "`" + MySqlHelper.EscapeString(this.fromTable) + "`";
-                }
-
-                if (this.joins.Count != 0)
-                {
-                    foreach (Join item in this.joins)
-                    {
-                        switch (item.JoinType)
-                        {
-                            case JoinTypes.Inner:
-                                query += " INNER JOIN ";
-                                break;
-                            case JoinTypes.Left:
-                                query += " LEFT OUTER JOIN ";
-                                break;
-                            case JoinTypes.Right:
-                                query += " RIGHT OUTER JOIN ";
-                                break;
-                            case JoinTypes.FullOuter:
-                                query += " FULL OUTER JOIN ";
-                                break;
-                        }
-
-                        query += "`" + MySqlHelper.EscapeString(item.Table) + "`";
-
-                        query += " ON " + item.JoinConditions;
-                    }
-                }
-
-                if (this.wheres.Count > 0)
-                {
-                    query += " WHERE ";
-
-                    bool first = true;
-
-                    foreach (var w in this.wheres)
-                    {
-                        if (!first)
-                        {
-                            query += " AND ";
-                        }
-
-                        first = false;
-                        query += w.ToString();
-                    }
-                }
-
-                if (this.groups.Count != 0)
-                {
-                    query += " GROUP BY ";
-                    bool first = true;
-                    foreach (string group in this.groups)
-                    {
-                        if (!first)
-                        {
-                            query += ", ";
-                        }
-
-                        first = false;
-                        query += MySqlHelper.EscapeString(group);
-                    }
-                }
-
-                if (this.orders.Count > 0)
-                {
-                    query += " ORDER BY ";
-
-                    bool first = true;
-                    foreach (Order order in this.orders)
-                    {
-                        if (!first)
-                        {
-                            query += ", ";
-                        }
-
-                        first = false;
-                        query += order.ToString();
-                    }
-                }
-
-                if (this.havings.Count > 0)
-                {
-                    query += " HAVING ";
-
-                    bool first = true;
-
-                    foreach (WhereConds w in this.havings)
-                    {
-                        if (!first)
-                        {
-                            query += " AND ";
-                        }
-
-                        first = false;
-                        query += w.ToString();
-                    }
-                }
-
-                if (this.limit != 0)
-                {
-                    query += " LIMIT " + this.limit;
-                }
-
-                if (this.offset != 0)
-                {
-                    query += " OFFSET " + this.offset;
-                }
-
-                query += ";";
-                return query;
-            }
-
-            /// <summary>
-            /// The where.
-            /// </summary>
-            /// <param name="conditions">
-            /// The conditions.
-            /// </param>
-            /// <returns>
-            /// The <see cref="Select"/>.
-            /// </returns>
-            public Select Where(params WhereConds[] conditions)
-            {
-                this.AddWhere(conditions);
-                return this;
-            }
-
-            /// <summary>
             /// Adds a grouping.
             /// </summary>
             /// <param name="field">
@@ -1141,6 +927,21 @@ namespace Helpmebot.Legacy.Database
             }
 
             /// <summary>
+            /// Sets the from clause
+            /// </summary>
+            /// <param name="from">
+            /// The table to pull from
+            /// </param>
+            /// <returns>
+            /// The <see cref="Select"/>.
+            /// </returns>
+            public Select From(string from)
+            {
+                this.SetFrom(from);
+                return this;
+            }
+
+            /// <summary>
             /// Sets from.
             /// </summary>
             /// <param name="from">
@@ -1149,6 +950,163 @@ namespace Helpmebot.Legacy.Database
             public void SetFrom(string from)
             {
                 this.fromTable = from;
+            }
+
+            /// <summary>
+            ///     Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>
+            ///     A <see cref="System.String" /> that represents this instance.
+            /// </returns>
+            public override string ToString()
+            {
+                string query = "SELECT ";
+                bool firstField = true;
+                foreach (string f in this.fields)
+                {
+                    if (!firstField)
+                    {
+                        query += ", ";
+                    }
+
+                    string fok = MySqlHelper.EscapeString(f);
+                    if (!this.shallIEscapeSelects)
+                    {
+                        fok = f;
+                    }
+
+                    firstField = false;
+
+                    query += fok;
+                }
+
+                if (this.fromTable != string.Empty)
+                {
+                    query += " FROM " + "`" + MySqlHelper.EscapeString(this.fromTable) + "`";
+                }
+
+                if (this.joins.Count != 0)
+                {
+                    foreach (Join item in this.joins)
+                    {
+                        switch (item.JoinType)
+                        {
+                            case JoinTypes.Inner:
+                                query += " INNER JOIN ";
+                                break;
+                            case JoinTypes.Left:
+                                query += " LEFT OUTER JOIN ";
+                                break;
+                            case JoinTypes.Right:
+                                query += " RIGHT OUTER JOIN ";
+                                break;
+                            case JoinTypes.FullOuter:
+                                query += " FULL OUTER JOIN ";
+                                break;
+                        }
+
+                        query += "`" + MySqlHelper.EscapeString(item.Table) + "`";
+
+                        query += " ON " + item.JoinConditions;
+                    }
+                }
+
+                if (this.wheres.Count > 0)
+                {
+                    query += " WHERE ";
+
+                    bool first = true;
+
+                    foreach (WhereConds w in this.wheres)
+                    {
+                        if (!first)
+                        {
+                            query += " AND ";
+                        }
+
+                        first = false;
+                        query += w.ToString();
+                    }
+                }
+
+                if (this.groups.Count != 0)
+                {
+                    query += " GROUP BY ";
+                    bool first = true;
+                    foreach (string group in this.groups)
+                    {
+                        if (!first)
+                        {
+                            query += ", ";
+                        }
+
+                        first = false;
+                        query += MySqlHelper.EscapeString(group);
+                    }
+                }
+
+                if (this.orders.Count > 0)
+                {
+                    query += " ORDER BY ";
+
+                    bool first = true;
+                    foreach (Order order in this.orders)
+                    {
+                        if (!first)
+                        {
+                            query += ", ";
+                        }
+
+                        first = false;
+                        query += order.ToString();
+                    }
+                }
+
+                if (this.havings.Count > 0)
+                {
+                    query += " HAVING ";
+
+                    bool first = true;
+
+                    foreach (WhereConds w in this.havings)
+                    {
+                        if (!first)
+                        {
+                            query += " AND ";
+                        }
+
+                        first = false;
+                        query += w.ToString();
+                    }
+                }
+
+                if (this.limit != 0)
+                {
+                    query += " LIMIT " + this.limit;
+                }
+
+                if (this.offset != 0)
+                {
+                    query += " OFFSET " + this.offset;
+                }
+
+                query += ";";
+                return query;
+            }
+
+            /// <summary>
+            /// The where.
+            /// </summary>
+            /// <param name="conditions">
+            /// The conditions.
+            /// </param>
+            /// <returns>
+            /// The <see cref="Select"/>.
+            /// </returns>
+            public Select Where(params WhereConds[] conditions)
+            {
+                this.AddWhere(conditions);
+                return this;
             }
 
             #endregion

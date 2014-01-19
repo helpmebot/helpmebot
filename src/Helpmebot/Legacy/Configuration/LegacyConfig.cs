@@ -23,6 +23,8 @@ namespace Helpmebot.Legacy.Configuration
 
     using Helpmebot.Legacy.Database;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     ///     Handles all configuration settings of the bot
     /// </summary>
@@ -308,11 +310,12 @@ namespace Helpmebot.Legacy.Configuration
             // INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
             if (newValue == null)
             {
-                this.legacyDatabase.Delete(
-                    "channelconfig", 
-                    1, 
-                    new LegacyDatabase.WhereConds("cc_config", this.GetOptionId(optionName)), 
-                    new LegacyDatabase.WhereConds("cc_channel", this.GetChannelId(channelId)));
+                var deleteCommand = new MySqlCommand("DELETE FROM channelconfig WHERE cc_config = @config AND cc_channel = @channel LIMIT 1;");
+                deleteCommand.Parameters.AddWithValue("@config", this.GetOptionId(optionName));
+                deleteCommand.Parameters.AddWithValue("@channel", this.GetChannelId(channelId));
+
+                this.legacyDatabase.ExecuteCommand(deleteCommand);
+
                 return;
             }
 
