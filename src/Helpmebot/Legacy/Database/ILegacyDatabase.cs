@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Legacy.Database
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
 
@@ -42,6 +43,7 @@ namespace Helpmebot.Legacy.Database
         /// <returns>
         /// The last Inserted Id.
         /// </returns>
+        [Obsolete("Don't use - use either repositories or parameterised queries")]
         long Insert(string table, params string[] values);
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace Helpmebot.Legacy.Database
         /// <returns>
         /// The <see cref="bool"/>.
         /// </returns>
+        [Obsolete("Don't use - use either repositories or parameterised queries")]
         bool Update(string table, Dictionary<string, string> items, int limit, params LegacyDatabase.WhereConds[] conditions);
 
         /// <summary>
