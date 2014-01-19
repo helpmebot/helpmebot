@@ -817,12 +817,12 @@ namespace Helpmebot.IRC
                 {
                     this.Channels[channelName].Users.Add(user.Nickname, new ChannelUser((IrcUser)user, channelName));
                 }
-            }
 
-            EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
-            if (temp != null)
-            {
-                temp(this, new JoinEventArgs(e.Message, user, channelName));
+                EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
+                if (temp != null)
+                {
+                    temp(this, new JoinEventArgs(e.Message, user, channelName));
+                }
             }
         }
 
