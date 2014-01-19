@@ -21,6 +21,8 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     ///     Represents the bot access log.
     /// </summary>
@@ -70,18 +72,23 @@ namespace Helpmebot
         /// </returns>
         public bool Save(AccessLogEntry logEntry)
         {
-            return LegacyDatabase.Singleton()
-                       .Insert(
-                           "accesslog", 
-                           string.Empty, 
-                           logEntry.User.ToString(), 
-                           logEntry.User.AccessLevel.ToString(), 
-                           logEntry.RequiredAccessLevel.ToString(), 
-                           string.Empty, 
-                           logEntry.Class.ToString(), 
-                           logEntry.Allowed ? "1" : "0", 
-                           logEntry.Channel, 
-                           logEntry.Parameters) != -1;
+            var insertCommand =
+                new MySqlCommand(
+                    "INSERT INTO accesslog (al_nuh, al_accesslevel, al_reqaccesslevel, al_class,"
+                    + " al_allowed, al_channel, al_args) VALUES (@nuh, @accesslevel, "
+                    + "@reqaccesslevel, @class, @allowed, @channel, @args);");
+
+            insertCommand.Parameters.AddWithValue("@nuh", logEntry.User.ToString());
+            insertCommand.Parameters.AddWithValue("@accesslevel", logEntry.User.AccessLevel);
+            insertCommand.Parameters.AddWithValue("@reqaccesslevel", logEntry.RequiredAccessLevel);
+            insertCommand.Parameters.AddWithValue("@class", logEntry.Class.ToString());
+            insertCommand.Parameters.AddWithValue("@allowed", logEntry.Allowed);
+            insertCommand.Parameters.AddWithValue("@channel", logEntry.Channel);
+            insertCommand.Parameters.AddWithValue("@args", logEntry.Parameters);
+
+            LegacyDatabase.Singleton().ExecuteCommand(insertCommand);
+
+            return true;
         }
 
         #endregion
