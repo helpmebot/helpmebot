@@ -127,7 +127,8 @@ namespace Helpmebot
         {
             BootstrapContainer();
 
-            ServiceLocator.Current.GetInstance<ILogger>().Info("Initialising Helpmebot...");
+            Log = ServiceLocator.Current.GetInstance<ILogger>();
+            Log.Info("Initialising Helpmebot...");
 
             InitialiseBot();
         }

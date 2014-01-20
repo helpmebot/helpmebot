@@ -25,13 +25,13 @@ namespace Helpmebot.Services
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
-    using Helpmebot.Repositories;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Shortens URLs
     /// </summary>
-    internal class UrlShorteningService : IUrlShorteningService
+    public class UrlShorteningService : IUrlShorteningService
     {
         #region Fields
 
@@ -43,7 +43,7 @@ namespace Helpmebot.Services
         /// <summary>
         ///     The short url cache repository.
         /// </summary>
-        private readonly ShortUrlCacheRepository shortUrlCacheRepository;
+        private readonly IShortUrlCacheRepository shortUrlCacheRepository;
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace Helpmebot.Services
         /// <param name="shortUrlCacheRepository">
         /// The short url cache repository.
         /// </param>
-        public UrlShorteningService(ILogger logger, ShortUrlCacheRepository shortUrlCacheRepository)
+        public UrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository)
         {
             this.logger = logger;
             this.shortUrlCacheRepository = shortUrlCacheRepository;
