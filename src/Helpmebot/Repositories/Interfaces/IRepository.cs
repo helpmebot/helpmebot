@@ -93,7 +93,10 @@ namespace Helpmebot.Repositories.Interfaces
         /// <summary>
         /// The begin transaction.
         /// </summary>
-        void BeginTransaction();
+        /// <returns>
+        /// Returns <c>true</c> if the transaction was started successfully.
+        /// </returns>
+        bool BeginTransaction();
 
         /// <summary>
         /// The roll back.

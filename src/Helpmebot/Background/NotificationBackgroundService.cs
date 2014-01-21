@@ -80,9 +80,19 @@ namespace Helpmebot.Background
         /// </param>
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
+            this.Logger.Debug("TimerOnElapsed()");
+
+            // Check we aren't already doing a notification check.
             if (Interlocked.CompareExchange(ref this.syncPoint, 1, 0) == 0)
             {
+                this.Logger.Debug("Retrieving items from notification queue...");
+
+                // Get items from the notification queue
                 var list = this.notificationRepository.RetrieveLatest().ToList();
+
+                this.Logger.DebugFormat("Found {0} items.", list.Count());
+
+                // Iterate to send them.
                 foreach (var notification in list)
                 {
                     var destination = "##helpmebot";
@@ -102,7 +112,12 @@ namespace Helpmebot.Background
                     this.ircClient.IrcPrivmsg(destination, notification.Text);
                 }
 
+                // ready to continue
                 this.syncPoint = 0; 
+            }
+            else
+            {
+                this.Logger.Debug("Sync already in progress");
             }
         }
     }

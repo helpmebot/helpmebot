@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Repositories
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -57,10 +58,25 @@ namespace Helpmebot.Repositories
         /// </returns>
         public IEnumerable<Notification> RetrieveLatest()
         {
-            this.BeginTransaction();
-            var list = this.Get().ToList();
-            this.Delete(list);
-            this.Commit();
+            var list = new List<Notification>();
+
+            if (!this.BeginTransaction())
+            {
+                this.Logger.Warn("Transaction failed to start!");
+                return list;
+            }
+
+            try
+            {
+                list = this.Get().ToList();
+                this.Delete(list);
+                this.Commit();
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Error("Error in transaction.", ex);
+                this.RollBack();
+            }
 
             return list;
         }

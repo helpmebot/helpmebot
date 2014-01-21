@@ -173,9 +173,15 @@ namespace Helpmebot.Repositories
         /// <summary>
         /// The begin transaction.
         /// </summary>
-        public virtual void BeginTransaction()
+        /// <returns>
+        /// Returns <c>true</c> if the transaction was started successfully.
+        /// </returns>
+        public virtual bool BeginTransaction()
         {
             this.session.BeginTransaction(IsolationLevel.Serializable);
+
+            // FIXME: !!
+            return true;
         }
 
         /// <summary>

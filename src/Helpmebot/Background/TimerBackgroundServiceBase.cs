@@ -144,7 +144,7 @@ namespace Helpmebot.Background
         /// </param>
         private void TimerOnElapsedBase(object sender, ElapsedEventArgs e)
         {
-            this.Logger.Debug("Event raised!");
+            this.Logger.Debug("Timer event raised!");
             this.TimerOnElapsed(sender, e);
         }
     }
