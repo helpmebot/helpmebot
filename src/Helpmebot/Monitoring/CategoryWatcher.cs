@@ -19,9 +19,10 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading;
-    using System.Xml;
+    using System.Xml.Linq;
 
     using Castle.Core.Logging;
 
@@ -151,71 +152,40 @@ namespace Helpmebot.Monitoring
         #region Public Methods and Operators
 
         /// <summary>
-        ///     Does the category check.
+        /// The do category check.
         /// </summary>
         /// <returns>
-        ///     The <see cref="IEnumerable" />.
+        /// The <see cref="IEnumerable"/>.
         /// </returns>
         public IEnumerable<string> DoCategoryCheck()
         {
             this.Log.Info("Getting items in category " + this.key);
-            var pages = new List<string>();
+
+            IEnumerable<string> pages = new List<string>();
             try
             {
                 // Create the XML Reader
-                var xmlreader =
-                    new XmlTextReader(
-                        HttpRequest.Get(
-                            this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
-                            + this.category))
-                        {
-                            // Disable whitespace so that you don't have to read over whitespaces
-                            WhitespaceHandling = WhitespaceHandling.None
-                        };
+                var uri = this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
+                          + this.category;
+                var xmlFragment = HttpRequest.Get(uri);
 
-                // read the xml declaration and advance to api tag
-                xmlreader.Read();
+                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
 
-                // read the api tag
-                xmlreader.Read();
-
-                // read the query tag
-                xmlreader.Read();
-
-                // read the categorymembers tag
-                xmlreader.Read();
-
-                while (true)
-                {
-                    // Go to the name tag
-                    xmlreader.Read();
-
-                    // if not start element exit while loop
-                    if (!xmlreader.IsStartElement())
-                    {
-                        break;
-                    }
-
-                    // Get the title Attribute Value
-                    string titleAttribute = xmlreader.GetAttribute("title");
-
-                    if (!pages.Contains(titleAttribute))
-                    {
-                        pages.Add(titleAttribute);
-                    }
-                }
-
-                // close the reader
-                xmlreader.Close();
+                pages = from item in xdoc.Descendants("cm")
+                        let xAttribute = item.Attribute("title")
+                        where xAttribute != null
+                        select xAttribute.Value;
             }
             catch (Exception ex)
             {
                 this.Log.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
-            pages = RemoveBlacklistedItems(pages);
+            var pageList = pages.ToList();
 
-            return pages;
+            pageList = RemoveBlacklistedItems(pageList);
+
+            return pageList;
         }
 
         /// <summary>
