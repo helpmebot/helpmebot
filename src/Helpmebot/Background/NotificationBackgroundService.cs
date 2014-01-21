@@ -21,7 +21,6 @@
 namespace Helpmebot.Background
 {
     using System.Linq;
-    using System.Threading;
     using System.Timers;
 
     using Castle.Core.Logging;
@@ -48,7 +47,7 @@ namespace Helpmebot.Background
         /// <summary>
         /// The sync point.
         /// </summary>
-        private int syncPoint;
+        private readonly object syncLock = new object();
 
         /// <summary>
         /// Initialises a new instance of the <see cref="NotificationBackgroundService"/> class.
@@ -83,7 +82,7 @@ namespace Helpmebot.Background
             this.Logger.Debug("TimerOnElapsed()");
 
             // Check we aren't already doing a notification check.
-            if (Interlocked.CompareExchange(ref this.syncPoint, 1, 0) == 0)
+            lock (this.syncLock)
             {
                 this.Logger.Debug("Retrieving items from notification queue...");
 
@@ -111,13 +110,6 @@ namespace Helpmebot.Background
 
                     this.ircClient.IrcPrivmsg(destination, notification.Text);
                 }
-
-                // ready to continue
-                this.syncPoint = 0; 
-            }
-            else
-            {
-                this.Logger.Debug("Sync already in progress");
             }
         }
     }
