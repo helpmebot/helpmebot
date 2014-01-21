@@ -20,7 +20,10 @@
 
 namespace Helpmebot.Services
 {
+    using System;
     using System.Linq;
+
+    using Castle.Core.Logging;
 
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
@@ -39,14 +42,23 @@ namespace Helpmebot.Services
         private readonly IKeywordRepository repository;
 
         /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="KeywordService"/> class.
         /// </summary>
         /// <param name="repository">
         /// The repository.
         /// </param>
-        public KeywordService(IKeywordRepository repository)
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        public KeywordService(IKeywordRepository repository, ILogger logger)
         {
             this.repository = repository;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -57,9 +69,22 @@ namespace Helpmebot.Services
         /// </param>
         public void Delete(string name)
         {
-            this.repository.BeginTransaction();
-            this.repository.Delete(Restrictions.Eq("Name", name));
-            this.repository.Commit();
+            if (!this.repository.BeginTransaction())
+            {
+                this.logger.Warn("Transaction failed to start!");
+                return;
+            }
+
+            try
+            {
+                this.repository.Delete(Restrictions.Eq("Name", name));
+                this.repository.Commit();
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error("Error in transaction.", ex);
+                this.repository.RollBack();
+            }
         }
 
         /// <summary>
@@ -76,14 +101,29 @@ namespace Helpmebot.Services
         /// </param>
         public void Create(string name, string response, bool action)
         {
-            Keyword existing = this.repository.GetByName(name).Any()
-                                   ? this.repository.GetByName(name).First()
-                                   : new Keyword { Name = name };
+            if (!this.repository.BeginTransaction())
+            {
+                this.logger.Warn("Transaction failed to start!");
+                return;
+            }
 
-            existing.Action = action;
-            existing.Response = response;
+            try
+            {
+                Keyword existing = this.repository.GetByName(name).Any()
+                                       ? this.repository.GetByName(name).First()
+                                       : new Keyword { Name = name };
 
-            this.repository.Save(existing);
+                existing.Action = action;
+                existing.Response = response;
+
+                this.repository.Save(existing);
+                this.repository.Commit();
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error("Error in transaction.", ex);
+                this.repository.RollBack();
+            }
         }
 
         /// <summary>
