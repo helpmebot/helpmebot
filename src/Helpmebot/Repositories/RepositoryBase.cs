@@ -173,14 +173,21 @@ namespace Helpmebot.Repositories
         /// <summary>
         /// The begin transaction.
         /// </summary>
+        /// <param name="level">
+        /// The transaction isolation level.
+        /// </param>
         /// <returns>
         /// Returns <c>true</c> if the transaction was started successfully.
         /// </returns>
-        public virtual bool BeginTransaction()
+        public virtual bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable)
         {
-            this.session.BeginTransaction(IsolationLevel.Serializable);
+            var transaction = this.session.BeginTransaction(level);
 
-            // FIXME: !!
+            if (!transaction.IsActive)
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -189,7 +196,15 @@ namespace Helpmebot.Repositories
         /// </summary>
         public virtual void RollBack()
         {
-            this.session.Transaction.Rollback();
+            if (this.session.Transaction.IsActive)
+            {
+                this.session.Transaction.Rollback();
+            }
+            else
+            {
+                this.Logger.Error("Can't rollback non-existing transaction!");
+                throw new TransactionException("Can't rollback non-existing transaction!");
+            }
         }
 
         /// <summary>
@@ -197,7 +212,14 @@ namespace Helpmebot.Repositories
         /// </summary>
         public virtual void Commit()
         {
-            this.session.Transaction.Commit();
+            if (this.session.Transaction.IsActive)
+            {
+                this.session.Transaction.Commit();
+            }
+            else
+            {
+                this.Logger.Warn("Skipped committing non-existing transaction!");
+            }
         }
 
         /// <summary>

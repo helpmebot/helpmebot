@@ -22,6 +22,7 @@ namespace Helpmebot.Repositories.Interfaces
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
 
     using NHibernate.Criterion;
 
@@ -93,10 +94,13 @@ namespace Helpmebot.Repositories.Interfaces
         /// <summary>
         /// The begin transaction.
         /// </summary>
+        /// <param name="level">
+        /// The transaction isolation level.
+        /// </param>
         /// <returns>
         /// Returns <c>true</c> if the transaction was started successfully.
         /// </returns>
-        bool BeginTransaction();
+        bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable);
 
         /// <summary>
         /// The roll back.
