@@ -17,12 +17,16 @@
 
 namespace Helpmebot.Repositories
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     using Castle.Core.Logging;
 
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
 
     using NHibernate;
+    using NHibernate.Criterion;
 
     /// <summary>
     /// The ignored pages repository.
@@ -46,5 +50,41 @@ namespace Helpmebot.Repositories
         }
 
         #endregion
+
+        /// <summary>
+        /// The get ignored pages.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IEnumerable{String}"/>.
+        /// </returns>
+        public IEnumerable<string> GetIgnoredPages()
+        {
+            return this.Get().Select(x => x.Title);
+        }
+
+        /// <summary>
+        /// The delete page.
+        /// </summary>
+        /// <param name="page">
+        /// The page.
+        /// </param>
+        public void DeletePage(string page)
+        {
+            this.Delete(Restrictions.Eq("Title", page));
+        }
+
+        /// <summary>
+        /// The add page.
+        /// </summary>
+        /// <param name="page">
+        /// The page.
+        /// </param>
+        public void AddPage(string page)
+        {
+            if (!this.Get(Restrictions.Eq("Title", page)).Any())
+            {
+                this.Save(new IgnoredPage { Title = page });
+            }
+        }
     }
 }

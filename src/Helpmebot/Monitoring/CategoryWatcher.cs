@@ -28,6 +28,7 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Threading;
 
     using Microsoft.Practices.ServiceLocation;
@@ -181,9 +182,9 @@ namespace Helpmebot.Monitoring
                 this.Log.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
-            var pageList = pages.ToList();
+            var pageList = pages;
 
-            pageList = RemoveBlacklistedItems(pageList);
+            pageList = RemoveBlacklistedItems(pageList).ToList();
 
             return pageList;
         }
@@ -241,21 +242,14 @@ namespace Helpmebot.Monitoring
         /// <returns>
         /// The <see cref="List{String}"/>.
         /// </returns>
-        private static List<string> RemoveBlacklistedItems(List<string> pageList)
+        private static IEnumerable<string> RemoveBlacklistedItems(IEnumerable<string> pageList)
         {
-            var q = new LegacyDatabase.Select("ip_title");
-            q.SetFrom("ignoredpages");
-            ArrayList blacklist = LegacyDatabase.Singleton().ExecuteSelect(q);
+            // FIXME: servicelocator
+            var ignoredPagesRepository = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
 
-            foreach (object[] item in blacklist)
-            {
-                if (pageList.Contains((string)item[0]))
-                {
-                    pageList.Remove((string)item[0]);
-                }
-            }
+            var ignoredPages = ignoredPagesRepository.GetIgnoredPages().ToList();
 
-            return pageList;
+            return pageList.Where(x => !ignoredPages.Contains(x));
         }
 
         /// <summary>

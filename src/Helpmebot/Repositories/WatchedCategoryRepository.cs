@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CategoryWatcherMap.cs" company="Helpmebot Development Team">
+// <copyright file="CategoryWatcherRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -15,31 +15,34 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Persistence.Mappings
+namespace Helpmebot.Repositories
 {
-    using FluentNHibernate.Mapping;
+    using Castle.Core.Logging;
 
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
+
+    using NHibernate;
 
     /// <summary>
-    /// The category watcher map.
+    /// The category watcher repository.
     /// </summary>
-    public class CategoryWatcherMap : ClassMap<CategoryWatcher>
+    public class WatchedCategoryRepository : RepositoryBase<WatchedCategory>, IWatchedCategoryRepository
     {
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="CategoryWatcherMap"/> class.
+        /// Initialises a new instance of the <see cref="WatchedCategoryRepository"/> class.
         /// </summary>
-        public CategoryWatcherMap()
+        /// <param name="session">
+        /// The session.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        public WatchedCategoryRepository(ISession session, ILogger logger)
+            : base(session, logger)
         {
-            this.Table("watcher");
-            this.Id(x => x.Id, "watcher_id");
-
-            this.Map(x => x.Category, "watcher_category");
-            this.Map(x => x.Keyword, "watcher_keyword");
-            this.Map(x => x.Priority, "watcher_priority");
-            this.Map(x => x.SleepTime, "watcher_sleeptime");
         }
 
         #endregion

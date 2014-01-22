@@ -17,6 +17,9 @@
 
 namespace Helpmebot.Repositories.Interfaces
 {
+    using System.Collections;
+    using System.Collections.Generic;
+
     using Helpmebot.Model;
 
     /// <summary>
@@ -24,5 +27,28 @@ namespace Helpmebot.Repositories.Interfaces
     /// </summary>
     public interface IIgnoredPagesRepository : IRepository<IgnoredPage>
     {
+        /// <summary>
+        /// The get ignored pages.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="IEnumerable"/>.
+        /// </returns>
+        IEnumerable<string> GetIgnoredPages();
+
+        /// <summary>
+        /// The delete page.
+        /// </summary>
+        /// <param name="page">
+        /// The page.
+        /// </param>
+        void DeletePage(string page);
+
+        /// <summary>
+        /// The add page.
+        /// </summary>
+        /// <param name="page">
+        /// The page.
+        /// </param>
+        void AddPage(string page);
     }
 }

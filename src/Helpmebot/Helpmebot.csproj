@@ -117,7 +117,7 @@
     <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
     <Compile Include="Legacy\IRC\LegacyIrcProxy.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
-    <Compile Include="Model\CategoryWatcher.cs" />
+    <Compile Include="Model\WatchedCategory.cs" />
     <Compile Include="Model\Channel.cs" />
     <Compile Include="Model\IgnoredPage.cs" />
     <Compile Include="Model\Interfaces\IUser.cs" />
@@ -131,7 +131,7 @@
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
-    <Compile Include="Persistence\Mappings\CategoryWatcherMap.cs" />
+    <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
     <Compile Include="Persistence\Mappings\ChannelMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupAssocMap.cs" />
@@ -144,10 +144,10 @@
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
-    <Compile Include="Repositories\CategoryWatcherRepository.cs" />
+    <Compile Include="Repositories\WatchedCategoryRepository.cs" />
     <Compile Include="Repositories\IgnoredPagesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IIgnoredPagesRepository.cs" />
-    <Compile Include="Repositories\Interfaces\ICategoryWatcherRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IWatchedCategoryRepository.cs" />
     <Compile Include="Repositories\Interfaces\IChannelRepository.cs" />
     <Compile Include="Repositories\Interfaces\INotificationRepository.cs" />
     <Compile Include="Repositories\Interfaces\IKeywordRepository.cs" />

@@ -21,7 +21,7 @@ namespace Helpmebot.Model
     /// <summary>
     /// The category watcher.
     /// </summary>
-    public class CategoryWatcher : EntityBase
+    public class WatchedCategory : EntityBase
     {
         #region Public Properties
 

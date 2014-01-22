@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CategoryWatcherRepository.cs" company="Helpmebot Development Team">
+// <copyright file="ICategoryWatcherRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -15,36 +15,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Repositories
+namespace Helpmebot.Repositories.Interfaces
 {
-    using Castle.Core.Logging;
-
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using NHibernate;
 
     /// <summary>
-    /// The category watcher repository.
+    /// The CategoryWatcherRepository interface.
     /// </summary>
-    public class CategoryWatcherRepository : RepositoryBase<CategoryWatcher>, ICategoryWatcherRepository
+    public interface IWatchedCategoryRepository : IRepository<WatchedCategory>
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CategoryWatcherRepository"/> class.
-        /// </summary>
-        /// <param name="session">
-        /// The session.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        public CategoryWatcherRepository(ISession session, ILogger logger)
-            : base(session, logger)
-        {
-        }
-
-        #endregion
     }
 }
