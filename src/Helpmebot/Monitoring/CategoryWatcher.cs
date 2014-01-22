@@ -56,6 +56,11 @@ namespace Helpmebot.Monitoring
         private readonly string key;
 
         /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
         ///     The site.
         /// </summary>
         private readonly string site;
@@ -89,7 +94,7 @@ namespace Helpmebot.Monitoring
         public CategoryWatcher(string category, string key, int sleepTime)
         {
             // FIXME: Remove me!
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            this.logger = ServiceLocator.Current.GetInstance<ILogger>();
 
             // look up site id
             string baseWiki = LegacyConfig.Singleton()["baseWiki"];
@@ -131,11 +136,6 @@ namespace Helpmebot.Monitoring
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
-
-        /// <summary>
         ///     Gets or sets the time to sleep, in seconds.
         /// </summary>
         public int SleepTime
@@ -148,7 +148,7 @@ namespace Helpmebot.Monitoring
             set
             {
                 this.sleepTime = value;
-                this.Log.Info("Restarting watcher...");
+                this.logger.Info("Restarting watcher...");
                 this.watcherThread.Abort();
                 Thread.Sleep(500);
                 this.watcherThread = new Thread(this.WatcherThreadMethod);
@@ -168,7 +168,7 @@ namespace Helpmebot.Monitoring
         /// </returns>
         public IEnumerable<string> DoCategoryCheck()
         {
-            this.Log.Info("Getting items in category " + this.key);
+            this.logger.Info("Getting items in category " + this.key);
 
             IEnumerable<string> pages = new List<string>();
             try
@@ -188,7 +188,7 @@ namespace Helpmebot.Monitoring
             }
             catch (Exception ex)
             {
-                this.Log.Error("Error contacting API (" + this.site + ") ", ex);
+                this.logger.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
             IEnumerable<string> pageList = pages;
@@ -223,7 +223,7 @@ namespace Helpmebot.Monitoring
         /// </summary>
         public void Stop()
         {
-            this.Log.Info("Stopping Watcher Thread for " + this.category + " ...");
+            this.logger.Info("Stopping Watcher Thread for " + this.category + " ...");
             this.watcherThread.Abort();
         }
 
@@ -263,7 +263,7 @@ namespace Helpmebot.Monitoring
         /// </summary>
         private void WatcherThreadMethod()
         {
-            this.Log.Info("Starting category watcher for '" + this.key + "'...");
+            this.logger.Info("Starting category watcher for '" + this.key + "'...");
             try
             {
                 while (true)
@@ -285,7 +285,7 @@ namespace Helpmebot.Monitoring
                 }
             }
 
-            this.Log.Warn("Category watcher for '" + this.key + "' died.");
+            this.logger.Warn("Category watcher for '" + this.key + "' died.");
         }
 
         #endregion
