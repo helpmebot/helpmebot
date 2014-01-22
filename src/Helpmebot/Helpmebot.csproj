@@ -117,6 +117,7 @@
     <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
     <Compile Include="Legacy\IRC\LegacyIrcProxy.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
+    <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\WatchedCategory.cs" />
     <Compile Include="Model\Channel.cs" />
     <Compile Include="Model\IgnoredPage.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
     <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
     <Compile Include="Persistence\Mappings\ChannelMap.cs" />
     <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
@@ -144,6 +146,8 @@
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IMediaWikiSiteRepository.cs" />
+    <Compile Include="Repositories\MediaWikiSiteRepository.cs" />
     <Compile Include="Repositories\WatchedCategoryRepository.cs" />
     <Compile Include="Repositories\IgnoredPagesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IIgnoredPagesRepository.cs" />
