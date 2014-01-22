@@ -46,6 +46,11 @@ namespace Helpmebot.Monitoring
         private readonly string category;
 
         /// <summary>
+        ///     The ignored pages repository.
+        /// </summary>
+        private readonly IIgnoredPagesRepository ignoredPagesRepository;
+
+        /// <summary>
         ///     The key.
         /// </summary>
         private readonly string key;
@@ -102,6 +107,9 @@ namespace Helpmebot.Monitoring
 
             this.watcherThread = new Thread(this.WatcherThreadMethod);
             this.watcherThread.Start();
+
+            // FIXME: servicelocator
+            this.ignoredPagesRepository = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
         }
 
         #endregion
@@ -153,10 +161,10 @@ namespace Helpmebot.Monitoring
         #region Public Methods and Operators
 
         /// <summary>
-        /// The do category check.
+        ///     The do category check.
         /// </summary>
         /// <returns>
-        /// The <see cref="IEnumerable"/>.
+        ///     The <see cref="IEnumerable" />.
         /// </returns>
         public IEnumerable<string> DoCategoryCheck()
         {
@@ -166,11 +174,12 @@ namespace Helpmebot.Monitoring
             try
             {
                 // Create the XML Reader
-                var uri = this.site + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
-                          + this.category;
-                var xmlFragment = HttpRequest.Get(uri);
+                string uri = this.site
+                             + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
+                             + this.category;
+                Stream xmlFragment = HttpRequest.Get(uri);
 
-                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
+                XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
 
                 pages = from item in xdoc.Descendants("cm")
                         let xAttribute = item.Attribute("title")
@@ -182,9 +191,9 @@ namespace Helpmebot.Monitoring
                 this.Log.Error("Error contacting API (" + this.site + ") ", ex);
             }
 
-            var pageList = pages;
+            IEnumerable<string> pageList = pages;
 
-            pageList = RemoveBlacklistedItems(pageList).ToList();
+            pageList = this.RemoveBlacklistedItems(pageList).ToList();
 
             return pageList;
         }
@@ -242,12 +251,9 @@ namespace Helpmebot.Monitoring
         /// <returns>
         /// The <see cref="List{String}"/>.
         /// </returns>
-        private static IEnumerable<string> RemoveBlacklistedItems(IEnumerable<string> pageList)
+        private IEnumerable<string> RemoveBlacklistedItems(IEnumerable<string> pageList)
         {
-            // FIXME: servicelocator
-            var ignoredPagesRepository = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
-
-            var ignoredPages = ignoredPagesRepository.GetIgnoredPages().ToList();
+            List<string> ignoredPages = this.ignoredPagesRepository.GetIgnoredPages().ToList();
 
             return pageList.Where(x => !ignoredPages.Contains(x));
         }
