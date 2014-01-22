@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories
 {
     using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace Helpmebot.Repositories
     using NHibernate.Criterion;
 
     /// <summary>
-    /// The ignored pages repository.
+    ///     The ignored pages repository.
     /// </summary>
     public class IgnoredPagesRepository : RepositoryBase<IgnoredPage>, IIgnoredPagesRepository
     {
@@ -51,27 +50,7 @@ namespace Helpmebot.Repositories
 
         #endregion
 
-        /// <summary>
-        /// The get ignored pages.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="IEnumerable{String}"/>.
-        /// </returns>
-        public IEnumerable<string> GetIgnoredPages()
-        {
-            return this.Get().Select(x => x.Title);
-        }
-
-        /// <summary>
-        /// The delete page.
-        /// </summary>
-        /// <param name="page">
-        /// The page.
-        /// </param>
-        public void DeletePage(string page)
-        {
-            this.Delete(Restrictions.Eq("Title", page));
-        }
+        #region Public Methods and Operators
 
         /// <summary>
         /// The add page.
@@ -86,5 +65,44 @@ namespace Helpmebot.Repositories
                 this.Save(new IgnoredPage { Title = page });
             }
         }
+
+        /// <summary>
+        /// The delete page.
+        /// </summary>
+        /// <param name="page">
+        /// The page.
+        /// </param>
+        public void DeletePage(string page)
+        {
+            this.Delete(Restrictions.Eq("Title", page));
+        }
+
+        /// <summary>
+        ///     The get ignored pages.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="IEnumerable{String}" />.
+        /// </returns>
+        public IEnumerable<string> GetIgnoredPages()
+        {
+            return this.Get().Select(x => x.Title);
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
+        }
+
+        #endregion
     }
 }

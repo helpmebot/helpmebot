@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CategoryWatcherRepository.cs" company="Helpmebot Development Team">
+// <copyright file="WatchedCategoryRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories
 {
     using Castle.Core.Logging;
@@ -25,7 +24,7 @@ namespace Helpmebot.Repositories
     using NHibernate;
 
     /// <summary>
-    /// The category watcher repository.
+    ///     The category watcher repository.
     /// </summary>
     public class WatchedCategoryRepository : RepositoryBase<WatchedCategory>, IWatchedCategoryRepository
     {
@@ -43,6 +42,21 @@ namespace Helpmebot.Repositories
         public WatchedCategoryRepository(ISession session, ILogger logger)
             : base(session, logger)
         {
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
         }
 
         #endregion
