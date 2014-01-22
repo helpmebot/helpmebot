@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CategoryWatcher.cs" company="Helpmebot Development Team">
+// <copyright file="WatchedCategory.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@ namespace Helpmebot.Model
     using Helpmebot.Persistence;
 
     /// <summary>
-    /// The category watcher.
+    ///     The category watcher.
     /// </summary>
     public class WatchedCategory : EntityBase
     {

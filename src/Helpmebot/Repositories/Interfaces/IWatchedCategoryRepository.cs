@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICategoryWatcherRepository.cs" company="Helpmebot Development Team">
+// <copyright file="IWatchedCategoryRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,13 +14,12 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories.Interfaces
 {
     using Helpmebot.Model;
 
     /// <summary>
-    /// The CategoryWatcherRepository interface.
+    ///     The CategoryWatcherRepository interface.
     /// </summary>
     public interface IWatchedCategoryRepository : IRepository<WatchedCategory>
     {
