@@ -28,47 +28,52 @@ namespace Helpmebot.Model
         #region Fields
 
         /// <summary>
-        /// The allow user talk.
+        ///     The allow user talk.
         /// </summary>
         public bool AllowUserTalk;
 
         /// <summary>
-        /// The auto-block.
+        ///     The anon only.
+        /// </summary>
+        public bool AnonOnly;
+
+        /// <summary>
+        ///     The auto-block.
         /// </summary>
         public bool AutoBlock;
 
         /// <summary>
-        /// The block reason.
+        ///     The block reason.
         /// </summary>
         public string BlockReason;
 
         /// <summary>
-        /// The blocked by.
+        ///     The blocked by.
         /// </summary>
         public string BlockedBy;
 
         /// <summary>
-        /// The expiry.
+        ///     The expiry.
         /// </summary>
         public string Expiry;
 
         /// <summary>
-        /// The no create.
+        ///     The no create.
         /// </summary>
         public bool NoCreate;
 
         /// <summary>
-        /// The no email.
+        ///     The no email.
         /// </summary>
         public bool NoEmail;
 
         /// <summary>
-        /// The start.
+        ///     The start.
         /// </summary>
         public string Start;
 
         /// <summary>
-        /// The target.
+        ///     The target.
         /// </summary>
         public string Target;
 
@@ -77,7 +82,7 @@ namespace Helpmebot.Model
         #region Public Properties
 
         /// <summary>
-        /// Gets or sets the id.
+        ///     Gets or sets the id.
         /// </summary>
         public string Id { get; set; }
 
@@ -125,6 +130,11 @@ namespace Helpmebot.Model
             if (this.AllowUserTalk)
             {
                 info += "ALLOWUSERTALK ";
+            }
+
+            if (this.AnonOnly)
+            {
+                info += "ANONONLY ";
             }
 
             string[] messageParams =
