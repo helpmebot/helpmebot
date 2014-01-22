@@ -113,6 +113,20 @@ namespace Helpmebot.Repositories
         }
 
         /// <summary>
+        /// The get by id.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="T"/>.
+        /// </returns>
+        public T GetById(int id)
+        {
+            return this.Session.CreateCriteria<T>().Add(Restrictions.Eq("Id", id)).UniqueResult<T>();
+        }
+
+        /// <summary>
         /// The get.
         /// </summary>
         /// <param name="criterion">

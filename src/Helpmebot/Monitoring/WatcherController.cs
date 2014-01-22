@@ -66,11 +66,6 @@ namespace Helpmebot.Monitoring
         private readonly IUrlShorteningService urlShorteningService;
 
         /// <summary>
-        ///     The watched category repository.
-        /// </summary>
-        private readonly IWatchedCategoryRepository watchedCategoryRepository;
-
-        /// <summary>
         ///     The watchers.
         /// </summary>
         private readonly Dictionary<string, CategoryWatcher> watchers;
@@ -91,6 +86,12 @@ namespace Helpmebot.Monitoring
         /// <param name="watchedCategoryRepository">
         /// The watched Category Repository.
         /// </param>
+        /// <param name="mediaWikiSiteRepository">
+        /// The media Wiki Site Repository.
+        /// </param>
+        /// <param name="ignoredPagesRepository">
+        /// The ignored Pages Repository.
+        /// </param>
         /// <param name="logger">
         /// The logger.
         /// </param>
@@ -98,17 +99,22 @@ namespace Helpmebot.Monitoring
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
             IWatchedCategoryRepository watchedCategoryRepository, 
+            IMediaWikiSiteRepository mediaWikiSiteRepository,
+            IIgnoredPagesRepository ignoredPagesRepository,
             ILogger logger)
         {
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
-            this.watchedCategoryRepository = watchedCategoryRepository;
             this.watchers = new Dictionary<string, CategoryWatcher>();
             this.logger = logger;
 
-            foreach (WatchedCategory item in this.watchedCategoryRepository.Get())
+            foreach (WatchedCategory item in watchedCategoryRepository.Get())
             {
-                var categoryWatcher = new CategoryWatcher(item);
+                var categoryWatcher = new CategoryWatcher(
+                    item,
+                    mediaWikiSiteRepository,
+                    ignoredPagesRepository,
+                    logger.CreateChildLogger("CategoryWatcher[" + item + "]"));
                 this.watchers.Add(item.Keyword, categoryWatcher);
                 categoryWatcher.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
             }
@@ -131,10 +137,12 @@ namespace Helpmebot.Monitoring
                 // FIXME: ServiceLocator usages
                 var ms = ServiceLocator.Current.GetInstance<IMessageService>();
                 var ss = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
-                var repo = ServiceLocator.Current.GetInstance<IWatchedCategoryRepository>();
+                var wcrepo = ServiceLocator.Current.GetInstance<IWatchedCategoryRepository>();
+                var mwrepo = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+                var iprepo = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
                 var logger = ServiceLocator.Current.GetInstance<ILogger>();
 
-                instance = new WatcherController(ms, ss, repo, logger);
+                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger);
             }
 
             return instance;

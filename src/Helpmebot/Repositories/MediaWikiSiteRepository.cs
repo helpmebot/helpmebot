@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories
 {
     using Castle.Core.Logging;
@@ -25,7 +24,7 @@ namespace Helpmebot.Repositories
     using NHibernate;
 
     /// <summary>
-    /// The media wiki site repository.
+    ///     The media wiki site repository.
     /// </summary>
     public class MediaWikiSiteRepository : RepositoryBase<MediaWikiSite>, IMediaWikiSiteRepository
     {
@@ -43,6 +42,21 @@ namespace Helpmebot.Repositories
         public MediaWikiSiteRepository(ISession session, ILogger logger)
             : base(session, logger)
         {
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(true);
         }
 
         #endregion

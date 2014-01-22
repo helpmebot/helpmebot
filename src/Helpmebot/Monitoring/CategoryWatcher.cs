@@ -27,12 +27,9 @@ namespace Helpmebot.Monitoring
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Threading;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Category watcher thread
@@ -64,10 +61,10 @@ namespace Helpmebot.Monitoring
         /// <summary>
         ///     The site.
         /// </summary>
-        private readonly string site;
+        private readonly MediaWikiSite site;
 
         /// <summary>
-        /// The watched category.
+        ///     The watched category.
         /// </summary>
         private readonly WatchedCategory watchedCategory;
 
@@ -91,20 +88,29 @@ namespace Helpmebot.Monitoring
         /// <param name="category">
         /// The category.
         /// </param>
-        public CategoryWatcher(WatchedCategory category)
+        /// <param name="mediaWikiSiteRepository">
+        /// The media Wiki Site Repository.
+        /// </param>
+        /// <param name="ignoredPagesRepository">
+        /// The ignored Pages Repository.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        public CategoryWatcher(
+            WatchedCategory category, 
+            IMediaWikiSiteRepository mediaWikiSiteRepository, 
+            IIgnoredPagesRepository ignoredPagesRepository, 
+            ILogger logger)
         {
             this.watchedCategory = category;
 
-            // FIXME: Remove me!
-            this.logger = ServiceLocator.Current.GetInstance<ILogger>();
+            this.logger = logger;
 
             // look up site id
             string baseWiki = LegacyConfig.Singleton()["baseWiki"];
-
-            var q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            this.site = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            this.site = mediaWikiSite;
 
             this.category = category.Category;
             this.key = category.Keyword;
@@ -115,8 +121,7 @@ namespace Helpmebot.Monitoring
             this.watcherThread = new Thread(this.WatcherThreadMethod);
             this.watcherThread.Start();
 
-            // FIXME: servicelocator
-            this.ignoredPagesRepository = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
+            this.ignoredPagesRepository = ignoredPagesRepository;
         }
 
         #endregion
@@ -159,7 +164,7 @@ namespace Helpmebot.Monitoring
         }
 
         /// <summary>
-        /// Gets the watched category.
+        ///     Gets the watched category.
         /// </summary>
         public WatchedCategory WatchedCategory
         {
@@ -187,7 +192,7 @@ namespace Helpmebot.Monitoring
             try
             {
                 // Create the XML Reader
-                string uri = this.site
+                string uri = this.site.Api
                              + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
                              + this.category;
                 Stream xmlFragment = HttpRequest.Get(uri);
@@ -201,7 +206,7 @@ namespace Helpmebot.Monitoring
             }
             catch (Exception ex)
             {
-                this.logger.Error("Error contacting API (" + this.site + ") ", ex);
+                this.logger.Error("Error contacting API (" + this.site.Api + ") ", ex);
             }
 
             IEnumerable<string> pageList = pages;

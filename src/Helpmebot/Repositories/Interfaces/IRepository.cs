@@ -119,5 +119,16 @@ namespace Helpmebot.Repositories.Interfaces
         /// The commit.
         /// </summary>
         void Commit();
+
+        /// <summary>
+        /// The get by id.
+        /// </summary>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// The <see cref="T"/>.
+        /// </returns>
+        T GetById(int id);
     }
 }
