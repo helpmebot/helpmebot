@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Controls instances of CategoryWatchers for the bot
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Monitoring
 {
     using System;
@@ -28,10 +24,10 @@ namespace Helpmebot.Monitoring
 
     using Castle.Core.Logging;
 
-    using Helpmebot;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
@@ -39,29 +35,49 @@ namespace Helpmebot.Monitoring
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    ///   Controls instances of CategoryWatchers for the bot
+    ///     Controls instances of CategoryWatchers for the bot
     /// </summary>
     internal class WatcherController
     {
+        #region Static Fields
+
         /// <summary>
-        /// The _instance.
+        ///     The _instance.
         /// </summary>
         private static WatcherController instance;
 
-        /// <summary>
-        /// The watchers.
-        /// </summary>
-        private readonly Dictionary<string, CategoryWatcher> watchers;
+        #endregion
+
+        #region Fields
 
         /// <summary>
-        /// The message service.
+        ///     Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
+        ///     The message service.
         /// </summary>
         private readonly IMessageService messageService;
 
         /// <summary>
-        /// The url shortening service.
+        ///     The url shortening service.
         /// </summary>
         private readonly IUrlShorteningService urlShorteningService;
+
+        /// <summary>
+        ///     The watched category repository.
+        /// </summary>
+        private readonly IWatchedCategoryRepository watchedCategoryRepository;
+
+        /// <summary>
+        ///     The watchers.
+        /// </summary>
+        private readonly Dictionary<string, CategoryWatcher> watchers;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="WatcherController"/> class.
@@ -72,42 +88,41 @@ namespace Helpmebot.Monitoring
         /// <param name="urlShorteningService">
         /// The url Shortening Service.
         /// </param>
-        protected WatcherController(IMessageService messageService, IUrlShorteningService urlShorteningService)
+        /// <param name="watchedCategoryRepository">
+        /// The watched Category Repository.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        protected WatcherController(
+            IMessageService messageService, 
+            IUrlShorteningService urlShorteningService, 
+            IWatchedCategoryRepository watchedCategoryRepository, 
+            ILogger logger)
         {
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
+            this.watchedCategoryRepository = watchedCategoryRepository;
             this.watchers = new Dictionary<string, CategoryWatcher>();
+            this.logger = logger;
 
-            var q = new LegacyDatabase.Select("watcher_category", "watcher_keyword", "watcher_sleeptime");
-            q.AddOrder(new LegacyDatabase.Select.Order("watcher_priority", true));
-            q.SetFrom("watcher");
-            q.AddLimit(100, 0);
-            ArrayList watchersInDb = LegacyDatabase.Singleton().ExecuteSelect(q);
-            foreach (object[] item in watchersInDb)
+            foreach (WatchedCategory item in this.watchedCategoryRepository.Get())
             {
-                this.watchers.Add(
-                    (string)item[1],
-                    new CategoryWatcher((string)item[0], (string)item[1], int.Parse(((uint)item[2]).ToString(CultureInfo.InvariantCulture))));
-            }
-
-            foreach (KeyValuePair<string, CategoryWatcher> item in this.watchers)
-            {
-                item.Value.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
+                var categoryWatcher = new CategoryWatcher(item);
+                this.watchers.Add(item.Keyword, categoryWatcher);
+                categoryWatcher.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
             }
         }
 
-        #region Public methods
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
-
-        /// <summary>
-        /// The instance.
+        ///     The instance.
         /// </summary>
         /// <returns>
-        /// The <see cref="WatcherController"/>.
+        ///     The <see cref="WatcherController" />.
         /// </returns>
         public static WatcherController Instance()
         {
@@ -116,35 +131,31 @@ namespace Helpmebot.Monitoring
                 // FIXME: ServiceLocator usages
                 var ms = ServiceLocator.Current.GetInstance<IMessageService>();
                 var ss = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
+                var repo = ServiceLocator.Current.GetInstance<IWatchedCategoryRepository>();
+                var logger = ServiceLocator.Current.GetInstance<ILogger>();
 
-                instance = new WatcherController(ms, ss);
+                instance = new WatcherController(ms, ss, repo, logger);
             }
 
             return instance;
         }
 
         /// <summary>
-        /// Determines whether the specified word is a valid keyword.
-        /// </summary>
-        /// <param name="keyword">The keyword.</param>
-        /// <returns>
-        ///     <c>true</c> if the specified word is a valid keyword; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsValidKeyword(string keyword)
-        {
-            return this.watchers.ContainsKey(keyword);
-        }
-
-        /// <summary>
         /// Adds the watcher to channel.
         /// </summary>
-        /// <param name="keyword">The keyword.</param>
-        /// <param name="channel">The channel.</param>
-        /// <returns>The bool</returns>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The bool
+        /// </returns>
         public bool AddWatcherToChannel(string keyword, string channel)
         {
             string channelId = LegacyConfig.Singleton().GetChannelId(channel);
-            int watcherId = GetWatcherId(keyword);
+            int watcherId = this.GetWatcherId(keyword);
 
             var q = new LegacyDatabase.Select("COUNT(*)");
             q.SetFrom("channelwatchers");
@@ -154,7 +165,8 @@ namespace Helpmebot.Monitoring
 
             if (count == "0")
             {
-                LegacyDatabase.Singleton().Insert("channelwatchers", channelId, watcherId.ToString(CultureInfo.InvariantCulture));
+                LegacyDatabase.Singleton()
+                    .Insert("channelwatchers", channelId, watcherId.ToString(CultureInfo.InvariantCulture));
                 return true;
             }
 
@@ -162,30 +174,21 @@ namespace Helpmebot.Monitoring
         }
 
         /// <summary>
-        /// Removes the watcher from channel.
-        /// </summary>
-        /// <param name="keyword">The keyword.</param>
-        /// <param name="channel">The channel.</param>
-        public void RemoveWatcherFromChannel(string keyword, string channel)
-        {
-            string channelId = LegacyConfig.Singleton().GetChannelId(channel);
-            int watcherId = GetWatcherId(keyword);
-
-            var deleteCommand =
-                new MySqlCommand("DELETE FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
-            deleteCommand.Parameters.AddWithValue("@channel", channelId);
-            deleteCommand.Parameters.AddWithValue("@watcher", watcherId);
-            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
-        }
-
-        /// <summary>
         /// Forces the update.
         /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="destination">The destination.</param>
-        /// <returns>the compile</returns>
+        /// <param name="key">
+        /// The key.
+        /// </param>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <returns>
+        /// the compile
+        /// </returns>
         public string ForceUpdate(string key, string destination)
         {
+            this.logger.InfoFormat("Forcing update for {0} at {1}.", key, destination);
+
             CategoryWatcher cw;
             if (this.watchers.TryGetValue(key, out cw))
             {
@@ -198,14 +201,100 @@ namespace Helpmebot.Monitoring
         }
 
         /// <summary>
-        /// Gets the keywords.
+        /// The get delay.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int GetDelay(string keyword)
+        {
+            CategoryWatcher cw = this.GetWatcher(keyword);
+            if (cw != null)
+            {
+                return cw.SleepTime;
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        ///     Gets the keywords.
         /// </summary>
         /// <returns>
-        /// The list of keywords
+        ///     The list of keywords
         /// </returns>
         public Dictionary<string, CategoryWatcher>.KeyCollection GetKeywords()
         {
             return this.watchers.Keys;
+        }
+
+        /// <summary>
+        /// Determines whether the specified word is a valid keyword.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the specified word is a valid keyword; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsValidKeyword(string keyword)
+        {
+            return this.watchers.ContainsKey(keyword);
+        }
+
+        /// <summary>
+        /// Determines whether [is watcher in channel] [the specified channel].
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsWatcherInChannel(string channel, string keyword)
+        {
+            var q = new LegacyDatabase.Select("COUNT(*)");
+            q.SetFrom("channelwatchers");
+            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
+            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
+            q.AddJoin(
+                "channel", 
+                LegacyDatabase.Select.JoinTypes.Inner, 
+                new LegacyDatabase.WhereConds(false, "cw_channel", "=", false, "channel_id"));
+            q.AddJoin(
+                "watcher", 
+                LegacyDatabase.Select.JoinTypes.Inner, 
+                new LegacyDatabase.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
+
+            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            return count != "0";
+        }
+
+        /// <summary>
+        /// Removes the watcher from channel.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        public void RemoveWatcherFromChannel(string keyword, string channel)
+        {
+            string channelId = LegacyConfig.Singleton().GetChannelId(channel);
+            int watcherId = this.GetWatcherId(keyword);
+
+            var deleteCommand =
+                new MySqlCommand("DELETE FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
+            deleteCommand.Parameters.AddWithValue("@channel", channelId);
+            deleteCommand.Parameters.AddWithValue("@watcher", watcherId);
+            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
         }
 
         /// <summary>
@@ -235,83 +324,39 @@ namespace Helpmebot.Monitoring
             if (cw != null)
             {
                 var vals = new Dictionary<string, string>
-                                                      {
-                                                          {
-                                                              "watcher_sleeptime",
-                                                              newDelay.ToString(
-                                                                  CultureInfo.InvariantCulture)
-                                                          }
-                                                      };
-                LegacyDatabase.Singleton().Update("watcher", vals, 0, new LegacyDatabase.WhereConds("watcher_keyword", keyword));
+                               {
+                                   {
+                                       "watcher_sleeptime", 
+                                       newDelay.ToString(CultureInfo.InvariantCulture)
+                                   }
+                               };
+                LegacyDatabase.Singleton()
+                    .Update("watcher", vals, 0, new LegacyDatabase.WhereConds("watcher_keyword", keyword));
                 cw.SleepTime = newDelay;
-                return new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
+                return
+                    new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
             }
 
             return new CommandResponseHandler();
         }
 
-        /// <summary>
-        /// The get delay.
-        /// </summary>
-        /// <param name="keyword">
-        /// The keyword.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
-        public int GetDelay(string keyword)
-        {
-            CategoryWatcher cw = this.GetWatcher(keyword);
-            if (cw != null)
-            {
-                return cw.SleepTime;
-            }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Determines whether [is watcher in channel] [the specified channel].
-        /// </summary>
-        /// <param name="channel">The channel.</param>
-        /// <param name="keyword">The keyword.</param>
-        /// <returns>
-        ///     <c>true</c> if [is watcher in channel] [the specified channel]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsWatcherInChannel(string channel, string keyword)
-        {
-            var q = new LegacyDatabase.Select("COUNT(*)");
-            q.SetFrom("channelwatchers");
-            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
-            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
-            q.AddJoin(
-                "channel",
-                LegacyDatabase.Select.JoinTypes.Inner,
-                new LegacyDatabase.WhereConds(false, "cw_channel", "=", false, "channel_id"));
-            q.AddJoin(
-                "watcher",
-                LegacyDatabase.Select.JoinTypes.Inner,
-                new LegacyDatabase.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
-
-            var count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
-            return count != "0";
-        }
-
         #endregion
+
+        #region Methods
 
         /// <summary>
         /// The update database table.
         /// </summary>
         /// <param name="items">
-        ///     The items.
+        /// The items.
         /// </param>
         /// <param name="keyword">
-        ///     The keyword.
+        /// The keyword.
         /// </param>
         private static void UpdateDatabaseTable(IEnumerable<string> items, string keyword)
         {
             var newItems = new List<string>();
-            foreach (var item in items)
+            foreach (string item in items)
             {
                 var q = new LegacyDatabase.Select("COUNT(*)");
                 q.SetFrom("categoryitems");
@@ -339,10 +384,10 @@ namespace Helpmebot.Monitoring
                     var v = new Dictionary<string, string> { { "item_updateflag", "1" } };
                     LegacyDatabase.Singleton()
                         .Update(
-                            "categoryitems",
-                            v,
-                            1,
-                            new LegacyDatabase.WhereConds("item_name", item),
+                            "categoryitems", 
+                            v, 
+                            1, 
+                            new LegacyDatabase.WhereConds("item_name", item), 
                             new LegacyDatabase.WhereConds("item_keyword", keyword));
                 }
             }
@@ -355,25 +400,6 @@ namespace Helpmebot.Monitoring
 
             var val = new Dictionary<string, string> { { "item_updateflag", "0" } };
             LegacyDatabase.Singleton().Update("categoryitems", val, 0);
-        }
-
-        /// <summary>
-        /// The get watcher id.
-        /// </summary>
-        /// <param name="keyword">
-        /// The keyword.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
-        private static int GetWatcherId(string keyword)
-        {
-            var q = new LegacyDatabase.Select("watcher_id");
-            q.SetFrom("watcher");
-            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
-            string watcherIdString = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
-
-            return int.Parse(watcherIdString);
         }
 
         /// <summary>
@@ -393,12 +419,12 @@ namespace Helpmebot.Monitoring
 
             var q = new LegacyDatabase.Select("channel_name");
             q.AddJoin(
-                "channelwatchers",
-                LegacyDatabase.Select.JoinTypes.Inner,
+                "channelwatchers", 
+                LegacyDatabase.Select.JoinTypes.Inner, 
                 new LegacyDatabase.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
             q.AddJoin(
-                "channel",
-                LegacyDatabase.Select.JoinTypes.Inner,
+                "channel", 
+                LegacyDatabase.Select.JoinTypes.Inner, 
                 new LegacyDatabase.WhereConds(false, "channel_id", "=", false, "cw_channel"));
             q.SetFrom("watcher");
             q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", e.Keyword));
@@ -435,18 +461,22 @@ namespace Helpmebot.Monitoring
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private string CompileMessage(IEnumerable<string> itemsEnumerable, string keyword, string destination, bool forceShowAll)
+        private string CompileMessage(
+            IEnumerable<string> itemsEnumerable, 
+            string keyword, 
+            string destination, 
+            bool forceShowAll)
         {
             //// keywordHasItems: 0: count, 1: plural word(s), 2: items in category
             //// keywordNoItems: 0: plural word(s)
             //// keywordPlural
             //// keywordSingular
-
             List<string> items = itemsEnumerable.ToList();
 
             string fakedestination = destination;
 
-            bool showWaitTime = fakedestination != string.Empty && (LegacyConfig.Singleton()["showWaitTime", destination] == "true");
+            bool showWaitTime = fakedestination != string.Empty
+                                && (LegacyConfig.Singleton()["showWaitTime", destination] == "true");
 
             TimeSpan minimumWaitTime;
             if (!TimeSpan.TryParse(LegacyConfig.Singleton()["minimumWaitTime", destination], out minimumWaitTime))
@@ -454,8 +484,10 @@ namespace Helpmebot.Monitoring
                 minimumWaitTime = new TimeSpan(0);
             }
 
-            bool shortenUrls = fakedestination != string.Empty && (LegacyConfig.Singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true");
-            bool showDelta = fakedestination != string.Empty && (LegacyConfig.Singleton()["catWatcherShowDelta", destination] == "true");
+            bool shortenUrls = fakedestination != string.Empty
+                               && (LegacyConfig.Singleton()["useShortUrlsInsteadOfWikilinks", destination] == "true");
+            bool showDelta = fakedestination != string.Empty
+                             && (LegacyConfig.Singleton()["catWatcherShowDelta", destination] == "true");
 
             if (forceShowAll)
             {
@@ -463,7 +495,7 @@ namespace Helpmebot.Monitoring
             }
 
             string message;
-            
+
             if (items.Any())
             {
                 string listString = string.Empty;
@@ -471,11 +503,11 @@ namespace Helpmebot.Monitoring
                 {
                     // Display [[]]'ied name of the page which requests help
                     listString += "[[" + item + "]] ";
-                    
+
                     // Display an http URL to the page, if desired
                     if (shortenUrls)
                     {
-                        var uriString = LegacyConfig.Singleton()["wikiUrl"] + item;
+                        string uriString = LegacyConfig.Singleton()["wikiUrl"] + item;
                         listString += this.urlShorteningService.Shorten(uriString);
                     }
 
@@ -499,14 +531,17 @@ namespace Helpmebot.Monitoring
                         {
                             string[] messageparams =
                                 {
-                                    ts.Hours.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                                    ts.Minutes.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
-                                    ts.Seconds.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'),
+                                    ts.Hours.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'), 
+                                    ts.Minutes.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'), 
+                                    ts.Seconds.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'), 
                                     ts.TotalDays >= 1
                                         ? ((int)Math.Floor(ts.TotalDays)) + "d "
                                         : string.Empty
                                 };
-                            listString += this.messageService.RetrieveMessage("catWatcherWaiting", destination, messageparams);
+                            listString += this.messageService.RetrieveMessage(
+                                "catWatcherWaiting", 
+                                destination, 
+                                messageparams);
                         }
                     }
 
@@ -517,23 +552,32 @@ namespace Helpmebot.Monitoring
                 listString = listString.TrimEnd(' ', ',');
                 string pluralString = items.Count() == 1
                                           ? this.messageService.RetrieveMessage(
-                                              keyword + "Singular",
-                                              destination,
+                                              keyword + "Singular", 
+                                              destination, 
                                               new[] { "keywordSingularDefault" })
                                           : this.messageService.RetrieveMessage(
-                                              keyword + "Plural",
-                                              destination,
+                                              keyword + "Plural", 
+                                              destination, 
                                               new[] { "keywordPluralDefault" });
                 string[] messageParams =
                     {
-                        items.Count().ToString(CultureInfo.InvariantCulture), pluralString,
+                        items.Count().ToString(CultureInfo.InvariantCulture), pluralString, 
                         listString
                     };
-                message = this.messageService.RetrieveMessage(keyword + (showDelta ? "New" : string.Empty) + "HasItems", destination, messageParams);
+                message = this.messageService.RetrieveMessage(
+                    keyword + (showDelta ? "New" : string.Empty) + "HasItems", 
+                    destination, 
+                    messageParams);
             }
             else
             {
-                string[] mp = { this.messageService.RetrieveMessage(keyword + "Plural", destination, new[] { "keywordPluralDefault" }) };
+                string[] mp =
+                    {
+                        this.messageService.RetrieveMessage(
+                            keyword + "Plural", 
+                            destination, 
+                            new[] { "keywordPluralDefault" })
+                    };
                 message = this.messageService.RetrieveMessage(keyword + "NoItems", destination, mp);
             }
 
@@ -555,5 +599,26 @@ namespace Helpmebot.Monitoring
             bool success = this.watchers.TryGetValue(keyword, out cw);
             return success ? cw : null;
         }
+
+        /// <summary>
+        /// The get watcher id.
+        /// </summary>
+        /// <param name="keyword">
+        /// The keyword.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        private int GetWatcherId(string keyword)
+        {
+            if (this.watchers.ContainsKey(keyword))
+            {
+                return this.watchers[keyword].WatchedCategory.Id;
+            }
+
+            return 0;
+        }
+
+        #endregion
     }
 }

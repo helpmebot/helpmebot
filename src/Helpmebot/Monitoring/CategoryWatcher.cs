@@ -28,6 +28,7 @@ namespace Helpmebot.Monitoring
 
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Threading;
 
@@ -56,7 +57,7 @@ namespace Helpmebot.Monitoring
         private readonly string key;
 
         /// <summary>
-        /// The logger.
+        ///     The logger.
         /// </summary>
         private readonly ILogger logger;
 
@@ -64,6 +65,11 @@ namespace Helpmebot.Monitoring
         ///     The site.
         /// </summary>
         private readonly string site;
+
+        /// <summary>
+        /// The watched category.
+        /// </summary>
+        private readonly WatchedCategory watchedCategory;
 
         /// <summary>
         ///     The sleep time.
@@ -85,14 +91,10 @@ namespace Helpmebot.Monitoring
         /// <param name="category">
         /// The category.
         /// </param>
-        /// <param name="key">
-        /// The key.
-        /// </param>
-        /// <param name="sleepTime">
-        /// The sleep time.
-        /// </param>
-        public CategoryWatcher(string category, string key, int sleepTime)
+        public CategoryWatcher(WatchedCategory category)
         {
+            this.watchedCategory = category;
+
             // FIXME: Remove me!
             this.logger = ServiceLocator.Current.GetInstance<ILogger>();
 
@@ -104,9 +106,9 @@ namespace Helpmebot.Monitoring
             q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
             this.site = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
 
-            this.category = category;
-            this.key = key;
-            this.sleepTime = sleepTime;
+            this.category = category.Category;
+            this.key = category.Keyword;
+            this.sleepTime = category.SleepTime;
 
             this.RegisterInstance();
 
@@ -153,6 +155,17 @@ namespace Helpmebot.Monitoring
                 Thread.Sleep(500);
                 this.watcherThread = new Thread(this.WatcherThreadMethod);
                 this.watcherThread.Start();
+            }
+        }
+
+        /// <summary>
+        /// Gets the watched category.
+        /// </summary>
+        public WatchedCategory WatchedCategory
+        {
+            get
+            {
+                return this.watchedCategory;
             }
         }
 
