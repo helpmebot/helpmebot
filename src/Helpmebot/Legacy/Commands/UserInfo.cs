@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Linq;
     using System.Text.RegularExpressions;
 
     using Castle.Core.Logging;
@@ -29,6 +30,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
@@ -238,7 +240,12 @@ namespace helpmebot6.Commands
 
                 initial.EditRate = initial.EditCount / initial.UserAge.TotalDays;
 
-                BlockInformation bi = Blockinfo.GetBlockInformation(userName, channel);
+                string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
+
+                // FIXME: ServiceLocator
+                var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+                MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+                BlockInformation bi = mediaWikiSite.GetBlockInformation(userName).FirstOrDefault();
 
                 initial.BlockInformation = bi.Id ?? string.Empty;
 

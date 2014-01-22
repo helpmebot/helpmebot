@@ -16,13 +16,10 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace helpmebot6.Commands
 {
-    using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Net;
-    using System.Xml.Linq;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -60,65 +57,6 @@ namespace helpmebot6.Commands
 
         #endregion
 
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Gets the block information for a user or IP address on a wiki.
-        /// </summary>
-        /// <param name="userName">
-        /// Name of the user.
-        /// </param>
-        /// <param name="channel">
-        /// The channel the command was requested in.
-        /// </param>
-        /// <returns>
-        /// the block information
-        /// </returns>
-        public static BlockInformation GetBlockInformation(string userName, string channel)
-        {
-            IPAddress ip;
-
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-            // FIXME: ServiceLocator
-            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
-
-            string apiParams = string.Format(
-                "{2}?action=query&list=blocks&bk{0}={1}&format=xml", 
-                IPAddress.TryParse(userName, out ip) ? "ip" : "users", 
-                userName, 
-                mediaWikiSite.Api);
-
-            Stream xmlFragment = HttpRequest.Get(apiParams);
-
-            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-            //// ReSharper disable PossibleNullReferenceException
-            IEnumerable<BlockInformation> x = from item in xdoc.Descendants("block")
-                                              select
-                                                  new BlockInformation
-                                                      {
-                                                          Id = item.Attribute("id").Value, 
-                                                          Target = item.Attribute("user").Value, 
-                                                          BlockedBy = item.Attribute("by").Value, 
-                                                          Start = item.Attribute("timestamp").Value, 
-                                                          Expiry = item.Attribute("expiry").Value, 
-                                                          BlockReason = item.Attribute("reason").Value, 
-                                                          AutoBlock = item.Attribute("autoblock") != null, 
-                                                          NoCreate = item.Attribute("nocreate") != null, 
-                                                          NoEmail = item.Attribute("noemail") != null, 
-                                                          AllowUserTalk =
-                                                              item.Attribute("allowusertalk") != null, 
-                                                          AnonOnly = item.Attribute("anononly") != null
-                                                      };
-
-            //// ReSharper restore PossibleNullReferenceException
-            return x.FirstOrDefault();
-        }
-
-        #endregion
-
         #region Methods
 
         /// <summary>
@@ -127,9 +65,15 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return
-                new CommandResponseHandler(
-                    GetBlockInformation(string.Join(" ", this.Arguments), this.Channel).ToString());
+            string userName = this.Arguments.Implode();
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+            return new CommandResponseHandler(mediaWikiSite.GetBlockInformation(userName).FirstOrDefault().ToString());
         }
 
         #endregion
