@@ -34,7 +34,7 @@ namespace Helpmebot.Tests.Services
     /// The keyword service tests.
     /// </summary>
     [TestFixture]
-    public class KeywordServiceTests
+    public class KeywordServiceTests : TestBase
     {
         /// <summary>
         /// The keyword repository.
@@ -49,8 +49,7 @@ namespace Helpmebot.Tests.Services
         /// <summary>
         /// The setup.
         /// </summary>
-        [TestFixtureSetUp]
-        public void Setup()
+        public override void LocalSetup()
         {
             this.keywordRepository = new Mock<IKeywordRepository>();
             this.keyword = new Keyword { Action = false, Name = "ab", Response = "ab" };
@@ -63,7 +62,7 @@ namespace Helpmebot.Tests.Services
         public void ShouldReturnKeyword()
         {
             // arrange
-            var keywordService = new KeywordService(this.keywordRepository.Object);
+            var keywordService = new KeywordService(this.keywordRepository.Object, this.Logger.Object);
             this.keywordRepository.Setup(x => x.GetByName("ab"))
                 .Returns(
                     new List<Keyword>
