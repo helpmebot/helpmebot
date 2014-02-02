@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Helpmebot.ExtensionMethods;
+
 namespace helpmebot6.Commands
 {
     using System;
