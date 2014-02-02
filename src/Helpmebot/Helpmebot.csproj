@@ -118,6 +118,7 @@
     <Compile Include="Legacy\IRC\IIrcAccessLayer.cs" />
     <Compile Include="Legacy\IRC\LegacyIrcProxy.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
+    <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\WatchedCategory.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
     <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
@@ -150,8 +152,10 @@
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IInterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\Interfaces\IMediaWikiSiteRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />
+    <Compile Include="Repositories\InterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\MediaWikiSiteRepository.cs" />
     <Compile Include="Repositories\ResponseRepository.cs" />
     <Compile Include="Repositories\WatchedCategoryRepository.cs" />

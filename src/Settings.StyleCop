@@ -10,6 +10,7 @@
       <Value>whois</Value>
       <Value>Wikipedian</Value>
       <Value>Helpmebot</Value>
+      <Value>transclusion</Value>
     </CollectionProperty>
     <StringProperty Name="Culture">en-GB</StringProperty>
   </GlobalSettings>
