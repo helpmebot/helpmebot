@@ -63,18 +63,26 @@ namespace helpmebot6.Commands
         {
             System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
+#if !DEBUG
             var date = new DateTime(2000, 1, 1, 0, 0, 0);
             date = date.AddDays(version.Build);
             date = date.AddSeconds(version.Revision * 2);
-
+#endif
             var messageArgs = new List<string>
                                   {
                                       version.Major.ToString(CultureInfo.InvariantCulture),
                                       version.Minor.ToString(CultureInfo.InvariantCulture),
+#if DEBUG
+                                      "*",
+                                      "*",
+                                      "DEBUG"
+#else
                                       version.Build.ToString(CultureInfo.InvariantCulture),
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
                                       date.ToInternetFormat()
+#endif
                                   };
+
 
             string message = this.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
 
