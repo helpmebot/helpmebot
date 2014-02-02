@@ -20,13 +20,16 @@
 
 namespace helpmebot6.Commands
 {
+#if !DEBUG
     using System;
+    using Helpmebot.ExtensionMethods;
+#endif
+
     using System.Collections.Generic;
     using System.Globalization;
     using System.Reflection;
 
     using Helpmebot;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
