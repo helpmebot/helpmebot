@@ -18,17 +18,17 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Helpmebot.ExtensionMethods;
-
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
 
     using Castle.Core.Logging;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -136,7 +136,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = { "userinfo", "1", args.Length.ToString() };
+                string[] messageParameters = { "userinfo", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
                 Helpmebot6.irc.IrcNotice(
                     this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
@@ -280,8 +280,9 @@ namespace helpmebot6.Commands
                     userInformation.UserName, userInformation.UserPage, userInformation.TalkPage,
                     userInformation.UserContributions, userInformation.UserBlockLog,
                     userInformation.UserGroups, userInformation.UserAge.ToString(),
-                    userInformation.RegistrationDate.ToString(),
-                    userInformation.EditRate.ToString(), userInformation.EditCount.ToString(),
+                    userInformation.RegistrationDate.ToString(CultureInfo.InvariantCulture),
+                    userInformation.EditRate.ToString(CultureInfo.InvariantCulture), 
+                    userInformation.EditCount.ToString(CultureInfo.InvariantCulture),
                     userInformation.BlockInformation == string.Empty ? string.Empty : "BLOCKED"
                 };
 
@@ -315,7 +316,7 @@ namespace helpmebot6.Commands
 
             this.response.Respond(message);
 
-            string[] messageParameters2 = { userInformation.EditCount.ToString(), userInformation.UserName };
+            string[] messageParameters2 = { userInformation.EditCount.ToString(CultureInfo.InvariantCulture), userInformation.UserName };
             message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
             this.response.Respond(message);
 
@@ -327,7 +328,7 @@ namespace helpmebot6.Commands
                 };
             message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
             this.response.Respond(message);
-            string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString() };
+            string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString(CultureInfo.InvariantCulture) };
             message = this.MessageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
             this.response.Respond(message);
         }
