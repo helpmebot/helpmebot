@@ -51,7 +51,7 @@ namespace Helpmebot.Startup.Facilities
             this.Kernel.Register(
                 Component.For<ISessionFactory>()
                     .UsingFactoryMethod(k => k.Resolve<ISessionFactoryProvider>().SessionFactory),
-                Component.For<ISession>().UsingFactoryMethod(k => k.Resolve<ISessionFactory>().OpenSession()));
+                Component.For<ISession>().UsingFactoryMethod(k => k.Resolve<ISessionFactory>().OpenSession()).LifestyleTransient());
         }
 
         /// <summary>
