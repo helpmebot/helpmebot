@@ -20,14 +20,15 @@
 
 namespace helpmebot6.Commands
 {
-    using System.Collections.Generic;
     using System.Globalization;
 
     using Helpmebot;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Joins an IRC channel
@@ -57,8 +58,8 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The join channel.
         /// </summary>
-        /// <param name="args">
-        /// The args.
+        /// <param name="channelName">
+        /// The channelName.
         /// </param>
         /// <param name="network">
         /// The network.
@@ -67,33 +68,28 @@ namespace helpmebot6.Commands
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
         /// TODO: this should probably be elsewhere
-        public static CommandResponseHandler JoinChannel(string args, uint network)
+        public static CommandResponseHandler JoinChannel(string channelName, uint network)
         {
-            LegacyDatabase.Select q = new LegacyDatabase.Select("count(*)");
-            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", args));
-            q.AddWhere(new LegacyDatabase.WhereConds("channel_network", network.ToString(CultureInfo.InvariantCulture)));
-            q.SetFrom("channel");
+            // FIXME: servicelocator call
+            var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
 
-            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
-
-            if (count == "1")
+            lock (channelRepo)
             {
-                // entry exists
-                Dictionary<string, string> vals = new Dictionary<string, string>
-                                                      {
-                                                          {
-                                                              "channel_enabled",
-                                                              "1"
-                                                              }
-                                                      };
-                LegacyDatabase.Singleton().Update("channel", vals, 1, new LegacyDatabase.WhereConds("channel_name", args));
+                // Get a channel from the repository.
+                var channel = channelRepo.GetByName(channelName);
 
-                Helpmebot6.irc.IrcJoin(args);
-            }
-            else
-            {
-                LegacyDatabase.Singleton().Insert("channel", string.Empty, args, string.Empty, "1", network.ToString(CultureInfo.InvariantCulture));
-                Helpmebot6.irc.IrcJoin(args);
+                if (channel != null)
+                {
+                    channel.Enabled = true;
+                }
+                else
+                {
+                    channel = new Channel { Enabled = true, Name = channelName, Password = null };
+                }
+
+                channelRepo.Save(channel);
+
+                Helpmebot6.irc.IrcJoin(channelName);
             }
 
             return null;

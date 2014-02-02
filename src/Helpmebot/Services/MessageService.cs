@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the MessageService type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Services
 {
     using System;
@@ -29,46 +25,103 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// The message service.
+    ///     The message service.
     /// </summary>
     public class MessageService : IMessageService
     {
-        /// <summary>
-        /// The legacy database.
-        /// </summary>
-        private readonly ILegacyDatabase legacyDatabase;
+        #region Fields
 
         /// <summary>
-        /// The random generator.
+        ///     The random generator.
         /// </summary>
         private readonly Random random;
 
         /// <summary>
-        /// The random lock.
+        ///     The random lock.
         /// </summary>
         private readonly object randomLock = new object();
 
         /// <summary>
+        /// The response repository.
+        /// </summary>
+        private readonly IResponseRepository responseRepository;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="MessageService"/> class.
         /// </summary>
-        /// <param name="legacyDatabase">
-        /// The legacy database.
+        /// <param name="responseRepository">
+        /// The response Repository.
         /// </param>
-        public MessageService(ILegacyDatabase legacyDatabase)
+        public MessageService(IResponseRepository responseRepository)
         {
-            this.legacyDatabase = legacyDatabase;
+            this.responseRepository = responseRepository;
             this.random = new Random();
         }
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets or sets the logger.
+        ///     Gets or sets the logger.
         /// </summary>
         public ILogger Log { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The done.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string Done(object context)
+        {
+            return this.RetrieveMessage(Messages.Done, context, null);
+        }
+
+        /// <summary>
+        /// The retrieve not enough parameters.
+        /// </summary>
+        /// <param name="context">
+        /// The context.
+        /// </param>
+        /// <param name="command">
+        /// The command.
+        /// </param>
+        /// <param name="expected">
+        /// The expected.
+        /// </param>
+        /// <param name="actual">
+        /// The actual.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string NotEnoughParameters(object context, string command, int expected, int actual)
+        {
+            var arguments = new[]
+                                {
+                                    command, expected.ToString(CultureInfo.InvariantCulture), 
+                                    actual.ToString(CultureInfo.InvariantCulture)
+                                };
+
+            return this.RetrieveMessage(Messages.NotEnoughParameters, context, arguments);
+        }
 
         /// <summary>
         /// The retrieve message.
@@ -113,47 +166,67 @@ namespace Helpmebot.Services
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The retrieve not enough parameters.
+        /// Gets a context-sensitive message from the database.
         /// </summary>
-        /// <param name="context">
-        /// The context.
+        /// <param name="messageKey">
+        /// The message key.
         /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="expected">
-        /// The expected.
-        /// </param>
-        /// <param name="actual">
-        /// The actual.
+        /// <param name="contextPath">
+        /// The context path.
         /// </param>
         /// <returns>
-        /// The <see cref="string"/>.
+        /// The list of messages.
         /// </returns>
-        public string NotEnoughParameters(object context, string command, int expected, int actual)
+        private IEnumerable<string> GetMessageFromDatabase(string messageKey, string contextPath)
         {
-            var arguments = new[]
-                                {
-                                    command, expected.ToString(CultureInfo.InvariantCulture),
-                                    actual.ToString(CultureInfo.InvariantCulture)
-                                };
+            // attempt to get some context-sensitive message.
+            List<string> results = this.GetRawMessageFromDatabase(string.Concat(messageKey, contextPath)).ToList();
 
-            return this.RetrieveMessage(Messages.NotEnoughParameters, context, arguments);
+            if (!results.Any())
+            {
+                // nothing found, fall back on the value with no context.
+                results = this.GetRawMessageFromDatabase(messageKey).ToList();
+
+                this.Log.InfoFormat(
+                    "Message {0} with context path {1} not found: Falling back to non-context-sensitive message.", 
+                    messageKey, 
+                    contextPath);
+            }
+
+            if (results.Any())
+            {
+                return results;
+            }
+
+            this.Log.ErrorFormat("Message {0} not found.", messageKey);
+            return null;
         }
 
         /// <summary>
-        /// The done.
+        /// Gets a raw message key (including any context path) from the database
         /// </summary>
-        /// <param name="context">
-        /// The context.
+        /// <param name="messageKey">
+        /// The message key.
         /// </param>
         /// <returns>
-        /// The <see cref="string"/>.
+        /// The list of messages.
         /// </returns>
-        public string Done(object context)
+        private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
         {
-            return this.RetrieveMessage(Messages.Done, context, null);
+            Response response = this.responseRepository.GetByName(messageKey);
+            if (response != null)
+            {
+                // extract the byte array from the dataset
+                string text = Encoding.UTF8.GetString(response.Text);
+                return text.Split('\n').ToList();
+            }
+
+            return new List<string>();
         }
 
         /// <summary>
@@ -179,7 +252,7 @@ namespace Helpmebot.Services
                 messageKey = messageKey.Substring(0, 1).ToUpper() + messageKey.Substring(1);
             }
 
-            var messages = this.GetMessageFromDatabase(messageKey, contextPath).ToList();
+            List<string> messages = this.GetMessageFromDatabase(messageKey, contextPath).ToList();
 
             // let's grab a random message from the tin:
             int randomNumber;
@@ -196,7 +269,7 @@ namespace Helpmebot.Services
                 object[] args = arguments.ToArray();
                 builtString = string.Format(builtString, args);
             }
-            
+
             if (builtString.StartsWith("#ACTION"))
             {
                 builtString = builtString.Substring(8).SetupForCtcp("ACTION");
@@ -205,65 +278,6 @@ namespace Helpmebot.Services
             return builtString;
         }
 
-        /// <summary>
-        /// Gets a context-sensitive message from the database.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="contextPath">
-        /// The context path.
-        /// </param>
-        /// <returns>
-        /// The list of messages.
-        /// </returns>
-        private IEnumerable<string> GetMessageFromDatabase(string messageKey, string contextPath)
-        {
-            // attempt to get some context-sensitive message.
-            var results = this.GetRawMessageFromDatabase(string.Concat(messageKey, contextPath)).ToList();
-
-            if (!results.Any())
-            {
-                // nothing found, fall back on the value with no context.
-                results = this.GetRawMessageFromDatabase(messageKey).ToList();
-
-                this.Log.InfoFormat("Message {0} with context path {1} not found: Falling back to non-context-sensitive message.", messageKey, contextPath);
-            }
-
-            if (results.Any())
-            {
-                return results;
-            }
-
-            this.Log.ErrorFormat("Message {0} not found.", messageKey);
-            return null;
-        }
-
-        /// <summary>
-        /// Gets a raw message key (including any context path) from the database
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <returns>
-        /// The list of messages.
-        /// </returns>
-        private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
-        {
-            LegacyDatabase.Select query =
-                new LegacyDatabase.Select("message_text").From("messages").Where(new LegacyDatabase.WhereConds("message_name", messageKey));
-            var result = this.legacyDatabase.ExecuteSelect(query);
-
-            if (result.Count == 1)
-            {
-                // extract the byte array from the dataset
-                var y = (byte[])((object[])result[0])[0];
-
-                Encoding encoding = Encoding.UTF8;
-                return encoding.GetString(y).Split('\n').ToList();
-            }
-
-            return new List<string>();
-        }
+        #endregion
     }
 }

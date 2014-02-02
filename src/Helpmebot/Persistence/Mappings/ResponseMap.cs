@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EntityBase.cs" company="Helpmebot Development Team">
+// <copyright file="ResponseMap.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -13,23 +13,32 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the EntityBase type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Persistence
+namespace Helpmebot.Persistence.Mappings
 {
-    using Helpmebot.Persistence.Interfaces;
+    using FluentNHibernate.Mapping;
+
+    using Helpmebot.Model;
 
     /// <summary>
-    /// The entity base.
+    /// The response map.
     /// </summary>
-    public class EntityBase : IDatabaseEntity
+    public class ResponseMap : ClassMap<Response>
     {
+        #region Constructors and Destructors
+
         /// <summary>
-        /// Gets or sets the id.
+        /// Initialises a new instance of the <see cref="ResponseMap"/> class.
         /// </summary>
-        public virtual int Id { get; protected set; }
+        public ResponseMap()
+        {
+            this.Table("messages");
+            this.Id(x => x.Id, "message_id");
+            this.Map(x => x.Name, "message_name");
+            this.Map(x => x.Text, "message_text");
+        }
+
+        #endregion
     }
 }

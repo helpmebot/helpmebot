@@ -20,12 +20,12 @@
 
 namespace helpmebot6.Commands
 {
-    using System.Collections.Generic;
-
     using Helpmebot;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Leave an IRC channel
@@ -58,15 +58,15 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            // FIXME: servicelocator call
+            var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
+
+            var channel = channelRepo.GetByName(this.Channel);
+            channel.Enabled = false;
+            channelRepo.Save(channel);
+
             Helpmebot6.irc.IrcPart(this.Channel, this.Source.ToString());
-            Dictionary<string, string> vals = new Dictionary<string, string> { { "channel_enabled", "0" } };
-            LegacyDatabase.Singleton()
-                .Update(
-                    "channel",
-                    vals,
-                    0,
-                    new LegacyDatabase.WhereConds("channel_name", this.Channel),
-                    new LegacyDatabase.WhereConds("channel_network", this.Source.Network.ToString()));
+
             return null;
         }
     }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EntityBase.cs" company="Helpmebot Development Team">
+// <copyright file="IResponseRepository.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -13,23 +13,26 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the EntityBase type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Persistence
+namespace Helpmebot.Repositories.Interfaces
 {
-    using Helpmebot.Persistence.Interfaces;
+    using Helpmebot.Model;
 
     /// <summary>
-    /// The entity base.
+    /// The ResponseRepository interface.
     /// </summary>
-    public class EntityBase : IDatabaseEntity
+    public interface IResponseRepository : IRepository<Response>
     {
         /// <summary>
-        /// Gets or sets the id.
+        /// The get response.
         /// </summary>
-        public virtual int Id { get; protected set; }
+        /// <param name="messageKey">
+        /// The message key.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Response"/>.
+        /// </returns>
+        Response GetByName(string messageKey);
     }
 }

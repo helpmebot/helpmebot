@@ -13,18 +13,14 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the MessageServiceTests type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Tests.Services
 {
     using System;
-    using System.Collections;
     using System.Text;
 
-    using Helpmebot.Legacy.Database;
+    using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services;
 
     using Moq;
@@ -32,39 +28,44 @@ namespace Helpmebot.Tests.Services
     using NUnit.Framework;
 
     /// <summary>
-    /// The message service tests.
+    ///     The message service tests.
     /// </summary>
     [TestFixture]
     public class MessageServiceTests
     {
-        /// <summary>
-        /// The database access layer.
-        /// </summary>
-        private Mock<ILegacyDatabase> databaseAccessLayer;
+        #region Fields
 
         /// <summary>
-        /// The message service.
+        ///     The message service.
         /// </summary>
         private MessageService messageService;
 
         /// <summary>
-        /// The custom setup.
+        /// The response repository mock.
+        /// </summary>
+        private Mock<IResponseRepository> responseRepositoryMock;
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The custom setup.
         /// </summary>
         [TestFixtureSetUp]
         public void CustomSetup()
         {
             const string Value = "test {0} {1}";
-            byte[] data = Encoding.UTF8.GetBytes(Value);
 
-            this.databaseAccessLayer = new Mock<ILegacyDatabase>();
-            this.databaseAccessLayer.Setup(x => x.ExecuteSelect(It.IsAny<LegacyDatabase.Select>()))
-                .Returns(new ArrayList { new object[] { data } });
+            this.responseRepositoryMock = new Mock<IResponseRepository>();
+            this.responseRepositoryMock.Setup(x => x.GetByName(It.IsAny<string>()))
+                .Returns(new Response { Text = Encoding.UTF8.GetBytes(Value) });
 
-            this.messageService = new MessageService(this.databaseAccessLayer.Object);
+            this.messageService = new MessageService(this.responseRepositoryMock.Object);
         }
 
         /// <summary>
-        /// Should get a message when a context and parameter list is passed in
+        ///     Should get a message when a context and parameter list is passed in
         /// </summary>
         [Test]
         public void ShouldGetMessage()
@@ -72,29 +73,14 @@ namespace Helpmebot.Tests.Services
             // arrange
 
             // act
-            var result = this.messageService.RetrieveMessage("test", "context", new[] { "arg1", "arg2" });
+            string result = this.messageService.RetrieveMessage("test", "context", new[] { "arg1", "arg2" });
 
             // assert
             Assert.That(result, Is.EqualTo("test arg1 arg2"));
         }
 
         /// <summary>
-        /// Should get a message when a parameter list is passed in
-        /// </summary>
-        [Test]
-        public void ShouldGetMessageOnNullContext()
-        {
-            // arrange
-
-            // act
-            var result = this.messageService.RetrieveMessage("test", null, new[] { "arg1", "arg2" });
-
-            // assert
-            Assert.That(result, Is.EqualTo("test arg1 arg2"));
-        }
-
-        /// <summary>
-        /// Should get a message when a context is passed in
+        ///     Should get a message when a context is passed in
         /// </summary>
         [Test]
         public void ShouldGetMessageOnNullArgs()
@@ -102,16 +88,32 @@ namespace Helpmebot.Tests.Services
             // arrange
 
             // act
-            var result = this.messageService.RetrieveMessage("test", "context", null);
+            string result = this.messageService.RetrieveMessage("test", "context", null);
 
             // assert
             Assert.That(result, Is.EqualTo("test {0} {1}"));
         }
 
         /// <summary>
-        /// Should get a message when a context is passed in
+        ///     Should get a message when a parameter list is passed in
         /// </summary>
-        [Test, ExpectedException(typeof(ArgumentNullException))]
+        [Test]
+        public void ShouldGetMessageOnNullContext()
+        {
+            // arrange
+
+            // act
+            string result = this.messageService.RetrieveMessage("test", null, new[] { "arg1", "arg2" });
+
+            // assert
+            Assert.That(result, Is.EqualTo("test arg1 arg2"));
+        }
+
+        /// <summary>
+        ///     Should get a message when a context is passed in
+        /// </summary>
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldGetMessageOnNullMessage()
         {
             // arrange
@@ -121,5 +123,7 @@ namespace Helpmebot.Tests.Services
 
             // assert
         }
+
+        #endregion
     }
 }
