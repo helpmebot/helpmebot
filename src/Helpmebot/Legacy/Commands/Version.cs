@@ -86,7 +86,6 @@ namespace helpmebot6.Commands
 #endif
                                   };
 
-
             string message = this.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
 
             return new CommandResponseHandler(message);
