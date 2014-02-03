@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Configuration.XmlSections
 {
     using System.Configuration;
@@ -53,13 +52,30 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets the user agent.
         /// </summary>
-        [ConfigurationProperty("useragent", IsRequired = true, DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)"
-            )]
+        [ConfigurationProperty(
+            "useragent", 
+            IsRequired = true, 
+            DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
         public string UserAgent
         {
             get
             {
                 return (string)base["useragent"];
+            }
+        }
+
+        /// <summary>
+        ///     Gets the user agent.
+        /// </summary>
+        [ConfigurationProperty(
+            "authToServices",
+            IsRequired = true,
+            DefaultValue = true)]
+        public bool AuthToServices
+        {
+            get
+            {
+                return (bool)base["authToServices"];
             }
         }
 
