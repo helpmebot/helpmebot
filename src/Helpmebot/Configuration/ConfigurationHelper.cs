@@ -43,5 +43,14 @@ namespace Helpmebot.Configuration
                 return databaseConfiguration;
             }
         }
+
+        public static CoreConfiguration CoreConfiguration
+        {
+            get
+            {
+                var coreConfig = ConfigurationManager.GetSection("core") as CoreConfiguration;
+                return coreConfig;
+            }
+        }
     }
 }

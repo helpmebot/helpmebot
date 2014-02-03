@@ -19,6 +19,7 @@ namespace Helpmebot
     using System.IO;
     using System.Net;
 
+    using Helpmebot.Configuration;
     using Helpmebot.Legacy.Configuration;
 
     /// <summary>
@@ -35,7 +36,7 @@ namespace Helpmebot
         /// The URI.
         /// </param>
         /// <param name="timeout">
-        /// optional. will default to httpTimeout config option 
+        /// optional. will default to httpTimeout XML config option 
         /// </param>
         /// <returns>
         /// The <see cref="Stream"/>.
@@ -43,8 +44,8 @@ namespace Helpmebot
         public static Stream Get(string uri, int timeout = -1)
         {
             var hwr = (HttpWebRequest)WebRequest.Create(uri);
-            hwr.UserAgent = LegacyConfig.Singleton()["useragent"];
-            hwr.Timeout = timeout == -1 ? int.Parse(LegacyConfig.Singleton()["httpTimeout"]) : timeout;
+            hwr.UserAgent = ConfigurationHelper.CoreConfiguration.UserAgent;
+            hwr.Timeout = timeout == -1 ? ConfigurationHelper.CoreConfiguration.HttpTimeout : timeout;
             var resp = (HttpWebResponse)hwr.GetResponse();
 
             return resp.GetResponseStream();

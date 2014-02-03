@@ -67,12 +67,7 @@ namespace Helpmebot
         /// The IRC.
         /// </summary>
         public static IIrcAccessLayer irc;
-
-        /// <summary>
-        /// The debug channel.
-        /// </summary>
-        public static string debugChannel;
-
+        
         /// <summary>
         /// The new IRC client.
         /// </summary>
@@ -175,8 +170,6 @@ namespace Helpmebot
             }
 
             LegacyConfig.Singleton();
-
-            debugChannel = LegacyConfig.Singleton()["channelDebug"];
 
             ircNetwork = uint.Parse(LegacyConfig.Singleton()["ircNetwork"]);
 

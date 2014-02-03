@@ -23,6 +23,7 @@ namespace Helpmebot.Services
 
     using Castle.Core.Logging;
 
+    using Helpmebot.Configuration;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
@@ -129,7 +130,7 @@ namespace Helpmebot.Services
             var wrq =
                 (HttpWebRequest)
                 WebRequest.Create("http://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
-            wrq.UserAgent = LegacyConfig.Singleton()["useragent"];
+            wrq.UserAgent = ConfigurationHelper.CoreConfiguration.UserAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

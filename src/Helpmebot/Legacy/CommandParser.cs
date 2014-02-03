@@ -383,7 +383,7 @@ namespace Helpmebot.Legacy
 
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            Helpmebot6.irc.IrcPrivmsg(Helpmebot6.debugChannel, message);
+                            Helpmebot6.irc.IrcPrivmsg(ConfigurationHelper.CoreConfiguration.DebugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
                             Helpmebot6.irc.IrcPrivmsg(source.Nickname, message);
