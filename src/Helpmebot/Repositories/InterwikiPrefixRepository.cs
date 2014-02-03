@@ -14,18 +14,20 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories
 {
+    using System.Linq;
+
     using Castle.Core.Logging;
 
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
 
     using NHibernate;
+    using NHibernate.Criterion;
 
     /// <summary>
-    /// The inter-wiki prefix repository.
+    ///     The inter-wiki prefix repository.
     /// </summary>
     public class InterwikiPrefixRepository : RepositoryBase<InterwikiPrefix>, IInterwikiPrefixRepository
     {
@@ -43,6 +45,24 @@ namespace Helpmebot.Repositories
         public InterwikiPrefixRepository(ISession session, ILogger logger)
             : base(session, logger)
         {
+        }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The get by prefix.
+        /// </summary>
+        /// <param name="iwprefix">
+        /// The prefix.
+        /// </param>
+        /// <returns>
+        /// The <see cref="InterwikiPrefix"/>.
+        /// </returns>
+        public InterwikiPrefix GetByPrefix(string iwprefix)
+        {
+            return this.Get(Restrictions.Eq("Prefix", iwprefix)).FirstOrDefault();
         }
 
         #endregion

@@ -19,11 +19,14 @@ namespace Helpmebot
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
 
     using Helpmebot.IRC.Events;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
+    using Helpmebot.Repositories.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Linker and link parser
@@ -86,7 +89,11 @@ namespace Helpmebot
         {
             string iwprefix = link.Split(':')[0];
 
-            string url = LegacyDatabase.Singleton().ProcHmbGetIwUrl(iwprefix);
+            // FIXME: servicelocator call
+            var interwikiPrefixRepository = ServiceLocator.Current.GetInstance<IInterwikiPrefixRepository>();
+            var prefix = interwikiPrefixRepository.GetByPrefix(iwprefix);
+
+            string url = prefix == null ? string.Empty : Encoding.UTF8.GetString(prefix.Url);
 
             if (link.Split(':').Length == 1 || url == string.Empty)
             {

@@ -17,10 +17,22 @@
 
 namespace Helpmebot.Repositories.Interfaces
 {
+    using Helpmebot.Model;
+
     /// <summary>
     /// The Inter-wiki Prefix Repository interface.
     /// </summary>
     public interface IInterwikiPrefixRepository
     {
+        /// <summary>
+        /// The get by prefix.
+        /// </summary>
+        /// <param name="iwprefix">
+        /// The inter-wiki prefix.
+        /// </param>
+        /// <returns>
+        /// The <see cref="InterwikiPrefix"/>.
+        /// </returns>
+        InterwikiPrefix GetByPrefix(string iwprefix);
     }
 }
