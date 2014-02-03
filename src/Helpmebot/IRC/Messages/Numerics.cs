@@ -26,6 +26,11 @@ namespace Helpmebot.IRC.Messages
     public class Numerics
     {
         /// <summary>
+        /// The unavailable resource.
+        /// </summary>
+        public const string UnavailableResource = "437";
+
+        /// <summary>
         /// The nickname in use.
         /// </summary>
         public const string NicknameInUse = "433";
