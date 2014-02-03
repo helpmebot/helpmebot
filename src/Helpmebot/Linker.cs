@@ -23,6 +23,7 @@ namespace Helpmebot
     using System.Text.RegularExpressions;
 
     using Helpmebot.IRC.Events;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Repositories.Interfaces;
 
@@ -49,6 +50,11 @@ namespace Helpmebot
         /// </summary>
         private readonly Dictionary<string, string> lastLink;
 
+        /// <summary>
+        /// The IRC client.
+        /// </summary>
+        private readonly IIrcClient ircClient;
+
         #endregion
 
         #region Constructors and Destructors
@@ -58,12 +64,12 @@ namespace Helpmebot
         /// </summary>
         protected Linker()
         {
+            // FIXME: servicelocator call
+            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+         
+            this.ircClient.ReceivedMessage += this.IrcPrivateMessageEvent;
+
             this.lastLink = new Dictionary<string, string>();
-            if (Helpmebot6.irc != null)
-            {
-                Helpmebot6.irc.PrivateMessageEvent += this.IrcPrivateMessageEvent;
-                Helpmebot6.irc.NoticeEvent += this.IrcPrivateMessageEvent;
-            }
         }
 
         #endregion
@@ -263,9 +269,13 @@ namespace Helpmebot
         /// <param name="e">
         /// The e.
         /// </param>
-        private void IrcPrivateMessageEvent(object sender, PrivateMessageEventArgs e)
+        private void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
         {
-            this.ParseMessage(e.Message, e.Destination);
+            if (e.Message.Command == "PRIVMSG" || e.Message.Command == "NOTICE")
+            {
+                var parameters = e.Message.Parameters.ToList();
+                this.ParseMessage(parameters[1], parameters[0]);
+            }
         }
 
         /// <summary>
@@ -281,7 +291,7 @@ namespace Helpmebot
         {
             if (LegacyConfig.Singleton()["autoLink", channel] == "true")
             {
-                Helpmebot6.irc.IrcPrivmsg(channel, this.GetLink(link, false));
+                this.ircClient.SendMessage(channel, this.GetLink(link, false));
             }
         }
 

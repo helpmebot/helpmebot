@@ -345,7 +345,7 @@ namespace Helpmebot
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;
-                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence))
+                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence, (IIrcAccessLayer)sender))
                 {
                     cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');

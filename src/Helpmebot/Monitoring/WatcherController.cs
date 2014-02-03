@@ -24,6 +24,7 @@ namespace Helpmebot.Monitoring
 
     using Castle.Core.Logging;
 
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;
@@ -54,6 +55,11 @@ namespace Helpmebot.Monitoring
         ///     Gets or sets the Castle.Windsor Logger
         /// </summary>
         private readonly ILogger logger;
+
+        /// <summary>
+        /// The IRC client.
+        /// </summary>
+        private readonly IIrcClient ircClient;
 
         /// <summary>
         ///     The message service.
@@ -95,18 +101,23 @@ namespace Helpmebot.Monitoring
         /// <param name="logger">
         /// The logger.
         /// </param>
+        /// <param name="ircClient">
+        /// The IRC Client.
+        /// </param>
         protected WatcherController(
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
             IWatchedCategoryRepository watchedCategoryRepository, 
             IMediaWikiSiteRepository mediaWikiSiteRepository,
             IIgnoredPagesRepository ignoredPagesRepository,
-            ILogger logger)
+            ILogger logger,
+            IIrcClient ircClient)
         {
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
             this.watchers = new Dictionary<string, CategoryWatcher>();
             this.logger = logger;
+            this.ircClient = ircClient;
 
             foreach (WatchedCategory item in watchedCategoryRepository.Get())
             {
@@ -141,8 +152,9 @@ namespace Helpmebot.Monitoring
                 var mwrepo = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
                 var iprepo = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
                 var logger = ServiceLocator.Current.GetInstance<ILogger>();
+                var irc = ServiceLocator.Current.GetInstance<IIrcClient>();
 
-                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger);
+                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger, irc);
             }
 
             return instance;
@@ -446,7 +458,7 @@ namespace Helpmebot.Monitoring
                 string message = this.CompileMessage(items, e.Keyword, channel, false);
                 if (LegacyConfig.Singleton()["silence", channel] == "false")
                 {
-                    Helpmebot6.irc.IrcPrivmsg(channel, message);
+                    this.ircClient.SendMessage(channel, message);
                 }
             }
         }

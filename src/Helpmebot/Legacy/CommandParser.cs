@@ -25,8 +25,11 @@ namespace Helpmebot.Legacy
 
     using Castle.Core.Logging;
 
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
+    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
@@ -59,6 +62,11 @@ namespace Helpmebot.Legacy
         /// </summary>
         private readonly IMessageService messageService;
 
+        /// <summary>
+        /// The irc.
+        /// </summary>
+        private readonly IIrcClient irc;
+
         #endregion
 
         #region Constructors and Destructors
@@ -71,6 +79,7 @@ namespace Helpmebot.Legacy
             // FIXME: Remove me!
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
             this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
+            this.irc = ServiceLocator.Current.GetInstance<IIrcClient>();
 
             this.OverrideBotSilence = false;
         }
@@ -103,6 +112,9 @@ namespace Helpmebot.Legacy
         /// <param name="overrideSilence">
         /// ref: whether this message format overrides any imposed silence
         /// </param>
+        /// <param name="client">
+        /// The client.
+        /// </param>
         /// <returns>
         /// true if the message is in a recognised format
         /// </returns>
@@ -115,9 +127,9 @@ namespace Helpmebot.Legacy
         ///     Helpmebot, command
         ///     Helpmebot&gt; command
         /// </remarks>
-        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence)
+        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcAccessLayer client)
         {
-            return ParseRawLineForMessage(ref message, Helpmebot6.irc.Nickname, Helpmebot6.Trigger);
+            return ParseRawLineForMessage(ref message, client.Nickname, Helpmebot6.Trigger);
         }
 
         /// <summary>
@@ -146,7 +158,7 @@ namespace Helpmebot.Legacy
             }
 
             // flip destination over if required
-            if (destination == Helpmebot6.irc.Nickname)
+            if (destination == this.irc.Nickname)
             {
                 destination = source.Nickname;
             }
@@ -378,15 +390,15 @@ namespace Helpmebot.Legacy
                         case CommandResponseDestination.Default:
                             if (this.OverrideBotSilence || LegacyConfig.Singleton()["silence", destination] != "true")
                             {
-                                Helpmebot6.irc.IrcPrivmsg(destination, message);
+                                this.irc.SendMessage(destination, message);
                             }
 
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            Helpmebot6.irc.IrcPrivmsg(ConfigurationHelper.CoreConfiguration.DebugChannel, message);
+                            this.irc.SendMessage(ConfigurationHelper.CoreConfiguration.DebugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
-                            Helpmebot6.irc.IrcPrivmsg(source.Nickname, message);
+                            this.irc.SendMessage(source.Nickname, message);
                             break;
                     }
                 }
