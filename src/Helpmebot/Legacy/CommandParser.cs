@@ -25,6 +25,7 @@ namespace Helpmebot.Legacy
 
     using Castle.Core.Logging;
 
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
