@@ -34,6 +34,7 @@ namespace Helpmebot.IRC
 
     using Castle.Core.Logging;
 
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.IRC.Interfaces;
@@ -140,6 +141,11 @@ namespace Helpmebot.IRC
         /// </summary>
         private bool nickTrackingValid = true;
 
+        /// <summary>
+        /// Authenticate to services?
+        /// </summary>
+        private bool authToServices;
+
         #endregion
 
         /// <summary>
@@ -176,6 +182,17 @@ namespace Helpmebot.IRC
             this.ReceivedMessage += this.OnMessageReceivedEvent;
 
             this.clientCapabilities = new List<string> { "sasl", "account-notify", "extended-join", "multi-prefix" };
+
+            this.authToServices = ConfigurationHelper.CoreConfiguration.AuthToServices;
+
+            if (!this.authToServices)
+            {
+                this.logger.Warn("Services authentication is disabled!");
+
+                this.clientCapabilities.Remove("sasl");
+                this.clientCapabilities.Remove("account-notify");
+                this.clientCapabilities.Remove("extended-join");
+            }
 
             this.userCache = new Dictionary<string, IrcUser>();
             this.channels = new Dictionary<string, IrcChannel>();
@@ -1130,7 +1147,7 @@ namespace Helpmebot.IRC
         /// </summary>
         private void Send1459Registration()
         {
-            if (!this.capSasl && !string.IsNullOrEmpty(this.password))
+            if (!this.capSasl && !string.IsNullOrEmpty(this.password) && this.authToServices)
             {
                 this.Send(new Message("PASS", this.password));
             }
