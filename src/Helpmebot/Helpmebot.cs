@@ -197,9 +197,9 @@ namespace Helpmebot
 
             newIrc =
                 new IrcClient(
-                    new NetworkClient(
+                    new SslNetworkClient(
                         "chat.freenode.net",
-                        6667,
+                        7000,
                         container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
                     myNickname,

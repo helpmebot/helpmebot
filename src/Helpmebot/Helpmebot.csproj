@@ -96,6 +96,7 @@
     <Compile Include="IRC\Model\IrcChannelUser.cs" />
     <Compile Include="IRC\Model\IrcUser.cs" />
     <Compile Include="IRC\Model\ServerUser.cs" />
+    <Compile Include="IRC\SslNetworkClient.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />

@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the NetworkClient type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.IRC
 {
     using System;
@@ -32,67 +28,63 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Interfaces;
 
     /// <summary>
-    /// The TCP client.
+    ///     The TCP client.
     /// </summary>
     /// <para>
-    /// This is an event-based asynchronous TCP client
+    ///     This is an event-based asynchronous TCP client
     /// </para>
     public class NetworkClient : INetworkClient
     {
+        #region Fields
+
         /// <summary>
-        /// The client.
+        ///     The client.
         /// </summary>
         private readonly TcpClient client;
 
         /// <summary>
-        /// The reader.
-        /// </summary>
-        private readonly StreamReader reader;
-
-        /// <summary>
-        /// The writer.
-        /// </summary>
-        private readonly StreamWriter writer;
-
-        /// <summary>
-        /// The reset event.
-        /// </summary>
-        private readonly AutoResetEvent writerThreadResetEvent;
-
-        /// <summary>
-        /// The send queue.
-        /// </summary>
-        private readonly Queue<string> sendQueue;
-
-        /// <summary>
-        /// The send queue lock.
-        /// </summary>
-        private readonly object sendQueueLock = new object();
-
-        /// <summary>
-        /// The hostname.
+        ///     The hostname.
         /// </summary>
         private readonly string hostname;
 
         /// <summary>
-        /// The port.
-        /// </summary>
-        private readonly int port;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// The network logger.
+        ///     The network logger.
         /// </summary>
         private readonly ILogger inboundLogger;
 
         /// <summary>
-        /// The outbound logger.
+        ///     The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
+        ///     The outbound logger.
         /// </summary>
         private readonly ILogger outboundLogger;
+
+        /// <summary>
+        ///     The port.
+        /// </summary>
+        private readonly int port;
+
+        /// <summary>
+        ///     The send queue.
+        /// </summary>
+        private readonly Queue<string> sendQueue;
+
+        /// <summary>
+        ///     The send queue lock.
+        /// </summary>
+        private readonly object sendQueueLock = new object();
+
+        /// <summary>
+        ///     The reset event.
+        /// </summary>
+        private readonly AutoResetEvent writerThreadResetEvent;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="NetworkClient"/> class.
@@ -107,6 +99,26 @@ namespace Helpmebot.IRC
         /// The logger.
         /// </param>
         public NetworkClient(string hostname, int port, ILogger logger)
+            : this(hostname, port, logger, true)
+        {
+        }
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="NetworkClient"/> class.
+        /// </summary>
+        /// <param name="hostname">
+        /// The hostname.
+        /// </param>
+        /// <param name="port">
+        /// The port.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        /// <param name="startThreads">
+        /// The start threads.
+        /// </param>
+        protected NetworkClient(string hostname, int port, ILogger logger, bool startThreads)
         {
             this.hostname = hostname;
             this.port = port;
@@ -118,28 +130,44 @@ namespace Helpmebot.IRC
 
             this.client = new TcpClient(this.hostname, this.port);
 
-            this.reader = new StreamReader(this.client.GetStream());
-            this.writer = new StreamWriter(this.client.GetStream());
+            this.Reader = new StreamReader(this.client.GetStream());
+            this.Writer = new StreamWriter(this.client.GetStream());
             this.sendQueue = new Queue<string>();
 
             this.writerThreadResetEvent = new AutoResetEvent(true);
 
-            var readerThread = new Thread(this.ReaderThreadTask);
-            var writerThread = new Thread(this.WriterThreadTask);
-
-            this.logger.InfoFormat("Initialising reader/writer threads", hostname, port);
-
-            readerThread.Start();
-            writerThread.Start();
+            if (startThreads)
+            {
+                this.StartThreads();
+            }
         }
 
+        #endregion
+
+        #region Public Events
+
         /// <summary>
-        /// The data received.
+        ///     The data received.
         /// </summary>
         public event EventHandler<DataReceivedEventArgs> DataReceived;
 
+        #endregion
+
+        #region Public Properties
+
         /// <summary>
-        /// Gets the hostname.
+        ///     Gets the client.
+        /// </summary>
+        public TcpClient Client
+        {
+            get
+            {
+                return this.client;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the hostname.
         /// </summary>
         public string Hostname
         {
@@ -150,7 +178,7 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// Gets the port.
+        ///     Gets the port.
         /// </summary>
         public int Port
         {
@@ -158,6 +186,44 @@ namespace Helpmebot.IRC
             {
                 return this.port;
             }
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        ///     Gets or sets the reader.
+        /// </summary>
+        protected StreamReader Reader { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the writer.
+        /// </summary>
+        protected StreamWriter Writer { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The disconnect.
+        /// </summary>
+        public void Disconnect()
+        {
+            this.logger.Info("Disconnecting network socket.");
+            this.Writer.Flush();
+            this.Writer.Close();
+            this.client.Close();
+        }
+
+        /// <summary>
+        ///     The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -186,7 +252,7 @@ namespace Helpmebot.IRC
         {
             lock (this.sendQueueLock)
             {
-                foreach (var message in messages)
+                foreach (string message in messages)
                 {
                     this.sendQueue.Enqueue(message);
                 }
@@ -195,24 +261,25 @@ namespace Helpmebot.IRC
             this.writerThreadResetEvent.Set();
         }
 
-        /// <summary>
-        /// The disconnect.
-        /// </summary>
-        public void Disconnect()
-        {
-            this.logger.Info("Disconnecting network socket.");
-            this.writer.Flush();
-            this.writer.Close();
-            this.client.Close();
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The dispose.
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing">
+        /// The disposing.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            if (disposing)
+            {
+                this.Reader.Dispose();
+                this.Writer.Dispose();
+                ((IDisposable)this.writerThreadResetEvent).Dispose();
+                this.client.Close();
+            }
         }
 
         /// <summary>
@@ -231,24 +298,21 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// The dispose.
+        /// The start threads.
         /// </summary>
-        /// <param name="disposing">
-        /// The disposing.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
+        protected void StartThreads()
         {
-            if (disposing)
-            {
-                this.reader.Dispose();
-                this.writer.Dispose();
-                ((IDisposable)this.writerThreadResetEvent).Dispose();
-                this.client.Close();
-            }
+            var readerThread = new Thread(this.ReaderThreadTask);
+            var writerThread = new Thread(this.WriterThreadTask);
+
+            this.logger.InfoFormat("Initialising reader/writer threads");
+
+            readerThread.Start();
+            writerThread.Start();
         }
 
         /// <summary>
-        /// The reader thread task.
+        ///     The reader thread task.
         /// </summary>
         private void ReaderThreadTask()
         {
@@ -256,7 +320,7 @@ namespace Helpmebot.IRC
             {
                 try
                 {
-                    string data = this.reader.ReadLine();
+                    string data = this.Reader.ReadLine();
 
                     if (data != null)
                     {
@@ -272,7 +336,7 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// The writer thread task.
+        ///     The writer thread task.
         /// </summary>
         private void WriterThreadTask()
         {
@@ -302,13 +366,15 @@ namespace Helpmebot.IRC
                     }
 
                     this.outboundLogger.Debug(item);
-                    this.writer.WriteLine(item);
-                    this.writer.Flush();
+                    this.Writer.WriteLine(item);
+                    this.Writer.Flush();
 
                     // Flood protection
                     Thread.Sleep(500);
                 }
             }
         }
+
+        #endregion
     }
 }
