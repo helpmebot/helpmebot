@@ -102,16 +102,5 @@ namespace Helpmebot.Legacy.Database
         /// The <see cref="string"/>.
         /// </returns>
         string ProcHmbGetLocalOption(string option, string channel);
-
-        /// <summary>
-        /// Call the HMB_GET_IW_URL stored procedure.
-        /// </summary>
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        string ProcHmbGetIwUrl(string prefix);
     }
 }

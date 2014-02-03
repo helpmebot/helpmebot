@@ -281,57 +281,6 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Call the HMB_GET_IW_URL stored procedure.
-        /// </summary>
-        /// <param name="prefix">
-        /// The prefix.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public string ProcHmbGetIwUrl(string prefix)
-        {
-            string surl = string.Empty;
-            try
-            {
-                lock (this)
-                {
-                    this.RunConnectionTest();
-
-                    var cmd = new MySqlCommand
-                                  {
-                                      Connection = this.connection, 
-                                      CommandType = CommandType.StoredProcedure, 
-                                      CommandText = "HMB_GET_IW_URL"
-                                  };
-
-                    if (prefix.Length > 32)
-                    {
-                        return string.Empty;
-                    }
-
-                    cmd.Parameters.Add("@prefix", MySqlDbType.VarChar).Value = prefix;
-                    cmd.Parameters["@prefix"].Direction = ParameterDirection.Input;
-
-                    var url = new byte[0];
-                    cmd.Parameters.Add("@url", MySqlDbType.VarChar).Value = url;
-                    cmd.Parameters["@url"].Direction = ParameterDirection.Output;
-
-                    cmd.ExecuteNonQuery();
-
-                    surl =
-                        (string)(cmd.Parameters["@url"].Value is DBNull ? string.Empty : cmd.Parameters["@url"].Value);
-                }
-            }
-            catch (InvalidOperationException ex)
-            {
-                this.Log.Error(ex.Message, ex);
-            }
-
-            return surl;
-        }
-
-        /// <summary>
         /// Call the HMB_GET_LOCAL_OPTION stored procedure.
         /// </summary>
         /// <param name="option">
