@@ -979,7 +979,7 @@ namespace Helpmebot.IRC
             }
 
             // nickname in use
-            if (message.Command == Numerics.NicknameInUse)
+            if (message.Command == Numerics.NicknameInUse || message.Command == Numerics.UnavailableResource)
             {
                 this.logger.Warn("Nickname in use, retrying.");
                 this.Nickname = this.Nickname + "_";
@@ -1117,7 +1117,7 @@ namespace Helpmebot.IRC
                 return;
             }
 
-            this.logger.Error("How did I get here?");
+            this.logger.ErrorFormat("How did I get here? ({0} recieved)", message.Command);
         }
 
         /// <summary>
