@@ -42,6 +42,7 @@ namespace Helpmebot.Startup.Installers
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IConfigurationHelper>().ImplementedBy<ConfigurationHelper>());
+            container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Configuration.XmlSections").WithService.AllInterfaces());
         }
 
         #endregion

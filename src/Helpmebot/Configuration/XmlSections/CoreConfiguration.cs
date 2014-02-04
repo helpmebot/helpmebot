@@ -66,6 +66,18 @@ namespace Helpmebot.Configuration.XmlSections
             }
         }
 
+        /// <summary>
+        ///     Gets the monitoring port
+        /// </summary>
+        [ConfigurationProperty("monitorPort", IsRequired = true, DefaultValue = 62167)]
+        public int MonitorPort
+        {
+            get
+            {
+                return (int)base["monitorPort"];
+            }
+        }
+
         #endregion
     }
 }

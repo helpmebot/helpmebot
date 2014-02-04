@@ -44,6 +44,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("useragent", IsRequired = true, DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
         string UserAgent { get; }
 
+        /// <summary>
+        ///     Gets the monitoring port.
+        /// </summary>
+        [ConfigurationProperty("monitorPort", IsRequired = true, DefaultValue = 62167)]
+        int MonitorPort { get; }
+
         #endregion
     }
 }
