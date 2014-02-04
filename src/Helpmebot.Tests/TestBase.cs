@@ -55,11 +55,13 @@ namespace Helpmebot.Tests
 
             var databaseConfig = new Mock<IDatabaseConfiguration>();
             var coreConfig = new Mock<ICoreConfiguration>();
+            var ircConfig = new Mock<IIrcConfiguration>();
 
             this.ConfigurationHelper = new Mock<IConfigurationHelper>();
             this.ConfigurationHelper.Setup(x => x.DatabaseConfiguration)
                 .Returns(databaseConfig.Object);
             this.ConfigurationHelper.Setup(x => x.CoreConfiguration).Returns(coreConfig.Object);
+            this.ConfigurationHelper.Setup(x => x.IrcConfiguration).Returns(ircConfig.Object);
 
             this.LocalSetup();
         }
