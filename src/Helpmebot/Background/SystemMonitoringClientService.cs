@@ -31,9 +31,12 @@ namespace Helpmebot.Background
     /// </summary>
     public class SystemMonitoringClientService : ISystemMonitoringClientService
     {
-        private readonly ILogger logger;
-
         #region Fields
+
+        /// <summary>
+        ///     The logger.
+        /// </summary>
+        private readonly ILogger logger;
 
         /// <summary>
         ///     The _monitor thread.
@@ -70,7 +73,7 @@ namespace Helpmebot.Background
 
             // TODO: Move somewhere else
             this.Message = "Helpmebot v6 (Nagios Monitor service)";
-            
+
             this.monitorthread = new Thread(this.ThreadMethod);
 
             this.service = new TcpListener(IPAddress.Any, this.Port);
@@ -135,7 +138,7 @@ namespace Helpmebot.Background
                 }
 
                 this.logger.Debug("Found waiting request.");
-                
+
                 TcpClient client = this.service.AcceptTcpClient();
 
                 var sw = new StreamWriter(client.GetStream());
