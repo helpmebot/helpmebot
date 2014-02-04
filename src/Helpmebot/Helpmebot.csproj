@@ -83,6 +83,8 @@
     <Compile Include="Configuration\XmlSections\CoreConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\Interfaces\ICoreConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\Interfaces\IDatabaseConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\Interfaces\IIrcConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\IrcConfiguration.cs" />
     <Compile Include="ExtensionMethods\DictionaryExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />

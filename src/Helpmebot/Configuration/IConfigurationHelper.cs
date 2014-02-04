@@ -14,13 +14,12 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Configuration
 {
     using Helpmebot.Configuration.XmlSections.Interfaces;
 
     /// <summary>
-    /// The ConfigurationHelper interface.
+    ///     The ConfigurationHelper interface.
     /// </summary>
     public interface IConfigurationHelper
     {
@@ -38,6 +37,11 @@ namespace Helpmebot.Configuration
         ///     The <see cref="DatabaseConfiguration" />.
         /// </returns>
         IDatabaseConfiguration DatabaseConfiguration { get; }
+
+        /// <summary>
+        ///     Gets the IRC configuration.
+        /// </summary>
+        IIrcConfiguration IrcConfiguration { get; }
 
         #endregion
     }

@@ -19,7 +19,6 @@ namespace Helpmebot.Configuration
     using System.Configuration;
 
     using Helpmebot.Configuration.XmlSections.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     The configuration helper.
@@ -29,14 +28,19 @@ namespace Helpmebot.Configuration
         #region Fields
 
         /// <summary>
-        /// The core configuration.
+        ///     The core configuration.
         /// </summary>
         private ICoreConfiguration coreConfiguration;
 
         /// <summary>
-        /// The database configuration.
+        ///     The database configuration.
         /// </summary>
         private IDatabaseConfiguration databaseConfiguration;
+
+        /// <summary>
+        /// The IRC configuration.
+        /// </summary>
+        private IIrcConfiguration ircConfiguration;
 
         #endregion
 
@@ -67,6 +71,18 @@ namespace Helpmebot.Configuration
                 return this.databaseConfiguration
                        ?? (this.databaseConfiguration =
                            ConfigurationManager.GetSection("database") as IDatabaseConfiguration);
+            }
+        }
+
+        /// <summary>
+        /// Gets the IRC configuration.
+        /// </summary>
+        public IIrcConfiguration IrcConfiguration
+        {
+            get
+            {
+                return this.ircConfiguration
+                       ?? (this.ircConfiguration = ConfigurationManager.GetSection("irc") as IIrcConfiguration);
             }
         }
 

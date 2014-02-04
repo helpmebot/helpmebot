@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CoreConfiguration.cs" company="Helpmebot Development Team">
+// <copyright file="IrcConfiguration.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,6 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Helpmebot.Configuration.XmlSections
 {
     using System.Configuration;
@@ -23,46 +24,46 @@ namespace Helpmebot.Configuration.XmlSections
     /// <summary>
     ///     The database configuration.
     /// </summary>
-    public class CoreConfiguration : ConfigurationSection, ICoreConfiguration
+    public class IrcConfiguration : ConfigurationSection, IIrcConfiguration
     {
         #region Public Properties
 
         /// <summary>
-        ///     Gets the debug channel.
+        ///     Gets the hostname.
         /// </summary>
-        [ConfigurationProperty("debugChannel", IsRequired = true, DefaultValue = "##helpmebot")]
-        public string DebugChannel
+        [ConfigurationProperty("hostname", IsRequired = true)]
+        public string Hostname
         {
             get
             {
-                return (string)base["debugChannel"];
+                return (string)base["hostname"];
             }
         }
 
         /// <summary>
-        ///     Gets the HTTP timeout
+        ///     Gets the hostname.
         /// </summary>
-        [ConfigurationProperty("httpTimeout", IsRequired = true, DefaultValue = 5000)]
-        public int HttpTimeout
+        [ConfigurationProperty("port", IsRequired = true)]
+        public int Port
         {
             get
             {
-                return (int)base["httpTimeout"];
+                return (int)base["port"];
             }
         }
 
         /// <summary>
-        ///     Gets the user agent.
+        ///     Gets a value indicating whether to authenticate to services
         /// </summary>
         [ConfigurationProperty(
-            "useragent", 
-            IsRequired = true, 
-            DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
-        public string UserAgent
+            "authToServices",
+            IsRequired = true,
+            DefaultValue = true)]
+        public bool AuthToServices
         {
             get
             {
-                return (string)base["useragent"];
+                return (bool)base["authToServices"];
             }
         }
 

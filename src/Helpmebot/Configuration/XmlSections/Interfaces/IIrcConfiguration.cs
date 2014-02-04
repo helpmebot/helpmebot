@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICoreConfiguration.cs" company="Helpmebot Development Team">
+// <copyright file="IIrcConfiguration.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -20,29 +20,29 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
     using System.Configuration;
 
     /// <summary>
-    /// The CoreConfiguration interface.
+    /// The IRC Configuration interface.
     /// </summary>
-    public interface ICoreConfiguration
+    public interface IIrcConfiguration
     {
         #region Public Properties
 
         /// <summary>
-        ///     Gets the debug channel.
+        ///     Gets a value indicating whether to authenticate to services.
         /// </summary>
-        [ConfigurationProperty("debugChannel", IsRequired = true, DefaultValue = "##helpmebot")]
-        string DebugChannel { get; }
+        [ConfigurationProperty("authToServices", IsRequired = true, DefaultValue = true)]
+        bool AuthToServices { get; }
 
         /// <summary>
-        ///     Gets the http timeout.
+        ///     Gets the hostname.
         /// </summary>
-        [ConfigurationProperty("httpTimeout", IsRequired = true, DefaultValue = 5000)]
-        int HttpTimeout { get; }
+        [ConfigurationProperty("hostname", IsRequired = true)]
+        string Hostname { get; }
 
         /// <summary>
-        ///     Gets the user agent.
+        ///     Gets the hostname.
         /// </summary>
-        [ConfigurationProperty("useragent", IsRequired = true, DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
-        string UserAgent { get; }
+        [ConfigurationProperty("port", IsRequired = true)]
+        int Port { get; }
 
         #endregion
     }

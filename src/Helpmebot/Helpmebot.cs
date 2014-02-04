@@ -196,14 +196,16 @@ namespace Helpmebot
             var myUsername = (string)((object[])configSettings[0])[4];
             var myRealname = (string)((object[])configSettings[0])[5];
 
+            var configurationHelper = container.Resolve<IConfigurationHelper>();
+
             newIrc =
                 new IrcClient(
                     new SslNetworkClient(
-                        "chat.freenode.net",
-                        7000,
+                        configurationHelper.IrcConfiguration.Hostname,
+                        configurationHelper.IrcConfiguration.Port,
                         container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
-                    container.Resolve<IConfigurationHelper>(),
+                    configurationHelper,
                     myNickname,
                     myUsername,
                     myRealname,

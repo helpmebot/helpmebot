@@ -186,7 +186,7 @@ namespace Helpmebot.IRC
 
             this.clientCapabilities = new List<string> { "sasl", "account-notify", "extended-join", "multi-prefix" };
 
-            this.authToServices = configurationHelper.CoreConfiguration.AuthToServices;
+            this.authToServices = configurationHelper.IrcConfiguration.AuthToServices;
 
             if (!this.authToServices)
             {
