@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConfigurationHelper.cs" company="Helpmebot Development Team">
+// <copyright file="IConfigurationHelper.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,45 +14,22 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Helpmebot.Configuration
 {
-    using System.Configuration;
-
     using Helpmebot.Configuration.XmlSections.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    ///     The configuration helper.
+    /// The ConfigurationHelper interface.
     /// </summary>
-    public class ConfigurationHelper : IConfigurationHelper
+    public interface IConfigurationHelper
     {
-        #region Fields
-
-        /// <summary>
-        /// The core configuration.
-        /// </summary>
-        private ICoreConfiguration coreConfiguration;
-
-        /// <summary>
-        /// The database configuration.
-        /// </summary>
-        private IDatabaseConfiguration databaseConfiguration;
-
-        #endregion
-
         #region Public Properties
 
         /// <summary>
         ///     Gets the core configuration.
         /// </summary>
-        public ICoreConfiguration CoreConfiguration
-        {
-            get
-            {
-                return this.coreConfiguration
-                       ?? (this.coreConfiguration = ConfigurationManager.GetSection("core") as ICoreConfiguration);
-            }
-        }
+        ICoreConfiguration CoreConfiguration { get; }
 
         /// <summary>
         ///     Gets the database configuration.
@@ -60,15 +37,7 @@ namespace Helpmebot.Configuration
         /// <returns>
         ///     The <see cref="DatabaseConfiguration" />.
         /// </returns>
-        public IDatabaseConfiguration DatabaseConfiguration
-        {
-            get
-            {
-                return this.databaseConfiguration
-                       ?? (this.databaseConfiguration =
-                           ConfigurationManager.GetSection("database") as IDatabaseConfiguration);
-            }
-        }
+        IDatabaseConfiguration DatabaseConfiguration { get; }
 
         #endregion
     }

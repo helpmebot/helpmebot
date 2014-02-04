@@ -38,9 +38,14 @@ namespace Helpmebot.Startup
         public const int Logger = 1;
 
         /// <summary>
+        /// The configuration.
+        /// </summary>
+        public const int Configuration = 2;
+
+        /// <summary>
         /// The database.
         /// </summary>
-        public const int Persistence = 2;
+        public const int Persistence = 3;
         
         /// <summary>
         /// The default priority assigned whenever this attribute is not applied to a class.

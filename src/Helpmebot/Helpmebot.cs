@@ -29,6 +29,7 @@ namespace Helpmebot
     using Castle.Windsor;
     using Castle.Windsor.Installer;
 
+    using Helpmebot.Configuration;
     using Helpmebot.IRC;
     using Helpmebot.IRC.Events;
     using Helpmebot.IRC.Interfaces;
@@ -202,6 +203,7 @@ namespace Helpmebot
                         7000,
                         container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
+                    container.Resolve<IConfigurationHelper>(),
                     myNickname,
                     myUsername,
                     myRealname,

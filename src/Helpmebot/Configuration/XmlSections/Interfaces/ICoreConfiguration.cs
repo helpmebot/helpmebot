@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CoreConfiguration.cs" company="Helpmebot Development Team">
+// <copyright file="ICoreConfiguration.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,72 +14,41 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Configuration.XmlSections
+
+namespace Helpmebot.Configuration.XmlSections.Interfaces
 {
     using System.Configuration;
 
-    using Helpmebot.Configuration.XmlSections.Interfaces;
-
     /// <summary>
-    ///     The database configuration.
+    /// The CoreConfiguration interface.
     /// </summary>
-    public class CoreConfiguration : ConfigurationSection, ICoreConfiguration
+    public interface ICoreConfiguration
     {
         #region Public Properties
+
+        /// <summary>
+        ///     Gets a value indicating whether to authenticate to services.
+        /// </summary>
+        [ConfigurationProperty("authToServices", IsRequired = true, DefaultValue = true)]
+        bool AuthToServices { get; }
 
         /// <summary>
         ///     Gets the debug channel.
         /// </summary>
         [ConfigurationProperty("debugChannel", IsRequired = true, DefaultValue = "##helpmebot")]
-        public string DebugChannel
-        {
-            get
-            {
-                return (string)base["debugChannel"];
-            }
-        }
+        string DebugChannel { get; }
 
         /// <summary>
-        ///     Gets the HTTP timeout
+        ///     Gets the http timeout.
         /// </summary>
         [ConfigurationProperty("httpTimeout", IsRequired = true, DefaultValue = 5000)]
-        public int HttpTimeout
-        {
-            get
-            {
-                return (int)base["httpTimeout"];
-            }
-        }
+        int HttpTimeout { get; }
 
         /// <summary>
         ///     Gets the user agent.
         /// </summary>
-        [ConfigurationProperty(
-            "useragent", 
-            IsRequired = true, 
-            DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
-        public string UserAgent
-        {
-            get
-            {
-                return (string)base["useragent"];
-            }
-        }
-
-        /// <summary>
-        ///     Gets a value indicating whether to authenticate to services
-        /// </summary>
-        [ConfigurationProperty(
-            "authToServices",
-            IsRequired = true,
-            DefaultValue = true)]
-        public bool AuthToServices
-        {
-            get
-            {
-                return (bool)base["authToServices"];
-            }
-        }
+        [ConfigurationProperty("useragent", IsRequired = true, DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
+        string UserAgent { get; }
 
         #endregion
     }

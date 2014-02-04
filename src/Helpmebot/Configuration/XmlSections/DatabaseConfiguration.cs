@@ -22,12 +22,14 @@ namespace Helpmebot.Configuration.XmlSections
 {
     using System.Configuration;
 
+    using Helpmebot.Configuration.XmlSections.Interfaces;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>
     /// The database configuration.
     /// </summary>
-    public class DatabaseConfiguration : ConfigurationSection
+    public class DatabaseConfiguration : ConfigurationSection, IDatabaseConfiguration
     {
         /// <summary>
         /// The connection string.

@@ -79,7 +79,10 @@
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
+    <Compile Include="Configuration\IConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\CoreConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\Interfaces\ICoreConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\Interfaces\IDatabaseConfiguration.cs" />
     <Compile Include="ExtensionMethods\DictionaryExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
@@ -198,6 +201,7 @@
     <Compile Include="Startup\Installers\PersistenceInstaller.cs" />
     <Compile Include="Startup\Installers\LoggerInstaller.cs" />
     <Compile Include="Startup\Installers\RepositoryInstaller.cs" />
+    <Compile Include="Startup\Installers\ConfigurationInstaller.cs" />
     <Compile Include="Startup\Installers\ServiceInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />

@@ -22,6 +22,9 @@ namespace Helpmebot.Tests
 {
     using Castle.Core.Logging;
 
+    using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections.Interfaces;
+
     using Moq;
 
     using NUnit.Framework;
@@ -37,6 +40,11 @@ namespace Helpmebot.Tests
         protected Mock<ILogger> Logger { get; set; }
 
         /// <summary>
+        /// Gets or sets the configuration helper.
+        /// </summary>
+        protected Mock<IConfigurationHelper> ConfigurationHelper { get; set; }
+
+        /// <summary>
         /// The common setup.
         /// </summary>
         [TestFixtureSetUp]
@@ -44,6 +52,15 @@ namespace Helpmebot.Tests
         {
             this.Logger = new Mock<ILogger>();
             this.Logger.Setup(x => x.CreateChildLogger(It.IsAny<string>())).Returns(this.Logger.Object);
+
+            var databaseConfig = new Mock<IDatabaseConfiguration>();
+            var coreConfig = new Mock<ICoreConfiguration>();
+
+            this.ConfigurationHelper = new Mock<IConfigurationHelper>();
+            this.ConfigurationHelper.Setup(x => x.DatabaseConfiguration)
+                .Returns(databaseConfig.Object);
+            this.ConfigurationHelper.Setup(x => x.CoreConfiguration).Returns(coreConfig.Object);
+
             this.LocalSetup();
         }
 

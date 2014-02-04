@@ -27,7 +27,7 @@ namespace Helpmebot.Legacy.Database
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Configuration.XmlSections;
+    using Helpmebot.Configuration.XmlSections.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -50,6 +50,11 @@ namespace Helpmebot.Legacy.Database
         #region Fields
 
         /// <summary>
+        ///     The configuration helper.
+        /// </summary>
+        private readonly IConfigurationHelper configurationHelper;
+
+        /// <summary>
         ///     The connection.
         /// </summary>
         private MySqlConnection connection;
@@ -64,8 +69,12 @@ namespace Helpmebot.Legacy.Database
         /// <param name="logger">
         /// The logger.
         /// </param>
-        public LegacyDatabase(ILogger logger)
+        /// <param name="configurationHelper">
+        /// The configuration Helper.
+        /// </param>
+        public LegacyDatabase(ILogger logger, IConfigurationHelper configurationHelper)
         {
+            this.configurationHelper = configurationHelper;
             this.Log = logger.CreateChildLogger("Helpmebot.Legacy.Database.LegacyDatabase");
         }
 
@@ -88,7 +97,11 @@ namespace Helpmebot.Legacy.Database
         /// <returns>the instance</returns>
         public static LegacyDatabase Singleton()
         {
-            return singleton ?? (singleton = new LegacyDatabase(ServiceLocator.Current.GetInstance<ILogger>()));
+            return singleton
+                   ?? (singleton =
+                       new LegacyDatabase(
+                           ServiceLocator.Current.GetInstance<ILogger>(), 
+                           ServiceLocator.Current.GetInstance<IConfigurationHelper>()));
         }
 
         /// <summary>
@@ -99,7 +112,7 @@ namespace Helpmebot.Legacy.Database
         /// </returns>
         public bool Connect()
         {
-            DatabaseConfiguration databaseConfiguration = ConfigurationHelper.DatabaseConfiguration;
+            IDatabaseConfiguration databaseConfiguration = this.configurationHelper.DatabaseConfiguration;
 
             try
             {
@@ -514,7 +527,7 @@ namespace Helpmebot.Legacy.Database
 
             int totalTimeSlept = 0;
 
-            while (!connectionOk || totalTimeSlept >= 180 /*seconds*/ * 1000 /*transform to milliseconds*/)
+            while (!connectionOk || totalTimeSlept >= 180 /*seconds*/* 1000 /*transform to milliseconds*/)
             {
                 if (!firstTime)
                 {

@@ -63,9 +63,14 @@ namespace Helpmebot.Legacy
         private readonly IMessageService messageService;
 
         /// <summary>
-        /// The irc.
+        /// The IRC client.
         /// </summary>
         private readonly IIrcClient irc;
+
+        /// <summary>
+        /// The configuration helper.
+        /// </summary>
+        private IConfigurationHelper configurationHelper;
 
         #endregion
 
@@ -80,6 +85,7 @@ namespace Helpmebot.Legacy
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
             this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
             this.irc = ServiceLocator.Current.GetInstance<IIrcClient>();
+            this.configurationHelper = ServiceLocator.Current.GetInstance<IConfigurationHelper>();
 
             this.OverrideBotSilence = false;
         }
@@ -395,7 +401,7 @@ namespace Helpmebot.Legacy
 
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            this.irc.SendMessage(ConfigurationHelper.CoreConfiguration.DebugChannel, message);
+                            this.irc.SendMessage(this.configurationHelper.CoreConfiguration.DebugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
                             this.irc.SendMessage(source.Nickname, message);

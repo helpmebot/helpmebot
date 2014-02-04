@@ -24,7 +24,6 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -46,6 +45,11 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly IShortUrlCacheRepository shortUrlCacheRepository;
 
+        /// <summary>
+        /// The configuration helper.
+        /// </summary>
+        private readonly IConfigurationHelper configurationHelper;
+
         #endregion
 
         #region Constructors and Destructors
@@ -59,10 +63,14 @@ namespace Helpmebot.Services
         /// <param name="shortUrlCacheRepository">
         /// The short url cache repository.
         /// </param>
-        public UrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository)
+        /// <param name="configurationHelper">
+        /// The configuration Helper.
+        /// </param>
+        public UrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository, IConfigurationHelper configurationHelper)
         {
             this.logger = logger;
             this.shortUrlCacheRepository = shortUrlCacheRepository;
+            this.configurationHelper = configurationHelper;
         }
 
         #endregion
@@ -93,7 +101,7 @@ namespace Helpmebot.Services
                 {
                     this.logger.DebugFormat("Cache MISS for {0}", longUrl);
 
-                    string shortUrl = GetShortUrl(longUrl);
+                    string shortUrl = this.GetShortUrl(longUrl);
                     cacheEntry = new ShortUrlCacheEntry { LongUrl = longUrl, ShortUrl = shortUrl };
                     this.shortUrlCacheRepository.Save(cacheEntry);
                     result = shortUrl;
@@ -125,12 +133,12 @@ namespace Helpmebot.Services
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string GetShortUrl(string longUrl)
+        private string GetShortUrl(string longUrl)
         {
             var wrq =
                 (HttpWebRequest)
                 WebRequest.Create("http://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
-            wrq.UserAgent = ConfigurationHelper.CoreConfiguration.UserAgent;
+            wrq.UserAgent = this.configurationHelper.CoreConfiguration.UserAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

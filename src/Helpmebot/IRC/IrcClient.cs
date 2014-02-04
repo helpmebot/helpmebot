@@ -60,7 +60,7 @@ namespace Helpmebot.IRC
         /// The logger.
         /// </summary>
         private readonly ILogger logger;
-
+        
         /// <summary>
         /// The sync logger.
         /// </summary>
@@ -157,6 +157,9 @@ namespace Helpmebot.IRC
         /// <param name="logger">
         /// The logger.
         /// </param>
+        /// <param name="configurationHelper">
+        /// The configuration Helper.
+        /// </param>
         /// <param name="nickname">
         /// The nickname.
         /// </param>
@@ -169,7 +172,7 @@ namespace Helpmebot.IRC
         /// <param name="password">
         /// The password.
         /// </param>
-        public IrcClient(INetworkClient client, ILogger logger, string nickname, string username, string realName, string password)
+        public IrcClient(INetworkClient client, ILogger logger, IConfigurationHelper configurationHelper, string nickname, string username, string realName, string password)
         {
             this.nickname = nickname;
             this.networkClient = client;
@@ -183,7 +186,7 @@ namespace Helpmebot.IRC
 
             this.clientCapabilities = new List<string> { "sasl", "account-notify", "extended-join", "multi-prefix" };
 
-            this.authToServices = ConfigurationHelper.CoreConfiguration.AuthToServices;
+            this.authToServices = configurationHelper.CoreConfiguration.AuthToServices;
 
             if (!this.authToServices)
             {

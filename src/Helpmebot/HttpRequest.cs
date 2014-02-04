@@ -20,13 +20,23 @@ namespace Helpmebot
     using System.Net;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Legacy.Configuration;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    /// The http request.
+    ///     The http request.
     /// </summary>
     internal static class HttpRequest
     {
+        #region Static Fields
+
+        /// <summary>
+        ///     The configuration helper.
+        /// </summary>
+        private static IConfigurationHelper configurationHelper;
+
+        #endregion
+
         #region Public Methods and Operators
 
         /// <summary>
@@ -36,16 +46,21 @@ namespace Helpmebot
         /// The URI.
         /// </param>
         /// <param name="timeout">
-        /// optional. will default to httpTimeout XML config option 
+        /// optional. will default to httpTimeout XML config option
         /// </param>
         /// <returns>
         /// The <see cref="Stream"/>.
         /// </returns>
         public static Stream Get(string uri, int timeout = -1)
         {
+            if (configurationHelper == null)
+            {
+                configurationHelper = ServiceLocator.Current.GetInstance<IConfigurationHelper>();
+            }
+
             var hwr = (HttpWebRequest)WebRequest.Create(uri);
-            hwr.UserAgent = ConfigurationHelper.CoreConfiguration.UserAgent;
-            hwr.Timeout = timeout == -1 ? ConfigurationHelper.CoreConfiguration.HttpTimeout : timeout;
+            hwr.UserAgent = configurationHelper.CoreConfiguration.UserAgent;
+            hwr.Timeout = timeout == -1 ? configurationHelper.CoreConfiguration.HttpTimeout : timeout;
             var resp = (HttpWebResponse)hwr.GetResponse();
 
             return resp.GetResponseStream();
