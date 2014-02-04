@@ -391,7 +391,5 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\Mapping\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
