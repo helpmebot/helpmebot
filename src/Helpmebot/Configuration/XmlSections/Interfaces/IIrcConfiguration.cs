@@ -14,13 +14,12 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Configuration.XmlSections.Interfaces
 {
     using System.Configuration;
 
     /// <summary>
-    /// The IRC Configuration interface.
+    ///     The IRC Configuration interface.
     /// </summary>
     public interface IIrcConfiguration
     {
@@ -39,10 +38,28 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         string Hostname { get; }
 
         /// <summary>
+        ///     Gets the nickname.
+        /// </summary>
+        [ConfigurationProperty("nickname", IsRequired = true)]
+        string Nickname { get; }
+
+        /// <summary>
         ///     Gets the hostname.
         /// </summary>
         [ConfigurationProperty("port", IsRequired = true)]
         int Port { get; }
+
+        /// <summary>
+        /// Gets the real name.
+        /// </summary>
+        [ConfigurationProperty("realname", IsRequired = true)]
+        string RealName { get; }
+
+        /// <summary>
+        /// Gets the username.
+        /// </summary>
+        [ConfigurationProperty("username", IsRequired = true)]
+        string Username { get; }
 
         #endregion
     }

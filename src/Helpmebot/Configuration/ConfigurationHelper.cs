@@ -33,9 +33,9 @@ namespace Helpmebot.Configuration
         private ICoreConfiguration coreConfiguration;
 
         /// <summary>
-        ///     The database configuration.
+        ///     The private configuration.
         /// </summary>
-        private IDatabaseConfiguration databaseConfiguration;
+        private IPrivateConfiguration privateConfiguration;
 
         /// <summary>
         /// The IRC configuration.
@@ -62,15 +62,15 @@ namespace Helpmebot.Configuration
         ///     Gets the database configuration.
         /// </summary>
         /// <returns>
-        ///     The <see cref="DatabaseConfiguration" />.
+        ///     The <see cref="PrivateConfiguration" />.
         /// </returns>
-        public IDatabaseConfiguration DatabaseConfiguration
+        public IPrivateConfiguration PrivateConfiguration
         {
             get
             {
-                return this.databaseConfiguration
-                       ?? (this.databaseConfiguration =
-                           ConfigurationManager.GetSection("database") as IDatabaseConfiguration);
+                return this.privateConfiguration
+                       ?? (this.privateConfiguration =
+                           ConfigurationManager.GetSection("private") as IPrivateConfiguration);
             }
         }
 

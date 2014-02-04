@@ -21,8 +21,6 @@
 namespace Helpmebot
 {
     using System;
-    using System.Collections;
-    using System.Globalization;
 
     using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
@@ -83,11 +81,6 @@ namespace Helpmebot
         /// The DB access layer.
         /// </summary>
         private static LegacyDatabase dbal;
-
-        /// <summary>
-        /// The IRC network.
-        /// </summary>
-        private static uint ircNetwork;
 
         /// <summary>
         /// The join message service.
@@ -172,30 +165,6 @@ namespace Helpmebot
 
             LegacyConfig.Singleton();
 
-            ircNetwork = uint.Parse(LegacyConfig.Singleton()["ircNetwork"]);
-
-            LegacyDatabase db = LegacyDatabase.Singleton();
-
-            var q = new LegacyDatabase.Select(
-                "in_host",
-                "in_port",
-                "in_nickname",
-                "in_password",
-                "in_username",
-                "in_realname",
-                "in_log",
-                "in_nickserv");
-            q.SetFrom("ircnetwork");
-            q.AddLimit(1, 0);
-            q.AddWhere(new LegacyDatabase.WhereConds("in_id", ircNetwork.ToString(CultureInfo.InvariantCulture)));
-
-            ArrayList configSettings = db.ExecuteSelect(q);
-
-            var myNickname = (string)((object[])configSettings[0])[2];
-            var myPassword = (string)((object[])configSettings[0])[3];
-            var myUsername = (string)((object[])configSettings[0])[4];
-            var myRealname = (string)((object[])configSettings[0])[5];
-
             var configurationHelper = container.Resolve<IConfigurationHelper>();
 
             newIrc =
@@ -205,11 +174,8 @@ namespace Helpmebot
                         configurationHelper.IrcConfiguration.Port,
                         container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
-                    configurationHelper,
-                    myNickname,
-                    myUsername,
-                    myRealname,
-                    myPassword);
+                    configurationHelper.IrcConfiguration,
+                    configurationHelper.PrivateConfiguration.IrcPassword);
 
             irc = new LegacyIrcProxy(newIrc);
 

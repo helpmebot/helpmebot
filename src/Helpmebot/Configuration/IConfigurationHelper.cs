@@ -34,9 +34,9 @@ namespace Helpmebot.Configuration
         ///     Gets the database configuration.
         /// </summary>
         /// <returns>
-        ///     The <see cref="DatabaseConfiguration" />.
+        ///     The <see cref="PrivateConfiguration" />.
         /// </returns>
-        IDatabaseConfiguration DatabaseConfiguration { get; }
+        IPrivateConfiguration PrivateConfiguration { get; }
 
         /// <summary>
         ///     Gets the IRC configuration.

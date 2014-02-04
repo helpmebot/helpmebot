@@ -35,6 +35,11 @@ namespace Helpmebot.Tests
     public abstract class TestBase
     {
         /// <summary>
+        /// Gets or sets the IRC configuration.
+        /// </summary>
+        protected Mock<IIrcConfiguration> IrcConfiguration { get; set; }
+
+        /// <summary>
         /// Gets or sets the logger.
         /// </summary>
         protected Mock<ILogger> Logger { get; set; }
@@ -53,15 +58,15 @@ namespace Helpmebot.Tests
             this.Logger = new Mock<ILogger>();
             this.Logger.Setup(x => x.CreateChildLogger(It.IsAny<string>())).Returns(this.Logger.Object);
 
-            var databaseConfig = new Mock<IDatabaseConfiguration>();
+            var databaseConfig = new Mock<IPrivateConfiguration>();
             var coreConfig = new Mock<ICoreConfiguration>();
-            var ircConfig = new Mock<IIrcConfiguration>();
+            this.IrcConfiguration = new Mock<IIrcConfiguration>();
 
             this.ConfigurationHelper = new Mock<IConfigurationHelper>();
-            this.ConfigurationHelper.Setup(x => x.DatabaseConfiguration)
+            this.ConfigurationHelper.Setup(x => x.PrivateConfiguration)
                 .Returns(databaseConfig.Object);
             this.ConfigurationHelper.Setup(x => x.CoreConfiguration).Returns(coreConfig.Object);
-            this.ConfigurationHelper.Setup(x => x.IrcConfiguration).Returns(ircConfig.Object);
+            this.ConfigurationHelper.Setup(x => x.IrcConfiguration).Returns(this.IrcConfiguration.Object);
 
             this.LocalSetup();
         }

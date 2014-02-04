@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Configuration.XmlSections
 {
     using System.Configuration;
@@ -29,6 +28,18 @@ namespace Helpmebot.Configuration.XmlSections
         #region Public Properties
 
         /// <summary>
+        ///     Gets a value indicating whether to authenticate to services
+        /// </summary>
+        [ConfigurationProperty("authToServices", IsRequired = true, DefaultValue = true)]
+        public bool AuthToServices
+        {
+            get
+            {
+                return (bool)base["authToServices"];
+            }
+        }
+
+        /// <summary>
         ///     Gets the hostname.
         /// </summary>
         [ConfigurationProperty("hostname", IsRequired = true)]
@@ -37,6 +48,18 @@ namespace Helpmebot.Configuration.XmlSections
             get
             {
                 return (string)base["hostname"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the nickname.
+        /// </summary>
+        [ConfigurationProperty("nickname", IsRequired = true)]
+        public string Nickname
+        {
+            get
+            {
+                return (string)base["nickname"];
             }
         }
 
@@ -53,17 +76,26 @@ namespace Helpmebot.Configuration.XmlSections
         }
 
         /// <summary>
-        ///     Gets a value indicating whether to authenticate to services
+        /// Gets the real name.
         /// </summary>
-        [ConfigurationProperty(
-            "authToServices",
-            IsRequired = true,
-            DefaultValue = true)]
-        public bool AuthToServices
+        [ConfigurationProperty("realname", IsRequired = true)]
+        public string RealName
         {
             get
             {
-                return (bool)base["authToServices"];
+                return (string)base["realname"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the username.
+        /// </summary>
+        [ConfigurationProperty("username", IsRequired = true)]
+        public string Username
+        {
+            get
+            {
+                return (string)base["username"];
             }
         }
 

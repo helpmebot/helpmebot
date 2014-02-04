@@ -82,7 +82,7 @@
     <Compile Include="Configuration\IConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\CoreConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\Interfaces\ICoreConfiguration.cs" />
-    <Compile Include="Configuration\XmlSections\Interfaces\IDatabaseConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\Interfaces\IPrivateConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\Interfaces\IIrcConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\IrcConfiguration.cs" />
     <Compile Include="ExtensionMethods\DictionaryExtensions.cs" />
@@ -115,7 +115,7 @@
     <Compile Include="Legacy\Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="Configuration\ConfigurationHelper.cs" />
-    <Compile Include="Configuration\XmlSections\DatabaseConfiguration.cs" />
+    <Compile Include="Configuration\XmlSections\PrivateConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\DateExtensions.cs" />

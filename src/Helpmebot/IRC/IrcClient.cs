@@ -34,7 +34,7 @@ namespace Helpmebot.IRC
 
     using Castle.Core.Logging;
 
-    using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Events;
     using Helpmebot.IRC.Interfaces;
@@ -157,36 +157,27 @@ namespace Helpmebot.IRC
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="configurationHelper">
+        /// <param name="ircConfiguration">
         /// The configuration Helper.
-        /// </param>
-        /// <param name="nickname">
-        /// The nickname.
-        /// </param>
-        /// <param name="username">
-        /// The username.
-        /// </param>
-        /// <param name="realName">
-        /// The real Name.
         /// </param>
         /// <param name="password">
         /// The password.
         /// </param>
-        public IrcClient(INetworkClient client, ILogger logger, IConfigurationHelper configurationHelper, string nickname, string username, string realName, string password)
+        public IrcClient(INetworkClient client, ILogger logger, IIrcConfiguration ircConfiguration, string password)
         {
-            this.nickname = nickname;
+            this.nickname = ircConfiguration.Nickname;
             this.networkClient = client;
             this.logger = logger;
             this.syncLogger = logger.CreateChildLogger("Sync");
-            this.username = username;
-            this.realName = realName;
+            this.username = ircConfiguration.Username;
+            this.realName = ircConfiguration.RealName;
             this.password = password;
             this.networkClient.DataReceived += this.NetworkClientOnDataReceived;
             this.ReceivedMessage += this.OnMessageReceivedEvent;
 
             this.clientCapabilities = new List<string> { "sasl", "account-notify", "extended-join", "multi-prefix" };
 
-            this.authToServices = configurationHelper.IrcConfiguration.AuthToServices;
+            this.authToServices = ircConfiguration.AuthToServices;
 
             if (!this.authToServices)
             {

@@ -112,7 +112,7 @@ namespace Helpmebot.Legacy.Database
         /// </returns>
         public bool Connect()
         {
-            IDatabaseConfiguration databaseConfiguration = this.configurationHelper.DatabaseConfiguration;
+            IPrivateConfiguration privateConfiguration = this.configurationHelper.PrivateConfiguration;
 
             try
             {
@@ -121,11 +121,11 @@ namespace Helpmebot.Legacy.Database
                     this.Log.Info("Opening database connection...");
                     var csb = new MySqlConnectionStringBuilder
                                   {
-                                      Database = databaseConfiguration.Schema, 
-                                      Password = databaseConfiguration.Password, 
-                                      Server = databaseConfiguration.Hostname, 
-                                      UserID = databaseConfiguration.Username, 
-                                      Port = (uint)databaseConfiguration.Port
+                                      Database = privateConfiguration.Schema, 
+                                      Password = privateConfiguration.Password, 
+                                      Server = privateConfiguration.Hostname, 
+                                      UserID = privateConfiguration.Username, 
+                                      Port = (uint)privateConfiguration.Port
                                   };
 
                     this.connection = new MySqlConnection(csb.ConnectionString);

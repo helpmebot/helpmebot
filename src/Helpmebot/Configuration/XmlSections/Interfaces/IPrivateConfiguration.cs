@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDatabaseConfiguration.cs" company="Helpmebot Development Team">
+// <copyright file="IPrivateConfiguration.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,6 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Configuration.XmlSections.Interfaces
 {
     using System.Configuration;
@@ -22,9 +21,9 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// The DatabaseConfiguration interface.
+    ///     The DatabaseConfiguration interface.
     /// </summary>
-    public interface IDatabaseConfiguration
+    public interface IPrivateConfiguration
     {
         #region Public Properties
 
@@ -62,6 +61,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         /// </summary>
         [ConfigurationProperty("username", IsRequired = true)]
         string Username { get; }
+
+        /// <summary>
+        ///     Gets the IRC password.
+        /// </summary>
+        [ConfigurationProperty("ircPassword", IsRequired = true)]
+        string IrcPassword { get; }
 
         #endregion
     }

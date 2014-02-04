@@ -57,7 +57,8 @@ namespace Helpmebot.Tests.IRC
         public void DoSetup(string nickName)
         {
             this.networkClient = new Mock<INetworkClient>();
-            this.client = new IrcClient(this.networkClient.Object, this.Logger.Object, this.ConfigurationHelper.Object, nickName, "user", "rn", "pw");
+            this.IrcConfiguration.Setup(x => x.Nickname).Returns(nickName);
+            this.client = new IrcClient(this.networkClient.Object, this.Logger.Object, this.IrcConfiguration.Object, "pw");
         }
 
         /// <summary>
