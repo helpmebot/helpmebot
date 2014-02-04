@@ -36,7 +36,6 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Monitoring;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
@@ -196,8 +195,6 @@ namespace Helpmebot
                 // if can't Connect to irc, die
                 return;
             }
-
-            new MonitorService(62167, "Helpmebot v6 (Nagios Monitor service)");
 
             // initialise the deferred installers.
             container.Install(FromAssembly.This(new DeferredWindsorBootstrap()));
