@@ -30,7 +30,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets the debug channel.
         /// </summary>
-        [ConfigurationProperty("debugChannel", IsRequired = true, DefaultValue = "##helpmebot")]
+        [ConfigurationProperty("debugChannel", DefaultValue = "##helpmebot")]
         public string DebugChannel
         {
             get
@@ -42,7 +42,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets the HTTP timeout
         /// </summary>
-        [ConfigurationProperty("httpTimeout", IsRequired = true, DefaultValue = 5000)]
+        [ConfigurationProperty("httpTimeout", DefaultValue = 5000)]
         public int HttpTimeout
         {
             get
@@ -56,7 +56,6 @@ namespace Helpmebot.Configuration.XmlSections
         /// </summary>
         [ConfigurationProperty(
             "useragent", 
-            IsRequired = true, 
             DefaultValue = "Helpmebot/6.0 (+http://helpmebot.org.uk)")]
         public string UserAgent
         {
@@ -69,7 +68,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets the monitoring port
         /// </summary>
-        [ConfigurationProperty("monitorPort", IsRequired = true, DefaultValue = 62167)]
+        [ConfigurationProperty("monitorPort", DefaultValue = 62167)]
         public int MonitorPort
         {
             get

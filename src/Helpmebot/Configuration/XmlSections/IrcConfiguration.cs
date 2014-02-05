@@ -30,7 +30,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets a value indicating whether to authenticate to services
         /// </summary>
-        [ConfigurationProperty("authToServices", IsRequired = true, DefaultValue = true)]
+        [ConfigurationProperty("authToServices", DefaultValue = true)]
         public bool AuthToServices
         {
             get
@@ -78,7 +78,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         /// Gets the real name.
         /// </summary>
-        [ConfigurationProperty("realname", IsRequired = true)]
+        [ConfigurationProperty("realname", DefaultValue = "Helpmebot (helpmebot@helpmebot.org.uk) - IRC bot")]
         public string RealName
         {
             get
