@@ -101,7 +101,7 @@ namespace Helpmebot.IRC.Messages
         {
             this.prefix = prefix;
             this.command = command;
-            this.parameters = parameters;
+            this.parameters = parameters ?? new List<string>();
         }
 
         /// <summary>
