@@ -88,7 +88,7 @@ namespace Helpmebot.Configuration.XmlSections
         /// <summary>
         ///     Gets the port.
         /// </summary>
-        [ConfigurationProperty("port", DefaultValue = 3306, IsRequired = true)]
+        [ConfigurationProperty("port", DefaultValue = 3306)]
         public int Port
         {
             get
@@ -130,6 +130,18 @@ namespace Helpmebot.Configuration.XmlSections
             get
             {
                 return (string)base["ircPassword"];
+            }
+        }
+
+        /// <summary>
+        ///     Gets the IpInfoDB API key.
+        /// </summary>
+        [ConfigurationProperty("ipInfoDbApiKey", DefaultValue = "")]
+        public string IpInfoDbApiKey
+        {
+            get
+            {
+                return (string)base["ipInfoDbApiKey"];
             }
         }
 

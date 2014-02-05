@@ -24,8 +24,12 @@ namespace Helpmebot.ExtensionMethods
     using System.Net;
     using System.Xml;
 
-    using Helpmebot.Legacy.Configuration;
+    using Castle.Core.Logging;
+
+    using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.Model;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// The ip address extensions.
@@ -43,9 +47,19 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static GeolocateResult GetLocation(this IPAddress ip)
         {
-            Stream s = HttpRequest.Get("http://api.ipinfodb.com/v3/ip-city/?key=" + LegacyConfig.Singleton()["ipinfodbApiKey"] + "&ip=" + ip + "&format=xml");
-            XmlTextReader xtr = new XmlTextReader(s);
-            GeolocateResult result = new GeolocateResult();
+            // FIXME: remove servicelocator
+            var config = ServiceLocator.Current.GetInstance<IPrivateConfiguration>();
+            var logger = ServiceLocator.Current.GetInstance<ILogger>().CreateChildLogger("IPAddressExtensions");
+
+            if (config.IpInfoDbApiKey == string.Empty)
+            {
+                logger.Error("API key is empty, please fix this in configuration.");
+                return new GeolocateResult();
+            }
+
+            Stream s = HttpRequest.Get("http://api.ipinfodb.com/v3/ip-city/?key=" + config.IpInfoDbApiKey + "&ip=" + ip + "&format=xml");
+            var xtr = new XmlTextReader(s);
+            var result = new GeolocateResult();
 
             while (!xtr.EOF)
             {

@@ -68,6 +68,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("ircPassword", IsRequired = true)]
         string IrcPassword { get; }
 
+        /// <summary>
+        ///     Gets the IpInfoDB API key.
+        /// </summary>
+        [ConfigurationProperty("ipInfoDbApiKey", DefaultValue = "")]
+        string IpInfoDbApiKey { get; }
+
         #endregion
     }
 }

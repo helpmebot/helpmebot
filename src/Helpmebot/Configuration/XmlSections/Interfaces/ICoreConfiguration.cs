@@ -50,6 +50,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("monitorPort", IsRequired = true, DefaultValue = 62167)]
         int MonitorPort { get; }
 
+        /// <summary>
+        ///     Gets the default command trigger
+        /// </summary>
+        [ConfigurationProperty("commandTrigger", DefaultValue = "!")]
+        string CommandTrigger { get; }
+
         #endregion
     }
 }

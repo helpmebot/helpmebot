@@ -180,7 +180,7 @@ namespace Helpmebot
 
             JoinChannels();
 
-            Trigger = LegacyConfig.Singleton()["commandTrigger"];
+            Trigger = configurationHelper.CoreConfiguration.CommandTrigger;
 
             // TODO: remove me!
             container.Register(Component.For<IIrcAccessLayer>().Instance(irc));

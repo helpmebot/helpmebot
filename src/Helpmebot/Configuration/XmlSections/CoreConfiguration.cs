@@ -75,6 +75,18 @@ namespace Helpmebot.Configuration.XmlSections
             {
                 return (int)base["monitorPort"];
             }
+        }        
+        
+        /// <summary>
+        ///     Gets the default command trigger
+        /// </summary>
+        [ConfigurationProperty("commandTrigger", DefaultValue = "!")]
+        public string CommandTrigger
+        {
+            get
+            {
+                return (string)base["commandTrigger"];
+            }
         }
 
         #endregion
