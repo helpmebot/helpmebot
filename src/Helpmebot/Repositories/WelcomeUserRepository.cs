@@ -60,8 +60,7 @@ namespace Helpmebot.Repositories
         /// </returns>
         public IEnumerable<WelcomeUser> GetWelcomeForChannel(string channel)
         {
-            return
-                this.Session.CreateCriteria<WelcomeUser>().Add(Restrictions.Eq("Channel", channel)).List<WelcomeUser>();
+            return this.Get(Restrictions.Eq("Channel", channel));
         }
 
         /// <summary>

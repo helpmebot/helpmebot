@@ -47,6 +47,11 @@ namespace Helpmebot.Repositories
         private readonly ISession session;
 
         /// <summary>
+        /// The session lock.
+        /// </summary>
+        private readonly object sessionLock = new object();
+
+        /// <summary>
         /// Initialises a new instance of the <see cref="RepositoryBase{T}"/> class. 
         /// </summary>
         /// <param name="session">
@@ -65,17 +70,6 @@ namespace Helpmebot.Repositories
         /// Gets the logger.
         /// </summary>
         protected ILogger Logger { get; private set; }
-
-        /// <summary>
-        /// Gets the session.
-        /// </summary>
-        protected ISession Session
-        {
-            get
-            {
-                return this.session;
-            }
-        }
 
         /// <summary>
         /// The save.
@@ -109,7 +103,14 @@ namespace Helpmebot.Repositories
         /// </returns>
         public IEnumerable<T> Get()
         {
-            return this.Session.CreateCriteria<T>().List<T>();
+            IList<T> list;
+
+            lock (this.sessionLock)
+            {
+                list = this.session.CreateCriteria<T>().List<T>();
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -123,7 +124,13 @@ namespace Helpmebot.Repositories
         /// </returns>
         public T GetById(int id)
         {
-            return this.Session.CreateCriteria<T>().Add(Restrictions.Eq("Id", id)).UniqueResult<T>();
+            T uniqueResult;
+            lock (this.sessionLock)
+            {
+                uniqueResult = this.session.CreateCriteria<T>().Add(Restrictions.Eq("Id", id)).UniqueResult<T>();
+            }
+
+            return uniqueResult;
         }
 
         /// <summary>
@@ -137,7 +144,13 @@ namespace Helpmebot.Repositories
         /// </returns>
         public IEnumerable<T> Get(ICriterion criterion)
         {
-            return this.Session.CreateCriteria<T>().Add(criterion).List<T>();
+            IList<T> list;
+            lock (this.sessionLock)
+            {
+                list = this.session.CreateCriteria<T>().Add(criterion).List<T>();
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -181,7 +194,10 @@ namespace Helpmebot.Repositories
         /// </summary>
         public void Flush()
         {
-            this.session.Flush();
+            lock (this.sessionLock)
+            {
+                this.session.Flush();
+            }
         }
 
         /// <summary>
@@ -195,14 +211,17 @@ namespace Helpmebot.Repositories
         /// </returns>
         public virtual bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable)
         {
-            var transaction = this.session.BeginTransaction(level);
-
-            if (!transaction.IsActive)
+            lock (this.sessionLock)
             {
-                return false;
-            }
+                var transaction = this.session.BeginTransaction(level);
 
-            return true;
+                if (!transaction.IsActive)
+                {
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         /// <summary>
@@ -210,14 +229,17 @@ namespace Helpmebot.Repositories
         /// </summary>
         public virtual void RollBack()
         {
-            if (this.session.Transaction.IsActive)
+            lock (this.sessionLock)
             {
-                this.session.Transaction.Rollback();
-            }
-            else
-            {
-                this.Logger.Error("Can't rollback non-existing transaction!");
-                throw new TransactionException("Can't rollback non-existing transaction!");
+                if (this.session.Transaction.IsActive)
+                {
+                    this.session.Transaction.Rollback();
+                }
+                else
+                {
+                    this.Logger.Error("Can't rollback non-existing transaction!");
+                    throw new TransactionException("Can't rollback non-existing transaction!");
+                }
             }
         }
 
@@ -269,8 +291,11 @@ namespace Helpmebot.Repositories
         /// </param>
         protected virtual void DoSave(T model)
         {
-            this.Logger.DebugFormat("Saving model {0} ({1})...", model, model.GetType().Name);
-            this.Session.SaveOrUpdate(model);
+            lock (this.sessionLock)
+            {
+                this.Logger.DebugFormat("Saving model {0} ({1})...", model, model.GetType().Name);
+                this.session.SaveOrUpdate(model);
+            }
         }        
         
         /// <summary>
@@ -281,8 +306,11 @@ namespace Helpmebot.Repositories
         /// </param>
         protected virtual void DoDelete(T model)
         {
-            this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
-            this.Session.Delete(model);
+            lock (this.sessionLock)
+            {
+                this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
+                this.session.Delete(model);
+            }
         }
     }
 }
