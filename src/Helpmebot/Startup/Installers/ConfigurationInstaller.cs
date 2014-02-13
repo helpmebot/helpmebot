@@ -21,6 +21,7 @@ namespace Helpmebot.Startup.Installers
     using Castle.Windsor;
 
     using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections.Interfaces;
 
     /// <summary>
     ///     The configuration installer.
@@ -42,7 +43,11 @@ namespace Helpmebot.Startup.Installers
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Component.For<IConfigurationHelper>().ImplementedBy<ConfigurationHelper>());
-            container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Configuration.XmlSections").WithService.AllInterfaces());
+            var configurationHelper = container.Resolve<IConfigurationHelper>();
+
+            container.Register(Component.For<ICoreConfiguration>().Instance(configurationHelper.CoreConfiguration));
+            container.Register(Component.For<IPrivateConfiguration>().Instance(configurationHelper.PrivateConfiguration));
+            container.Register(Component.For<IIrcConfiguration>().Instance(configurationHelper.IrcConfiguration));
         }
 
         #endregion
