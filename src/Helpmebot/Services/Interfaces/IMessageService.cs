@@ -34,7 +34,7 @@ namespace Helpmebot.Services.Interfaces
         /// The message key.
         /// </param>
         /// <param name="context">
-        /// The context of the message.
+        /// The context for retrieving a message.
         /// </param>
         /// <param name="arguments">
         /// The arguments.
@@ -48,7 +48,7 @@ namespace Helpmebot.Services.Interfaces
         /// The retrieve not enough parameters.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The context for retrieving a message.
         /// </param>
         /// <param name="command">
         /// The command.
@@ -68,7 +68,7 @@ namespace Helpmebot.Services.Interfaces
         /// The done.
         /// </summary>
         /// <param name="context">
-        /// The context.
+        /// The context for retrieving a message.
         /// </param>
         /// <returns>
         /// The <see cref="string"/>.
