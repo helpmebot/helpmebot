@@ -31,6 +31,8 @@ namespace helpmebot6.Commands
 
     using Microsoft.Practices.ServiceLocation;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
     /// Generic bot command abstract class
     /// </summary>
@@ -93,12 +95,10 @@ namespace helpmebot6.Commands
             {
                 string command = GetType().ToString();
 
-                var q = new LegacyDatabase.Select("accesslevel");
-                q.SetFrom("command");
-                q.AddLimit(1, 0);
-                q.AddWhere(new LegacyDatabase.WhereConds("typename", command));
+                var cmd = new MySqlCommand("SELECT accesslevel FROM `command` WHERE typename = @command LIMIT 1;");
+                cmd.Parameters.AddWithValue("@command", command);
 
-                string al = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+                string al = LegacyDatabase.Singleton().ExecuteScalarSelect(cmd);
                 try
                 {
                     return (LegacyUser.UserRights)Enum.Parse(typeof(LegacyUser.UserRights), al, true);

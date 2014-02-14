@@ -441,20 +441,13 @@ namespace Helpmebot.Monitoring
 
             UpdateDatabaseTable(items, e.Keyword);
 
-            var q = new LegacyDatabase.Select("channel_name");
-            q.AddJoin(
-                "channelwatchers", 
-                LegacyDatabase.Select.JoinTypes.Inner, 
-                new LegacyDatabase.WhereConds(false, "watcher_id", "=", false, "cw_watcher"));
-            q.AddJoin(
-                "channel", 
-                LegacyDatabase.Select.JoinTypes.Inner, 
-                new LegacyDatabase.WhereConds(false, "channel_id", "=", false, "cw_channel"));
-            q.SetFrom("watcher");
-            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", e.Keyword));
-            q.AddLimit(10, 0);
+            var query =
+                new MySqlCommand(
+                    "SELECT channel_name FROM `watcher` INNER JOIN `channelwatchers` ON watcher_id = cw_watcher INNER JOIN `channel` ON channel_id = cw_channel WHERE watcher_keyword = @keyword;");
 
-            ArrayList channels = LegacyDatabase.Singleton().ExecuteSelect(q);
+            query.Parameters.AddWithValue("@keyword", e.Keyword);
+            
+            ArrayList channels = LegacyDatabase.Singleton().ExecuteSelect(query);
             foreach (object[] item in channels)
             {
                 var channel = (string)item[0];
