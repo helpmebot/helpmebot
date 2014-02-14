@@ -47,7 +47,7 @@ namespace Helpmebot.Legacy.Configuration
         private readonly Dictionary<string, ConfigurationSetting> configurationCache;
 
         /// <summary>
-        /// The legacy database.
+        ///     The legacy database.
         /// </summary>
         private readonly LegacyDatabase legacyDatabase = LegacyDatabase.Singleton();
 
@@ -164,11 +164,10 @@ namespace Helpmebot.Legacy.Configuration
         /// </returns>
         public string GetChannelId(string channel)
         {
-            var q = new LegacyDatabase.Select("channel_id");
-            q.SetFrom("channel");
-            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
+            var command = new MySqlCommand("SELECT channel_id FROM channel WHERE channel_name = @name;");
+            command.Parameters.AddWithValue("@name", channel);
 
-            return this.legacyDatabase.ExecuteScalarSelect(q);
+            return this.legacyDatabase.ExecuteScalarSelect(command);
         }
 
         #endregion
@@ -237,11 +236,11 @@ namespace Helpmebot.Legacy.Configuration
         /// </returns>
         private string GetOptionId(string optionName)
         {
-            var q = new LegacyDatabase.Select("configuration_id");
-            q.SetFrom("configuration");
-            q.AddWhere(new LegacyDatabase.WhereConds("configuration_name", optionName));
+            var command =
+                new MySqlCommand("SELECT configuration_id FROM `configuration` WHERE configuration_name = @name;");
+            command.Parameters.AddWithValue("@name", optionName);
 
-            return this.legacyDatabase.ExecuteScalarSelect(q);
+            return this.legacyDatabase.ExecuteScalarSelect(command);
         }
 
         /// <summary>
@@ -257,12 +256,12 @@ namespace Helpmebot.Legacy.Configuration
         {
             try
             {
-                var q = new LegacyDatabase.Select("configuration_value");
-                q.SetFrom("configuration");
-                q.AddLimit(1, 0);
-                q.AddWhere(new LegacyDatabase.WhereConds("configuration_name", optionName));
+                var command =
+                    new MySqlCommand(
+                        "SELECT configuration_value FROM `configuration` WHERE configuration_name = @name LIMIT 1;");
+                command.Parameters.AddWithValue("@name", optionName);
 
-                string result = this.legacyDatabase.ExecuteScalarSelect(q) ?? string.Empty;
+                string result = this.legacyDatabase.ExecuteScalarSelect(command) ?? string.Empty;
                 return result;
             }
             catch (Exception ex)
@@ -284,7 +283,9 @@ namespace Helpmebot.Legacy.Configuration
         /// </param>
         private void SetGlobalOption(string newValue, string optionName)
         {
-            var command = new MySqlCommand("UPDATE configuration SET configuration_value = @value WHERE configuration_name = @name LIMIT 1;");
+            var command =
+                new MySqlCommand(
+                    "UPDATE configuration SET configuration_value = @value WHERE configuration_name = @name LIMIT 1;");
 
             command.Parameters.AddWithValue("@value", newValue);
             command.Parameters.AddWithValue("@name", optionName);
@@ -314,7 +315,9 @@ namespace Helpmebot.Legacy.Configuration
             // INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
             if (newValue == null)
             {
-                var deleteCommand = new MySqlCommand("DELETE FROM channelconfig WHERE cc_config = @config AND cc_channel = @channel LIMIT 1;");
+                var deleteCommand =
+                    new MySqlCommand(
+                        "DELETE FROM channelconfig WHERE cc_config = @config AND cc_channel = @channel LIMIT 1;");
                 deleteCommand.Parameters.AddWithValue("@config", this.GetOptionId(optionName));
                 deleteCommand.Parameters.AddWithValue("@channel", this.GetChannelId(channelId));
 
@@ -323,16 +326,20 @@ namespace Helpmebot.Legacy.Configuration
                 return;
             }
 
-            var q = new LegacyDatabase.Select("COUNT(*)");
-            q.SetFrom("channelconfig");
-            q.AddWhere(new LegacyDatabase.WhereConds("cc_channel", channelId));
-            q.AddWhere(new LegacyDatabase.WhereConds("cc_config", configId));
-            string count = this.legacyDatabase.ExecuteScalarSelect(q);
+            var selectCommand =
+                new MySqlCommand(
+                    "SELECT COUNT(*) FROM channelconfig WHERE cc_channel = @channel AND cc_config = @config;");
+            selectCommand.Parameters.AddWithValue("@channel", channelId);
+            selectCommand.Parameters.AddWithValue("@config", configId);
+
+            string count = this.legacyDatabase.ExecuteScalarSelect(selectCommand);
 
             if (count == "1")
             {
                 // yes: Update
-                var command = new MySqlCommand("UPDATE channelconfig SET cc_value = @value WHERE cc_channel = @channel AND cc_config = @name LIMIT 1;");
+                var command =
+                    new MySqlCommand(
+                        "UPDATE channelconfig SET cc_value = @value WHERE cc_channel = @channel AND cc_config = @name LIMIT 1;");
 
                 command.Parameters.AddWithValue("@value", newValue);
                 command.Parameters.AddWithValue("@name", configId);

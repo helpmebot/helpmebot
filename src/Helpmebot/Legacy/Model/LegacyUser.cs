@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the LegacyUser type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Legacy.Model
 {
     using System;
@@ -30,106 +26,88 @@ namespace Helpmebot.Legacy.Model
 
     using Microsoft.Practices.ServiceLocation;
 
+    using MySql.Data.MySqlClient;
+
     /// <summary>
-    /// The user.
+    ///     The user.
     /// </summary>
     public class LegacyUser : ILegacyUser
     {
+        #region Fields
+
         /// <summary>
-        /// The database.
+        ///     The database.
         /// </summary>
         private readonly LegacyDatabase db;
 
         /// <summary>
-        /// The _access level.
+        ///     The _access level.
         /// </summary>
         private UserRights accessLevel;
 
         /// <summary>
-        /// The retrieved access level.
+        ///     The retrieved access level.
         /// </summary>
         private bool retrievedAccessLevel;
 
+        #endregion
+
+        #region Constructors and Destructors
+
         /// <summary>
-        /// Initialises a new instance of the <see cref="LegacyUser"/> class.
+        ///     Initialises a new instance of the <see cref="LegacyUser" /> class.
         /// </summary>
         public LegacyUser()
         {
             this.db = LegacyDatabase.Singleton();
         }
 
+        #endregion
+
+        #region Enums
+
         /// <summary>
-        /// The user rights.
+        ///     The user rights.
         /// </summary>
         public enum UserRights
         {
             /// <summary>
-            /// The developer.
+            ///     The developer.
             /// </summary>
-            Developer = 3,
+            Developer = 3, 
 
             /// <summary>
-            /// The super user.
+            ///     The super user.
             /// </summary>
-            Superuser = 2,
+            Superuser = 2, 
 
             /// <summary>
-            /// The advanced.
+            ///     The advanced.
             /// </summary>
-            Advanced = 1,
+            Advanced = 1, 
 
             /// <summary>
-            /// The normal.
+            ///     The normal.
             /// </summary>
-            Normal = 0,
+            Normal = 0, 
 
             /// <summary>
-            /// The semi-ignored.
+            ///     The semi-ignored.
             /// </summary>
-            Semiignored = -1,
+            Semiignored = -1, 
 
             /// <summary>
-            /// The ignored.
+            ///     The ignored.
             /// </summary>
             Ignored = -2
         }
 
-        /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the nickname.
-        /// </summary>
-        /// <value>The nickname.</value>
-        public string Nickname { get; set; }
-
-        /// <summary>
-        /// Gets or sets the username.
-        /// </summary>
-        /// <value>The username.</value>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hostname.
-        /// </summary>
-        /// <value>The hostname.</value>
-        public string Hostname { get; set; }
-
-        /// <summary>
-        /// Gets or sets the account.
-        /// </summary>
-        public string Account { get; set; }
-
-        /// <summary>
-        /// Gets the network.
-        /// </summary>
-        /// <value>The network.</value>
-        public uint Network { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the access level.
+        ///     Gets or sets the access level.
         /// </summary>
         /// <value>The access level.</value>
         public UserRights AccessLevel
@@ -140,15 +118,14 @@ namespace Helpmebot.Legacy.Model
                 {
                     if (this.retrievedAccessLevel == false)
                     {
-                        var q = new LegacyDatabase.Select("user_accesslevel");
-                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Nickname, "LIKE", false, "user_nickname"));
-                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Username, "LIKE", false, "user_username"));
-                        q.AddWhere(new LegacyDatabase.WhereConds(true, this.Hostname, "LIKE", false, "user_hostname"));
-                        q.AddOrder(new LegacyDatabase.Select.Order("user_accesslevel", true));
-                        q.SetFrom("user");
+                        var command =
+                            new MySqlCommand(
+                                "SELECT user_accesslevel FROM `user` WHERE @nick LIKE user_nickname AND @user LIKE user_username AND @host LIKE user_hostname ORDER BY `user_accesslevel` ASC;");
+                        command.Parameters.AddWithValue("@nick", this.Nickname);
+                        command.Parameters.AddWithValue("@user", this.Username);
+                        command.Parameters.AddWithValue("@host", this.Hostname);
 
-                        string accesslevel = this.db.ExecuteScalarSelect(q) ??
-                                             "Normal";
+                        string accesslevel = this.db.ExecuteScalarSelect(command) ?? "Normal";
 
                         var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);
 
@@ -172,6 +149,44 @@ namespace Helpmebot.Legacy.Model
                 throw new NotImplementedException();
             }
         }
+
+        /// <summary>
+        ///     Gets or sets the account.
+        /// </summary>
+        public string Account { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the hostname.
+        /// </summary>
+        /// <value>The hostname.</value>
+        public string Hostname { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        /// <summary>
+        ///     Gets the network.
+        /// </summary>
+        /// <value>The network.</value>
+        public uint Network { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the nickname.
+        /// </summary>
+        /// <value>The nickname.</value>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the username.
+        /// </summary>
+        /// <value>The username.</value>
+        public string Username { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// The new from other user.
@@ -200,8 +215,12 @@ namespace Helpmebot.Legacy.Model
         /// <summary>
         /// New from string.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <returns>The legacy user</returns>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <returns>
+        /// The legacy user
+        /// </returns>
         public static LegacyUser NewFromString(string source)
         {
             return NewFromString(source, 0);
@@ -210,9 +229,15 @@ namespace Helpmebot.Legacy.Model
         /// <summary>
         /// New user from string.
         /// </summary>
-        /// <param name="source">The source.</param>
-        /// <param name="network">The network.</param>
-        /// <returns>The legacy user</returns>
+        /// <param name="source">
+        /// The source.
+        /// </param>
+        /// <param name="network">
+        /// The network.
+        /// </param>
+        /// <returns>
+        /// The legacy user
+        /// </returns>
         public static LegacyUser NewFromString(string source, uint network)
         {
             string user, host;
@@ -244,13 +269,7 @@ namespace Helpmebot.Legacy.Model
                 ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
             }
 
-            var ret = new LegacyUser
-                           {
-                               Hostname = host,
-                               Nickname = nick,
-                               Username = user,
-                               Network = network
-                           };
+            var ret = new LegacyUser { Hostname = host, Nickname = nick, Username = user, Network = network };
             return ret;
         }
 
@@ -294,7 +313,7 @@ namespace Helpmebot.Legacy.Model
         }
 
         /// <summary>
-        ///   Recompiles the source string
+        ///     Recompiles the source string
         /// </summary>
         /// <returns>nick!user@host, OR nick@host, OR nick</returns>
         public override string ToString()
@@ -310,7 +329,7 @@ namespace Helpmebot.Legacy.Model
             {
                 endResult += "!" + this.Username;
             }
-            
+
             if (this.Hostname != null)
             {
                 endResult += "@" + this.Hostname;
@@ -318,5 +337,7 @@ namespace Helpmebot.Legacy.Model
 
             return endResult;
         }
+
+        #endregion
     }
 }
