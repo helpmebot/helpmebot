@@ -183,12 +183,6 @@ namespace Helpmebot
 
             SetupEvents();
 
-            if (!irc.Connect())
-            {
-                // if can't Connect to irc, die
-                return;
-            }
-
             // initialise the deferred installers.
             container.Install(FromAssembly.This(new DeferredWindsorBootstrap()));
         }
