@@ -343,15 +343,13 @@ namespace Helpmebot.Monitoring
             CategoryWatcher cw = this.GetWatcher(keyword);
             if (cw != null)
             {
-                var vals = new Dictionary<string, string>
-                               {
-                                   {
-                                       "watcher_sleeptime", 
-                                       newDelay.ToString(CultureInfo.InvariantCulture)
-                                   }
-                               };
-                LegacyDatabase.Singleton()
-                    .Update("watcher", vals, 0, new LegacyDatabase.WhereConds("watcher_keyword", keyword));
+                var command = new MySqlCommand("UPDATE watcher SET watcher_sleeptime = @value WHERE watcher_keyword = @name LIMIT 1;");
+
+                command.Parameters.AddWithValue("@value", newDelay.ToString(CultureInfo.InvariantCulture));
+                command.Parameters.AddWithValue("@name", keyword);
+
+                LegacyDatabase.Singleton().ExecuteCommand(command);
+
                 cw.SleepTime = newDelay;
                 return
                     new CommandResponseHandler(this.messageService.RetrieveMessage(Messages.Done, messageContext, null));
@@ -401,14 +399,12 @@ namespace Helpmebot.Monitoring
                 }
                 else
                 {
-                    var v = new Dictionary<string, string> { { "item_updateflag", "1" } };
-                    LegacyDatabase.Singleton()
-                        .Update(
-                            "categoryitems", 
-                            v, 
-                            1, 
-                            new LegacyDatabase.WhereConds("item_name", item), 
-                            new LegacyDatabase.WhereConds("item_keyword", keyword));
+                    var command = new MySqlCommand("UPDATE categoryitems SET item_updateflag = 1 WHERE item_keyword = @keyword AND item_name = @name LIMIT 1;");
+
+                    command.Parameters.AddWithValue("@name", item);
+                    command.Parameters.AddWithValue("@keyword", keyword);
+
+                    LegacyDatabase.Singleton().ExecuteCommand(command);
                 }
             }
 
@@ -418,8 +414,8 @@ namespace Helpmebot.Monitoring
             deleteCommand.Parameters.AddWithValue("@keyword", keyword);
             LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
 
-            var val = new Dictionary<string, string> { { "item_updateflag", "0" } };
-            LegacyDatabase.Singleton().Update("categoryitems", val, 0);
+            var updateCommand = new MySqlCommand("UPDATE categoryitems SET item_updateflag = 0;");
+            LegacyDatabase.Singleton().ExecuteCommand(updateCommand);
         }
 
         /// <summary>

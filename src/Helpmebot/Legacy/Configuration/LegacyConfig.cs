@@ -284,8 +284,12 @@ namespace Helpmebot.Legacy.Configuration
         /// </param>
         private void SetGlobalOption(string newValue, string optionName)
         {
-            var vals = new Dictionary<string, string> { { "configuration_value", newValue } };
-            this.legacyDatabase.Update("configuration", vals, 1, new LegacyDatabase.WhereConds("configuration_name", optionName));
+            var command = new MySqlCommand("UPDATE configuration SET configuration_value = @value WHERE configuration_name = @name LIMIT 1;");
+
+            command.Parameters.AddWithValue("@value", newValue);
+            command.Parameters.AddWithValue("@name", optionName);
+
+            this.legacyDatabase.ExecuteCommand(command);
         }
 
         /// <summary>
@@ -328,13 +332,13 @@ namespace Helpmebot.Legacy.Configuration
             if (count == "1")
             {
                 // yes: Update
-                var vals = new Dictionary<string, string> { { "cc_value", newValue } };
-                this.legacyDatabase.Update(
-                    "channelconfig", 
-                    vals, 
-                    1, 
-                    new LegacyDatabase.WhereConds("cc_channel", channelId), 
-                    new LegacyDatabase.WhereConds("cc_config", configId));
+                var command = new MySqlCommand("UPDATE channelconfig SET cc_value = @value WHERE cc_channel = @channel AND cc_config = @name LIMIT 1;");
+
+                command.Parameters.AddWithValue("@value", newValue);
+                command.Parameters.AddWithValue("@name", configId);
+                command.Parameters.AddWithValue("@channel", channelId);
+
+                this.legacyDatabase.ExecuteCommand(command);
             }
             else
             {

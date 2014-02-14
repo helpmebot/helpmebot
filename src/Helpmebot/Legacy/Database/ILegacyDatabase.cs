@@ -47,27 +47,6 @@ namespace Helpmebot.Legacy.Database
         long Insert(string table, params string[] values);
 
         /// <summary>
-        /// Updates rows in the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="items">
-        /// The items.
-        /// </param>
-        /// <param name="limit">
-        /// The limit.
-        /// </param>
-        /// <param name="conditions">
-        /// The conditions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        [Obsolete("Don't use - use either repositories or parameterised queries")]
-        bool Update(string table, Dictionary<string, string> items, int limit, params LegacyDatabase.WhereConds[] conditions);
-
-        /// <summary>
         /// Executes the select.
         /// </summary>
         /// <param name="query">The query.</param>

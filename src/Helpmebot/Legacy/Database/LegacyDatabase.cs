@@ -347,77 +347,6 @@ namespace Helpmebot.Legacy.Database
             return null;
         }
 
-        /// <summary>
-        /// Updates rows in the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="items">
-        /// The items.
-        /// </param>
-        /// <param name="limit">
-        /// The limit.
-        /// </param>
-        /// <param name="conditions">
-        /// The conditions.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        public bool Update(string table, Dictionary<string, string> items, int limit, params WhereConds[] conditions)
-        {
-            bool succeed = false;
-
-            if (items.Count < 1)
-            {
-                return true;
-            }
-
-            string query = "UPDATE `" + Sanitise(table) + "` SET ";
-
-            foreach (var col in items)
-            {
-                query += "`" + Sanitise(col.Key) + "` = \"" + Sanitise(col.Value) + "\", ";
-            }
-
-            query = query.TrimEnd(',', ' ');
-
-            for (int i = 0; i < conditions.Length; i++)
-            {
-                if (i == 0)
-                {
-                    query += " WHERE ";
-                }
-                else
-                {
-                    query += " AND ";
-                }
-
-                query += conditions[i].ToString();
-            }
-
-            if (limit > 0)
-            {
-                query += " LIMIT " + limit;
-            }
-
-            query += ";";
-
-            try
-            {
-                var updateCommand = new MySqlCommand(query);
-                this.ExecuteNonQuery(ref updateCommand);
-                succeed = true;
-            }
-            catch (MySqlException ex)
-            {
-                this.Log.Error(ex.Message, ex);
-            }
-
-            return succeed;
-        }
-
         #endregion
 
         #region Methods
@@ -527,7 +456,7 @@ namespace Helpmebot.Legacy.Database
 
             int totalTimeSlept = 0;
 
-            while (!connectionOk || totalTimeSlept >= 180 /*seconds*/* 1000 /*transform to milliseconds*/)
+            while (!connectionOk || totalTimeSlept >= 180 /*seconds*/ * 1000 /*transform to milliseconds*/)
             {
                 if (!firstTime)
                 {
