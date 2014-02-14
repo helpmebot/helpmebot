@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the maximum replication lag on the wiki
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System.Xml;
@@ -27,15 +23,14 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
-    ///   Returns the maximum replication lag on the wiki
+    ///     Returns the maximum replication lag on the wiki
     /// </summary>
     internal class Maxlag : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Maxlag"/> class.
         /// </summary>
@@ -56,24 +51,41 @@ namespace helpmebot6.Commands
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the channel.
+        ///     Actual command logic
         /// </summary>
-        /// <param name="channel">The channel.</param>
+        /// <returns>The response</returns>
+        protected override CommandResponseHandler ExecuteCommand()
+        {
+            string[] messageParameters = { this.Source.Nickname, this.GetMaxLag() };
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                "cmdMaxLag", 
+                this.Channel, 
+                messageParameters);
+            return new CommandResponseHandler(message);
+        }
+
+        /// <summary>
+        ///     Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
+        ///     channel.
+        /// </summary>
         /// <returns>The maximum replication lag</returns>
-        public static string GetMaxLag(string channel)
+        private string GetMaxLag()
         {
             // look up site id
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-             
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+
             // get api
-            // FIXME: ServiceLocator
-            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             // TODO: use Linq-to-XML
             var mlreader =
-                new XmlTextReader(HttpRequest.Get(mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
+                new XmlTextReader(
+                    HttpRequest.Get(mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
             do
             {
                 mlreader.Read();
@@ -85,15 +97,6 @@ namespace helpmebot6.Commands
             return lag;
         }
 
-        /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <returns>The response</returns>
-        protected override CommandResponseHandler ExecuteCommand()
-        {
-            string[] messageParameters = { this.Source.Nickname, GetMaxLag(this.Channel) };
-            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("cmdMaxLag", this.Channel, messageParameters);
-            return new CommandResponseHandler(message);
-        }
+        #endregion
     }
 }
