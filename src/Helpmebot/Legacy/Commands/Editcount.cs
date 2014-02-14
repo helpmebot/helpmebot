@@ -13,30 +13,32 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the edit count of a wikipedian
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Globalization;
     using System.Web;
     using System.Xml.XPath;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
-    ///   Returns the edit count of a Wikipedian
+    ///     Returns the edit count of a Wikipedian
     /// </summary>
     internal class Editcount : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Editcount"/> class.
         /// </summary>
@@ -57,12 +59,22 @@ namespace helpmebot6.Commands
         {
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
         /// Gets the edit count.
         /// </summary>
-        /// <param name="username">The username to retrieve the edit count for.</param>
-        /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
-        /// <returns>The edit count</returns>
+        /// <param name="username">
+        /// The username to retrieve the edit count for.
+        /// </param>
+        /// <param name="channel">
+        /// The channel the command was issued in. (Gets the correct base wiki)
+        /// </param>
+        /// <returns>
+        /// The edit count
+        /// </returns>
         public static int GetEditCount(string username, string channel)
         {
             if (username == string.Empty)
@@ -72,17 +84,18 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             username = HttpUtility.UrlEncode(username);
 
-            XPathDocument xpd =
+            // TODO: Linq-to-XML in MediaWikiSite extension method
+            var xpd =
                 new XPathDocument(
                     HttpRequest.Get(
-                        api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers=" + username));
+                        mediaWikiSite.Api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers="
+                        + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
 
@@ -104,8 +117,12 @@ namespace helpmebot6.Commands
             throw new ArgumentException();
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic    
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -129,12 +146,14 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = { editCount.ToString(), userName };
+                string[] messageParameters = { editCount.ToString(CultureInfo.InvariantCulture), userName };
 
                 string message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters);
 
                 return new CommandResponseHandler(message);
             }
         }
+
+        #endregion
     }
 }
