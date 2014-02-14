@@ -128,28 +128,6 @@ namespace Helpmebot.Legacy.IRC
         }
 
         /// <summary>
-        /// The Connect.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        public bool Connect()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// The send raw line.
-        /// </summary>
-        /// <param name="line">
-        /// The line.
-        /// </param>
-        public void SendRawLine(string line)
-        {
-            this.realClient.Send(Message.Parse(line));
-        }
-
-        /// <summary>
         /// The IRC PRIVMSG.
         /// </summary>
         /// <param name="destination">
@@ -161,31 +139,6 @@ namespace Helpmebot.Legacy.IRC
         public void IrcPrivmsg(string destination, string message)
         {
             this.realClient.SendMessage(destination, message);
-        }
-
-        /// <summary>
-        /// The IRC join.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public void IrcJoin(string channel)
-        {
-            this.realClient.JoinChannel(channel);
-        }
-
-        /// <summary>
-        /// The IRC part.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        public void IrcPart(string channel, string message)
-        {
-            this.realClient.PartChannel(channel, message);
         }
 
         /// <summary>

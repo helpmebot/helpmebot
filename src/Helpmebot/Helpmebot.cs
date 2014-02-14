@@ -64,7 +64,7 @@ namespace Helpmebot
         /// <summary>
         /// The IRC.
         /// </summary>
-        public static IIrcAccessLayer irc;
+        private static IIrcAccessLayer irc;
         
         /// <summary>
         /// The new IRC client.
@@ -192,9 +192,9 @@ namespace Helpmebot
         /// </summary>
         private static void SetupEvents()
         {
-            irc.JoinEvent += WelcomeNewbieOnJoinEvent;
+            newIrc.JoinReceivedEvent += WelcomeNewbieOnJoinEvent;
 
-            irc.JoinEvent += NotifyOnJoinEvent;
+            newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
 
             irc.PrivateMessageEvent += ReceivedMessage;
 

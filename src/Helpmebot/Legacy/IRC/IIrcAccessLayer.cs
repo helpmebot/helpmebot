@@ -65,47 +65,12 @@ namespace Helpmebot.Legacy.IRC
         string Nickname { get; }
 
         /// <summary>
-        /// The Connect.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool Connect();
-
-        /// <summary>
-        /// The send raw line.
-        /// </summary>
-        /// <param name="line">
-        /// The line.
-        /// </param>
-        void SendRawLine(string line);
-
-        /// <summary>
         ///   Sends a private message
         /// </summary>
         /// <param name = "destination">The destination of the private message.</param>
         /// <param name = "message">The message text to be sent</param>
         void IrcPrivmsg(string destination, string message);
-        
-        /// <summary>
-        /// The IRC join.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        void IrcJoin(string channel);
 
-        /// <summary>
-        /// The IRC part.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        void IrcPart(string channel, string message);
-        
         /// <summary>
         /// The IRC notice.
         /// </summary>
