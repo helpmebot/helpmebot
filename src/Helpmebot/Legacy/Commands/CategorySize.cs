@@ -21,16 +21,20 @@
 namespace helpmebot6.Commands
 {
     using System;
-    using System.Xml;
+    using System.Globalization;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
+    using Microsoft.Practices.ServiceLocation;
+
     /// <summary>
-    /// Count how many articles are in a category (if blank, assumes [[Category:Pending AfC submissions]]).
+    /// Count how many articles are in a category.
     /// </summary>
     internal class Categorysize : GenericCommand
     {
@@ -67,60 +71,14 @@ namespace helpmebot6.Commands
             }
             else
             {
-                // TODO: really?
-                categoryName = "Pending AfC submissions";
+                return new CommandResponseHandler(this.MessageService.NotEnoughParameters(this.Channel, "CategorySize", 1, 0));
             }
 
-            return this.GetResultOfCommand(categoryName);
+            return this.GetSizeOfCategory(categoryName);
         }
 
         /// <summary>
-        /// Gets the size of a category.
-        /// </summary>
-        /// <param name="categoryName">The category to retrieve the article count for.</param>
-        /// <param name="channel">The channel the command was issued in. (Gets the correct base wiki)</param>
-        /// <returns>the size of the category</returns>
-        public int GetCategorySize(string categoryName, string channel)
-        {
-            if (categoryName == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
-
-            XmlTextReader creader =
-                new XmlTextReader(
-                    HttpRequest.Get(api + "?action=query&format=xml&prop=categoryinfo&titles=Category:" +
-                                    categoryName));
-            do
-            {
-                creader.Read();
-            }
-            while (creader.Name != "page");
-
-            if (creader.GetAttribute("missing") == string.Empty)
-            {
-                return -2;
-            }
-
-            creader.Read();
-            string categorySize = creader.GetAttribute("size");
-            if (categorySize != null)
-            {
-                return int.Parse(categorySize);
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// The get result of command.
+        /// Gets the size of a category for a command's usage.
         /// </summary>
         /// <param name="categoryName">
         /// The category name.
@@ -129,34 +87,29 @@ namespace helpmebot6.Commands
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
         /// <remarks>
-        /// TODO: rename me!
+        /// If you wish to get the size of a category for another purpose, look at using the MediaWikiSite.GetCategorySize() extension method.
         /// </remarks>
-        protected CommandResponseHandler GetResultOfCommand(string categoryName)
+        protected CommandResponseHandler GetSizeOfCategory(string categoryName)
         {
-            int categorySize = this.GetCategorySize(categoryName, this.Channel);
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
 
-            switch (categorySize)
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+            try
             {
-                case -2:
-                    {
-                        string[] messageParams = { categoryName };
-                        string message = this.MessageService.RetrieveMessage("categoryMissing", this.Channel, messageParams);
-                        return new CommandResponseHandler(message);
-                    }
+                int categorySize = mediaWikiSite.GetCategorySize(categoryName);
 
-                case -1:
-                    {
-                        string[] messageParams = { categoryName };
-                        string message = this.MessageService.RetrieveMessage("categoryEmpty", this.Channel, messageParams);
-                        return new CommandResponseHandler(message);
-                    }
-
-                default:
-                    {
-                        string[] messageParameters = { categorySize.ToString(), categoryName };
-                        string message = this.MessageService.RetrieveMessage("categorySize", this.Channel, messageParameters);
-                        return new CommandResponseHandler(message);
-                    }
+                string[] messageParameters = { categorySize.ToString(CultureInfo.InvariantCulture), categoryName };
+                string message = this.MessageService.RetrieveMessage("categorySize", this.Channel, messageParameters);
+                return new CommandResponseHandler(message);
+            }
+            catch (ArgumentException)
+            {
+                string[] messageParams = { categoryName };
+                string message = this.MessageService.RetrieveMessage("categoryMissing", this.Channel, messageParams);
+                return new CommandResponseHandler(message);
             }
         }
     }

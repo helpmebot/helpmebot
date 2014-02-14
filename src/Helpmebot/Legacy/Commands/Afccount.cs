@@ -57,7 +57,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return this.GetResultOfCommand("Pending AfC submissions");
+            return this.GetSizeOfCategory("Pending AfC submissions");
         }
     }
 }

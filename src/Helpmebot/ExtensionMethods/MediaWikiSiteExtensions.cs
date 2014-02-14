@@ -14,9 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.ExtensionMethods
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -26,7 +26,7 @@ namespace Helpmebot.ExtensionMethods
     using Helpmebot.Model;
 
     /// <summary>
-    /// The media wiki site extensions.
+    ///     The media wiki site extensions.
     /// </summary>
     public static class MediaWikiSiteExtensions
     {
@@ -97,6 +97,45 @@ namespace Helpmebot.ExtensionMethods
 
             //// ReSharper restore PossibleNullReferenceException
             return blockInformations;
+        }
+
+        /// <summary>
+        /// The get category size.
+        /// </summary>
+        /// <param name="site">
+        /// The site.
+        /// </param>
+        /// <param name="category">
+        /// The category.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// Thrown when the specified page is not a category.
+        /// </exception>
+        public static int GetCategorySize(this MediaWikiSite site, string category)
+        {
+            string apiCall = string.Format(
+                "{1}?action=query&format=xml&prop=categoryinfo&titles=Category:{0}", 
+                category, 
+                site.Api);
+
+            Stream xmlFragment = HttpRequest.Get(apiCall);
+
+            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
+
+            IEnumerable<int> countEnumerable = from item in xdoc.Descendants("categoryinfo")
+                                               let xAttribute = item.Attribute("pages")
+                                               where xAttribute != null
+                                               select int.Parse(xAttribute.Value);
+            List<int> countList = countEnumerable.ToList();
+            if (!countList.Any())
+            {
+                throw new ArgumentException("Category does not exist!");
+            }
+
+            return countList.FirstOrDefault();
         }
 
         #endregion

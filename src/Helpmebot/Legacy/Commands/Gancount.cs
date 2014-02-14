@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return this.GetResultOfCommand("Good article nominees awaiting review");
+            return this.GetSizeOfCategory("Good article nominees awaiting review");
         }
     }
 }
