@@ -13,34 +13,38 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the registration date of a wikipedian
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Xml;
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
+    using Microsoft.Practices.ServiceLocation;
+
     /// <summary>
-    ///   Returns the registration date of a wikipedian
+    ///     Returns the registration date of a wikipedian
     /// </summary>
     internal class Registration : GenericCommand
     {
+        #region Static Fields
+
         /// <summary>
-        /// The registration cache.
+        ///     The registration cache.
         /// </summary>
-        private static Dictionary<string, DateTime> registrationCache =
-            new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, DateTime> RegistrationCache = new Dictionary<string, DateTime>();
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Registration"/> class.
@@ -61,6 +65,10 @@ namespace helpmebot6.Commands
             : base(source, channel, args, messageService)
         {
         }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// The get registration date.
@@ -86,18 +94,20 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
-            if (registrationCache.ContainsKey(baseWiki + "||" + username))
+            if (RegistrationCache.ContainsKey(baseWiki + "||" + username))
             {
-                return registrationCache[baseWiki + "||" + username];
+                return RegistrationCache[baseWiki + "||" + username];
             }
 
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
-            XmlTextReader creader =
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+            var creader =
                 new XmlTextReader(
-                    HttpRequest.Get(api + "?action=query&list=users&usprop=registration&format=xml&ususers=" + username));
+                    HttpRequest.Get(
+                        mediaWikiSite.Api + "?action=query&list=users&usprop=registration&format=xml&ususers="
+                        + username));
             do
             {
                 creader.Read();
@@ -110,27 +120,31 @@ namespace helpmebot6.Commands
                 if (apiRegDate == string.Empty)
                 {
                     var registrationDate = new DateTime(1970, 1, 1, 0, 0, 0);
-                    registrationCache.Add(baseWiki + "||" + username, registrationDate);
+                    RegistrationCache.Add(baseWiki + "||" + username, registrationDate);
                     return registrationDate;
                 }
 
                 DateTime regDate = DateTime.Parse(apiRegDate);
-                registrationCache.Add(baseWiki + "||" + username, regDate);
+                RegistrationCache.Add(baseWiki + "||" + username, regDate);
                 return regDate;
             }
 
             return new DateTime(0);
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The execute command.
+        ///     The execute command.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            CommandResponseHandler crh = new CommandResponseHandler();
+            var crh = new CommandResponseHandler();
             if (this.Arguments.Length > 0)
             {
                 string userName = string.Join(" ", this.Arguments);
@@ -145,22 +159,31 @@ namespace helpmebot6.Commands
                 {
                     string[] messageParameters =
                         {
-                            userName, registrationDate.ToString("hh:mm:ss t"),
+                            userName, registrationDate.ToString("hh:mm:ss t"), 
                             registrationDate.ToString("d MMMM yyyy")
                         };
-                    string message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters);
+                    string message = this.MessageService.RetrieveMessage(
+                        "registrationDate", 
+                        this.Channel, 
+                        messageParameters);
                     crh.Respond(message);
                 }
             }
             else
             {
-                string[] messageParameters = { "registration", "1", this.Arguments.Length.ToString() };
+                string[] messageParameters =
+                    {
+                        "registration", "1", 
+                        this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
+                    };
                 Helpmebot6.irc.IrcNotice(
-                    this.Source.Nickname,
+                    this.Source.Nickname, 
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return crh;
         }
+
+        #endregion
     }
 }

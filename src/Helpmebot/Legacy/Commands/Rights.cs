@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the user rights of a wikipedian
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
@@ -25,15 +21,20 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
+    using Microsoft.Practices.ServiceLocation;
+
     /// <summary>
-    ///   Returns the user rights of a wikipedian
+    ///     Returns the user rights of a wikipedian
     /// </summary>
     internal class Rights : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Rights"/> class.
         /// </summary>
@@ -54,12 +55,22 @@ namespace helpmebot6.Commands
         {
         }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
         /// Gets the rights of a wikipedian.
         /// </summary>
-        /// <param name="username">The username.</param>
-        /// <param name="channel">The channel to get the base wiki for.</param>
-        /// <returns>the rights</returns>
+        /// <param name="username">
+        /// The username.
+        /// </param>
+        /// <param name="channel">
+        /// The channel to get the base wiki for.
+        /// </param>
+        /// <returns>
+        /// the rights
+        /// </returns>
         public static string GetRights(string username, string channel)
         {
             if (username == string.Empty)
@@ -69,16 +80,16 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
-            LegacyDatabase.Select q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             string returnStr = string.Empty;
             int rightsCount = 0;
-            XmlTextReader creader =
+            var creader =
                 new XmlTextReader(
-                    HttpRequest.Get(api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
+                    HttpRequest.Get(
+                        mediaWikiSite.Api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
             do
             {
                 creader.Read();
@@ -107,15 +118,19 @@ namespace helpmebot6.Commands
 
             return returnStr;
         }
-        
+
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            CommandResponseHandler crh = new CommandResponseHandler();
-            
+            var crh = new CommandResponseHandler();
+
             string userName;
             if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
@@ -127,7 +142,7 @@ namespace helpmebot6.Commands
             }
 
             string rights = GetRights(userName, this.Channel);
-            
+
             string message;
             if (rights != string.Empty)
             {
@@ -143,5 +158,7 @@ namespace helpmebot6.Commands
             crh.Respond(message);
             return crh;
         }
+
+        #endregion
     }
 }

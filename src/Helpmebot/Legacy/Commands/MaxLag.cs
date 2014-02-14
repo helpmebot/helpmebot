@@ -24,9 +24,12 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
+    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Returns the maximum replication lag on the wiki
@@ -64,13 +67,13 @@ namespace helpmebot6.Commands
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
              
             // get api
-            var q = new LegacyDatabase.Select("site_api");
-            q.SetFrom("site");
-            q.AddWhere(new LegacyDatabase.WhereConds("site_id", baseWiki));
-            string api = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            // FIXME: ServiceLocator
+            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
+            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
+            // TODO: use Linq-to-XML
             var mlreader =
-                new XmlTextReader(HttpRequest.Get(api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
+                new XmlTextReader(HttpRequest.Get(mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
             do
             {
                 mlreader.Read();
