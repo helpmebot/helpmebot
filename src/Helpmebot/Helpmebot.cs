@@ -35,7 +35,6 @@ namespace Helpmebot
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
-    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -61,11 +60,6 @@ namespace Helpmebot
         /// The start-up time.
         /// </summary>
         public static readonly DateTime StartupTime = DateTime.Now;
-
-        /// <summary>
-        /// The IRC.
-        /// </summary>
-        private static IIrcAccessLayer irc;
         
         /// <summary>
         /// The new IRC client.
@@ -172,12 +166,9 @@ namespace Helpmebot
                     configurationHelper.IrcConfiguration,
                     configurationHelper.PrivateConfiguration.IrcPassword);
 
-            irc = new LegacyIrcProxy(newIrc);
-
             JoinChannels();
             
             // TODO: remove me!
-            container.Register(Component.For<IIrcAccessLayer>().Instance(irc));
             container.Register(Component.For<IIrcClient>().Instance(newIrc));
 
             joinMessageService = container.Resolve<IJoinMessageService>();
@@ -199,23 +190,7 @@ namespace Helpmebot
 
             newIrc.ReceivedMessage += ReceivedMessage;
 
-            irc.InviteEvent += IrcInviteEvent;
-
-            irc.ThreadFatalErrorEvent += IrcThreadFatalErrorEvent;
-        }
-
-        /// <summary>
-        /// The IRC thread fatal error event.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private static void IrcThreadFatalErrorEvent(object sender, EventArgs e)
-        {
-            Stop();
+            newIrc.InviteReceivedEvent += IrcInviteEvent;
         }
 
         /// <summary>
