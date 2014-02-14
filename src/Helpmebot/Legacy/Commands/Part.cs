@@ -23,12 +23,8 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Leave an IRC channel
@@ -61,20 +57,18 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: servicelocator call
-            var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
-            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-            
-            var channel = channelRepo.GetByName(this.Channel);
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+
+            var channel = channelRepository.GetByName(this.Channel);
             channel.Enabled = false;
-            channelRepo.Save(channel);
+            channelRepository.Save(channel);
 
             string partMessage = this.CommandServiceHelper.MessageService.RetrieveMessage(
                 Messages.RequestedBy,
                 this.Channel,
                 this.Source.ToString().ToEnumerable());
 
-            ircClient.PartChannel(this.Channel, partMessage);
+            this.CommandServiceHelper.Client.PartChannel(this.Channel, partMessage);
 
             return null;
         }

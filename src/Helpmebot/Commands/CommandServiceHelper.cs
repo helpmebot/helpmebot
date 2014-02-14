@@ -30,6 +30,11 @@ namespace Helpmebot.Commands
         #region Fields
 
         /// <summary>
+        /// The channel repository.
+        /// </summary>
+        private readonly IChannelRepository channelRepository;
+
+        /// <summary>
         ///     The client.
         /// </summary>
         private readonly IIrcClient client;
@@ -40,7 +45,12 @@ namespace Helpmebot.Commands
         private readonly IConfigurationHelper configurationHelper;
 
         /// <summary>
-        /// The media wiki site repository.
+        ///     The inter-wiki prefix repository.
+        /// </summary>
+        private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
+
+        /// <summary>
+        ///     The media wiki site repository.
         /// </summary>
         private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
 
@@ -76,23 +86,44 @@ namespace Helpmebot.Commands
         /// <param name="mediaWikiSiteRepository">
         /// The media Wiki Site Repository.
         /// </param>
+        /// <param name="interwikiPrefixRepository">
+        /// The inter-wiki Prefix Repository.
+        /// </param>
+        /// <param name="channelRepository">
+        /// The channel Repository.
+        /// </param>
         public CommandServiceHelper(
             IIrcClient client, 
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
             IConfigurationHelper configurationHelper, 
-            IMediaWikiSiteRepository mediaWikiSiteRepository)
+            IMediaWikiSiteRepository mediaWikiSiteRepository, 
+            IInterwikiPrefixRepository interwikiPrefixRepository, 
+            IChannelRepository channelRepository)
         {
             this.client = client;
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
             this.configurationHelper = configurationHelper;
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
+            this.interwikiPrefixRepository = interwikiPrefixRepository;
+            this.channelRepository = channelRepository;
         }
 
         #endregion
 
         #region Public Properties
+
+        /// <summary>
+        /// Gets the channel repository.
+        /// </summary>
+        public IChannelRepository ChannelRepository
+        {
+            get
+            {
+                return this.channelRepository;
+            }
+        }
 
         /// <summary>
         ///     Gets the client.
@@ -117,7 +148,18 @@ namespace Helpmebot.Commands
         }
 
         /// <summary>
-        /// Gets the media wiki site repository.
+        ///     Gets the inter-wiki prefix repository.
+        /// </summary>
+        public IInterwikiPrefixRepository InterwikiPrefixRepository
+        {
+            get
+            {
+                return this.interwikiPrefixRepository;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the media wiki site repository.
         /// </summary>
         public IMediaWikiSiteRepository MediaWikiSiteRepository
         {

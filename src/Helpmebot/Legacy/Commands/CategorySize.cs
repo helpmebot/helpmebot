@@ -29,9 +29,6 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Count how many articles are in a category.
@@ -93,9 +90,7 @@ namespace helpmebot6.Commands
         {
             string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
 
-            // FIXME: ServiceLocator
-            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             var messageService = this.CommandServiceHelper.MessageService;
             try

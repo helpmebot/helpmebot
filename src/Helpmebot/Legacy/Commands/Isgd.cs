@@ -28,20 +28,12 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Shortens a URL
     /// </summary>
     internal class Isgd : GenericCommand
     {
-        /// <summary>
-        /// The shortening service.
-        /// </summary>
-        private readonly IUrlShorteningService shortener;
-
         /// <summary>
         /// Initialises a new instance of the <see cref="Isgd"/> class.
         /// </summary>
@@ -60,8 +52,6 @@ namespace helpmebot6.Commands
         public Isgd(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
-            // FIXME: remove service locator;
-            this.shortener = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
         }
 
         /// <summary>
@@ -77,7 +67,7 @@ namespace helpmebot6.Commands
             }
 
             // shorten the urls
-            var shortUrls = this.Arguments.Select(this.shortener.Shorten);
+            var shortUrls = this.Arguments.Select(this.CommandServiceHelper.UrlShorteningService.Shorten);
 
             // construct the message
             var message = shortUrls.Implode();

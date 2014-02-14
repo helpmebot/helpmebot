@@ -24,9 +24,6 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Returns the block information of a wikipedian
@@ -68,10 +65,7 @@ namespace helpmebot6.Commands
             string userName = this.Arguments.Implode();
             string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
 
-            // FIXME: ServiceLocator
-            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-
-            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             return new CommandResponseHandler(mediaWikiSite.GetBlockInformation(userName).FirstOrDefault().ToString());
         }

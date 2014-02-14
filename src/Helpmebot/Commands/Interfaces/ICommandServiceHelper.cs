@@ -54,6 +54,16 @@ namespace Helpmebot.Commands.Interfaces
         /// </summary>
         IUrlShorteningService UrlShorteningService { get; }
 
+        /// <summary>
+        /// Gets the inter-wiki prefix repository.
+        /// </summary>
+        IInterwikiPrefixRepository InterwikiPrefixRepository { get; }
+
+        /// <summary>
+        /// Gets the channel repository.
+        /// </summary>
+        IChannelRepository ChannelRepository { get; }
+
         #endregion
     }
 }

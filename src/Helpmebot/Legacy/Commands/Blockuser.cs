@@ -24,9 +24,6 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Repositories.Interfaces;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Retrieves a link to block a user.
@@ -85,10 +82,7 @@ namespace helpmebot6.Commands
                 name = parts[1];
                 prefix = parts[0];
 
-                // FIXME: servicelocator call
-                var interwikiPrefixRepository = ServiceLocator.Current.GetInstance<IInterwikiPrefixRepository>();
-
-                if (interwikiPrefixRepository.GetByPrefix(prefix) == null)
+                if (this.CommandServiceHelper.InterwikiPrefixRepository.GetByPrefix(prefix) == null)
                 {
                     name = origname;
                     prefix = string.Empty;
