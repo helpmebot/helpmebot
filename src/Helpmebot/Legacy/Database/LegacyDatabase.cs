@@ -187,50 +187,39 @@ namespace Helpmebot.Legacy.Database
         /// </returns>
         public ArrayList ExecuteSelect(Select query)
         {
-            List<string> cols;
-            return this.ExecuteSelect(query, out cols);
-        }
-
-        /// <summary>
-        /// Executes the select.
-        /// </summary>
-        /// <param name="query">
-        /// The query.
-        /// </param>
-        /// <param name="columns">
-        /// A list of column names
-        /// </param>
-        /// <returns>
-        /// ArrayList of arrays. Each array is one row in the dataset.
-        /// </returns>
-        public ArrayList ExecuteSelect(Select query, out List<string> columns)
-        {
-            columns = new List<string>();
             var resultSet = new ArrayList();
             lock (this)
             {
-                MySqlDataReader dr = this.ExecuteReaderQuery(query.ToString());
+                MySqlDataReader result = null;
 
-                if (dr == null)
+                this.Log.Debug("Executing (reader)query: " + query);
+
+                try
+                {
+                    this.RunConnectionTest();
+
+                    var cmd = new MySqlCommand(query.ToString()) { Connection = this.connection };
+                    result = cmd.ExecuteReader();
+                    this.Log.Debug("Done executing (reader)query: " + query);
+                }
+                catch (Exception ex)
+                {
+                    this.Log.Error("Problem executing (reader)query", ex);
+                }
+
+                if (result == null)
                 {
                     return resultSet;
                 }
 
                 try
                 {
-                    DataTableReader cols = dr.GetSchemaTable().CreateDataReader();
-                    while (cols.Read())
+                    while (result.Read())
                     {
-                        columns.Add((string)cols.GetValue(0));
-                    }
+                        var row = new object[result.FieldCount];
 
-                    cols.Close();
-
-                    while (dr.Read())
-                    {
-                        var row = new object[dr.FieldCount];
-
-                        dr.GetValues(row);
+                        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+                        result.GetValues(row);
                         resultSet.Add(row);
                     }
                 }
@@ -241,7 +230,7 @@ namespace Helpmebot.Legacy.Database
                 }
                 finally
                 {
-                    dr.Close();
+                    result.Close();
                 }
             }
 
@@ -321,20 +310,6 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Sanitises the specified raw data.
-        /// </summary>
-        /// <param name="rawData">
-        /// The raw data.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        private static string Sanitise(string rawData)
-        {
-            return MySqlHelper.EscapeString(rawData);
-        }
-
-        /// <summary>
         /// The execute non query.
         /// </summary>
         /// <param name="cmd">
@@ -358,42 +333,6 @@ namespace Helpmebot.Legacy.Database
 
                 this.Log.Debug("Done executing query");
             }
-        }
-
-        /// <summary>
-        /// Executes the reader query
-        /// </summary>
-        /// <param name="query">
-        /// The string query to use
-        /// </param>
-        /// <returns>
-        /// The <see cref="MySqlDataReader"/>.
-        /// </returns>
-        /// <remarks>
-        /// Needs Lock!
-        /// </remarks>
-        private MySqlDataReader ExecuteReaderQuery(string query)
-        {
-            MySqlDataReader result = null;
-
-            this.Log.Debug("Executing (reader)query: " + query);
-
-            try
-            {
-                this.RunConnectionTest();
-
-                var cmd = new MySqlCommand(query) { Connection = this.connection };
-                result = cmd.ExecuteReader();
-                this.Log.Debug("Done executing (reader)query: " + query);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                this.Log.Error("Problem executing (reader)query", ex);
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -724,16 +663,16 @@ namespace Helpmebot.Legacy.Database
             /// <summary>
             /// Adds a limit.
             /// </summary>
-            /// <param name="limit">
+            /// <param name="lim">
             /// The limit.
             /// </param>
-            /// <param name="offset">
+            /// <param name="off">
             /// The offset.
             /// </param>
-            public void AddLimit(int limit, int offset)
+            public void AddLimit(int lim, int off)
             {
-                this.limit = limit;
-                this.offset = offset;
+                this.limit = lim;
+                this.offset = off;
             }
 
             /// <summary>

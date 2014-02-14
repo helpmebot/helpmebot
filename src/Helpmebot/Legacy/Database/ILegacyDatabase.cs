@@ -40,15 +40,7 @@ namespace Helpmebot.Legacy.Database
         /// <param name="query">The query.</param>
         /// <returns>ArrayList of arrays. Each array is one row in the dataset.</returns>
         ArrayList ExecuteSelect(LegacyDatabase.Select query);
-
-        /// <summary>
-        /// Executes the select.
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <param name="columns">A list of column names</param>
-        /// <returns>ArrayList of arrays. Each array is one row in the dataset.</returns>
-        ArrayList ExecuteSelect(LegacyDatabase.Select query, out List<string> columns);
-
+        
         /// <summary>
         /// Executes the scalar select.
         /// </summary>
