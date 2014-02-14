@@ -343,7 +343,11 @@ namespace Helpmebot.Legacy.Configuration
             else
             {
                 // no: Insert
-                this.legacyDatabase.Insert("channelconfig", channelId, configId, newValue);
+                var command = new MySqlCommand("INSERT INTO channelconfig VALUES ( @channel, @config, @value );");
+                command.Parameters.AddWithValue("@channel", channel);
+                command.Parameters.AddWithValue("@config", configId);
+                command.Parameters.AddWithValue("@value", newValue);
+                this.legacyDatabase.ExecuteCommand(command);
             }
         }
 

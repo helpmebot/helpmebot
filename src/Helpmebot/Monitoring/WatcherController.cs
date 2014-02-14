@@ -185,8 +185,12 @@ namespace Helpmebot.Monitoring
 
             if (count == "0")
             {
-                LegacyDatabase.Singleton()
-                    .Insert("channelwatchers", channelId, watcherId.ToString(CultureInfo.InvariantCulture));
+                var command = new MySqlCommand("INSERT INTO channelwatchers VALUES ( @channelid, @watcherid );");
+                command.Parameters.AddWithValue("@channelid", channelId);
+                command.Parameters.AddWithValue("@watcherid", watcherId.ToString(CultureInfo.InvariantCulture));
+
+                LegacyDatabase.Singleton().ExecuteCommand(command);
+
                 return true;
             }
 
@@ -394,7 +398,11 @@ namespace Helpmebot.Monitoring
 
                 if (databaseResult == "0")
                 {
-                    LegacyDatabase.Singleton().Insert("categoryitems", string.Empty, item, string.Empty, keyword, "1");
+                    var command = new MySqlCommand("INSERT INTO categoryitems VALUES (null, @item, null, @keyword, 1);");
+                    command.Parameters.AddWithValue("@item", item);
+                    command.Parameters.AddWithValue("@keyword", keyword);
+
+                    LegacyDatabase.Singleton().ExecuteCommand(command);
                     newItems.Add(item);
                 }
                 else

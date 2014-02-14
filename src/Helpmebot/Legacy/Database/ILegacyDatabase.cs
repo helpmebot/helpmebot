@@ -20,7 +20,6 @@
 
 namespace Helpmebot.Legacy.Database
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
 
@@ -34,17 +33,6 @@ namespace Helpmebot.Legacy.Database
         /// </summary>
         /// <returns>true if successful</returns>
         bool Connect();
-
-        /// <summary>
-        /// Inserts values the specified table.
-        /// </summary>
-        /// <param name="table">The table.</param>
-        /// <param name="values">The values.</param>
-        /// <returns>
-        /// The last Inserted Id.
-        /// </returns>
-        [Obsolete("Don't use - use either repositories or parameterised queries")]
-        long Insert(string table, params string[] values);
 
         /// <summary>
         /// Executes the select.

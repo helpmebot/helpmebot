@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Modifies the bot's access list
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System.Globalization;
@@ -34,10 +30,12 @@ namespace helpmebot6.Commands
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// Modifies the bot's access list
+    ///     Modifies the bot's access list
     /// </summary>
     internal class Access : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Access"/> class.
         /// </summary>
@@ -58,20 +56,12 @@ namespace helpmebot6.Commands
         {
         }
 
-        /// <summary>
-        /// Access denied to command, decide what to do
-        /// </summary>
-        /// <returns>
-        /// A response to the command if access to the command was denied
-        /// </returns>
-        protected override CommandResponseHandler OnAccessDenied()
-        {
-            CommandResponseHandler crh = new Myaccess(this.Source, this.Channel, this.Arguments, this.MessageService).RunCommand();
-            return crh;
-        }
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -117,8 +107,17 @@ namespace helpmebot6.Commands
                         }
                         else
                         {
-                            string[] messageParameters = { "access add", "3", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                            return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
+                            string[] messageParameters =
+                                {
+                                    "access add", "3", 
+                                    this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
+                                };
+                            return
+                                new CommandResponseHandler(
+                                    this.MessageService.RetrieveMessage(
+                                        "notEnoughParameters", 
+                                        this.Channel, 
+                                        messageParameters));
                         }
 
                         break;
@@ -135,36 +134,61 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = { "access", "2", this.Arguments.Length.ToString(CultureInfo.InstalledUICulture) };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
+                string[] messageParameters =
+                    {
+                        "access", "2", 
+                        this.Arguments.Length.ToString(CultureInfo.InstalledUICulture)
+                    };
+                return
+                    new CommandResponseHandler(
+                        this.MessageService.RetrieveMessage("notEnoughParameters", this.Channel, messageParameters));
             }
 
             return crh;
         }
 
         /// <summary>
+        ///     Access denied to command, decide what to do
+        /// </summary>
+        /// <returns>
+        ///     A response to the command if access to the command was denied
+        /// </returns>
+        protected override CommandResponseHandler OnAccessDenied()
+        {
+            CommandResponseHandler crh =
+                new Myaccess(this.Source, this.Channel, this.Arguments, this.MessageService).RunCommand();
+            return crh;
+        }
+
+        /// <summary>
         /// Adds the access entry.
         /// </summary>
-        /// <param name="newEntry">The new entry.</param>
-        /// <param name="accessLevel">The access level.</param>
-        /// <returns>a response</returns>
+        /// <param name="newEntry">
+        /// The new entry.
+        /// </param>
+        /// <param name="accessLevel">
+        /// The access level.
+        /// </param>
+        /// <returns>
+        /// a response
+        /// </returns>
         private CommandResponseHandler AddAccessEntry(LegacyUser newEntry, LegacyUser.UserRights accessLevel)
         {
             string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
             string message = this.MessageService.RetrieveMessage("addAccessEntry", this.Channel, messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
-            ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
+            ServiceLocator.Current.GetInstance<ILogger>()
+                .Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
 
-            LegacyDatabase.Singleton()
-                .Insert(
-                    "user",
-                    string.Empty,
-                    newEntry.Nickname,
-                    newEntry.Username,
-                    newEntry.Hostname,
-                    accessLevel.ToString(),
-                    string.Empty);
+            var command = new MySqlCommand("INSERT INTO user VALUES ( null, @nick, @user, @host, @accesslevel, null );");
+
+            command.Parameters.AddWithValue("@nick", newEntry.Nickname);
+            command.Parameters.AddWithValue("@user", newEntry.Username);
+            command.Parameters.AddWithValue("@host", newEntry.Hostname);
+            command.Parameters.AddWithValue("@accesslevel", accessLevel.ToString());
+
+            LegacyDatabase.Singleton().ExecuteCommand(command);
 
             return new CommandResponseHandler(message);
         }
@@ -172,8 +196,12 @@ namespace helpmebot6.Commands
         /// <summary>
         /// Deletes the access entry.
         /// </summary>
-        /// <param name="id">The id.</param>
-        /// <returns>a response</returns>
+        /// <param name="id">
+        /// The id.
+        /// </param>
+        /// <returns>
+        /// a response
+        /// </returns>
         private CommandResponseHandler DeleteAccessEntry(int id)
         {
             string[] messageParams = { id.ToString(CultureInfo.InvariantCulture) };
@@ -187,5 +215,7 @@ namespace helpmebot6.Commands
 
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

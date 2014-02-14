@@ -249,51 +249,6 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Inserts values the specified table.
-        /// </summary>
-        /// <param name="table">
-        /// The table.
-        /// </param>
-        /// <param name="values">
-        /// The values.
-        /// </param>
-        /// <returns>
-        /// The last Inserted Id.
-        /// </returns>
-        public long Insert(string table, params string[] values)
-        {
-            string query = "INSERT INTO `" + Sanitise(table) + "` VALUES (";
-            foreach (string item in values)
-            {
-                if (item != string.Empty)
-                {
-                    query += " \"" + Sanitise(item) + "\",";
-                }
-                else
-                {
-                    query += "null,";
-                }
-            }
-
-            query = query.TrimEnd(',');
-            query += " );";
-
-            long lastInsertedId = -1;
-            try
-            {
-                var cmd = new MySqlCommand(query);
-                this.ExecuteNonQuery(ref cmd);
-                lastInsertedId = cmd.LastInsertedId;
-            }
-            catch (MySqlException ex)
-            {
-                this.Log.Error(ex.Message, ex);
-            }
-
-            return lastInsertedId;
-        }
-
-        /// <summary>
         /// Call the HMB_GET_LOCAL_OPTION stored procedure.
         /// </summary>
         /// <param name="option">
