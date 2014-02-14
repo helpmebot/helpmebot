@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System.Globalization;
 
     using Helpmebot;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
@@ -72,6 +73,7 @@ namespace helpmebot6.Commands
         {
             // FIXME: servicelocator call
             var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
+            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
 
             lock (channelRepo)
             {
@@ -89,7 +91,7 @@ namespace helpmebot6.Commands
 
                 channelRepo.Save(channel);
 
-                Helpmebot6.irc.IrcJoin(channelName);
+                ircClient.JoinChannel(channelName);
             }
 
             return null;

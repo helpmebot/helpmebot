@@ -21,7 +21,10 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
@@ -60,12 +63,18 @@ namespace helpmebot6.Commands
         {
             // FIXME: servicelocator call
             var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
-
+            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+            
             var channel = channelRepo.GetByName(this.Channel);
             channel.Enabled = false;
             channelRepo.Save(channel);
 
-            Helpmebot6.irc.IrcPart(this.Channel, this.Source.ToString());
+            string partMessage = this.MessageService.RetrieveMessage(
+                Messages.RequestedBy,
+                this.Channel,
+                this.Source.ToString().ToEnumerable());
+
+            ircClient.PartChannel(this.Channel, partMessage);
 
             return null;
         }

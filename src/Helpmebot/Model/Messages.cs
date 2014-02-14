@@ -64,5 +64,10 @@ namespace Helpmebot.Model
         /// The on access denied.
         /// </summary>
         public const string OnAccessDenied = "AccessDenied";
+
+        /// <summary>
+        /// The requested by.
+        /// </summary>
+        public const string RequestedBy = "RequestedBy";
     }
 }
