@@ -28,7 +28,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// The curl.
     /// </summary>
-    class Curl : FunStuff.FunCommand
+    public class Curl : FunStuff.FunCommand
     {
         /// <summary>
         /// Initialises a new instance of the <see cref="Curl"/> class.

@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace helpmebot.Commands.FunStuff
+namespace Helpmebot.Commands.FunStuff
 {
     using System.Linq;
 

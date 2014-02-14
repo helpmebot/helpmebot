@@ -23,9 +23,7 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
-
-    using helpmebot.Commands.FunStuff;
-
+    using Helpmebot.Commands.FunStuff;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 

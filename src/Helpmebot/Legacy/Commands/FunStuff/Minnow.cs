@@ -20,8 +20,7 @@
 
 namespace helpmebot6.Commands
 {
-    using helpmebot.Commands.FunStuff;
-
+    using Helpmebot.Commands.FunStuff;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
