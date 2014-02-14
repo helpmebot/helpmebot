@@ -1,0 +1,154 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CommandServiceHelper.cs" company="Helpmebot Development Team">
+//   Helpmebot is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//   
+//   Helpmebot is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//   
+//   You should have received a copy of the GNU General Public License
+//   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+namespace Helpmebot.Commands
+{
+    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Configuration;
+    using Helpmebot.IRC.Interfaces;
+    using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Services.Interfaces;
+
+    /// <summary>
+    ///     The command service helper.
+    /// </summary>
+    public class CommandServiceHelper : ICommandServiceHelper
+    {
+        #region Fields
+
+        /// <summary>
+        ///     The client.
+        /// </summary>
+        private readonly IIrcClient client;
+
+        /// <summary>
+        ///     The configuration helper.
+        /// </summary>
+        private readonly IConfigurationHelper configurationHelper;
+
+        /// <summary>
+        /// The media wiki site repository.
+        /// </summary>
+        private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
+
+        /// <summary>
+        ///     The message service.
+        /// </summary>
+        private readonly IMessageService messageService;
+
+        /// <summary>
+        ///     The url shortening service.
+        /// </summary>
+        private readonly IUrlShorteningService urlShorteningService;
+
+        #endregion
+
+        #region Constructors and Destructors
+
+        /// <summary>
+        /// Initialises a new instance of the <see cref="CommandServiceHelper"/> class.
+        /// </summary>
+        /// <param name="client">
+        /// The client.
+        /// </param>
+        /// <param name="messageService">
+        /// The message service.
+        /// </param>
+        /// <param name="urlShorteningService">
+        /// The url Shortening Service.
+        /// </param>
+        /// <param name="configurationHelper">
+        /// The configuration Helper.
+        /// </param>
+        /// <param name="mediaWikiSiteRepository">
+        /// The media Wiki Site Repository.
+        /// </param>
+        public CommandServiceHelper(
+            IIrcClient client, 
+            IMessageService messageService, 
+            IUrlShorteningService urlShorteningService, 
+            IConfigurationHelper configurationHelper, 
+            IMediaWikiSiteRepository mediaWikiSiteRepository)
+        {
+            this.client = client;
+            this.messageService = messageService;
+            this.urlShorteningService = urlShorteningService;
+            this.configurationHelper = configurationHelper;
+            this.mediaWikiSiteRepository = mediaWikiSiteRepository;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the client.
+        /// </summary>
+        public IIrcClient Client
+        {
+            get
+            {
+                return this.client;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the configuration helper.
+        /// </summary>
+        public IConfigurationHelper ConfigurationHelper
+        {
+            get
+            {
+                return this.configurationHelper;
+            }
+        }
+
+        /// <summary>
+        /// Gets the media wiki site repository.
+        /// </summary>
+        public IMediaWikiSiteRepository MediaWikiSiteRepository
+        {
+            get
+            {
+                return this.mediaWikiSiteRepository;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the message service.
+        /// </summary>
+        public IMessageService MessageService
+        {
+            get
+            {
+                return this.messageService;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the url shortening service.
+        /// </summary>
+        public IUrlShorteningService UrlShorteningService
+        {
+            get
+            {
+                return this.urlShorteningService;
+            }
+        }
+
+        #endregion
+    }
+}

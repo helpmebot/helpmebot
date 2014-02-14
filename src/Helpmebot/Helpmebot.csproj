@@ -80,6 +80,7 @@
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\Interfaces\ICommandServiceHelper.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
     <Compile Include="Configuration\IConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\CoreConfiguration.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="IRC\Model\IrcUser.cs" />
     <Compile Include="IRC\Model\ServerUser.cs" />
     <Compile Include="IRC\SslNetworkClient.cs" />
+    <Compile Include="Commands\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
