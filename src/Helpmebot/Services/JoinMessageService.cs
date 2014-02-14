@@ -26,7 +26,7 @@ namespace Helpmebot.Services
 
     using Castle.Core.Logging;
 
-    using Helpmebot.Legacy.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
@@ -40,7 +40,7 @@ namespace Helpmebot.Services
         /// <summary>
         /// The IRC network.
         /// </summary>
-        private readonly IIrcAccessLayer ircNetwork;
+        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// The logger.
@@ -60,7 +60,7 @@ namespace Helpmebot.Services
         /// <summary>
         /// Initialises a new instance of the <see cref="JoinMessageService"/> class.
         /// </summary>
-        /// <param name="ircNetwork">
+        /// <param name="ircClient">
         /// The IRC network.
         /// </param>
         /// <param name="logger">
@@ -72,9 +72,9 @@ namespace Helpmebot.Services
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public JoinMessageService(IIrcAccessLayer ircNetwork, ILogger logger, IWelcomeUserRepository repository, IMessageService messageService)
+        public JoinMessageService(IIrcClient ircClient, ILogger logger, IWelcomeUserRepository repository, IMessageService messageService)
         {
-            this.ircNetwork = ircNetwork;
+            this.ircClient = ircClient;
             this.logger = logger;
             this.repository = repository;
             this.messageService = messageService;
@@ -109,7 +109,7 @@ namespace Helpmebot.Services
 
                         this.logger.DebugFormat("Welcoming {0} in channel {1}", networkUser, channel);
 
-                        this.ircNetwork.IrcPrivmsg(channel, welcomeMessage);
+                        this.ircClient.SendMessage(channel, welcomeMessage);
                     }
                     else
                     {

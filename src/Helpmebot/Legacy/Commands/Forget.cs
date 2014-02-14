@@ -24,7 +24,7 @@ namespace helpmebot6.Commands
     using System.Globalization;
 
     using Helpmebot;
-    using Helpmebot.Legacy.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -44,7 +44,7 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The IRC access layer.
         /// </summary>
-        private readonly IIrcAccessLayer ircAccessLayer;
+        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Forget"/> class.
@@ -66,7 +66,7 @@ namespace helpmebot6.Commands
         {
             // FIXME: ServiceLocator
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
-            this.ircAccessLayer = ServiceLocator.Current.GetInstance<IIrcAccessLayer>();
+            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
         }
 
         /// <summary>
@@ -93,12 +93,12 @@ namespace helpmebot6.Commands
                     forgottenMessage = this.MessageService.RetrieveMessage("cmdForgetError", this.Channel, null);
                 }
                 
-                this.ircAccessLayer.IrcNotice(this.Source.Nickname, forgottenMessage);
+                this.ircClient.SendNotice(this.Source.Nickname, forgottenMessage);
             }
             else
             {
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                this.ircAccessLayer.IrcNotice(
+                this.ircClient.SendNotice(
                     this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

@@ -128,34 +128,6 @@ namespace Helpmebot.Legacy.IRC
         }
 
         /// <summary>
-        /// The IRC PRIVMSG.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        public void IrcPrivmsg(string destination, string message)
-        {
-            this.realClient.SendMessage(destination, message);
-        }
-
-        /// <summary>
-        /// The IRC notice.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        public void IrcNotice(string destination, string message)
-        {
-            this.realClient.Send(new Message("NOTICE", new[] { destination, message }));
-        }
-
-        /// <summary>
         /// The on received message.
         /// </summary>
         /// <param name="sender">

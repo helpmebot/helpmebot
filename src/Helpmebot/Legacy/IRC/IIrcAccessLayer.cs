@@ -63,23 +63,5 @@ namespace Helpmebot.Legacy.IRC
         /// Gets the nickname.
         /// </summary>
         string Nickname { get; }
-
-        /// <summary>
-        ///   Sends a private message
-        /// </summary>
-        /// <param name = "destination">The destination of the private message.</param>
-        /// <param name = "message">The message text to be sent</param>
-        void IrcPrivmsg(string destination, string message);
-
-        /// <summary>
-        /// The IRC notice.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        void IrcNotice(string destination, string message);
     }
 }

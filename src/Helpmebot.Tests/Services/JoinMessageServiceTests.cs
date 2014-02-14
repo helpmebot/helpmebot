@@ -24,7 +24,7 @@ namespace Helpmebot.Tests.Services
 
     using Castle.Core.Logging;
 
-    using Helpmebot.Legacy.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
@@ -79,7 +79,7 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUnknownUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcAccessLayer>();
+            var ircNetwork = new Mock<IIrcClient>();
             var joinMessageService = new JoinMessageService(
                 ircNetwork.Object,
                 this.logger.Object,
@@ -97,7 +97,7 @@ namespace Helpmebot.Tests.Services
             joinMessageService.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.IrcPrivmsg("ab", It.IsAny<string>()), Times.Never());
+            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeIgnoredUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcAccessLayer>();
+            var ircNetwork = new Mock<IIrcClient>();
             var joinMessageService = new JoinMessageService(
                 ircNetwork.Object,
                 this.logger.Object,
@@ -125,7 +125,7 @@ namespace Helpmebot.Tests.Services
             joinMessageService.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.IrcPrivmsg("ab", It.IsAny<string>()), Times.Never());
+            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace Helpmebot.Tests.Services
         public void ShouldWelcomeUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcAccessLayer>();
+            var ircNetwork = new Mock<IIrcClient>();
             var joinMessageService = new JoinMessageService(
                 ircNetwork.Object,
                 this.logger.Object,
@@ -153,7 +153,7 @@ namespace Helpmebot.Tests.Services
             joinMessageService.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.IrcPrivmsg("ab", It.IsAny<string>()), Times.Once());
+            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUserOnUnknownChannel()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcAccessLayer>();
+            var ircNetwork = new Mock<IIrcClient>();
             var joinMessageService = new JoinMessageService(
                 ircNetwork.Object,
                 this.logger.Object,
@@ -181,8 +181,8 @@ namespace Helpmebot.Tests.Services
             joinMessageService.Welcome(networkUser.Object, "cd");
 
             // assert
-            ircNetwork.Verify(x => x.IrcPrivmsg("cd", It.IsAny<string>()), Times.Never());
-            ircNetwork.Verify(x => x.IrcPrivmsg("ab", It.IsAny<string>()), Times.Never());
+            ircNetwork.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
+            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
     }
 }

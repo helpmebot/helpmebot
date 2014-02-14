@@ -26,7 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -46,7 +46,7 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The IRC access layer.
         /// </summary>
-        private readonly IIrcAccessLayer ircAccessLayer;
+        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Learn"/> class.
@@ -68,7 +68,7 @@ namespace helpmebot6.Commands
         {
             // FIXME: ServiceLocator
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
-            this.ircAccessLayer = ServiceLocator.Current.GetInstance<IIrcAccessLayer>();
+            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
         }
 
         /// <summary>
@@ -102,12 +102,12 @@ namespace helpmebot6.Commands
                     this.Log.Error("Error learning command", ex);
                 }
 
-                this.ircAccessLayer.IrcNotice(this.Source.Nickname, message);
+                this.ircClient.SendNotice(this.Source.Nickname, message);
             }
             else
             {
                 string[] messageParameters = { "learn", "2", args.Count.ToString(CultureInfo.InvariantCulture) };
-                this.ircAccessLayer.IrcNotice(
+                this.ircClient.SendNotice(
                     this.Source.Nickname,
                     this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

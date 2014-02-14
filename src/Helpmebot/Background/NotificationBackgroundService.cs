@@ -26,7 +26,7 @@ namespace Helpmebot.Background
     using Castle.Core.Logging;
 
     using Helpmebot.Background.Interfaces;
-    using Helpmebot.Legacy.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Repositories.Interfaces;
 
     /// <summary>
@@ -37,7 +37,7 @@ namespace Helpmebot.Background
         /// <summary>
         /// The IRC client.
         /// </summary>
-        private readonly IIrcAccessLayer ircClient;
+        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// The notification repository.
@@ -61,7 +61,7 @@ namespace Helpmebot.Background
         /// <param name="notificationRepository">
         /// The notification Repository.
         /// </param>
-        public NotificationBackgroundService(IIrcAccessLayer ircClient, ILogger logger, INotificationRepository notificationRepository)
+        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository)
             : base(logger, 5 * 1000)
         {
             this.ircClient = ircClient;
@@ -108,7 +108,7 @@ namespace Helpmebot.Background
                             break;
                     }
 
-                    this.ircClient.IrcPrivmsg(destination, notification.Text);
+                    this.ircClient.SendMessage(destination, notification.Text);
                 }
             }
         }
