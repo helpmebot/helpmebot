@@ -206,7 +206,6 @@
     <Compile Include="Startup\Installers\ConfigurationInstaller.cs" />
     <Compile Include="Startup\Installers\ServiceInstaller.cs" />
     <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
-    <Compile Include="IRC\Events\PrivateMessageEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
