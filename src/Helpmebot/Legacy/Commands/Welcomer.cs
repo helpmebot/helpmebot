@@ -74,7 +74,7 @@ namespace helpmebot6.Commands
                 return response;
             }
 
-            // TODO: fix me
+            // FIXME: ServiceLocator
             var repository = ServiceLocator.Current.GetInstance<IWelcomeUserRepository>();
 
             List<string> argumentsList = this.Arguments.ToList();

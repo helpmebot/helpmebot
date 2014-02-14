@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
         public Forget(LegacyUser source, string channel, string[] args, IMessageService messageService)
             : base(source, channel, args, messageService)
         {
-            // TODO: remove me!
+            // FIXME: ServiceLocator
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
             this.ircAccessLayer = ServiceLocator.Current.GetInstance<IIrcAccessLayer>();
         }

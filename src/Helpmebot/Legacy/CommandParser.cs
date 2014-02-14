@@ -82,7 +82,7 @@ namespace Helpmebot.Legacy
         /// </summary>
         public CommandParser()
         {
-            // FIXME: Remove me!
+            // FIXME: ServiceLocator
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
             this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
             this.irc = ServiceLocator.Current.GetInstance<IIrcClient>();
@@ -231,7 +231,7 @@ namespace Helpmebot.Legacy
              * Check for a learned word
              */
             {
-                // TODO: remove me
+                // FIXME: ServiceLocator
                 var keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
 
                 Keyword keyword = keywordService.Get(command);

@@ -50,7 +50,7 @@ namespace Helpmebot.Threading
         {
             this.ThreadedObjects = new ArrayList();
 
-            // TODO: remove me!
+            // FIXME: ServiceLocator
             this.log = ServiceLocator.Current.GetInstance<ILogger>();
         }
 

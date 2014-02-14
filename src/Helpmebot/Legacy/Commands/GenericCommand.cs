@@ -53,7 +53,7 @@ namespace helpmebot6.Commands
         {
             this.MessageService = messageService;
 
-            // FIXME: Remove me!
+            // FIXME: ServiceLocator
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
         }
 
