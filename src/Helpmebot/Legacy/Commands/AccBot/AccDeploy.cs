@@ -25,10 +25,10 @@ namespace helpmebot6.Commands
     using System.Web;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -51,11 +51,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Accdeploy(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Accdeploy(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -72,7 +72,7 @@ namespace helpmebot6.Commands
 
             string[] args = this.Arguments;
             
-            string deployInProgressMessage = this.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
+            string deployInProgressMessage = this.CommandServiceHelper.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
             ircClient.SendMessage(this.Channel, deployInProgressMessage);
 
             string revision;

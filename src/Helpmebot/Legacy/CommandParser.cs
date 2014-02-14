@@ -25,6 +25,7 @@ namespace Helpmebot.Legacy
 
     using Castle.Core.Logging;
 
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.ExtensionMethods;
@@ -70,7 +71,12 @@ namespace Helpmebot.Legacy
         /// <summary>
         /// The configuration helper.
         /// </summary>
-        private IConfigurationHelper configurationHelper;
+        private readonly IConfigurationHelper configurationHelper;
+
+        /// <summary>
+        /// The command service helper.
+        /// </summary>
+        private readonly ICommandServiceHelper commandServiceHelper;
 
         #endregion
 
@@ -86,6 +92,7 @@ namespace Helpmebot.Legacy
             this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
             this.irc = ServiceLocator.Current.GetInstance<IIrcClient>();
             this.configurationHelper = ServiceLocator.Current.GetInstance<IConfigurationHelper>();
+            this.commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
 
             this.OverrideBotSilence = false;
         }
@@ -194,7 +201,7 @@ namespace Helpmebot.Legacy
                 newArgs[0] = command;
                 string directedTo = FindRedirection(ref newArgs);
                 CommandResponseHandler crh =
-                    new CategoryWatcher(source, destination, newArgs, this.messageService).RunCommand();
+                    new CategoryWatcher(source, destination, newArgs, this.commandServiceHelper).RunCommand();
                 this.HandleCommandResponseHandler(source, destination, directedTo, crh);
                 return;
             }
@@ -220,7 +227,7 @@ namespace Helpmebot.Legacy
                 // run the command.
                 CommandResponseHandler response =
                     ((GenericCommand)
-                     Activator.CreateInstance(commandHandler, source, destination, args, this.messageService))
+                     Activator.CreateInstance(commandHandler, source, destination, args, this.commandServiceHelper))
                         .RunCommand();
                 this.HandleCommandResponseHandler(source, destination, directedTo, response);
                 return;

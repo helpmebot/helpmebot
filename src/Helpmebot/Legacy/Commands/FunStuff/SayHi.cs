@@ -13,22 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Says hi to a user
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
+
+    using helpmebot6.Commands.FunStuff;
 
     /// <summary>
-    ///   Says hi to a user
+    ///     Says hi to a user
     /// </summary>
-    internal class Sayhi : FunStuff.FunCommand
+    internal class Sayhi : FunCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Sayhi"/> class.
         /// </summary>
@@ -41,24 +41,32 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Sayhi(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Sayhi(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The execute command.
+        ///     The execute command.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] commandParams = { this.Source.Nickname };
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdSayHi1", this.Channel, commandParams));
+            return
+                new CommandResponseHandler(
+                    this.CommandServiceHelper.MessageService.RetrieveMessage("cmdSayHi1", this.Channel, commandParams));
         }
+
+        #endregion
     }
 }

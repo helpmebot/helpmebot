@@ -23,9 +23,9 @@ namespace helpmebot6.Commands
     using System.Collections.Generic;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -56,11 +56,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Notify(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Notify(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -89,7 +89,7 @@ namespace helpmebot6.Commands
                 // FIXME: servicelocator
                 var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
 
-                string message = this.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
+                string message = this.CommandServiceHelper.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
                 foreach (LegacyUser user in toNotify)
                 {
                     ircClient.SendMessage(user.Nickname, message);
@@ -105,9 +105,10 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length != 1)
             {
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("argsExpected1", this.Channel, new[] { "nickname" }));
+                return new CommandResponseHandler(messageService.RetrieveMessage("argsExpected1", this.Channel, new[] { "nickname" }));
             }
 
             string trigger;
@@ -124,7 +125,7 @@ namespace helpmebot6.Commands
                 RequestedNotifications[triggerUpper].Add(toNotify);
             }
 
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage("confirmNotify", this.Channel, new[] { trigger }));
+            return new CommandResponseHandler(messageService.RetrieveMessage("confirmNotify", this.Channel, new[] { trigger }));
         }
     }
 }

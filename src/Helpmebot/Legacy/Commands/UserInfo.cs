@@ -28,13 +28,13 @@ namespace helpmebot6.Commands
     using Castle.Core.Logging;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -75,11 +75,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Userinfo(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Userinfo(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -111,6 +111,7 @@ namespace helpmebot6.Commands
                 }
             }
 
+            var messageService = this.CommandServiceHelper.MessageService;
             if (args.Length > 0)
             {
                 string userName = string.Join(" ", args);
@@ -123,7 +124,7 @@ namespace helpmebot6.Commands
                 if (userInformation.EditCount == -1)
                 {
                     string[] mparams = { userName };
-                    this.response.Respond(this.MessageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
+                    this.response.Respond(messageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
                     return this.response;
                 }
 
@@ -142,7 +143,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
 
-                string notEnoughParamsMessage = this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
+                string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
                 ircClient.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 
@@ -290,7 +291,7 @@ namespace helpmebot6.Commands
                     userInformation.BlockInformation == string.Empty ? string.Empty : "BLOCKED"
                 };
 
-            string message = this.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
 
             this.response.Respond(message);
         }
@@ -307,21 +308,22 @@ namespace helpmebot6.Commands
             this.response.Respond(userInformation.UserBlockLog);
             this.response.Respond(userInformation.BlockInformation);
             string message;
+            var messageService = this.CommandServiceHelper.MessageService;
             if (userInformation.UserGroups != string.Empty)
             {
                 string[] messageParameters = { userInformation.UserName, userInformation.UserGroups };
-                message = this.MessageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
             }
             else
             {
                 string[] messageParameters = { userInformation.UserName };
-                message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
             this.response.Respond(message);
 
             string[] messageParameters2 = { userInformation.EditCount.ToString(CultureInfo.InvariantCulture), userInformation.UserName };
-            message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
+            message = messageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
             this.response.Respond(message);
 
             string[] messageParameters3 =
@@ -330,10 +332,10 @@ namespace helpmebot6.Commands
                     userInformation.RegistrationDate.ToString("hh:mm:ss t"),
                     userInformation.RegistrationDate.ToString("d MMMM yyyy")
                 };
-            message = this.MessageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
+            message = messageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
             this.response.Respond(message);
             string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString(CultureInfo.InvariantCulture) };
-            message = this.MessageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
+            message = messageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
             this.response.Respond(message);
         }
 

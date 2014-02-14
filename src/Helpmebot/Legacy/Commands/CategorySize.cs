@@ -24,12 +24,12 @@ namespace helpmebot6.Commands
     using System.Globalization;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -50,11 +50,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Categorysize(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Categorysize(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -71,7 +71,7 @@ namespace helpmebot6.Commands
             }
             else
             {
-                return new CommandResponseHandler(this.MessageService.NotEnoughParameters(this.Channel, "CategorySize", 1, 0));
+                return new CommandResponseHandler(this.CommandServiceHelper.MessageService.NotEnoughParameters(this.Channel, "CategorySize", 1, 0));
             }
 
             return this.GetSizeOfCategory(categoryName);
@@ -97,18 +97,19 @@ namespace helpmebot6.Commands
             var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
             MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
+            var messageService = this.CommandServiceHelper.MessageService;
             try
             {
                 int categorySize = mediaWikiSite.GetCategorySize(categoryName);
 
                 string[] messageParameters = { categorySize.ToString(CultureInfo.InvariantCulture), categoryName };
-                string message = this.MessageService.RetrieveMessage("categorySize", this.Channel, messageParameters);
+                string message = messageService.RetrieveMessage("categorySize", this.Channel, messageParameters);
                 return new CommandResponseHandler(message);
             }
             catch (ArgumentException)
             {
                 string[] messageParams = { categoryName };
-                string message = this.MessageService.RetrieveMessage("categoryMissing", this.Channel, messageParams);
+                string message = messageService.RetrieveMessage("categoryMissing", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
         }

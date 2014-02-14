@@ -26,8 +26,8 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Retrieves information on a specific page
@@ -46,11 +46,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Page(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Page(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -78,6 +78,7 @@ namespace helpmebot6.Commands
             DateTime touched = DateTime.MinValue;
             string user = title = comment = size = null;
 
+            var messageService = this.CommandServiceHelper.MessageService;
             while (!xtr.EOF)
             {
                 xtr.Read();
@@ -93,7 +94,7 @@ namespace helpmebot6.Commands
                         case "page":
                             if (xtr.GetAttribute("missing") != null)
                             {
-                                return new CommandResponseHandler(this.MessageService.RetrieveMessage("pageMissing", this.Channel, null));
+                                return new CommandResponseHandler(messageService.RetrieveMessage("pageMissing", this.Channel, null));
                             }
                             
                             title = xtr.GetAttribute("title");
@@ -123,11 +124,11 @@ namespace helpmebot6.Commands
             if (redirects != null)
             {
                 string[] redirArgs = { redirects, title };
-                crh.Respond(this.MessageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
+                crh.Respond(messageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
             }
 
             string[] margs = { title, user, touched.ToString(), comment, size };
-            crh.Respond(this.MessageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
+            crh.Respond(messageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
 
             foreach (PageProtection p in protection)
             {
@@ -136,7 +137,7 @@ namespace helpmebot6.Commands
                         title, p.Type, p.Level,
                         p.Expiry == DateTime.MaxValue ? "infinity" : p.Expiry.ToString()
                     };
-                crh.Respond(this.MessageService.RetrieveMessage("pageProtected", this.Channel, pargs));
+                crh.Respond(messageService.RetrieveMessage("pageProtected", this.Channel, pargs));
             }
 
             return crh;

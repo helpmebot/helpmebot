@@ -24,6 +24,9 @@ namespace Helpmebot.Startup.Installers
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
 
+    using Helpmebot.Commands;
+    using Helpmebot.Commands.Interfaces;
+
     /// <summary>
     /// The service installer.
     /// </summary>
@@ -42,6 +45,7 @@ namespace Helpmebot.Startup.Installers
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces());
+            container.Register(Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>());
         }
     }
 }

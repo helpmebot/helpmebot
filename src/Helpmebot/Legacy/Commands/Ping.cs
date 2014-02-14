@@ -13,22 +13,21 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   The ping command
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// The ping command
+    ///     The ping command
     /// </summary>
     internal class Ping : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Ping"/> class.
         /// </summary>
@@ -41,16 +40,20 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Ping(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Ping(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>Command response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -58,20 +61,23 @@ namespace helpmebot6.Commands
             string name;
             string message;
 
+            IMessageService messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
                 name = this.Source.Nickname;
                 string[] messageparams = { name };
-                message = this.MessageService.RetrieveMessage("cmdPing", this.Channel, messageparams);
+                message = messageService.RetrieveMessage("cmdPing", this.Channel, messageparams);
             }
             else
             {
                 name = string.Join(" ", this.Arguments);
                 string[] messageparams = { name };
-                message = this.MessageService.RetrieveMessage("cmdPingUser", this.Channel, messageparams);
+                message = messageService.RetrieveMessage("cmdPingUser", this.Channel, messageparams);
             }
 
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

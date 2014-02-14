@@ -25,9 +25,9 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Decodes a hex-encoded IP address
@@ -46,11 +46,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Decode(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Decode(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -60,10 +60,11 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "decode", "1", this.Arguments.Length.ToString() };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+                return new CommandResponseHandler(messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             if (this.Arguments[0].Length != 8)
@@ -92,12 +93,12 @@ namespace helpmebot6.Commands
             if (hostname != string.Empty)
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString(), hostname };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("hexDecodeResult", this.Channel, messageargs));
+                return new CommandResponseHandler(messageService.RetrieveMessage("hexDecodeResult", this.Channel, messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0], ipAddr.ToString() };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("hexDecodeResultNoResolve", this.Channel, messageargs));
+                return new CommandResponseHandler(messageService.RetrieveMessage("hexDecodeResultNoResolve", this.Channel, messageargs));
             }
         }
     }

@@ -23,8 +23,8 @@ namespace helpmebot6.Commands
     using System.Diagnostics.CodeAnalysis;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The vorticough.
@@ -44,11 +44,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Vorticough(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Vorticough(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -60,7 +60,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage("Vortigaunt", this.Channel, null));
+            return new CommandResponseHandler(this.CommandServiceHelper.MessageService.RetrieveMessage("Vortigaunt", this.Channel, null));
         }
     }
 }

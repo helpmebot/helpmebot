@@ -20,11 +20,11 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -47,11 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Rights(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Rights(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -144,15 +144,16 @@ namespace helpmebot6.Commands
             string rights = GetRights(userName, this.Channel);
 
             string message;
+            var messageService = this.CommandServiceHelper.MessageService;
             if (rights != string.Empty)
             {
                 string[] messageParameters = { userName, rights };
-                message = this.MessageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
             }
             else
             {
                 string[] messageParameters = { userName };
-                message = this.MessageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
             }
 
             crh.Respond(message);

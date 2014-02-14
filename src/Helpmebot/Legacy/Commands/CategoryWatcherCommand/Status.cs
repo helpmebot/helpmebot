@@ -13,24 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Category watcher status subcomand
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Category watcher status subcommand
+    ///     Category watcher status subcommand
     /// </summary>
     internal class Status : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Status"/> class.
         /// </summary>
@@ -43,30 +41,47 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Status(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Status(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageParams =
                 {
-                    this.Arguments[0],
+                    this.Arguments[0], 
                     WatcherController.Instance().IsWatcherInChannel(this.Channel, this.Arguments[0])
-                        ? this.MessageService.RetrieveMessage(Messages.Enabled, this.Channel, null)
-                        : this.MessageService.RetrieveMessage(Messages.Disabled, this.Channel, null),
+                        ? this.CommandServiceHelper.MessageService.RetrieveMessage(
+                            Messages.Enabled, 
+                            this.Channel, 
+                            null)
+                        : this.CommandServiceHelper.MessageService.RetrieveMessage(
+                            Messages.Disabled, 
+                            this.Channel, 
+                            null), 
                     WatcherController.Instance().GetDelay(this.Arguments[0]).ToString()
                 };
 
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage("keywordStatus", this.Channel, messageParams));
+            return
+                new CommandResponseHandler(
+                    this.CommandServiceHelper.MessageService.RetrieveMessage(
+                        "keywordStatus", 
+                        this.Channel, 
+                        messageParams));
         }
+
+        #endregion
     }
 }

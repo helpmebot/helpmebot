@@ -13,24 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the Configcacheclear type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// The configuration cache clear command.
+    ///     The configuration cache clear command.
     /// </summary>
     internal class Configcacheclear : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Configcacheclear"/> class.
         /// </summary>
@@ -43,24 +41,36 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Configcacheclear(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Configcacheclear(
+            LegacyUser source, 
+            string channel, 
+            string[] args, 
+            ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The execute command.
+        ///     The execute command.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             LegacyConfig.Singleton().ClearCache();
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
+            return
+                new CommandResponseHandler(
+                    this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
         }
+
+        #endregion
     }
 }

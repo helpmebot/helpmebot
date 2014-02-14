@@ -21,12 +21,12 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -47,11 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Part(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Part(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -69,7 +69,7 @@ namespace helpmebot6.Commands
             channel.Enabled = false;
             channelRepo.Save(channel);
 
-            string partMessage = this.MessageService.RetrieveMessage(
+            string partMessage = this.CommandServiceHelper.MessageService.RetrieveMessage(
                 Messages.RequestedBy,
                 this.Channel,
                 this.Source.ToString().ToEnumerable());

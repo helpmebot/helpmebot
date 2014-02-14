@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
@@ -60,11 +61,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Learn(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Learn(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
             // FIXME: ServiceLocator
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
@@ -86,6 +87,7 @@ namespace helpmebot6.Commands
                 args.PopFromFront();
             }
 
+            var messageService = this.CommandServiceHelper.MessageService;
             if (args.Count >= 2)
             {
                 var keywordName = args.PopFromFront();
@@ -94,11 +96,11 @@ namespace helpmebot6.Commands
                 try
                 {
                     this.keywordService.Create(keywordName, args.Implode(), action);
-                    message = this.MessageService.RetrieveMessage("cmdLearnDone", this.Channel, null);
+                    message = messageService.RetrieveMessage("cmdLearnDone", this.Channel, null);
                 }
                 catch (Exception ex)
                 {
-                    message = this.MessageService.RetrieveMessage("cmdLearnError", this.Channel, null);
+                    message = messageService.RetrieveMessage("cmdLearnError", this.Channel, null);
                     this.Log.Error("Error learning command", ex);
                 }
 
@@ -109,7 +111,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "learn", "2", args.Count.ToString(CultureInfo.InvariantCulture) };
                 this.ircClient.SendNotice(
                     this.Source.Nickname,
-                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+                    messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             return null;

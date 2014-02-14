@@ -22,11 +22,11 @@ namespace helpmebot6.Commands
     using System.Xml.XPath;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -51,11 +51,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Editcount(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Editcount(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -138,17 +138,18 @@ namespace helpmebot6.Commands
             }
 
             int editCount = GetEditCount(userName, this.Channel);
+            var messageService = this.CommandServiceHelper.MessageService;
             if (editCount == -1)
             {
                 string[] messageParams = { userName };
-                string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
+                string message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
             else
             {
                 string[] messageParameters = { editCount.ToString(CultureInfo.InvariantCulture), userName };
 
-                string message = this.MessageService.RetrieveMessage("editCount", this.Channel, messageParameters);
+                string message = messageService.RetrieveMessage("editCount", this.Channel, messageParameters);
 
                 return new CommandResponseHandler(message);
             }

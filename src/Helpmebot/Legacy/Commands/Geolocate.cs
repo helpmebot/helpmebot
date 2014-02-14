@@ -25,10 +25,10 @@ namespace helpmebot6.Commands
     using System.Net;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Discovers the location of an IP address
@@ -47,11 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Geolocate(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Geolocate(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -74,15 +74,16 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "geolocate", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+                return new CommandResponseHandler(messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             GeolocateResult location = IPAddress.Parse(this.Arguments[0]).GetLocation();
             string[] messageArgs = { location.ToString() };
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
+            return new CommandResponseHandler(messageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
         }
     }
 }

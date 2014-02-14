@@ -13,24 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Category watcher disable subcommand
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Category watcher disable subcommand
+    ///     Category watcher disable subcommand
     /// </summary>
     internal class Disable : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Disable"/> class.
         /// </summary>
@@ -43,22 +41,30 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Disable(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Disable(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             WatcherController.Instance().RemoveWatcherFromChannel(this.Arguments[0], this.Channel);
-            return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
+            return
+                new CommandResponseHandler(
+                    this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
         }
+
+        #endregion
     }
 }

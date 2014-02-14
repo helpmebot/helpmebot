@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Generic bot command abstract class
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
@@ -25,36 +21,42 @@ namespace helpmebot6.Commands
     using Castle.Core.Logging;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
 
     /// <summary>
-    /// Generic bot command abstract class
+    ///     Generic bot command abstract class
     /// </summary>
     public abstract class GenericCommand
     {
+        #region Fields
+
         /// <summary>
-        /// The message service.
+        /// The command service helper.
         /// </summary>
-        protected readonly IMessageService MessageService;
+        protected readonly ICommandServiceHelper CommandServiceHelper;
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="GenericCommand"/> class.
         /// </summary>
-        /// <param name="messageService">
-        /// The message Service.
+        /// <param name="commandServiceHelper">
+        /// The command Service Helper.
         /// </param>
-        protected GenericCommand(IMessageService messageService)
+        protected GenericCommand(ICommandServiceHelper commandServiceHelper)
         {
-            this.MessageService = messageService;
-
             // FIXME: ServiceLocator
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+
+            this.CommandServiceHelper = commandServiceHelper;
         }
 
         /// <summary>
@@ -69,31 +71,34 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
-        /// The message Service.
+        /// <param name="commandServiceHelper">
+        /// The command Service Helper.
         /// </param>
-        protected GenericCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : this(messageService)
+        protected GenericCommand(
+            LegacyUser source, 
+            string channel, 
+            string[] args, 
+            ICommandServiceHelper commandServiceHelper)
+            : this(commandServiceHelper)
         {
             this.Source = source;
             this.Channel = channel;
             this.Arguments = args;
         }
 
-        /// <summary>
-        /// Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
-        /// Gets the access level of the command
+        ///     Gets the access level of the command
         /// </summary>
         /// <value>The access level.</value>
         public LegacyUser.UserRights AccessLevel
         {
             get
             {
-                string command = GetType().ToString();
+                string command = this.GetType().ToString();
 
                 var cmd = new MySqlCommand("SELECT accesslevel FROM `command` WHERE typename = @command LIMIT 1;");
                 cmd.Parameters.AddWithValue("@command", command);
@@ -112,27 +117,44 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Gets or sets the source.
-        /// </summary>
-        public LegacyUser Source { get; set; }
-
-        /// <summary>
-        /// Gets or sets the channel.
-        /// </summary>
-        public string Channel { get; set; }
-
-        /// <summary>
-        /// Gets or sets the arguments.
+        ///     Gets or sets the arguments.
         /// </summary>
         public string[] Arguments { get; set; }
 
         /// <summary>
+        ///     Gets or sets the channel.
+        /// </summary>
+        public string Channel { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the Castle.Windsor Logger
+        /// </summary>
+        public ILogger Log { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the source.
+        /// </summary>
+        public LegacyUser Source { get; set; }
+
+        #endregion
+
+        #region Public Methods and Operators
+
+        /// <summary>
         /// Trigger an execution of the command
         /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">Arguments to the command.</param>
-        /// <returns>the response container</returns>
+        /// <param name="source">
+        /// The user who triggered the command.
+        /// </param>
+        /// <param name="channel">
+        /// The channel the command was triggered in.
+        /// </param>
+        /// <param name="args">
+        /// Arguments to the command.
+        /// </param>
+        /// <returns>
+        /// the response container
+        /// </returns>
         [Obsolete]
         public CommandResponseHandler RunCommand(LegacyUser source, string channel, string[] args)
         {
@@ -144,43 +166,112 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// The run command.
+        ///     The run command.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         public CommandResponseHandler RunCommand()
         {
-            string command = GetType().ToString();
+            string command = this.GetType().ToString();
 
             this.Log.Info("Running command: " + command);
 
-            return this.TestAccess()
-                       ? this.ReallyRunCommand()
-                       : this.OnAccessDenied();
+            return this.TestAccess() ? this.ReallyRunCommand() : this.OnAccessDenied();
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Check the access level and then decide what to do.
+        /// Actual command logic
         /// </summary>
-        /// <returns>True if the command is allowed to Execute</returns>
-        protected virtual bool TestAccess()
+        /// <param name="source">
+        /// The user who triggered the command.
+        /// </param>
+        /// <param name="channel">
+        /// The channel the command was triggered in.
+        /// </param>
+        /// <param name="args">
+        /// The arguments to the command.
+        /// </param>
+        /// <returns>
+        /// The response to the command
+        /// </returns>
+        [Obsolete]
+        protected virtual CommandResponseHandler ExecuteCommand(LegacyUser source, string channel, string[] args)
         {
-            // check the access level
-            return this.Source.AccessLevel >= this.AccessLevel;
+            return new CommandResponseHandler("not implemented");
         }
 
         /// <summary>
-        /// Access granted to command, decide what to do
+        ///     The execute command.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="CommandResponseHandler" />.
+        /// </returns>
+        protected virtual CommandResponseHandler ExecuteCommand()
+        {
+#pragma warning disable 612
+            return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
+#pragma warning restore 612
+        }
+
+        /// <summary>
+        ///     Access denied to command, decide what to do
+        /// </summary>
+        /// <returns>A response to the command if access to the command was denied</returns>
+        protected virtual CommandResponseHandler OnAccessDenied()
+        {
+            var response = new CommandResponseHandler();
+
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("OnAccessDenied", this.Channel, null);
+
+            response.Respond(message, CommandResponseDestination.PrivateMessage);
+            this.Log.Info("Access denied to command.");
+            if (
+                !AccessLog.Instance()
+                     .Save(
+                         new AccessLog.AccessLogEntry(
+                     this.Source, 
+                     this.GetType(), 
+                     false, 
+                     this.Channel, 
+                     this.Arguments, 
+                     this.AccessLevel)))
+            {
+                response.Respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        ///     Access granted to command, decide what to do
         /// </summary>
         /// <returns>The response to the command</returns>
         protected virtual CommandResponseHandler ReallyRunCommand()
         {
-            if (!AccessLog.Instance().Save(new AccessLog.AccessLogEntry(this.Source, GetType(), true, this.Channel, this.Arguments, this.AccessLevel)))
+            if (
+                !AccessLog.Instance()
+                     .Save(
+                         new AccessLog.AccessLogEntry(
+                     this.Source, 
+                     this.GetType(), 
+                     true, 
+                     this.Channel, 
+                     this.Arguments, 
+                     this.AccessLevel)))
             {
                 var errorResponse = new CommandResponseHandler();
-                var message = this.MessageService.RetrieveMessage("AccessDeniedAccessListFailure", this.Channel, null);
-                errorResponse.Respond("Error adding to access log - command aborted.", CommandResponseDestination.ChannelDebug);
+                string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                    "AccessDeniedAccessListFailure", 
+                    this.Channel, 
+                    null);
+                errorResponse.Respond(
+                    "Error adding to access log - command aborted.", 
+                    CommandResponseDestination.ChannelDebug);
                 errorResponse.Respond(message, CommandResponseDestination.Default);
                 return errorResponse;
             }
@@ -202,49 +293,15 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        /// Access denied to command, decide what to do
+        ///     Check the access level and then decide what to do.
         /// </summary>
-        /// <returns>A response to the command if access to the command was denied</returns>
-        protected virtual CommandResponseHandler OnAccessDenied()
+        /// <returns>True if the command is allowed to Execute</returns>
+        protected virtual bool TestAccess()
         {
-            var response = new CommandResponseHandler();
-
-            string message = this.MessageService.RetrieveMessage("OnAccessDenied", this.Channel, null);
-
-            response.Respond(message, CommandResponseDestination.PrivateMessage);
-            this.Log.Info("Access denied to command.");
-            if (!AccessLog.Instance().Save(new AccessLog.AccessLogEntry(this.Source, GetType(), false, this.Channel, this.Arguments, this.AccessLevel)))
-            {
-                response.Respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
-            }
-
-            return response;
+            // check the access level
+            return this.Source.AccessLevel >= this.AccessLevel;
         }
 
-        /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <param name="source">The user who triggered the command.</param>
-        /// <param name="channel">The channel the command was triggered in.</param>
-        /// <param name="args">The arguments to the command.</param>
-        /// <returns>The response to the command</returns>
-        [Obsolete]
-        protected virtual CommandResponseHandler ExecuteCommand(LegacyUser source, string channel, string[] args)
-        {
-            return new CommandResponseHandler("not implemented");
-        }
-
-        /// <summary>
-        /// The execute command.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
-        /// </returns>
-        protected virtual CommandResponseHandler ExecuteCommand()
-        {
-#pragma warning disable 612
-            return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
-#pragma warning restore 612
-        }
+        #endregion
     }
 }

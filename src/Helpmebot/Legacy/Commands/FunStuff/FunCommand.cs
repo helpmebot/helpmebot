@@ -13,24 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the FunCommand type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// The fun command.
+    ///     The fun command.
     /// </summary>
     public abstract class FunCommand : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="FunCommand"/> class.
         /// </summary>
@@ -43,40 +41,50 @@ namespace helpmebot6.Commands.FunStuff
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        protected FunCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        protected FunCommand(
+            LegacyUser source, 
+            string channel, 
+            string[] args, 
+            ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The on access denied.
+        ///     The on access denied.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            string message = this.MessageService.RetrieveMessage(
-                Messages.HedgehogAccessDenied,
-                this.Channel,
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                Messages.HedgehogAccessDenied, 
+                this.Channel, 
                 null);
-            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false" ? 
-                base.OnAccessDenied() : 
-                new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
+            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false"
+                       ? base.OnAccessDenied()
+                       : new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
         }
 
         /// <summary>
-        /// The test access.
+        ///     The test access.
         /// </summary>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         protected override bool TestAccess()
         {
             return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
         }
+
+        #endregion
     }
 }

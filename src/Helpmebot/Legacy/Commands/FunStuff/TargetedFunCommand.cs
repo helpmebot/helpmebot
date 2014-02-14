@@ -23,8 +23,8 @@ namespace Helpmebot.Commands.FunStuff
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     using helpmebot6.Commands.FunStuff;
 
@@ -45,11 +45,11 @@ namespace Helpmebot.Commands.FunStuff
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        protected TargetedFunCommand(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        protected TargetedFunCommand(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -78,7 +78,7 @@ namespace Helpmebot.Commands.FunStuff
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageparams = { this.CommandTarget };
-            string message = this.MessageService.RetrieveMessage(this.TargetMessage, this.Channel, messageparams);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(this.TargetMessage, this.Channel, messageparams);
 
             return new CommandResponseHandler(message);
         }

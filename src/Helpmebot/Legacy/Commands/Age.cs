@@ -13,24 +13,24 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the age of a wikipedian
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Globalization;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    ///   Returns the age of a wikipedian
+    ///     Returns the age of a wikipedian
     /// </summary>
     internal class Age : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Age"/> class.
         /// </summary>
@@ -43,20 +43,30 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Age(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Age(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
+
+        #endregion
+
+        #region Public Methods and Operators
 
         /// <summary>
         /// Gets the wikipedian age.
         /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="channel">The channel the command is requested in. (Retrieves the relevant base wiki)</param>
-        /// <returns>timespan of the age</returns>
+        /// <param name="userName">
+        /// Name of the user.
+        /// </param>
+        /// <param name="channel">
+        /// The channel the command is requested in. (Retrieves the relevant base wiki)
+        /// </param>
+        /// <returns>
+        /// timespan of the age
+        /// </returns>
         public static TimeSpan GetWikipedianAge(string userName, string channel)
         {
             DateTime regdate = Registration.GetRegistrationDate(userName, channel);
@@ -69,8 +79,12 @@ namespace helpmebot6.Commands
             return age;
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -87,22 +101,28 @@ namespace helpmebot6.Commands
 
             TimeSpan time = GetWikipedianAge(userName, this.Channel);
             string message;
+            IMessageService messageService = this.CommandServiceHelper.MessageService;
             if (time.Equals(new TimeSpan(0)))
             {
                 string[] messageParameters = { userName };
-                message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParameters);
             }
             else
             {
                 string[] messageParameters =
                     {
-                        userName, (time.Days / 365).ToString(), (time.Days % 365).ToString(),
-                        time.Hours.ToString(), time.Minutes.ToString(), time.Seconds.ToString()
+                        userName, (time.Days / 365).ToString(CultureInfo.InvariantCulture),
+                        (time.Days % 365).ToString(CultureInfo.InvariantCulture),
+                        time.Hours.ToString(CultureInfo.InvariantCulture),
+                        time.Minutes.ToString(CultureInfo.InvariantCulture),
+                        time.Seconds.ToString(CultureInfo.InvariantCulture)
                     };
-                message = this.MessageService.RetrieveMessage("cmdAge", this.Channel, messageParameters);
+                message = messageService.RetrieveMessage("cmdAge", this.Channel, messageParameters);
             }
 
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

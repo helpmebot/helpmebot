@@ -13,11 +13,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the Acccount type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
@@ -25,16 +21,19 @@ namespace helpmebot6.Commands
     using System.Xml.XPath;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
-    /// The ACC count.
+    ///     The ACC count.
     /// </summary>
     internal class Acccount : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Acccount"/> class.
         /// </summary>
@@ -47,18 +46,20 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Acccount(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Acccount(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
-        #region Overrides of GenericCommand
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -78,34 +79,34 @@ namespace helpmebot6.Commands
 
             username = HttpUtility.UrlEncode(username);
 
-            XPathDocument xpd =
-                new XPathDocument(
-                    HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=count&user=" + username));
+            var xpd =
+                new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=count&user=" + username));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
 
             if (xpni.MoveNext())
             {
+                IMessageService messageService = this.CommandServiceHelper.MessageService;
                 if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                 {
                     string[] msgparams = { username };
-                    string msg = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
+                    string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
                     return new CommandResponseHandler(msg);
                 }
 
                 string[] adminparams =
                     {
-                        xpni.Current.GetAttribute("suspended", string.Empty),
-                        xpni.Current.GetAttribute("promoted", string.Empty),
-                        xpni.Current.GetAttribute("approved", string.Empty),
-                        xpni.Current.GetAttribute("demoted", string.Empty),
-                        xpni.Current.GetAttribute("declined", string.Empty),
-                        xpni.Current.GetAttribute("renamed", string.Empty),
-                        xpni.Current.GetAttribute("edited", string.Empty),
+                        xpni.Current.GetAttribute("suspended", string.Empty), 
+                        xpni.Current.GetAttribute("promoted", string.Empty), 
+                        xpni.Current.GetAttribute("approved", string.Empty), 
+                        xpni.Current.GetAttribute("demoted", string.Empty), 
+                        xpni.Current.GetAttribute("declined", string.Empty), 
+                        xpni.Current.GetAttribute("renamed", string.Empty), 
+                        xpni.Current.GetAttribute("edited", string.Empty), 
                         xpni.Current.GetAttribute("prefchange", string.Empty)
                     };
 
-                string adminmessage = this.MessageService.RetrieveMessage("CmdAccCountAdmin", this.Channel, adminparams);
+                string adminmessage = messageService.RetrieveMessage("CmdAccCountAdmin", this.Channel, adminparams);
 
                 string[] messageParams =
                     {
@@ -118,7 +119,7 @@ namespace helpmebot6.Commands
                             : string.Empty // admin
                     };
 
-                string message = this.MessageService.RetrieveMessage("CmdAccCount", this.Channel, messageParams);
+                string message = messageService.RetrieveMessage("CmdAccCount", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

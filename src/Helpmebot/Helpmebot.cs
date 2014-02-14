@@ -28,6 +28,7 @@ namespace Helpmebot
     using Castle.Windsor;
     using Castle.Windsor.Installer;
 
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.IRC;
     using Helpmebot.IRC.Events;
@@ -209,7 +210,7 @@ namespace Helpmebot
                 LegacyUser.NewFromOtherUser(e.User),
                 e.Nickname,
                 new[] { e.Channel },
-                ServiceLocator.Current.GetInstance<IMessageService>()).RunCommand();
+                ServiceLocator.Current.GetInstance<ICommandServiceHelper>()).RunCommand();
         }
 
         /// <summary>
@@ -247,10 +248,10 @@ namespace Helpmebot
             try
             {
                 // FIXME: Remove service locator!
-                var messageService = ServiceLocator.Current.GetInstance<IMessageService>();
+                var commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
 
                 var legacyUser = LegacyUser.NewFromOtherUser(e.User);
-                new Notify(legacyUser, e.Channel, new string[0], messageService).NotifyJoin(legacyUser, e.Channel);
+                new Notify(legacyUser, e.Channel, new string[0], commandServiceHelper).NotifyJoin(legacyUser, e.Channel);
             }
             catch (Exception exception)
             {

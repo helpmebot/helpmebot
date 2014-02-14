@@ -25,9 +25,9 @@ namespace helpmebot6.Commands
     using System.Net.Sockets;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
@@ -46,11 +46,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Resolve(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Resolve(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -60,10 +60,11 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
                 string[] messageParameters = { "resolve", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+                return new CommandResponseHandler(messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
             IPAddress[] addresses = new IPAddress[0];
@@ -92,12 +93,12 @@ namespace helpmebot6.Commands
 
                 string[] messageargs = { this.Arguments[0], ipList };
 
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolve", this.Channel, messageargs));
+                return new CommandResponseHandler(messageService.RetrieveMessage("resolve", this.Channel, messageargs));
             }
             else
             {
                 string[] messageargs = { this.Arguments[0] };
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage("resolveFail", this.Channel, messageargs));
+                return new CommandResponseHandler(messageService.RetrieveMessage("resolveFail", this.Channel, messageargs));
             }
         }
     }

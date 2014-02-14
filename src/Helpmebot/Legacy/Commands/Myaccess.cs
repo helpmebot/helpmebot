@@ -13,22 +13,21 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Retrieves the bot access lvel of the user who called the command
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Retrieves the bot access level of the user who called the command
+    ///     Retrieves the bot access level of the user who called the command
     /// </summary>
     internal class Myaccess : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Myaccess"/> class.
         /// </summary>
@@ -41,37 +40,44 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Myaccess(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Myaccess(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             var crh = new CommandResponseHandler();
 
+            IMessageService messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)
             {
                 foreach (string s in this.Arguments)
                 {
                     string[] cmdArgs = { s, LegacyUser.NewFromString(s).AccessLevel.ToString() };
-                    crh.Respond(this.MessageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
+                    crh.Respond(messageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
                 }
             }
             else
             {
                 string[] cmdArgs = { this.Source.ToString(), this.Source.AccessLevel.ToString() };
-                crh.Respond(this.MessageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
+                crh.Respond(messageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
             }
 
             return crh;
         }
+
+        #endregion
     }
 }

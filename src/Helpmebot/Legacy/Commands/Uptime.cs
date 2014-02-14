@@ -13,22 +13,20 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Gets the uptime of the bot
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Gets the uptime of the bot
+    ///     Gets the uptime of the bot
     /// </summary>
     internal class Uptime : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Uptime"/> class.
         /// </summary>
@@ -41,28 +39,37 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Uptime(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Uptime(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
-        /// <returns>The <see cref="CommandResponseHandler"/>.</returns>
+        /// <returns>The <see cref="CommandResponseHandler" />.</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageParams =
                 {
-                    Helpmebot6.StartupTime.DayOfWeek.ToString(),
-                    Helpmebot6.StartupTime.ToLongDateString(),
+                    Helpmebot6.StartupTime.DayOfWeek.ToString(), 
+                    Helpmebot6.StartupTime.ToLongDateString(), 
                     Helpmebot6.StartupTime.ToLongTimeString()
                 };
-            string message = this.MessageService.RetrieveMessage("cmdUptimeUpSince", this.Channel, messageParams);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                "cmdUptimeUpSince", 
+                this.Channel, 
+                messageParams);
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

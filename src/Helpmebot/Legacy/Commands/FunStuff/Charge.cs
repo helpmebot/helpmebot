@@ -24,8 +24,8 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.FunStuff;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// The charge.
@@ -44,11 +44,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Charge(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Charge(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -74,9 +74,10 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var messageService = this.CommandServiceHelper.MessageService;
             return this.Arguments.Length > 0
-                       ? new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdChargeParam", this.Channel, new[] { this.CommandTarget }))
-                       : new CommandResponseHandler(this.MessageService.RetrieveMessage("cmdCharge", this.Channel, new[] { this.Source.Nickname }));
+                       ? new CommandResponseHandler(messageService.RetrieveMessage("cmdChargeParam", this.Channel, new[] { this.CommandTarget }))
+                       : new CommandResponseHandler(messageService.RetrieveMessage("cmdCharge", this.Channel, new[] { this.Source.Nickname }));
         }
     }
 }

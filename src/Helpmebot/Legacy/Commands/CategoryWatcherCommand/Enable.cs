@@ -21,10 +21,10 @@
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Category watcher enable subcommand 
@@ -43,11 +43,11 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Enable(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Enable(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -58,8 +58,8 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         protected override CommandResponseHandler ExecuteCommand()
         {
             return WatcherController.Instance().AddWatcherToChannel(this.Arguments[0], this.Channel)
-                       ? new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null))
-                       : new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
+                       ? new CommandResponseHandler(this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.Done, this.Channel, null))
+                       : new CommandResponseHandler(this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null));
         }
     }
 }

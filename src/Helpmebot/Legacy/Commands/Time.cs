@@ -13,24 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Returns the current date/time
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    ///   Returns the current date/time
+    ///     Returns the current date/time
     /// </summary>
     internal class Time : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Time"/> class.
         /// </summary>
@@ -43,29 +41,38 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Time(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Time(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] messageParams =
                 {
-                    this.Source.Nickname, DateTime.Now.DayOfWeek.ToString(),
-                    DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"),
-                    DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
+                    this.Source.Nickname, DateTime.Now.DayOfWeek.ToString(), 
+                    DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"), 
+                    DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"), 
                     DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")
                 };
-            string message = this.MessageService.RetrieveMessage("cmdTime", this.Channel, messageParams);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                "cmdTime", 
+                this.Channel, 
+                messageParams);
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

@@ -22,12 +22,12 @@ namespace helpmebot6.Commands
     using System.Xml;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -59,11 +59,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Registration(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Registration(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -149,6 +149,7 @@ namespace helpmebot6.Commands
             var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
 
             var crh = new CommandResponseHandler();
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length > 0)
             {
                 string userName = string.Join(" ", this.Arguments);
@@ -156,7 +157,7 @@ namespace helpmebot6.Commands
                 if (registrationDate == new DateTime(0))
                 {
                     string[] messageParams = { userName };
-                    string message = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
+                    string message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
                     crh.Respond(message);
                 }
                 else
@@ -166,7 +167,7 @@ namespace helpmebot6.Commands
                             userName, registrationDate.ToString("hh:mm:ss t"), 
                             registrationDate.ToString("d MMMM yyyy")
                         };
-                    string message = this.MessageService.RetrieveMessage(
+                    string message = messageService.RetrieveMessage(
                         "registrationDate", 
                         this.Channel, 
                         messageParameters);
@@ -181,7 +182,7 @@ namespace helpmebot6.Commands
                         this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
                     };
 
-                string notEnoughParamsMessage = this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
+                string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
                 ircClient.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 

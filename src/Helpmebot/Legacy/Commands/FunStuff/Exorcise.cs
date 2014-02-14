@@ -13,22 +13,22 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the Exorcise type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
+
+    using helpmebot6.Commands.FunStuff;
 
     /// <summary>
-    /// The exorcise.
+    ///     The exorcise.
     /// </summary>
-    internal class Exorcise : FunStuff.FunCommand
+    internal class Exorcise : FunCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Exorcise"/> class.
         /// </summary>
@@ -41,28 +41,37 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Exorcise(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Exorcise(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// The execute command.
+        ///     The execute command.
         /// </summary>
         /// <returns>
-        /// The <see cref="CommandResponseHandler"/>.
+        ///     The <see cref="CommandResponseHandler" />.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string name = string.Join(" ", this.Arguments);
 
             string[] messageparams = { name };
-            string message = this.MessageService.RetrieveMessage("CmdExorcise", this.Channel, messageparams);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                "CmdExorcise", 
+                this.Channel, 
+                messageparams);
 
             return new CommandResponseHandler(message);
         }
+
+        #endregion
     }
 }

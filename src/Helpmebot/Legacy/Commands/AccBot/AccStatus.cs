@@ -13,25 +13,23 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the Accstatus type.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using System;
     using System.Xml.XPath;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// The status of ACC.
+    ///     The status of ACC.
     /// </summary>
     internal class Accstatus : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Accstatus"/> class.
         /// </summary>
@@ -44,25 +42,25 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Accstatus(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Accstatus(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
-        #region Overrides of GenericCommand
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            XPathDocument xpd =
-                new XPathDocument(
-                    HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status"));
+            var xpd = new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status"));
 
             XPathNodeIterator xpni = xpd.CreateNavigator().Select("//status");
 
@@ -70,16 +68,19 @@ namespace helpmebot6.Commands
             {
                 string[] messageParams =
                     {
-                        xpni.Current.GetAttribute("open", string.Empty),
-                        xpni.Current.GetAttribute("admin", string.Empty),
-                        xpni.Current.GetAttribute("checkuser", string.Empty),
-                        xpni.Current.GetAttribute("bans", string.Empty),
-                        xpni.Current.GetAttribute("useradmin", string.Empty),
-                        xpni.Current.GetAttribute("user", string.Empty),
+                        xpni.Current.GetAttribute("open", string.Empty), 
+                        xpni.Current.GetAttribute("admin", string.Empty), 
+                        xpni.Current.GetAttribute("checkuser", string.Empty), 
+                        xpni.Current.GetAttribute("bans", string.Empty), 
+                        xpni.Current.GetAttribute("useradmin", string.Empty), 
+                        xpni.Current.GetAttribute("user", string.Empty), 
                         xpni.Current.GetAttribute("usernew", string.Empty)
                     };
 
-                string message = this.MessageService.RetrieveMessage("CmdAccStatus", this.Channel, messageParams);
+                string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                    "CmdAccStatus", 
+                    this.Channel, 
+                    messageParams);
                 return new CommandResponseHandler(message);
             }
 

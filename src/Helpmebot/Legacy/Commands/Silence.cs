@@ -13,24 +13,23 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Controls the bots silencer
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Controls the bots silencer
+    ///     Controls the bots silencer
     /// </summary>
     internal class Silence : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Silence"/> class.
         /// </summary>
@@ -43,22 +42,26 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Silence(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Silence(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             bool global = false;
-            var args = this.Arguments;
+            string[] args = this.Arguments;
 
             if (args.Length > 0)
             {
@@ -73,6 +76,7 @@ namespace helpmebot6.Commands
                 bool.Parse(
                     !global ? LegacyConfig.Singleton()["silence", this.Channel] : LegacyConfig.Singleton()["silence"]);
 
+            IMessageService messageService = this.CommandServiceHelper.MessageService;
             if (args.Length > 0)
             {
                 string newValue = "global";
@@ -91,17 +95,19 @@ namespace helpmebot6.Commands
 
                 if (newValue == oldValue.ToString().ToLower())
                 {
-                    return new CommandResponseHandler(
-                        this.MessageService.RetrieveMessage(Messages.NoChange, this.Channel, null),
-                        CommandResponseDestination.PrivateMessage);
+                    return
+                        new CommandResponseHandler(
+                            messageService.RetrieveMessage(Messages.NoChange, this.Channel, null), 
+                            CommandResponseDestination.PrivateMessage);
                 }
 
                 if (newValue == "global")
                 {
                     LegacyConfig.Singleton()["silence", this.Channel] = null;
-                    return new CommandResponseHandler(
-                        this.MessageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null),
-                        CommandResponseDestination.PrivateMessage);
+                    return
+                        new CommandResponseHandler(
+                            messageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null), 
+                            CommandResponseDestination.PrivateMessage);
                 }
 
                 if (!global)
@@ -116,13 +122,18 @@ namespace helpmebot6.Commands
                     }
                 }
 
-                return new CommandResponseHandler(this.MessageService.RetrieveMessage(Messages.Done, this.Channel, null), CommandResponseDestination.PrivateMessage);
+                return new CommandResponseHandler(
+                    messageService.RetrieveMessage(Messages.Done, this.Channel, null), 
+                    CommandResponseDestination.PrivateMessage);
             }
 
             string[] mP = { "silence", 1.ToString(), args.Length.ToString() };
-            return new CommandResponseHandler(
-                this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, mP),
-                CommandResponseDestination.PrivateMessage);
+            return
+                new CommandResponseHandler(
+                    messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, mP), 
+                    CommandResponseDestination.PrivateMessage);
         }
+
+        #endregion
     }
 }

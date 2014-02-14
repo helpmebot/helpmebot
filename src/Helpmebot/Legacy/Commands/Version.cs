@@ -30,8 +30,8 @@ namespace helpmebot6.Commands
     using System.Reflection;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///   Returns the current version of the bot.
@@ -50,11 +50,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Version(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Version(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -86,7 +86,7 @@ namespace helpmebot6.Commands
 #endif
                                   };
 
-            string message = this.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
 
             return new CommandResponseHandler(message);
         }

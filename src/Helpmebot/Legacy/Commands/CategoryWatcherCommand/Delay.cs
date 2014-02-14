@@ -13,23 +13,23 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Category watcher delay subcommand
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands.CategoryWatcherCommand
 {
+    using System.Globalization;
+
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
-    /// Category watcher delay subcommand
+    ///     Category watcher delay subcommand
     /// </summary>
     internal class Delay : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Delay"/> class.
         /// </summary>
@@ -45,13 +45,17 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public Delay(LegacyUser source, string channel, string[] args, IMessageService messageService)
+        public Delay(LegacyUser source, string channel, string[] args, ICommandServiceHelper messageService)
             : base(source, channel, args, messageService)
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -59,19 +63,25 @@ namespace helpmebot6.Commands.CategoryWatcherCommand
             if (this.Arguments.Length > 2)
             {
                 // 2 or more args
-                return WatcherController.Instance().SetDelay(this.Arguments[0], int.Parse(this.Arguments[2]), this.Channel);
+                return WatcherController.Instance()
+                    .SetDelay(this.Arguments[0], int.Parse(this.Arguments[2]), this.Channel);
             }
 
             if (this.Arguments.Length == 2)
             {
                 int delay = WatcherController.Instance().GetDelay(this.Arguments[0]);
-                string[] messageParams = { this.Arguments[0], delay.ToString() };
-                string message = this.MessageService.RetrieveMessage("catWatcherCurrentDelay", this.Channel, messageParams);
+                string[] messageParams = { this.Arguments[0], delay.ToString(CultureInfo.InvariantCulture) };
+                string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                    "catWatcherCurrentDelay", 
+                    this.Channel, 
+                    messageParams);
                 return new CommandResponseHandler(message);
             }
 
             // TODO: fix
             return null;
         }
+
+        #endregion
     }
 }

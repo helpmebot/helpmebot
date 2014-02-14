@@ -25,8 +25,8 @@ namespace helpmebot6.Commands
     using System.Xml.XPath;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -47,11 +47,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Accstats(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Accstats(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -83,10 +83,11 @@ namespace helpmebot6.Commands
 
             if (xpni.MoveNext())
             {
+                var messageService = this.CommandServiceHelper.MessageService;
                 if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                 {
                     string[] msgparams = { username };
-                    string msg = this.MessageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
+                    string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
                     return new CommandResponseHandler(msg);
                 }
 
@@ -101,7 +102,7 @@ namespace helpmebot6.Commands
                         xpni.Current.GetAttribute("onwikiname", string.Empty)
                     };
 
-                string message = this.MessageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);
+                string message = messageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);
                 return new CommandResponseHandler(message);
             }
 

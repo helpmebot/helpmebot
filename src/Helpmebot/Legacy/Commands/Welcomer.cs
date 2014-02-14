@@ -24,11 +24,11 @@ namespace helpmebot6.Commands
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
@@ -52,11 +52,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Welcomer(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Welcomer(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -68,9 +68,10 @@ namespace helpmebot6.Commands
         {
             var response = new CommandResponseHandler();
 
+            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
-                response.Respond(this.MessageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
+                response.Respond(messageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
                 return response;
             }
 
@@ -85,7 +86,7 @@ namespace helpmebot6.Commands
                 case "enable":
                 case "disable":
                     response.Respond(
-                        this.MessageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
+                        messageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
                         CommandResponseDestination.PrivateMessage);
                     break;
                 case "add":
@@ -99,7 +100,7 @@ namespace helpmebot6.Commands
                                           };
                     repository.Save(welcomeUser);
 
-                    response.Respond(this.MessageService.Done(this.Channel));
+                    response.Respond(messageService.Done(this.Channel));
                     break;
                 case "del":
                 case "Delete":
@@ -120,7 +121,7 @@ namespace helpmebot6.Commands
 
                     this.Log.Debug("All done, cleaning up and sending message to IRC");
 
-                    response.Respond(this.MessageService.Done(this.Channel));
+                    response.Respond(messageService.Done(this.Channel));
                     break;
                 case "list":
                     var welcomeForChannel = repository.GetWelcomeForChannel(this.Channel);

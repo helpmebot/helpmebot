@@ -24,9 +24,9 @@ namespace helpmebot6.Commands
     using System.Linq;
 
     using Helpmebot;
+    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Monitoring;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     /// Retrieve information about all registered category codes
@@ -45,11 +45,11 @@ namespace helpmebot6.Commands
         /// <param name="args">
         /// The args.
         /// </param>
-        /// <param name="messageService">
+        /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Fetchall(LegacyUser source, string channel, string[] args, IMessageService messageService)
-            : base(source, channel, args, messageService)
+        public Fetchall(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+            : base(source, channel, args, commandServiceHelper)
         {
         }
 
@@ -68,8 +68,9 @@ namespace helpmebot6.Commands
             {
                 args.Remove("@cats");
 
-                string listSep = this.MessageService.RetrieveMessage("listSeparator", this.Channel, null);
-                string list = this.MessageService.RetrieveMessage("allCategoryCodes", this.Channel, null);
+                var messageService = this.CommandServiceHelper.MessageService;
+                string listSep = messageService.RetrieveMessage("listSeparator", this.Channel, null);
+                string list = messageService.RetrieveMessage("allCategoryCodes", this.Channel, null);
 
                 foreach (string item in kc)
                 {
