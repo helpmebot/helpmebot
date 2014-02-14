@@ -170,37 +170,54 @@ namespace Helpmebot.Legacy.Database
         /// <returns>
         /// A single value as a string
         /// </returns>
+        [Obsolete]
         public string ExecuteScalarSelect(Select query)
         {
-            ArrayList al = this.ExecuteSelect(query);
+            var cmd = new MySqlCommand(query.ToString());
+
+            return this.ExecuteScalarSelect(cmd);
+        }
+
+        /// <summary>
+        /// The execute scalar select.
+        /// </summary>
+        /// <param name="cmd">
+        /// The command.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string ExecuteScalarSelect(MySqlCommand cmd)
+        {
+            ArrayList al = this.ExecuteSelect(cmd);
             return al.Count > 0 ? ((object[])al[0])[0].ToString() : string.Empty;
         }
 
         /// <summary>
-        /// Executes the select.
+        /// The execute select.
         /// </summary>
-        /// <param name="query">
-        /// The query.
+        /// <param name="cmd">
+        /// The command.
         /// </param>
         /// <returns>
-        /// ArrayList of arrays. Each array is one row in the dataset.
+        /// The <see cref="ArrayList"/>.
         /// </returns>
-        public ArrayList ExecuteSelect(Select query)
+        public ArrayList ExecuteSelect(MySqlCommand cmd)
         {
             var resultSet = new ArrayList();
             lock (this)
             {
                 MySqlDataReader result = null;
 
-                this.Log.Debug("Executing (reader)query: " + query);
+                this.Log.Debug("Executing (reader)query: " + cmd.CommandText);
 
                 try
                 {
                     this.RunConnectionTest();
+                    cmd.Connection = this.connection;
 
-                    var cmd = new MySqlCommand(query.ToString()) { Connection = this.connection };
                     result = cmd.ExecuteReader();
-                    this.Log.Debug("Done executing (reader)query: " + query);
+                    this.Log.Debug("Done executing (reader)query: " + cmd.CommandText);
                 }
                 catch (Exception ex)
                 {

@@ -21,7 +21,8 @@
 namespace Helpmebot.Legacy.Database
 {
     using System.Collections;
-    using System.Collections.Generic;
+
+    using MySql.Data.MySqlClient;
 
     /// <summary>
     /// The LegacyDatabase interface.
@@ -34,13 +35,6 @@ namespace Helpmebot.Legacy.Database
         /// <returns>true if successful</returns>
         bool Connect();
 
-        /// <summary>
-        /// Executes the select.
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <returns>ArrayList of arrays. Each array is one row in the dataset.</returns>
-        ArrayList ExecuteSelect(LegacyDatabase.Select query);
-        
         /// <summary>
         /// Executes the scalar select.
         /// </summary>
@@ -61,5 +55,27 @@ namespace Helpmebot.Legacy.Database
         /// The <see cref="string"/>.
         /// </returns>
         string ProcHmbGetLocalOption(string option, string channel);
+
+        /// <summary>
+        /// The execute select.
+        /// </summary>
+        /// <param name="cmd">
+        /// The command.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ArrayList"/>.
+        /// </returns>
+        ArrayList ExecuteSelect(MySqlCommand cmd);
+
+        /// <summary>
+        /// The execute scalar select.
+        /// </summary>
+        /// <param name="cmd">
+        /// The command.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        string ExecuteScalarSelect(MySqlCommand cmd);
     }
 }
