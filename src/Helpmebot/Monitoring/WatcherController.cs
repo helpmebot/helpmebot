@@ -177,11 +177,12 @@ namespace Helpmebot.Monitoring
             string channelId = LegacyConfig.Singleton().GetChannelId(channel);
             int watcherId = this.GetWatcherId(keyword);
 
-            var q = new LegacyDatabase.Select("COUNT(*)");
-            q.SetFrom("channelwatchers");
-            q.AddWhere(new LegacyDatabase.WhereConds("cw_channel", channelId));
-            q.AddWhere(new LegacyDatabase.WhereConds("cw_watcher", watcherId));
-            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            var countCommand =
+                new MySqlCommand(
+                    "SELECT COUNT(*) FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
+            countCommand.Parameters.AddWithValue("@channel", channelId);
+            countCommand.Parameters.AddWithValue("@watcher", watcherId);
+            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(countCommand);
 
             if (count == "0")
             {
@@ -283,20 +284,10 @@ namespace Helpmebot.Monitoring
         /// </returns>
         public bool IsWatcherInChannel(string channel, string keyword)
         {
-            var q = new LegacyDatabase.Select("COUNT(*)");
-            q.SetFrom("channelwatchers");
-            q.AddWhere(new LegacyDatabase.WhereConds("channel_name", channel));
-            q.AddWhere(new LegacyDatabase.WhereConds("watcher_keyword", keyword));
-            q.AddJoin(
-                "channel", 
-                LegacyDatabase.Select.JoinTypes.Inner, 
-                new LegacyDatabase.WhereConds(false, "cw_channel", "=", false, "channel_id"));
-            q.AddJoin(
-                "watcher", 
-                LegacyDatabase.Select.JoinTypes.Inner, 
-                new LegacyDatabase.WhereConds(false, "cw_watcher", "=", false, "watcher_id"));
-
-            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+            var command = new MySqlCommand("SELECT COUNT(*) FROM channelwatchers INNER JOIN channel ON cw_channel = channel_id INNER JOIN watcher ON cw_watcher = watcher_id WHERE channel_name = @channel AND watcher_keyword = @keyword;");
+            command.Parameters.AddWithValue("@channel", channel);
+            command.Parameters.AddWithValue("@keyword", keyword);
+            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(command);
             return count != "0";
         }
 
@@ -380,15 +371,16 @@ namespace Helpmebot.Monitoring
             var newItems = new List<string>();
             foreach (string item in items)
             {
-                var q = new LegacyDatabase.Select("COUNT(*)");
-                q.SetFrom("categoryitems");
-                q.AddWhere(new LegacyDatabase.WhereConds("item_name", item));
-                q.AddWhere(new LegacyDatabase.WhereConds("item_keyword", keyword));
+                var countCommand =
+                    new MySqlCommand(
+                        "SELECT COUNT(*) FROM categoryitems WHERE item_name = @name AND item_keyword = @keyword;");
+                countCommand.Parameters.AddWithValue("@name", item);
+                countCommand.Parameters.AddWithValue("@keyword", keyword);
 
                 string databaseResult;
                 try
                 {
-                    databaseResult = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+                    databaseResult = LegacyDatabase.Singleton().ExecuteScalarSelect(countCommand);
                 }
                 catch (MySqlException ex)
                 {
@@ -530,12 +522,14 @@ namespace Helpmebot.Monitoring
 
                     if (showWaitTime)
                     {
-                        var q = new LegacyDatabase.Select("item_entrytime");
-                        q.AddWhere(new LegacyDatabase.WhereConds("item_name", item));
-                        q.AddWhere(new LegacyDatabase.WhereConds("item_keyword", keyword));
-                        q.SetFrom("categoryitems");
+                        var command =
+                            new MySqlCommand(
+                                "SELECT item_entrytime FROM categoryitems WHERE item_name = @name and item_keyword = @keyword;");
 
-                        string insertDate = LegacyDatabase.Singleton().ExecuteScalarSelect(q);
+                        command.Parameters.AddWithValue("@name", item);
+                        command.Parameters.AddWithValue("@keyword", keyword);
+
+                        string insertDate = LegacyDatabase.Singleton().ExecuteScalarSelect(command);
                         DateTime realInsertDate;
                         if (!DateTime.TryParse(insertDate, out realInsertDate))
                         {

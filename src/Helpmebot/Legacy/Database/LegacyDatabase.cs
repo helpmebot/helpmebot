@@ -162,23 +162,6 @@ namespace Helpmebot.Legacy.Database
         }
 
         /// <summary>
-        /// Executes the scalar select.
-        /// </summary>
-        /// <param name="query">
-        /// The query.
-        /// </param>
-        /// <returns>
-        /// A single value as a string
-        /// </returns>
-        [Obsolete]
-        public string ExecuteScalarSelect(Select query)
-        {
-            var cmd = new MySqlCommand(query.ToString());
-
-            return this.ExecuteScalarSelect(cmd);
-        }
-
-        /// <summary>
         /// The execute scalar select.
         /// </summary>
         /// <param name="cmd">

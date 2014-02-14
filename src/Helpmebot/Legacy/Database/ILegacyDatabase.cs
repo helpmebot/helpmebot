@@ -36,13 +36,6 @@ namespace Helpmebot.Legacy.Database
         bool Connect();
 
         /// <summary>
-        /// Executes the scalar select.
-        /// </summary>
-        /// <param name="query">The query.</param>
-        /// <returns>A single value as a string</returns>
-        string ExecuteScalarSelect(LegacyDatabase.Select query);
-
-        /// <summary>
         /// Call the HMB_GET_LOCAL_OPTION stored procedure.
         /// </summary>
         /// <param name="option">
