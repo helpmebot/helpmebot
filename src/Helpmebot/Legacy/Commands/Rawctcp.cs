@@ -22,8 +22,11 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Sends a raw client-to-client protocol command
@@ -61,7 +64,10 @@ namespace helpmebot6.Commands
             string cmd = GlobalFunctions.PopFromFront(ref args);
             string dst = GlobalFunctions.PopFromFront(ref args);
 
-            Helpmebot6.irc.IrcPrivmsg(dst, string.Join(" ", args).SetupForCtcp(cmd));
+            // FIXME: service locator
+            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+
+            ircClient.SendMessage(dst, string.Join(" ", args).SetupForCtcp(cmd));
 
             return null;
         }

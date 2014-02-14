@@ -26,6 +26,7 @@ namespace Helpmebot.Legacy
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
+    using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
@@ -135,7 +136,10 @@ namespace Helpmebot.Legacy
         /// </remarks>
         public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcAccessLayer client)
         {
-            return ParseRawLineForMessage(ref message, client.Nickname, Helpmebot6.Trigger);
+            // FIXME: servicelocator
+            var coreConfiguration = ServiceLocator.Current.GetInstance<ICoreConfiguration>();
+
+            return ParseRawLineForMessage(ref message, client.Nickname, coreConfiguration.CommandTrigger);
         }
 
         /// <summary>

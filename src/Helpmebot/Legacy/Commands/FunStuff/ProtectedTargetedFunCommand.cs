@@ -22,9 +22,11 @@ namespace Helpmebot.Commands.FunStuff
 {
     using System.Linq;
 
-    using Helpmebot;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// The protected targeted command.
@@ -34,11 +36,7 @@ namespace Helpmebot.Commands.FunStuff
         /// <summary>
         /// The forbidden targets.
         /// </summary>
-        private readonly string[] forbiddenTargets =
-            {
-                "itself", "himself", "herself", "themself",
-                Helpmebot6.irc.Nickname.ToLower()
-            };
+        private readonly string[] forbiddenTargets = { "itself", "himself", "herself", "themself" };
 
         /// <summary>
         /// Initialises a new instance of the <see cref="ProtectedTargetedFunCommand"/> class.
@@ -67,7 +65,15 @@ namespace Helpmebot.Commands.FunStuff
         {
             get
             {
-                if (this.forbiddenTargets.Contains(base.CommandTarget))
+                if (this.forbiddenTargets.Contains(base.CommandTarget.ToLower()))
+                {
+                    return this.Source.Nickname;
+                }
+
+                // FIXME: servicelocator call
+                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+
+                if (base.CommandTarget.ToLower() == ircClient.Nickname.ToLower())
                 {
                     return this.Source.Nickname;
                 }

@@ -23,8 +23,11 @@ namespace helpmebot6.Commands
     using System.Collections.Generic;
 
     using Helpmebot;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// The notify.
@@ -83,10 +86,13 @@ namespace helpmebot6.Commands
 
             if (toNotify != null)
             {
+                // FIXME: servicelocator
+                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+
                 string message = this.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
                 foreach (LegacyUser user in toNotify)
                 {
-                    Helpmebot6.irc.IrcPrivmsg(user.Nickname, message);
+                    ircClient.SendMessage(user.Nickname, message);
                 }
             }
         }

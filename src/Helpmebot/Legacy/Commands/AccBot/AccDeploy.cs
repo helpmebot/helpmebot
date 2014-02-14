@@ -25,9 +25,12 @@ namespace helpmebot6.Commands
     using System.Web;
 
     using Helpmebot;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -64,9 +67,13 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] args = this.Arguments;
+            // FIXME: ServiceLocator call
+            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
 
-            Helpmebot6.irc.IrcPrivmsg(this.Channel, this.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null));
+            string[] args = this.Arguments;
+            
+            string deployInProgressMessage = this.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
+            ircClient.SendMessage(this.Channel, deployInProgressMessage);
 
             string revision;
 

@@ -13,22 +13,25 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Send a raw line to IRC
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
+    using Microsoft.Practices.ServiceLocation;
+
     /// <summary>
-    /// Send a raw line to IRC
+    ///     Send a raw line to IRC
     /// </summary>
     internal class Raw : GenericCommand
     {
+        #region Constructors and Destructors
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Raw"/> class.
         /// </summary>
@@ -49,15 +52,32 @@ namespace helpmebot6.Commands
         {
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
-        /// Actual command logic
+        ///     Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.irc.SendRawLine(string.Join(" ", this.Arguments));
+            // FIXME: servicelocator
+            var ircClientIface = ServiceLocator.Current.GetInstance<IIrcClient>();
+
+            var ircClient = ircClientIface as IrcClient;
+            if (ircClient != null)
+            {
+                ircClient.Inject(this.Arguments.Implode());
+            }
+            else
+            {
+                ircClientIface.SendMessage(this.Source.Nickname, "Error injecting message into network stream.");
+            }
 
             return new CommandResponseHandler();
         }
+
+        #endregion
     }
 }

@@ -21,8 +21,11 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
+
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Triggers an inter-channel alert
@@ -64,7 +67,9 @@ namespace helpmebot6.Commands
                     message += " (message: \"" + string.Join(" ", this.Arguments) + "\")";
                 }
 
-                Helpmebot6.irc.IrcNotice("#wikipedia-en-helpers", message);
+                // FIXME: ServiceLocator
+                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+                ircClient.SendNotice("#wikipedia-en-helpers", message);
             }
 
             return null;

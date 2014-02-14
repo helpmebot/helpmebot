@@ -103,6 +103,17 @@ namespace Helpmebot.IRC.Interfaces
         void SendMessage(string destination, string message);
 
         /// <summary>
+        /// The send notice.
+        /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        void SendNotice(string destination, string message);
+
+        /// <summary>
         /// The send.
         /// </summary>
         /// <param name="message">

@@ -13,16 +13,12 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   Defines the IrcClient type.
-// </summary>
 // <remarks>
 // TODO: +Q user mode for no forwarding.
 // TODO: automatic CTCP replies
 // TODO: kick tracking
 // </remarks>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.IRC
 {
     using System;
@@ -42,111 +38,111 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Model;
     using Helpmebot.Model.Interfaces;
 
-    using IMessage = Helpmebot.IRC.Messages.IMessage;
-
     /// <summary>
-    /// The IRC client.
+    ///     The IRC client.
     /// </summary>
     public class IrcClient : IIrcClient, IDisposable
     {
         #region Fields
 
         /// <summary>
-        /// The network client.
+        ///     Authenticate to services?
         /// </summary>
-        private readonly INetworkClient networkClient;
+        private readonly bool authToServices;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger logger;
-        
-        /// <summary>
-        /// The sync logger.
-        /// </summary>
-        private readonly ILogger syncLogger;
-
-        /// <summary>
-        /// The username.
-        /// </summary>
-        private readonly string username;
-
-        /// <summary>
-        /// The real name.
-        /// </summary>
-        private readonly string realName;
-
-        /// <summary>
-        /// The password.
-        /// </summary>
-        private readonly string password;
-
-        /// <summary>
-        /// The client's possible capabilities.
-        /// </summary>
-        private readonly List<string> clientCapabilities;
-
-        /// <summary>
-        /// The user cache.
-        /// </summary>
-        private readonly Dictionary<string, IrcUser> userCache;
-
-        /// <summary>
-        /// The channels.
+        ///     The channels.
         /// </summary>
         private readonly Dictionary<string, IrcChannel> channels;
 
         /// <summary>
-        /// The connection registration semaphore.
+        ///     The client's possible capabilities.
+        /// </summary>
+        private readonly List<string> clientCapabilities;
+
+        /// <summary>
+        ///     The connection registration semaphore.
         /// </summary>
         private readonly Semaphore connectionRegistrationSemaphore;
 
         /// <summary>
-        /// The lock object for operations on the user/channel lists.
+        ///     The logger.
+        /// </summary>
+        private readonly ILogger logger;
+
+        /// <summary>
+        ///     The network client.
+        /// </summary>
+        private readonly INetworkClient networkClient;
+
+        /// <summary>
+        ///     The password.
+        /// </summary>
+        private readonly string password;
+
+        /// <summary>
+        ///     The real name.
+        /// </summary>
+        private readonly string realName;
+
+        /// <summary>
+        ///     The sync logger.
+        /// </summary>
+        private readonly ILogger syncLogger;
+
+        /// <summary>
+        ///     The user cache.
+        /// </summary>
+        private readonly Dictionary<string, IrcUser> userCache;
+
+        /// <summary>
+        ///     The lock object for operations on the user/channel lists.
         /// </summary>
         private readonly object userOperationLock = new object();
 
         /// <summary>
-        /// The cap extended join.
+        ///     The username.
+        /// </summary>
+        private readonly string username;
+
+        /// <summary>
+        ///     The cap extended join.
         /// </summary>
         private bool capExtendedJoin;
 
         /// <summary>
-        /// The SASL capability.
+        ///     The SASL capability.
         /// </summary>
         private bool capSasl;
 
         /// <summary>
-        /// The data interception function.
+        ///     The data interception function.
         /// </summary>
         private bool connectionRegistered;
 
         /// <summary>
-        /// The nickname.
-        /// </summary>
-        private string nickname;
-
-        /// <summary>
-        /// Is the client logged in to a nickserv account?
-        /// </summary>
-        private bool servicesLoggedIn;
-
-        /// <summary>
-        /// The server prefix.
-        /// </summary>
-        private string serverPrefix;
-
-        /// <summary>
-        /// The nick tracking valid.
+        ///     The nick tracking valid.
         /// </summary>
         private bool nickTrackingValid = true;
 
         /// <summary>
-        /// Authenticate to services?
+        ///     The nickname.
         /// </summary>
-        private bool authToServices;
+        private string nickname;
+
+        /// <summary>
+        ///     The server prefix.
+        /// </summary>
+        private string serverPrefix;
+
+        /// <summary>
+        ///     Is the client logged in to a nickserv account?
+        /// </summary>
+        private bool servicesLoggedIn;
 
         #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="IrcClient"/> class.
@@ -197,25 +193,53 @@ namespace Helpmebot.IRC
             this.RegisterConnection(null);
         }
 
-        /// <summary>
-        /// The received message.
-        /// </summary>
-        public event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
+        #endregion
+
+        #region Public Events
 
         /// <summary>
-        /// The join received event.
+        ///     The invite received event.
+        /// </summary>
+        public event EventHandler<InviteEventArgs> InviteReceivedEvent;
+
+        /// <summary>
+        ///     The join received event.
         /// </summary>
         public event EventHandler<JoinEventArgs> JoinReceivedEvent;
 
         /// <summary>
-        /// The invite received event.
+        ///     The received message.
         /// </summary>
-        public event EventHandler<InviteEventArgs> InviteReceivedEvent;
+        public event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
 
-        #region Properties
+        #endregion
+
+        #region Public Properties
 
         /// <summary>
-        /// Gets or sets the nickname.
+        ///     Gets the channels.
+        /// </summary>
+        public Dictionary<string, IrcChannel> Channels
+        {
+            get
+            {
+                return this.channels;
+            }
+        }
+
+        /// <summary>
+        ///     Gets a value indicating whether the nick tracking is valid.
+        /// </summary>
+        public bool NickTrackingValid
+        {
+            get
+            {
+                return this.nickTrackingValid;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the nickname.
         /// </summary>
         public string Nickname
         {
@@ -232,40 +256,7 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// Gets the channels.
-        /// </summary>
-        public Dictionary<string, IrcChannel> Channels
-        {
-            get
-            {
-                return this.channels;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the nick tracking is valid.
-        /// </summary>
-        public bool NickTrackingValid
-        {
-            get
-            {
-                return this.nickTrackingValid;
-            }
-        }
-
-        /// <summary>
-        /// Gets the user cache.
-        /// </summary>
-        public Dictionary<string, IrcUser> UserCache
-        {
-            get
-            {
-                return this.userCache;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the client logged in to a nickserv account
+        ///     Gets a value indicating whether the client logged in to a nickserv account
         /// </summary>
         public bool ServicesLoggedIn
         {
@@ -275,9 +266,42 @@ namespace Helpmebot.IRC
             }
         }
 
+        /// <summary>
+        ///     Gets the user cache.
+        /// </summary>
+        public Dictionary<string, IrcUser> UserCache
+        {
+            get
+            {
+                return this.userCache;
+            }
+        }
+
         #endregion
 
-        #region Public methods
+        #region Public Methods and Operators
+
+        /// <summary>
+        ///     The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Don't use this.
+        ///     Injects a raw string into the network stream.
+        ///     Everything should use Send(IMessage) instead.
+        /// </summary>
+        /// <param name="message">
+        /// The raw data to inject into the network stream
+        /// </param>
+        public void Inject(string message)
+        {
+            this.networkClient.Send(message);
+        }
 
         /// <summary>
         /// The join.
@@ -297,7 +321,7 @@ namespace Helpmebot.IRC
             this.syncLogger.DebugFormat("Join({0}) acquired on connectionRegistration semaphore.", channel);
             this.connectionRegistrationSemaphore.Release();
             this.syncLogger.DebugFormat("Join({0}) released connectionRegistration semaphore.", channel);
-            
+
             // request to join
             this.Send(new Message("JOIN", channel));
         }
@@ -318,6 +342,17 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
+        /// The send.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        public void Send(IMessage message)
+        {
+            this.networkClient.Send(message.ToString());
+        }
+
+        /// <summary>
         /// The send message.
         /// </summary>
         /// <param name="destination">
@@ -332,25 +367,22 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// The send.
+        /// The send notice.
         /// </summary>
+        /// <param name="destination">
+        /// The destination.
+        /// </param>
         /// <param name="message">
         /// The message.
         /// </param>
-        public void Send(IMessage message)
+        public void SendNotice(string destination, string message)
         {
-            this.networkClient.Send(message.ToString());
+            this.Send(new Message("NOTICE", new[] { destination, message }));
         }
 
-        /// <summary>
-        /// The dispose.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
         #endregion
+
+        #region Methods
 
         /// <summary>
         /// The dispose.
@@ -369,6 +401,85 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
+        /// The handle who x reply.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
+        private void HandleWhoXReply(IMessage message)
+        {
+            try
+            {
+                if (message.Command != Numerics.WhoXReply)
+                {
+                    throw new ArgumentException("Expected WHOX reply message", "message");
+                }
+
+                List<string> parameters = message.Parameters.ToList();
+                if (parameters.Count() != 8)
+                {
+                    throw new ArgumentException("Expected 8 WHOX parameters.", "message");
+                }
+
+                /* >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ChanServ services.           ChanServ       H@  0
+                 * >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ~jamesur wikimedia/Jamesofur Jamesofur|away G  jamesofur
+                 *                             .            t   c                      u        h                   n              f  a
+                 *     prefix              cmd    0         1   2                      3        4                   5              6  7
+                 */
+                string channel = parameters[2];
+                string user = parameters[3];
+                string host = parameters[4];
+                string nick = parameters[5];
+                string flags = parameters[6];
+                bool away = flags[0] == 'G'; // H (here) / G (gone)
+                string modes = flags.Substring(1);
+                string account = parameters[7];
+
+                lock (this.userOperationLock)
+                {
+                    var ircUser = new IrcUser();
+                    if (this.UserCache.ContainsKey(nick))
+                    {
+                        ircUser = this.UserCache[nick];
+                    }
+                    else
+                    {
+                        ircUser.Nickname = nick;
+                        this.UserCache.Add(nick, ircUser);
+                    }
+
+                    ircUser.Account = account;
+                    ircUser.Username = user;
+                    ircUser.Hostname = host;
+                    ircUser.Away = away;
+
+                    if (this.channels[channel].Users.ContainsKey(ircUser.Nickname))
+                    {
+                        IrcChannelUser channelUser = this.channels[channel].Users[ircUser.Nickname];
+                        channelUser.Operator = modes.Contains("@");
+                        channelUser.Voice = modes.Contains("+");
+                    }
+                    else
+                    {
+                        var channelUser = new IrcChannelUser(ircUser, channel)
+                                              {
+                                                  Operator = modes.Contains("@"), 
+                                                  Voice = modes.Contains("+")
+                                              };
+
+                        this.channels[channel].Users.Add(ircUser.Nickname, channelUser);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.nickTrackingValid = false;
+                this.logger.Error("Nick tracking for authentication is no longer valid.", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// The network client on data received.
         /// </summary>
         /// <param name="sender">
@@ -379,11 +490,11 @@ namespace Helpmebot.IRC
         /// </param>
         private void NetworkClientOnDataReceived(object sender, DataReceivedEventArgs dataReceivedEventArgs)
         {
-            var message = Message.Parse(dataReceivedEventArgs.Data);
+            IMessage message = Message.Parse(dataReceivedEventArgs.Data);
 
             if (message.Command == "ERROR")
             {
-                var errorMessage = message.Parameters.First();
+                string errorMessage = message.Parameters.First();
                 this.logger.Fatal(errorMessage);
                 this.networkClient.Disconnect();
                 throw new IOException(errorMessage);
@@ -405,17 +516,165 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// The raise data event.
+        /// The on account message received.
         /// </summary>
-        /// <param name="message">
-        /// The message.
+        /// <param name="e">
+        /// The e.
         /// </param>
-        private void RaiseDataEvent(IMessage message)
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnAccountMessageReceived(MessageReceivedEventArgs e, IUser user)
         {
-            EventHandler<MessageReceivedEventArgs> receivedMessageEvent = this.ReceivedMessage;
-            if (receivedMessageEvent != null)
+            List<string> parameters = e.Message.Parameters.ToList();
+
+            lock (this.userOperationLock)
             {
-                receivedMessageEvent(this, new MessageReceivedEventArgs(message));
+                this.logger.DebugFormat("Seen {0} change account name to {1}", user, parameters[0]);
+                if (this.UserCache.ContainsKey(user.Nickname))
+                {
+                    this.UserCache[user.Nickname].Account = parameters[0];
+                }
+                else
+                {
+                    this.UserCache.Add(user.Nickname, (IrcUser)user);
+                    user.Account = parameters[0];
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on channel mode received.
+        /// </summary>
+        /// <param name="parameters">
+        /// The parameters.
+        /// </param>
+        private void OnChannelModeReceived(List<string> parameters)
+        {
+            // Channel Mode message
+            string channel = parameters[0];
+            string modechange = parameters[1];
+
+            bool addMode = true;
+            int position = 2;
+
+            foreach (char c in modechange)
+            {
+                if (c == '-')
+                {
+                    addMode = false;
+                }
+
+                if (c == '+')
+                {
+                    addMode = true;
+                }
+
+                if (c == 'o')
+                {
+                    string nick = parameters[position];
+
+                    lock (this.userOperationLock)
+                    {
+                        IrcChannelUser channelUser = this.channels[channel].Users[nick];
+
+                        this.logger.InfoFormat("Seen {0}o on {1}.", addMode ? "+" : "-", channelUser);
+
+                        channelUser.Operator = addMode;
+
+                        position++;
+                    }
+                }
+
+                if (c == 'v')
+                {
+                    string nick = parameters[position];
+
+                    lock (this.userOperationLock)
+                    {
+                        IrcChannelUser channelUser = this.channels[channel].Users[nick];
+
+                        this.logger.InfoFormat("Seen {0}v on {1}.", addMode ? "+" : "-", channelUser, channel);
+
+                        channelUser.Voice = addMode;
+
+                        position++;
+                    }
+                }
+
+                if ("eIbqkflj".Contains(c))
+                {
+                    position++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on join received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <param name="user">
+        /// The user.
+        /// </param>
+        private void OnJoinReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            // this is a client join to a channel.
+            // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster
+            List<string> parametersList = e.Message.Parameters.ToList();
+
+            lock (this.userOperationLock)
+            {
+                if (this.userCache.ContainsKey(user.Nickname))
+                {
+                    user = this.userCache[user.Nickname];
+                }
+                else
+                {
+                    this.userCache.Add(user.Nickname, (IrcUser)user);
+                }
+            }
+
+            if (this.capExtendedJoin)
+            {
+                // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster accountname :realname
+                user.Account = parametersList[1];
+            }
+
+            string channelName = parametersList[0];
+            if (user.Nickname == this.Nickname)
+            {
+                // we're joining this, so rate-limit from here.
+                this.logger.InfoFormat("Joining channel {0}", channelName);
+                this.logger.Debug("Requesting WHOX a information");
+                this.Send(new Message("WHO", new[] { channelName, "%uhnatfc,001" }));
+
+                lock (this.userOperationLock)
+                {
+                    // add the channel to the list of channels I'm in.
+                    this.Channels.Add(channelName, new IrcChannel(channelName));
+                }
+            }
+            else
+            {
+                this.logger.InfoFormat("Seen {0} join channel {1}.", user, channelName);
+
+                lock (this.userOperationLock)
+                {
+                    if (!this.Channels[channelName].Users.ContainsKey(user.Nickname))
+                    {
+                        this.Channels[channelName].Users.Add(
+                            user.Nickname, 
+                            new IrcChannelUser((IrcUser)user, channelName));
+                    }
+                }
+
+                EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
+                if (temp != null)
+                {
+                    temp(this, new JoinEventArgs(e.Message, user, channelName));
+                }
             }
         }
 
@@ -471,8 +730,8 @@ namespace Helpmebot.IRC
 
             if (e.Message.Command == "MODE" && user != null)
             {
-                var parameters = e.Message.Parameters.ToList();
-                var target = parameters[0];
+                List<string> parameters = e.Message.Parameters.ToList();
+                string target = parameters[0];
                 if (target.StartsWith("#"))
                 {
                     this.OnChannelModeReceived(parameters);
@@ -504,16 +763,75 @@ namespace Helpmebot.IRC
                 EventHandler<InviteEventArgs> inviteReceivedEvent = this.InviteReceivedEvent;
                 if (inviteReceivedEvent != null)
                 {
-                    var parameters = e.Message.Parameters.ToList();
+                    List<string> parameters = e.Message.Parameters.ToList();
                     inviteReceivedEvent(this, new InviteEventArgs(e.Message, user, parameters[1], parameters[0]));
                 }
             }
         }
 
-        #region Message received event handlers
+        /// <summary>
+        /// The on name reply received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void OnNameReplyReceived(MessageReceivedEventArgs e)
+        {
+            List<string> parameters = e.Message.Parameters.ToList();
+
+            string channel = parameters[2];
+            string names = parameters[3];
+
+            this.logger.DebugFormat("Names on {0}: {1}", channel, names);
+
+            foreach (string name in names.Split(' '))
+            {
+                string parsedName = name;
+                bool voice = false;
+                bool op = false;
+
+                if (parsedName.StartsWith("+"))
+                {
+                    parsedName = parsedName.Substring(1);
+                    voice = true;
+                }
+
+                if (parsedName.StartsWith("@"))
+                {
+                    parsedName = parsedName.Substring(1);
+                    op = true;
+                }
+
+                lock (this.userOperationLock)
+                {
+                    if (this.channels[channel].Users.ContainsKey(parsedName))
+                    {
+                        IrcChannelUser channelUser = this.channels[channel].Users[parsedName];
+                        channelUser.Operator = op;
+                        channelUser.Voice = voice;
+                    }
+                    else
+                    {
+                        var ircUser = new IrcUser { Nickname = parsedName };
+                        if (this.UserCache.ContainsKey(parsedName))
+                        {
+                            ircUser = this.UserCache[parsedName];
+                        }
+                        else
+                        {
+                            this.UserCache.Add(parsedName, ircUser);
+                        }
+
+                        var channelUser = new IrcChannelUser(ircUser, channel) { Voice = voice, Operator = op };
+
+                        this.channels[channel].Users.Add(parsedName, channelUser);
+                    }
+                }
+            }
+        }
 
         /// <summary>
-        /// The on account message received.
+        /// The on nick change received.
         /// </summary>
         /// <param name="e">
         /// The e.
@@ -521,21 +839,45 @@ namespace Helpmebot.IRC
         /// <param name="user">
         /// The user.
         /// </param>
-        private void OnAccountMessageReceived(MessageReceivedEventArgs e, IUser user)
+        private void OnNickChangeReceived(MessageReceivedEventArgs e, IUser user)
         {
-            var parameters = e.Message.Parameters.ToList();
-
+            List<string> parameters = e.Message.Parameters.ToList();
+            string newNickname = parameters[0];
+            string oldNickname = user.Nickname;
             lock (this.userOperationLock)
             {
-                this.logger.DebugFormat("Seen {0} change account name to {1}", user, parameters[0]);
-                if (this.UserCache.ContainsKey(user.Nickname))
+                // firstly, update the user cache.
+                IrcUser ircUser = this.UserCache[oldNickname];
+                this.UserCache.Remove(oldNickname);
+
+                ircUser.Nickname = newNickname;
+
+                this.UserCache.Add(newNickname, ircUser);
+
+                // secondly, update the channels this user is in.
+                foreach (var channelPair in this.channels)
                 {
-                    this.UserCache[user.Nickname].Account = parameters[0];
-                }
-                else
-                {
-                    this.UserCache.Add(user.Nickname, (IrcUser)user);
-                    user.Account = parameters[0];
+                    if (channelPair.Value.Users.ContainsKey(oldNickname))
+                    {
+                        IrcChannelUser channelUser = channelPair.Value.Users[oldNickname];
+
+                        if (!channelUser.User.Equals(ircUser))
+                        {
+                            this.logger.ErrorFormat(
+                                "Channel user {0} doesn't match irc user {1} for NICK in {2}", 
+                                channelUser.User, 
+                                ircUser, 
+                                channelPair.Value.Name);
+
+                            this.logger.Error("Nick tracking is no longer valid.");
+                            this.nickTrackingValid = false;
+
+                            throw new Exception("Channel user doesn't match irc user");
+                        }
+
+                        channelPair.Value.Users.Remove(oldNickname);
+                        channelPair.Value.Users.Add(newNickname, channelUser);
+                    }
                 }
             }
         }
@@ -551,8 +893,8 @@ namespace Helpmebot.IRC
         /// </param>
         private void OnPartMessageReceived(MessageReceivedEventArgs e, IUser user)
         {
-            var parameters = e.Message.Parameters.ToList();
-            var channel = parameters[0];
+            List<string> parameters = e.Message.Parameters.ToList();
+            string channel = parameters[0];
             if (user.Nickname == this.Nickname)
             {
                 this.logger.InfoFormat("Leaving channel {1}.", user, channel);
@@ -595,335 +937,19 @@ namespace Helpmebot.IRC
         }
 
         /// <summary>
-        /// The on nick change received.
-        /// </summary>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        private void OnNickChangeReceived(MessageReceivedEventArgs e, IUser user)
-        {
-            var parameters = e.Message.Parameters.ToList();
-            var newNickname = parameters[0];
-            var oldNickname = user.Nickname;
-            lock (this.userOperationLock)
-            {
-                // firstly, update the user cache.
-                var ircUser = this.UserCache[oldNickname];
-                this.UserCache.Remove(oldNickname);
-
-                ircUser.Nickname = newNickname;
-
-                this.UserCache.Add(newNickname, ircUser);
-
-                // secondly, update the channels this user is in.
-                foreach (KeyValuePair<string, IrcChannel> channelPair in this.channels)
-                {
-                    if (channelPair.Value.Users.ContainsKey(oldNickname))
-                    {
-                        var channelUser = channelPair.Value.Users[oldNickname];
-
-                        if (!channelUser.User.Equals(ircUser))
-                        {
-                            this.logger.ErrorFormat(
-                                "Channel user {0} doesn't match irc user {1} for NICK in {2}",
-                                channelUser.User,
-                                ircUser,
-                                channelPair.Value.Name);
-
-                            this.logger.Error("Nick tracking is no longer valid.");
-                            this.nickTrackingValid = false;
-
-                            throw new Exception("Channel user doesn't match irc user");
-                        }
-
-                        channelPair.Value.Users.Remove(oldNickname);
-                        channelPair.Value.Users.Add(newNickname, channelUser);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// The on name reply received.
-        /// </summary>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private void OnNameReplyReceived(MessageReceivedEventArgs e)
-        {
-            var parameters = e.Message.Parameters.ToList();
-
-            var channel = parameters[2];
-            var names = parameters[3];
-
-            this.logger.DebugFormat("Names on {0}: {1}", channel, names);
-            
-            foreach (string name in names.Split(' '))
-            {
-                var parsedName = name;
-                var voice = false;
-                var op = false;
-
-                if (parsedName.StartsWith("+"))
-                {
-                    parsedName = parsedName.Substring(1);
-                    voice = true;
-                }
-
-                if (parsedName.StartsWith("@"))
-                {
-                    parsedName = parsedName.Substring(1);
-                    op = true;
-                }
-
-                lock (this.userOperationLock)
-                {
-                    if (this.channels[channel].Users.ContainsKey(parsedName))
-                    {
-                        var channelUser = this.channels[channel].Users[parsedName];
-                        channelUser.Operator = op;
-                        channelUser.Voice = voice;
-                    }
-                    else
-                    {
-                        var ircUser = new IrcUser { Nickname = parsedName };
-                        if (this.UserCache.ContainsKey(parsedName))
-                        {
-                            ircUser = this.UserCache[parsedName];
-                        }
-                        else
-                        {
-                            this.UserCache.Add(parsedName, ircUser);
-                        }
-
-                        var channelUser = new IrcChannelUser(ircUser, channel) { Voice = voice, Operator = op };
-
-                        this.channels[channel].Users.Add(parsedName, channelUser);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// The on channel mode received.
-        /// </summary>
-        /// <param name="parameters">
-        /// The parameters.
-        /// </param>
-        private void OnChannelModeReceived(List<string> parameters)
-        {
-            // Channel Mode message
-            var channel = parameters[0];
-            var modechange = parameters[1];
-
-            var addMode = true;
-            var position = 2;
-
-            foreach (char c in modechange)
-            {
-                if (c == '-')
-                {
-                    addMode = false;
-                }
-
-                if (c == '+')
-                {
-                    addMode = true;
-                }
-
-                if (c == 'o')
-                {
-                    var nick = parameters[position];
-
-                    lock (this.userOperationLock)
-                    {
-                        var channelUser = this.channels[channel].Users[nick];
-                     
-                        this.logger.InfoFormat("Seen {0}o on {1}.", addMode ? "+" : "-", channelUser);
-
-                        channelUser.Operator = addMode;
-
-                        position++;
-                    }
-                }
-
-                if (c == 'v')
-                {
-                    var nick = parameters[position];
-
-                    lock (this.userOperationLock)
-                    {
-                        var channelUser = this.channels[channel].Users[nick];
-
-                        this.logger.InfoFormat("Seen {0}v on {1}.", addMode ? "+" : "-", channelUser, channel);
-
-                        channelUser.Voice = addMode;
-
-                        position++;
-                    }
-                }
-
-                if ("eIbqkflj".Contains(c))
-                {
-                    position++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// The on join received.
-        /// </summary>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        private void OnJoinReceived(MessageReceivedEventArgs e, IUser user)
-        {
-            // this is a client join to a channel.
-            // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster
-            var parametersList = e.Message.Parameters.ToList();
-
-            lock (this.userOperationLock)
-            {
-                if (this.userCache.ContainsKey(user.Nickname))
-                {
-                    user = this.userCache[user.Nickname];
-                }
-                else
-                {
-                    this.userCache.Add(user.Nickname, (IrcUser)user);
-                }
-            }
-
-            if (this.capExtendedJoin)
-            {
-                // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster accountname :realname
-                user.Account = parametersList[1];
-            }
-
-            var channelName = parametersList[0];
-            if (user.Nickname == this.Nickname)
-            {
-                // we're joining this, so rate-limit from here.
-                this.logger.InfoFormat("Joining channel {0}", channelName);
-                this.logger.Debug("Requesting WHOX a information");
-                this.Send(new Message("WHO", new[] { channelName, "%uhnatfc,001" }));
-
-                lock (this.userOperationLock)
-                {
-                    // add the channel to the list of channels I'm in.
-                    this.Channels.Add(channelName, new IrcChannel(channelName));
-                }
-            }
-            else
-            {
-                this.logger.InfoFormat("Seen {0} join channel {1}.", user, channelName);
-
-                lock (this.userOperationLock)
-                {
-                    if (!this.Channels[channelName].Users.ContainsKey(user.Nickname))
-                    {
-                        this.Channels[channelName].Users.Add(
-                            user.Nickname,
-                            new IrcChannelUser((IrcUser)user, channelName));
-                    }
-                }
-
-                EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
-                if (temp != null)
-                {
-                    temp(this, new JoinEventArgs(e.Message, user, channelName));
-                }
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// The handle who x reply.
+        /// The raise data event.
         /// </summary>
         /// <param name="message">
         /// The message.
         /// </param>
-        private void HandleWhoXReply(IMessage message)
+        private void RaiseDataEvent(IMessage message)
         {
-            try
+            EventHandler<MessageReceivedEventArgs> receivedMessageEvent = this.ReceivedMessage;
+            if (receivedMessageEvent != null)
             {
-                if (message.Command != Numerics.WhoXReply)
-                {
-                    throw new ArgumentException("Expected WHOX reply message", "message");
-                }
-
-                var parameters = message.Parameters.ToList();
-                if (parameters.Count() != 8)
-                {
-                    throw new ArgumentException("Expected 8 WHOX parameters.", "message");
-                }
-
-                /* >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ChanServ services.           ChanServ       H@  0
-                 * >> :holmes.freenode.net 354 stwalkerster 001 #wikipedia-en-accounts ~jamesur wikimedia/Jamesofur Jamesofur|away G  jamesofur
-                 *                             .            t   c                      u        h                   n              f  a
-                 *     prefix              cmd    0         1   2                      3        4                   5              6  7
-                 */
-                var channel = parameters[2];
-                var user = parameters[3];
-                var host = parameters[4];
-                var nick = parameters[5];
-                var flags = parameters[6];
-                var away = flags[0] == 'G'; // H (here) / G (gone)
-                var modes = flags.Substring(1);
-                var account = parameters[7];
-
-                lock (this.userOperationLock)
-                {
-                    var ircUser = new IrcUser();
-                    if (this.UserCache.ContainsKey(nick))
-                    {
-                        ircUser = this.UserCache[nick];
-                    }
-                    else
-                    {
-                        ircUser.Nickname = nick;
-                        this.UserCache.Add(nick, ircUser);
-                    }
-
-                    ircUser.Account = account;
-                    ircUser.Username = user;
-                    ircUser.Hostname = host;
-                    ircUser.Away = away;
-
-                    if (this.channels[channel].Users.ContainsKey(ircUser.Nickname))
-                    {
-                        var channelUser = this.channels[channel].Users[ircUser.Nickname];
-                        channelUser.Operator = modes.Contains("@");
-                        channelUser.Voice = modes.Contains("+");
-                    }
-                    else
-                    {
-                        var channelUser = new IrcChannelUser(ircUser, channel)
-                                              {
-                                                  Operator = modes.Contains("@"),
-                                                  Voice = modes.Contains("+")
-                                              };
-
-                        this.channels[channel].Users.Add(ircUser.Nickname, channelUser);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                this.nickTrackingValid = false;
-                this.logger.Error("Nick tracking for authentication is no longer valid.", ex);
-                throw;
+                receivedMessageEvent(this, new MessageReceivedEventArgs(message));
             }
         }
-
-        #region Connection Registration
 
         /// <summary>
         /// The register connection.
@@ -949,7 +975,7 @@ namespace Helpmebot.IRC
                     // we support capabilities, use them!
                     this.Send(new Message("CAP", "LS"));
                 }
-                
+
                 return;
             }
 
@@ -990,15 +1016,15 @@ namespace Helpmebot.IRC
             // we've recieved a reply to our CAP commands
             if (message.Command == "CAP")
             {
-                var list = message.Parameters.ToList();
-                
+                List<string> list = message.Parameters.ToList();
+
                 if (list[1] == "LS")
                 {
-                    var serverCapabilities = list[2].Split(' ');
+                    string[] serverCapabilities = list[2].Split(' ');
                     this.logger.DebugFormat("Server Capabilities: {0}", serverCapabilities.Implode(", "));
                     this.logger.DebugFormat("Client Capabilities: {0}", this.clientCapabilities.Implode(", "));
 
-                    var caps = serverCapabilities.Intersect(this.clientCapabilities).ToList();
+                    List<string> caps = serverCapabilities.Intersect(this.clientCapabilities).ToList();
 
                     // We don't support one without the other!
                     if (caps.Intersect(new[] { "account-notify", "extended-join" }).Count() == 1)
@@ -1029,10 +1055,10 @@ namespace Helpmebot.IRC
 
                 if (list[1] == "ACK")
                 {
-                    var caps = list[2].Split(' ');
+                    string[] caps = list[2].Split(' ');
                     this.logger.InfoFormat("Acknowledged capabilities: {0}", caps.Implode(", "));
 
-                    foreach (var cap in caps)
+                    foreach (string cap in caps)
                     {
                         if (cap == "sasl")
                         {
@@ -1056,7 +1082,7 @@ namespace Helpmebot.IRC
                     else
                     {
                         this.Send(new Message("CAP", "END"));
-                        this.Send1459Registration();  
+                        this.Send1459Registration();
                     }
 
                     return;
@@ -1065,7 +1091,7 @@ namespace Helpmebot.IRC
                 if (list[1] == "NAK")
                 {
                     // something went wrong, so downgrade to 1459.
-                    var caps = list[2].Split(' ');
+                    string[] caps = list[2].Split(' ');
                     this.logger.WarnFormat("NOT Acked capabilities: {0}", caps.Implode(", "));
 
                     this.Send(new Message("CAP", "END"));
@@ -1076,7 +1102,7 @@ namespace Helpmebot.IRC
 
             if (message.Command == Numerics.SaslLoggedIn)
             {
-                var strings = message.Parameters.ToArray();
+                string[] strings = message.Parameters.ToArray();
                 this.logger.InfoFormat("You are now logged in as {1} ({0})", strings[1], strings[2]);
                 this.servicesLoggedIn = true;
                 return;
@@ -1128,16 +1154,16 @@ namespace Helpmebot.IRC
                 return;
             }
 
-            var list = message.Parameters.ToList();
+            List<string> list = message.Parameters.ToList();
             if (list[0] == "+")
             {
-                var authdata = string.Format("\0{0}\0{1}", this.username, this.password).ToBase64();
+                string authdata = string.Format("\0{0}\0{1}", this.username, this.password).ToBase64();
                 this.Send(new Message("AUTHENTICATE", authdata));
             }
         }
 
         /// <summary>
-        /// The send 1459 registration.
+        ///     The send 1459 registration.
         /// </summary>
         private void Send1459Registration()
         {

@@ -29,6 +29,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -88,6 +89,9 @@ namespace helpmebot6.Commands
         /// <returns>The <see cref="CommandResponseHandler"/>.</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            // FIXME: servicelocator
+            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
+
             var args = this.Arguments;
 
             bool useLongInfo = bool.Parse(LegacyConfig.Singleton()["useLongUserInfo", this.Channel]);
@@ -111,7 +115,7 @@ namespace helpmebot6.Commands
             {
                 string userName = string.Join(" ", args);
 
-                UserInformation userInformation = new UserInformation
+                var userInformation = new UserInformation
                                             {
                                                 EditCount = Editcount.GetEditCount(userName, this.Channel)
                                             };
@@ -137,9 +141,9 @@ namespace helpmebot6.Commands
             else
             {
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
-                Helpmebot6.irc.IrcNotice(
-                    this.Source.Nickname,
-                    this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
+
+                string notEnoughParamsMessage = this.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
+                ircClient.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 
             return this.response;
@@ -268,7 +272,7 @@ namespace helpmebot6.Commands
         {
             const string Regex = "^http://en.wikipedia.org/wiki/";
             const string ShortUrlAlias = "http://enwp.org/";
-            Regex r = new Regex(Regex);
+            var r = new Regex(Regex);
 
             userInformation.UserPage = r.Replace(userInformation.UserPage, ShortUrlAlias);
             userInformation.TalkPage = r.Replace(userInformation.TalkPage, ShortUrlAlias);

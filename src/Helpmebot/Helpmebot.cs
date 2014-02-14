@@ -90,11 +90,6 @@ namespace Helpmebot
         private static IJoinMessageService joinMessageService;
 
         /// <summary>
-        /// Gets or sets the trigger.
-        /// </summary>
-        public static string Trigger { get; set; }
-
-        /// <summary>
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public static ILogger Log { get; set; }
@@ -179,9 +174,7 @@ namespace Helpmebot
             irc = new LegacyIrcProxy(newIrc);
 
             JoinChannels();
-
-            Trigger = configurationHelper.CoreConfiguration.CommandTrigger;
-
+            
             // TODO: remove me!
             container.Register(Component.For<IIrcAccessLayer>().Instance(irc));
             container.Register(Component.For<IIrcClient>().Instance(newIrc));
