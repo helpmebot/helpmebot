@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Linq;
 
     using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
@@ -196,7 +197,7 @@ namespace Helpmebot
 
             newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
 
-            irc.PrivateMessageEvent += ReceivedMessage;
+            newIrc.ReceivedMessage += ReceivedMessage;
 
             irc.InviteEvent += IrcInviteEvent;
 
@@ -288,18 +289,28 @@ namespace Helpmebot
         /// <param name="sender">
         /// The sender.
         /// </param>
-        /// <param name="e">
-        /// The e.
+        /// <param name="ea">
+        /// The new event args.
         /// </param>
-        private static void ReceivedMessage(object sender, PrivateMessageEventArgs e)
+        /// <remarks>
+        /// TODO: upgrade this, get rid of PMEA call.
+        /// </remarks>
+        private static void ReceivedMessage(object sender, MessageReceivedEventArgs ea)
         {
-            string message = e.Message;
+            if (ea.Message.Command != "PRIVMSG")
+            {
+                return;
+            }
+
+            var parameters = ea.Message.Parameters.ToList();
+
+            string message = parameters[1];
 
             var cmd = new CommandParser();
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;
-                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence, (IIrcAccessLayer)sender))
+                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence, (IIrcClient)sender))
                 {
                     cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
@@ -307,7 +318,7 @@ namespace Helpmebot
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.HandleCommand(e.Sender, e.Destination, command, commandArgs);
+                    cmd.HandleCommand(LegacyUser.NewFromString(ea.Message.Prefix), parameters[0], command, commandArgs);
                 }
             }
             catch (Exception ex)

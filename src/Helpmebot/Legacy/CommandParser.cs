@@ -30,7 +30,6 @@ namespace Helpmebot.Legacy
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.IRC;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Monitoring;
@@ -134,7 +133,7 @@ namespace Helpmebot.Legacy
         ///     Helpmebot, command
         ///     Helpmebot&gt; command
         /// </remarks>
-        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcAccessLayer client)
+        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcClient client)
         {
             // FIXME: servicelocator
             var coreConfiguration = ServiceLocator.Current.GetInstance<ICoreConfiguration>();
