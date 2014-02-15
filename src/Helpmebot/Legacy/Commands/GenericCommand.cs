@@ -141,31 +141,6 @@ namespace helpmebot6.Commands
         #region Public Methods and Operators
 
         /// <summary>
-        /// Trigger an execution of the command
-        /// </summary>
-        /// <param name="source">
-        /// The user who triggered the command.
-        /// </param>
-        /// <param name="channel">
-        /// The channel the command was triggered in.
-        /// </param>
-        /// <param name="args">
-        /// Arguments to the command.
-        /// </param>
-        /// <returns>
-        /// the response container
-        /// </returns>
-        [Obsolete]
-        public CommandResponseHandler RunCommand(LegacyUser source, string channel, string[] args)
-        {
-            this.Source = source;
-            this.Channel = channel;
-            this.Arguments = args;
-
-            return this.RunCommand();
-        }
-
-        /// <summary>
         ///     The run command.
         /// </summary>
         /// <returns>
@@ -185,27 +160,6 @@ namespace helpmebot6.Commands
         #region Methods
 
         /// <summary>
-        /// Actual command logic
-        /// </summary>
-        /// <param name="source">
-        /// The user who triggered the command.
-        /// </param>
-        /// <param name="channel">
-        /// The channel the command was triggered in.
-        /// </param>
-        /// <param name="args">
-        /// The arguments to the command.
-        /// </param>
-        /// <returns>
-        /// The response to the command
-        /// </returns>
-        [Obsolete]
-        protected virtual CommandResponseHandler ExecuteCommand(LegacyUser source, string channel, string[] args)
-        {
-            return new CommandResponseHandler("not implemented");
-        }
-
-        /// <summary>
         ///     The execute command.
         /// </summary>
         /// <returns>
@@ -213,9 +167,7 @@ namespace helpmebot6.Commands
         /// </returns>
         protected virtual CommandResponseHandler ExecuteCommand()
         {
-#pragma warning disable 612
-            return this.ExecuteCommand(this.Source, this.Channel, this.Arguments);
-#pragma warning restore 612
+            return new CommandResponseHandler("not implemented");
         }
 
         /// <summary>
