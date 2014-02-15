@@ -282,11 +282,13 @@ namespace Helpmebot
 
             string message = parameters[1];
 
-            var cmd = new CommandParser();
+            var cmd = new LegacyCommandParser(
+                ServiceLocator.Current.GetInstance<ICommandServiceHelper>(),
+                Log.CreateChildLogger("LegacyCommandParser"));
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;
-                if (CommandParser.IsRecognisedMessage(ref message, ref overrideSilence, (IIrcClient)sender))
+                if (cmd.IsRecognisedMessage(ref message, ref overrideSilence, (IIrcClient)sender))
                 {
                     cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');

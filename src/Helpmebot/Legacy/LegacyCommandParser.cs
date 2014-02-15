@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandParser.cs" company="Helpmebot Development Team">
+// <copyright file="LegacyCommandParser.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -26,8 +26,6 @@ namespace Helpmebot.Legacy
     using Castle.Core.Logging;
 
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Configuration;
-    using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
@@ -45,7 +43,7 @@ namespace Helpmebot.Legacy
     /// <summary>
     ///     A command parser
     /// </summary>
-    internal class CommandParser
+    internal class LegacyCommandParser
     {
         #region Constants
 
@@ -59,21 +57,6 @@ namespace Helpmebot.Legacy
         #region Fields
 
         /// <summary>
-        ///     The message service.
-        /// </summary>
-        private readonly IMessageService messageService;
-
-        /// <summary>
-        /// The IRC client.
-        /// </summary>
-        private readonly IIrcClient irc;
-
-        /// <summary>
-        /// The configuration helper.
-        /// </summary>
-        private readonly IConfigurationHelper configurationHelper;
-
-        /// <summary>
         /// The command service helper.
         /// </summary>
         private readonly ICommandServiceHelper commandServiceHelper;
@@ -83,16 +66,18 @@ namespace Helpmebot.Legacy
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initialises a new instance of the <see cref="CommandParser" /> class.
+        /// Initialises a new instance of the <see cref="LegacyCommandParser"/> class.
         /// </summary>
-        public CommandParser()
+        /// <param name="commandServiceHelper">
+        /// The command Service Helper.
+        /// </param>
+        /// <param name="logger">
+        /// The logger.
+        /// </param>
+        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger)
         {
-            // FIXME: ServiceLocator
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>();
-            this.messageService = ServiceLocator.Current.GetInstance<IMessageService>();
-            this.irc = ServiceLocator.Current.GetInstance<IIrcClient>();
-            this.configurationHelper = ServiceLocator.Current.GetInstance<IConfigurationHelper>();
-            this.commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
+            this.commandServiceHelper = commandServiceHelper;
+            this.Log = logger;
 
             this.OverrideBotSilence = false;
         }
@@ -140,12 +125,12 @@ namespace Helpmebot.Legacy
         ///     Helpmebot, command
         ///     Helpmebot&gt; command
         /// </remarks>
-        public static bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcClient client)
+        public bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcClient client)
         {
-            // FIXME: servicelocator
-            var coreConfiguration = ServiceLocator.Current.GetInstance<ICoreConfiguration>();
-
-            return ParseRawLineForMessage(ref message, client.Nickname, coreConfiguration.CommandTrigger);
+            return ParseRawLineForMessage(
+                ref message,
+                client.Nickname,
+                this.commandServiceHelper.ConfigurationHelper.CoreConfiguration.CommandTrigger);
         }
 
         /// <summary>
@@ -174,7 +159,7 @@ namespace Helpmebot.Legacy
             }
 
             // flip destination over if required
-            if (destination == this.irc.Nickname)
+            if (destination == this.commandServiceHelper.Client.Nickname)
             {
                 destination = source.Nickname;
             }
@@ -250,13 +235,14 @@ namespace Helpmebot.Legacy
                     {
                         this.Log.InfoFormat("Access denied for keyword retrieval for {0}", source);
 
+                        var messageService1 = this.commandServiceHelper.MessageService;
                         crh.Respond(
-                            this.messageService.RetrieveMessage(Messages.OnAccessDenied, destination, null), 
+                            messageService1.RetrieveMessage(Messages.OnAccessDenied, destination, null), 
                             CommandResponseDestination.PrivateMessage);
 
                         string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
                         crh.Respond(
-                            this.messageService.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments), 
+                            messageService1.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments), 
                             CommandResponseDestination.ChannelDebug);
                     }
                     else
@@ -401,20 +387,21 @@ namespace Helpmebot.Legacy
                         message = directedTo + ": " + message;
                     }
 
+                    var irc1 = this.commandServiceHelper.Client;
                     switch (item.Destination)
                     {
                         case CommandResponseDestination.Default:
                             if (this.OverrideBotSilence || LegacyConfig.Singleton()["silence", destination] != "true")
                             {
-                                this.irc.SendMessage(destination, message);
+                                irc1.SendMessage(destination, message);
                             }
 
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            this.irc.SendMessage(this.configurationHelper.CoreConfiguration.DebugChannel, message);
+                            irc1.SendMessage(this.commandServiceHelper.ConfigurationHelper.CoreConfiguration.DebugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
-                            this.irc.SendMessage(source.Nickname, message);
+                            irc1.SendMessage(source.Nickname, message);
                             break;
                     }
                 }

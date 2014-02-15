@@ -286,7 +286,7 @@
     <Compile Include="Services\UrlShorteningService.cs" />
     <Compile Include="Linker.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
-    <Compile Include="Legacy\CommandParser.cs" />
+    <Compile Include="Legacy\LegacyCommandParser.cs" />
     <Compile Include="Legacy\Configuration\LegacyConfig.cs" />
     <Compile Include="Legacy\Configuration\ConfigurationSetting.cs" />
     <Compile Include="Legacy\Database\LegacyDatabase.cs" />
