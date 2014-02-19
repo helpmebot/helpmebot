@@ -21,6 +21,7 @@ namespace Helpmebot.Monitoring
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using System.Web;
 
     using Castle.Core.Logging;
 
@@ -516,7 +517,9 @@ namespace Helpmebot.Monitoring
                     // Display an http URL to the page, if desired
                     if (shortenUrls)
                     {
-                        string uriString = LegacyConfig.Singleton()["wikiUrl"] + item;
+                        string urlName = item.Replace(' ', '_');
+
+                        string uriString = LegacyConfig.Singleton()["wikiUrl"] + HttpUtility.UrlEncode(urlName);
                         listString += this.urlShorteningService.Shorten(uriString);
                     }
 
