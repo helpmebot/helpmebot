@@ -173,8 +173,7 @@ namespace Helpmebot
                     configurationHelper.IrcConfiguration.Port,
                     container.Resolve<ILogger>().CreateChildLogger("NetworkClient"));
             }
-
-
+            
             newIrc =
                 new IrcClient(
                     networkClient,
