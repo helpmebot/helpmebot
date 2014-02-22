@@ -61,6 +61,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("username", IsRequired = true)]
         string Username { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether to connect with SSL.
+        /// </summary>
+        [ConfigurationProperty("ssl", IsRequired = true)]
+        bool Ssl { get; }
+
         #endregion
     }
 }

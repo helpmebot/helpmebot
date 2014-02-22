@@ -21,6 +21,7 @@
 namespace Helpmebot
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     using Castle.Core.Logging;
@@ -157,12 +158,26 @@ namespace Helpmebot
 
             var configurationHelper = container.Resolve<IConfigurationHelper>();
 
+            INetworkClient networkClient;
+            if (configurationHelper.IrcConfiguration.Ssl)
+            {
+                networkClient = new SslNetworkClient(
+                    configurationHelper.IrcConfiguration.Hostname,
+                    configurationHelper.IrcConfiguration.Port,
+                    container.Resolve<ILogger>().CreateChildLogger("NetworkClient"));
+            }
+            else
+            {
+                networkClient = new NetworkClient(
+                    configurationHelper.IrcConfiguration.Hostname,
+                    configurationHelper.IrcConfiguration.Port,
+                    container.Resolve<ILogger>().CreateChildLogger("NetworkClient"));
+            }
+
+
             newIrc =
                 new IrcClient(
-                    new SslNetworkClient(
-                        configurationHelper.IrcConfiguration.Hostname,
-                        configurationHelper.IrcConfiguration.Port,
-                        container.Resolve<ILogger>().CreateChildLogger("NetworkClient")),
+                    networkClient,
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
                     configurationHelper.IrcConfiguration,
                     configurationHelper.PrivateConfiguration.IrcPassword);

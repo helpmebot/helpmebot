@@ -99,6 +99,18 @@ namespace Helpmebot.Configuration.XmlSections
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether to connect with SSL.
+        /// </summary>
+        [ConfigurationProperty("ssl", IsRequired = true)]
+        public bool Ssl
+        {
+            get
+            {
+                return (bool)base["ssl"];
+            }
+        }
+
         #endregion
     }
 }

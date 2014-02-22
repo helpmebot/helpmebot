@@ -47,6 +47,8 @@ namespace Helpmebot.IRC
         {
             var sslStream = new SslStream(this.Client.GetStream());
 
+            logger.Info("Performing SSL Handshake...");
+
             sslStream.AuthenticateAsClient(hostname, new X509CertificateCollection(), SslProtocols.Tls, false);
 
             this.Reader = new StreamReader(sslStream);
