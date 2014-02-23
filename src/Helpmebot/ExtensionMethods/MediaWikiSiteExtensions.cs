@@ -138,6 +138,34 @@ namespace Helpmebot.ExtensionMethods
             return countList.FirstOrDefault();
         }
 
+        /// <summary>
+        /// The get pages in category.
+        /// </summary>
+        /// <param name="site">
+        /// The site.
+        /// </param>
+        /// <param name="category">
+        /// The category.
+        /// </param>
+        /// <returns>
+        /// The <see cref="List{String}"/>.
+        /// </returns>
+        public static List<string> GetPagesInCategory(this MediaWikiSite site, string category)
+        {
+            string uri = site.Api + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
+                         + category;
+            Stream xmlFragment = HttpRequest.Get(uri);
+
+            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
+
+            IEnumerable<string> pages = from item in xdoc.Descendants("cm")
+                                        let xAttribute = item.Attribute("title")
+                                        where xAttribute != null
+                                        select xAttribute.Value;
+
+            return pages.ToList();
+        }
+
         #endregion
     }
 }

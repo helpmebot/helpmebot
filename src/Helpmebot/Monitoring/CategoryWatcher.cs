@@ -19,13 +19,12 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
     using System.Threading;
-    using System.Xml.Linq;
 
     using Castle.Core.Logging;
 
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
@@ -192,17 +191,7 @@ namespace Helpmebot.Monitoring
             try
             {
                 // Create the XML Reader
-                string uri = this.site.Api
-                             + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
-                             + this.category;
-                Stream xmlFragment = HttpRequest.Get(uri);
-
-                XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-                pages = from item in xdoc.Descendants("cm")
-                        let xAttribute = item.Attribute("title")
-                        where xAttribute != null
-                        select xAttribute.Value;
+                pages = this.site.GetPagesInCategory(this.category);
             }
             catch (Exception ex)
             {

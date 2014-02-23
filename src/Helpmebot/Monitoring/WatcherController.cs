@@ -135,7 +135,7 @@ namespace Helpmebot.Monitoring
                     item,
                     mediaWikiSiteRepository,
                     ignoredPagesRepository,
-                    logger.CreateChildLogger("CategoryWatcher[" + item + "]"));
+                    logger.CreateChildLogger("CategoryWatcher[" + item.Keyword + "]"));
                 this.watchers.Add(item.Keyword, categoryWatcher);
                 categoryWatcher.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
             }
