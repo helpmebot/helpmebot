@@ -23,6 +23,8 @@ namespace Helpmebot.Legacy.Configuration
 
     using Helpmebot.Legacy.Database;
 
+    using Microsoft.Practices.ServiceLocation;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -49,7 +51,7 @@ namespace Helpmebot.Legacy.Configuration
         /// <summary>
         ///     The legacy database.
         /// </summary>
-        private readonly LegacyDatabase legacyDatabase = LegacyDatabase.Singleton();
+        private readonly ILegacyDatabase legacyDatabase;
 
         #endregion
 
@@ -60,6 +62,9 @@ namespace Helpmebot.Legacy.Configuration
         /// </summary>
         protected LegacyConfig()
         {
+            // FIXME: servicelocator
+            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
+
             this.configurationCache = new Dictionary<string, ConfigurationSetting>();
         }
 

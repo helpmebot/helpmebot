@@ -21,6 +21,8 @@ namespace Helpmebot
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
 
+    using Microsoft.Practices.ServiceLocation;
+
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -35,6 +37,11 @@ namespace Helpmebot
         /// </summary>
         private static AccessLog instance;
 
+        /// <summary>
+        /// The legacy database.
+        /// </summary>
+        private ILegacyDatabase legacyDatabase;
+
         #endregion
 
         #region Constructors and Destructors
@@ -44,6 +51,8 @@ namespace Helpmebot
         /// </summary>
         protected AccessLog()
         {
+            // FIXME: Servicelocator
+            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 
         #endregion
@@ -86,7 +95,7 @@ namespace Helpmebot
             insertCommand.Parameters.AddWithValue("@channel", logEntry.Channel);
             insertCommand.Parameters.AddWithValue("@args", logEntry.Parameters);
 
-            LegacyDatabase.Singleton().ExecuteCommand(insertCommand);
+            this.legacyDatabase.ExecuteCommand(insertCommand);
 
             return true;
         }

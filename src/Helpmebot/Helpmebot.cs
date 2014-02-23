@@ -21,7 +21,6 @@
 namespace Helpmebot
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using Castle.Core.Logging;
@@ -76,7 +75,7 @@ namespace Helpmebot
         /// <summary>
         /// The DB access layer.
         /// </summary>
-        private static LegacyDatabase dbal;
+        private static ILegacyDatabase dbal;
 
         /// <summary>
         /// The join message service.
@@ -146,7 +145,7 @@ namespace Helpmebot
         /// </summary>
         private static void InitialiseBot()
         {
-            dbal = LegacyDatabase.Singleton();
+            dbal = container.Resolve<ILegacyDatabase>();
 
             if (!dbal.Connect())
             {

@@ -41,6 +41,11 @@ namespace helpmebot6.Commands
         /// </summary>
         protected readonly ICommandServiceHelper CommandServiceHelper;
 
+        /// <summary>
+        /// The legacy database.
+        /// </summary>
+        private readonly ILegacyDatabase legacyDatabase;
+
         #endregion
 
         #region Constructors and Destructors
@@ -55,6 +60,7 @@ namespace helpmebot6.Commands
         {
             // FIXME: ServiceLocator
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
+            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
 
             this.CommandServiceHelper = commandServiceHelper;
         }
@@ -103,7 +109,7 @@ namespace helpmebot6.Commands
                 var cmd = new MySqlCommand("SELECT accesslevel FROM `command` WHERE typename = @command LIMIT 1;");
                 cmd.Parameters.AddWithValue("@command", command);
 
-                string al = LegacyDatabase.Singleton().ExecuteScalarSelect(cmd);
+                string al = this.legacyDatabase.ExecuteScalarSelect(cmd);
                 try
                 {
                     return (LegacyUser.UserRights)Enum.Parse(typeof(LegacyUser.UserRights), al, true);

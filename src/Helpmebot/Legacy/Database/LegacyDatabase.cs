@@ -27,8 +27,6 @@ namespace Helpmebot.Legacy.Database
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections.Interfaces;
 
-    using Microsoft.Practices.ServiceLocation;
-
     using MySql.Data.MySqlClient;
 
     /// <summary>
@@ -36,15 +34,6 @@ namespace Helpmebot.Legacy.Database
     /// </summary>
     public class LegacyDatabase : IDisposable, ILegacyDatabase
     {
-        #region Static Fields
-
-        /// <summary>
-        ///     The _singleton.
-        /// </summary>
-        private static LegacyDatabase singleton;
-
-        #endregion
-
         #region Fields
 
         /// <summary>
@@ -88,19 +77,6 @@ namespace Helpmebot.Legacy.Database
         #endregion
 
         #region Public Methods and Operators
-
-        /// <summary>
-        ///     Singletons the specified host.
-        /// </summary>
-        /// <returns>the instance</returns>
-        public static LegacyDatabase Singleton()
-        {
-            return singleton
-                   ?? (singleton =
-                       new LegacyDatabase(
-                           ServiceLocator.Current.GetInstance<ILogger>(), 
-                           ServiceLocator.Current.GetInstance<IConfigurationHelper>()));
-        }
 
         /// <summary>
         ///     Connects this instance to the database.

@@ -70,5 +70,13 @@ namespace Helpmebot.Legacy.Database
         /// The <see cref="string"/>.
         /// </returns>
         string ExecuteScalarSelect(MySqlCommand cmd);
+
+        /// <summary>
+        /// The execute command.
+        /// </summary>
+        /// <param name="command">
+        /// The delete command.
+        /// </param>
+        void ExecuteCommand(MySqlCommand command);
     }
 }

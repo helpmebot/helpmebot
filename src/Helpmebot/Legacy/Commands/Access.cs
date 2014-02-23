@@ -35,6 +35,15 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Access : GenericCommand
     {
+        #region Fields
+
+        /// <summary>
+        ///     The legacy database.
+        /// </summary>
+        private readonly ILegacyDatabase legacyDatabase;
+
+        #endregion
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -55,6 +64,8 @@ namespace helpmebot6.Commands
         public Access(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
+            // FIXME: servicelocator
+            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 
         #endregion
@@ -158,8 +169,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler OnAccessDenied()
         {
             CommandResponseHandler crh =
-                new Myaccess(this.Source, this.Channel, this.Arguments, this.CommandServiceHelper)
-                    .RunCommand();
+                new Myaccess(this.Source, this.Channel, this.Arguments, this.CommandServiceHelper).RunCommand();
             return crh;
         }
 
@@ -194,7 +204,7 @@ namespace helpmebot6.Commands
             command.Parameters.AddWithValue("@host", newEntry.Hostname);
             command.Parameters.AddWithValue("@accesslevel", accessLevel.ToString());
 
-            LegacyDatabase.Singleton().ExecuteCommand(command);
+            this.legacyDatabase.ExecuteCommand(command);
 
             return new CommandResponseHandler(message);
         }
@@ -220,7 +230,7 @@ namespace helpmebot6.Commands
 
             var deleteCommand = new MySqlCommand("DELETE FROM user WHERE user_id = @userid LIMIT 1;");
             deleteCommand.Parameters.AddWithValue("@userid", id);
-            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
+            this.legacyDatabase.ExecuteCommand(deleteCommand);
 
             return new CommandResponseHandler(message);
         }

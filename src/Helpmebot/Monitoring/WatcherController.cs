@@ -77,6 +77,11 @@ namespace Helpmebot.Monitoring
         /// </summary>
         private readonly Dictionary<string, CategoryWatcher> watchers;
 
+        /// <summary>
+        /// The legacy database.
+        /// </summary>
+        private readonly ILegacyDatabase legacyDatabase;
+
         #endregion
 
         #region Constructors and Destructors
@@ -105,6 +110,9 @@ namespace Helpmebot.Monitoring
         /// <param name="ircClient">
         /// The IRC Client.
         /// </param>
+        /// <param name="legacyDatabase">
+        /// The legacy Database.
+        /// </param>
         protected WatcherController(
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
@@ -112,7 +120,8 @@ namespace Helpmebot.Monitoring
             IMediaWikiSiteRepository mediaWikiSiteRepository,
             IIgnoredPagesRepository ignoredPagesRepository,
             ILogger logger,
-            IIrcClient ircClient)
+            IIrcClient ircClient,
+            ILegacyDatabase legacyDatabase)
         {
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
@@ -130,6 +139,8 @@ namespace Helpmebot.Monitoring
                 this.watchers.Add(item.Keyword, categoryWatcher);
                 categoryWatcher.CategoryHasItemsEvent += this.CategoryHasItemsEvent;
             }
+
+            this.legacyDatabase = legacyDatabase;
         }
 
         #endregion
@@ -154,8 +165,9 @@ namespace Helpmebot.Monitoring
                 var iprepo = ServiceLocator.Current.GetInstance<IIgnoredPagesRepository>();
                 var logger = ServiceLocator.Current.GetInstance<ILogger>();
                 var irc = ServiceLocator.Current.GetInstance<IIrcClient>();
+                var legacyDb = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
 
-                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger, irc);
+                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger, irc, legacyDb);
             }
 
             return instance;
@@ -183,7 +195,7 @@ namespace Helpmebot.Monitoring
                     "SELECT COUNT(*) FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
             countCommand.Parameters.AddWithValue("@channel", channelId);
             countCommand.Parameters.AddWithValue("@watcher", watcherId);
-            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(countCommand);
+            string count = this.legacyDatabase.ExecuteScalarSelect(countCommand);
 
             if (count == "0")
             {
@@ -191,7 +203,7 @@ namespace Helpmebot.Monitoring
                 command.Parameters.AddWithValue("@channelid", channelId);
                 command.Parameters.AddWithValue("@watcherid", watcherId.ToString(CultureInfo.InvariantCulture));
 
-                LegacyDatabase.Singleton().ExecuteCommand(command);
+                this.legacyDatabase.ExecuteCommand(command);
 
                 return true;
             }
@@ -219,7 +231,7 @@ namespace Helpmebot.Monitoring
             if (this.watchers.TryGetValue(key, out cw))
             {
                 List<string> items = cw.DoCategoryCheck().ToList();
-                UpdateDatabaseTable(items, key);
+                this.UpdateDatabaseTable(items, key);
                 return this.CompileMessage(items, key, destination, true);
             }
 
@@ -288,7 +300,7 @@ namespace Helpmebot.Monitoring
             var command = new MySqlCommand("SELECT COUNT(*) FROM channelwatchers INNER JOIN channel ON cw_channel = channel_id INNER JOIN watcher ON cw_watcher = watcher_id WHERE channel_name = @channel AND watcher_keyword = @keyword;");
             command.Parameters.AddWithValue("@channel", channel);
             command.Parameters.AddWithValue("@keyword", keyword);
-            string count = LegacyDatabase.Singleton().ExecuteScalarSelect(command);
+            string count = this.legacyDatabase.ExecuteScalarSelect(command);
             return count != "0";
         }
 
@@ -310,7 +322,7 @@ namespace Helpmebot.Monitoring
                 new MySqlCommand("DELETE FROM channelwatchers WHERE cw_channel = @channel AND cw_watcher = @watcher;");
             deleteCommand.Parameters.AddWithValue("@channel", channelId);
             deleteCommand.Parameters.AddWithValue("@watcher", watcherId);
-            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
+            this.legacyDatabase.ExecuteCommand(deleteCommand);
         }
 
         /// <summary>
@@ -344,7 +356,7 @@ namespace Helpmebot.Monitoring
                 command.Parameters.AddWithValue("@value", newDelay.ToString(CultureInfo.InvariantCulture));
                 command.Parameters.AddWithValue("@name", keyword);
 
-                LegacyDatabase.Singleton().ExecuteCommand(command);
+                this.legacyDatabase.ExecuteCommand(command);
 
                 cw.SleepTime = newDelay;
                 return
@@ -367,7 +379,7 @@ namespace Helpmebot.Monitoring
         /// <param name="keyword">
         /// The keyword.
         /// </param>
-        private static void UpdateDatabaseTable(IEnumerable<string> items, string keyword)
+        private void UpdateDatabaseTable(IEnumerable<string> items, string keyword)
         {
             var newItems = new List<string>();
             foreach (string item in items)
@@ -381,7 +393,7 @@ namespace Helpmebot.Monitoring
                 string databaseResult;
                 try
                 {
-                    databaseResult = LegacyDatabase.Singleton().ExecuteScalarSelect(countCommand);
+                    databaseResult = this.legacyDatabase.ExecuteScalarSelect(countCommand);
                 }
                 catch (MySqlException ex)
                 {
@@ -395,7 +407,7 @@ namespace Helpmebot.Monitoring
                     command.Parameters.AddWithValue("@item", item);
                     command.Parameters.AddWithValue("@keyword", keyword);
 
-                    LegacyDatabase.Singleton().ExecuteCommand(command);
+                    this.legacyDatabase.ExecuteCommand(command);
                     newItems.Add(item);
                 }
                 else
@@ -405,7 +417,7 @@ namespace Helpmebot.Monitoring
                     command.Parameters.AddWithValue("@name", item);
                     command.Parameters.AddWithValue("@keyword", keyword);
 
-                    LegacyDatabase.Singleton().ExecuteCommand(command);
+                    this.legacyDatabase.ExecuteCommand(command);
                 }
             }
 
@@ -413,10 +425,10 @@ namespace Helpmebot.Monitoring
                 new MySqlCommand("DELETE FROM categoryitems WHERE item_updateflag = 0 AND item_keyword = @keyword;");
             deleteCommand.Parameters.AddWithValue("@update", 0);
             deleteCommand.Parameters.AddWithValue("@keyword", keyword);
-            LegacyDatabase.Singleton().ExecuteCommand(deleteCommand);
+            this.legacyDatabase.ExecuteCommand(deleteCommand);
 
             var updateCommand = new MySqlCommand("UPDATE categoryitems SET item_updateflag = 0;");
-            LegacyDatabase.Singleton().ExecuteCommand(updateCommand);
+            this.legacyDatabase.ExecuteCommand(updateCommand);
         }
 
         /// <summary>
@@ -432,7 +444,7 @@ namespace Helpmebot.Monitoring
         {
             List<string> items = e.Items.ToList();
 
-            UpdateDatabaseTable(items, e.Keyword);
+            this.UpdateDatabaseTable(items, e.Keyword);
 
             var query =
                 new MySqlCommand(
@@ -440,7 +452,7 @@ namespace Helpmebot.Monitoring
 
             query.Parameters.AddWithValue("@keyword", e.Keyword);
             
-            ArrayList channels = LegacyDatabase.Singleton().ExecuteSelect(query);
+            ArrayList channels = this.legacyDatabase.ExecuteSelect(query);
             foreach (object[] item in channels)
             {
                 var channel = (string)item[0];
@@ -532,7 +544,7 @@ namespace Helpmebot.Monitoring
                         command.Parameters.AddWithValue("@name", item);
                         command.Parameters.AddWithValue("@keyword", keyword);
 
-                        string insertDate = LegacyDatabase.Singleton().ExecuteScalarSelect(command);
+                        string insertDate = this.legacyDatabase.ExecuteScalarSelect(command);
                         DateTime realInsertDate;
                         if (!DateTime.TryParse(insertDate, out realInsertDate))
                         {

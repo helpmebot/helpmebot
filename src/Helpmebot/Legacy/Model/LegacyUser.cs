@@ -38,7 +38,7 @@ namespace Helpmebot.Legacy.Model
         /// <summary>
         ///     The database.
         /// </summary>
-        private readonly LegacyDatabase db;
+        private readonly ILegacyDatabase db;
 
         /// <summary>
         ///     The _access level.
@@ -59,7 +59,8 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         public LegacyUser()
         {
-            this.db = LegacyDatabase.Singleton();
+            // FIXME: servicelocator
+            this.db = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 
         #endregion
