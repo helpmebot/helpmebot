@@ -184,7 +184,7 @@ namespace helpmebot6.Commands
         {
             var response = new CommandResponseHandler();
 
-            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("OnAccessDenied", this.Channel, null);
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("AccessDenied", this.Channel, null);
 
             response.Respond(message, CommandResponseDestination.PrivateMessage);
             this.Log.Info("Access denied to command.");
