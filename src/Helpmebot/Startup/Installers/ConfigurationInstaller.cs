@@ -22,6 +22,7 @@ namespace Helpmebot.Startup.Installers
 
     using Helpmebot.Configuration;
     using Helpmebot.Configuration.XmlSections.Interfaces;
+    using Helpmebot.Startup.Resolvers;
 
     /// <summary>
     ///     The configuration installer.
@@ -42,6 +43,8 @@ namespace Helpmebot.Startup.Installers
         /// </param>
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            container.Kernel.Resolver.AddSubResolver(new AppSettingsDependencyResolver());
+
             container.Register(Component.For<IConfigurationHelper>().ImplementedBy<ConfigurationHelper>());
             var configurationHelper = container.Resolve<IConfigurationHelper>();
 
