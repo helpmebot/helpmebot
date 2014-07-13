@@ -358,8 +358,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.release.config" />
     <None Include="app.config" />
-    <None Include="database.config" />
+    <None Include="database.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="logger.release.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
