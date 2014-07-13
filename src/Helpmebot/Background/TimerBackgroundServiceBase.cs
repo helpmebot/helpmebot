@@ -32,6 +32,11 @@ namespace Helpmebot.Background
     public abstract class TimerBackgroundServiceBase : ITimerBackgroundService
     {
         /// <summary>
+        /// Flag stating whether this service is enabled.
+        /// </summary>
+        private readonly bool enabled;
+
+        /// <summary>
         /// The interval.
         /// </summary>
         private int interval;
@@ -45,11 +50,22 @@ namespace Helpmebot.Background
         /// <param name="interval">
         /// The interval.
         /// </param>
-        protected TimerBackgroundServiceBase(ILogger logger, int interval)
+        /// <param name="enabled">
+        /// The enabled.
+        /// </param>
+        protected TimerBackgroundServiceBase(ILogger logger, int interval, bool enabled = true)
         {
+            this.enabled = enabled;
             this.Logger = logger;
-            this.Logger.DebugFormat("Creating instance of {0} as TimerBackgroundService", this.GetType().Name);
             this.Interval = interval;
+
+            if (!enabled)
+            {
+                this.Logger.WarnFormat("{0} is disabled and will not function.", this.GetType().Name);
+            }
+
+            this.Logger.DebugFormat("Creating instance of {0} as TimerBackgroundService", this.GetType().Name);
+            this.Logger.DebugFormat("{0} interval set to {1}", this.GetType().Name, interval);
             this.Timer = new Timer(this.Interval);
             this.Logger.DebugFormat("Done creating instance of {0} as TimerBackgroundService", this.GetType().Name);
         }
@@ -91,6 +107,12 @@ namespace Helpmebot.Background
         /// </summary>
         public void Start()
         {
+            if (!this.enabled)
+            {
+                this.Logger.WarnFormat("Start requested for {0}, but service is disabled.", this.GetType().Name);
+                return;
+            }
+
             this.Timer.Elapsed += this.TimerOnElapsedBase;
             this.Timer.Enabled = true;
             this.OnStart();
@@ -102,6 +124,12 @@ namespace Helpmebot.Background
         /// </summary>
         public void Stop()
         {
+            if (!this.enabled)
+            {
+                this.Logger.WarnFormat("Stop requested for {0}, but service is disabled.", this.GetType().Name);
+                return;
+            }
+
             this.Logger.InfoFormat("Stopping instance of {0}", this.GetType().Name);
             this.Timer.Enabled = false;
             this.Timer.Elapsed -= this.TimerOnElapsedBase;

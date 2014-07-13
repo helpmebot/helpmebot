@@ -61,8 +61,11 @@ namespace Helpmebot.Background
         /// <param name="notificationRepository">
         /// The notification Repository.
         /// </param>
-        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository)
-            : base(logger, 5 * 1000)
+        /// <param name="enableNotificationService">
+        /// The enable Notification Service.
+        /// </param>
+        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository, bool enableNotificationService)
+            : base(logger, 5 * 1000, enableNotificationService)
         {
             this.ircClient = ircClient;
             this.notificationRepository = notificationRepository;
