@@ -24,7 +24,6 @@ namespace Helpmebot.Background
     using Castle.Core.Logging;
 
     using Helpmebot.Background.Interfaces;
-    using Helpmebot.Configuration.XmlSections.Interfaces;
 
     /// <summary>
     ///     The system monitoring client service.
@@ -32,6 +31,8 @@ namespace Helpmebot.Background
     public class SystemMonitoringClientService : ISystemMonitoringClientService
     {
         #region Fields
+
+        private readonly bool enabled;
 
         /// <summary>
         ///     The logger.
@@ -60,19 +61,30 @@ namespace Helpmebot.Background
         /// <summary>
         /// Initialises a new instance of the <see cref="SystemMonitoringClientService"/> class.
         /// </summary>
-        /// <param name="configuration">
-        /// The configuration.
+        /// <param name="systemMonitoringPort">
+        /// The system Monitoring Port.
+        /// </param>
+        /// <param name="systemMonitoringMessage">
+        /// The system Monitoring Message.
+        /// </param>
+        /// <param name="systemMonitoringEnabled">
+        /// The system Monitoring Enabled.
         /// </param>
         /// <param name="logger">
         /// The logger.
         /// </param>
-        public SystemMonitoringClientService(ICoreConfiguration configuration, ILogger logger)
+        public SystemMonitoringClientService(int systemMonitoringPort, string systemMonitoringMessage, bool systemMonitoringEnabled, ILogger logger)
         {
+            this.enabled = systemMonitoringEnabled;
             this.logger = logger;
-            this.Port = configuration.MonitorPort;
+            this.Port = systemMonitoringPort;
+            this.Message = systemMonitoringMessage;
 
-            // TODO: Move somewhere else
-            this.Message = "Helpmebot v6 (Nagios Monitor service)";
+            if (!this.enabled)
+            {
+                this.logger.WarnFormat("{0} is disabled and will not function.", this.GetType().Name);
+                return;
+            }
 
             this.monitorthread = new Thread(this.ThreadMethod);
 
@@ -104,6 +116,12 @@ namespace Helpmebot.Background
         /// </summary>
         public void Start()
         {
+            if (!this.enabled)
+            {
+                this.logger.WarnFormat("{0} is disabled and will not function.", this.GetType().Name);
+                return;
+            }
+
             this.logger.Info("Starting Monitoring Client...");
             this.monitorthread.Start();
         }

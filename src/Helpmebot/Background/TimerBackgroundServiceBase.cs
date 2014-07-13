@@ -53,7 +53,7 @@ namespace Helpmebot.Background
         /// <param name="enabled">
         /// The enabled.
         /// </param>
-        protected TimerBackgroundServiceBase(ILogger logger, int interval, bool enabled = true)
+        protected TimerBackgroundServiceBase(ILogger logger, int interval, bool enabled)
         {
             this.enabled = enabled;
             this.Logger = logger;

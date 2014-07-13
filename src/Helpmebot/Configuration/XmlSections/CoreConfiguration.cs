@@ -66,18 +66,6 @@ namespace Helpmebot.Configuration.XmlSections
         }
 
         /// <summary>
-        ///     Gets the monitoring port
-        /// </summary>
-        [ConfigurationProperty("monitorPort", DefaultValue = 62167)]
-        public int MonitorPort
-        {
-            get
-            {
-                return (int)base["monitorPort"];
-            }
-        }        
-        
-        /// <summary>
         ///     Gets the default command trigger
         /// </summary>
         [ConfigurationProperty("commandTrigger", DefaultValue = "!")]

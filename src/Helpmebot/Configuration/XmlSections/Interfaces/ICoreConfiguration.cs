@@ -45,12 +45,6 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         string UserAgent { get; }
 
         /// <summary>
-        ///     Gets the monitoring port.
-        /// </summary>
-        [ConfigurationProperty("monitorPort", IsRequired = true, DefaultValue = 62167)]
-        int MonitorPort { get; }
-
-        /// <summary>
         ///     Gets the default command trigger
         /// </summary>
         [ConfigurationProperty("commandTrigger", DefaultValue = "!")]
