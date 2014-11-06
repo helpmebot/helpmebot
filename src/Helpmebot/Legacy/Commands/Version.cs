@@ -30,6 +30,7 @@ namespace helpmebot6.Commands
     using System.Reflection;
 
     using Helpmebot;
+    using Helpmebot.Attributes;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
@@ -78,12 +79,13 @@ namespace helpmebot6.Commands
 #if DEBUG
                                       "*",
                                       "*",
-                                      "DEBUG"
+                                      "DEBUG",
 #else
                                       version.Build.ToString(CultureInfo.InvariantCulture),
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
-                                      date.ToInternetFormat()
+                                      date.ToInternetFormat(),
 #endif
+                                      (string)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GitRevisionAttribute), true)[0]
                                   };
 
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
