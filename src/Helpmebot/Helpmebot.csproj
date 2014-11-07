@@ -4,7 +4,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <GitRevision Condition=" '$(GitRevision)' == '' ">0000000000000000000000000000000000000000</GitRevision>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B9DDF39F-2C6C-4C0F-9DA4-10C934DD24BD}</ProjectGuid>
@@ -62,14 +61,6 @@
   <!--<Target Name="BeforeBuild">
   </Target>
   -->
-  <ItemGroup>
-    <AssemblyAttributes Include="Helpmebot.Attributes.GitRevision">
-      <_Parameter1>$(GitRevision)</_Parameter1>
-    </AssemblyAttributes>
-  </ItemGroup>
-  <Target Name="BeforeBuild">
-    <WriteCodeFragment Language="C#" OutputFile="GeneratedAssemblyInfo.cs" OutputDirectory="Properties" AssemblyAttributes="@(AssemblyAttributes)" />
-  </Target>
   <Target Name="AfterBuild" Condition="'$(RunStyleCop)' == 'true'">
     <Message Text="$(MSBuildExtensionsPath)" />
     <StyleCopTask ProjectFullPath="$(MSBuildProjectDirectory)" SourceFiles="@(Compile)" ForceFullAnalysis="true" TreatErrorsAsWarnings="true" OutputFile="StyleCopViolations.xml" MaxViolationCount="0">
@@ -81,7 +72,6 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessLog.cs" />
-    <Compile Include="Attributes\GitRevisionAttribute.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
     <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
@@ -103,7 +93,6 @@
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
-    <Compile Include="Properties\GeneratedAssemblyInfo.cs" />
     <Compile Include="IRC\Events\JoinEventArgs.cs" />
     <Compile Include="IRC\Events\UserEventArgsBase.cs" />
     <Compile Include="IRC\Interfaces\IIrcClient.cs" />
