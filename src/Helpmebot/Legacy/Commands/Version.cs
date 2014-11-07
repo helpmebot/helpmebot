@@ -85,7 +85,10 @@ namespace helpmebot6.Commands
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
                                       date.ToInternetFormat(),
 #endif
-                                      (string)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(GitRevisionAttribute), true)[0]
+                                      ((GitRevisionAttribute)
+                                       Assembly.GetExecutingAssembly()
+                                           .GetCustomAttributes(typeof(GitRevisionAttribute), true)[0])
+                                          .RevisionInfo
                                   };
 
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
