@@ -62,12 +62,12 @@
   <!--<Target Name="BeforeBuild">
   </Target>
   -->
+  <ItemGroup>
+    <AssemblyAttributes Include="Helpmebot.Attributes.GitRevision">
+      <_Parameter1>$(GitRevision)</_Parameter1>
+    </AssemblyAttributes>
+  </ItemGroup>
   <Target Name="BeforeBuild">
-    <ItemGroup>
-      <AssemblyAttributes Include="Helpmebot.Attributes.GitRevision">
-        <_Parameter1>$(GitRevision)</_Parameter1>
-      </AssemblyAttributes>
-    </ItemGroup>
     <WriteCodeFragment Language="C#" OutputFile="GeneratedAssemblyInfo.cs" OutputDirectory="Properties" AssemblyAttributes="@(AssemblyAttributes)" />
   </Target>
   <Target Name="AfterBuild" Condition="'$(RunStyleCop)' == 'true'">
