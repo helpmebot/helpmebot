@@ -85,47 +85,6 @@ namespace Helpmebot.Repositories
         #region Public Methods and Operators
 
         /// <summary>
-        /// The begin transaction.
-        /// </summary>
-        /// <param name="level">
-        /// The transaction isolation level.
-        /// </param>
-        /// <returns>
-        /// Returns <c>true</c> if the transaction was started successfully.
-        /// </returns>
-        [Obsolete("Use Transactionally()")]
-        public bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable)
-        {
-            lock (this.sessionLock)
-            {
-                var transaction = this.session.BeginTransaction(level);
-
-                if (!transaction.IsActive)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// The commit.
-        /// </summary>
-        [Obsolete("Use Transactionally()")]
-        public void Commit()
-        {
-            if (this.session.Transaction.IsActive)
-            {
-                this.session.Transaction.Commit();
-            }
-            else
-            {
-                this.Logger.Warn("Skipped committing non-existing transaction!");
-            }
-        }
-
-        /// <summary>
         /// The delete.
         /// </summary>
         /// <param name="model">
@@ -238,26 +197,6 @@ namespace Helpmebot.Repositories
             }
 
             return uniqueResult;
-        }
-
-        /// <summary>
-        /// The roll back.
-        /// </summary>
-        [Obsolete("Use Transactionally()")]
-        public void RollBack()
-        {
-            lock (this.sessionLock)
-            {
-                if (this.session.Transaction.IsActive)
-                {
-                    this.session.Transaction.Rollback();
-                }
-                else
-                {
-                    this.Logger.Error("Can't rollback non-existing transaction!");
-                    throw new TransactionException("Can't rollback non-existing transaction!");
-                }
-            }
         }
 
         /// <summary>

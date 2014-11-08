@@ -85,12 +85,7 @@ namespace Helpmebot.Repositories
                             session.CreateCriteria<Keyword>()
                                 .Add(Restrictions.Eq("Name", name))
                                 .List<Keyword>()
-                                .FirstOrDefault();
-
-                        if (existing == null)
-                        {
-                            existing = new Keyword();
-                        }
+                                .FirstOrDefault() ?? new Keyword();
 
                         existing.Name = name;
                         existing.Response = response;

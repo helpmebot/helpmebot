@@ -20,7 +20,6 @@
 
 namespace Helpmebot.Services
 {
-    using System;
     using System.Linq;
 
     using Castle.Core.Logging;
