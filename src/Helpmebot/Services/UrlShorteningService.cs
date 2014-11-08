@@ -90,34 +90,7 @@ namespace Helpmebot.Services
         {
             this.logger.InfoFormat("Getting short url for {0}...", longUrl);
 
-            string result = longUrl;
-
-            try
-            {
-                this.logger.DebugFormat("Searching cache for {0}", longUrl);
-                ShortUrlCacheEntry cacheEntry = this.shortUrlCacheRepository.GetByLongUrl(longUrl);
-
-                if (cacheEntry == null)
-                {
-                    this.logger.DebugFormat("Cache MISS for {0}", longUrl);
-
-                    string shortUrl = this.GetShortUrl(longUrl);
-                    cacheEntry = new ShortUrlCacheEntry { LongUrl = longUrl, ShortUrl = shortUrl };
-                    this.shortUrlCacheRepository.Save(cacheEntry);
-                    result = shortUrl;
-                }
-                else
-                {
-                    this.logger.DebugFormat("Cache HIT for {0}", longUrl);
-                    result = cacheEntry.ShortUrl;
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error(ex.Message, ex);
-            }
-
-            return result;
+            return this.shortUrlCacheRepository.GetShortUrl(longUrl, this.GetShortUrl);
         }
 
         #endregion

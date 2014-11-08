@@ -17,7 +17,6 @@
 //   The repository base.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Repositories
 {
     using System;
@@ -41,6 +40,8 @@ namespace Helpmebot.Repositories
     public abstract class RepositoryBase<T> : IRepository<T>
         where T : class
     {
+        #region Fields
+
         /// <summary>
         /// The session.
         /// </summary>
@@ -50,6 +51,10 @@ namespace Helpmebot.Repositories
         /// The session lock.
         /// </summary>
         private readonly object sessionLock = new object();
+
+        #endregion
+
+        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="RepositoryBase{T}"/> class. 
@@ -66,33 +71,115 @@ namespace Helpmebot.Repositories
             this.Logger = logger;
         }
 
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// Gets the logger.
         /// </summary>
         protected ILogger Logger { get; private set; }
 
+        #endregion
+
+        #region Public Methods and Operators
+
         /// <summary>
-        /// The save.
+        /// The begin transaction.
+        /// </summary>
+        /// <param name="level">
+        /// The transaction isolation level.
+        /// </param>
+        /// <returns>
+        /// Returns <c>true</c> if the transaction was started successfully.
+        /// </returns>
+        [Obsolete("Use Transactionally()")]
+        public bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable)
+        {
+            lock (this.sessionLock)
+            {
+                var transaction = this.session.BeginTransaction(level);
+
+                if (!transaction.IsActive)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// The commit.
+        /// </summary>
+        [Obsolete("Use Transactionally()")]
+        public void Commit()
+        {
+            if (this.session.Transaction.IsActive)
+            {
+                this.session.Transaction.Commit();
+            }
+            else
+            {
+                this.Logger.Warn("Skipped committing non-existing transaction!");
+            }
+        }
+
+        /// <summary>
+        /// The delete.
         /// </summary>
         /// <param name="model">
         /// The model.
         /// </param>
-        public void Save(T model)
+        public void Delete(T model)
         {
-            this.DoSave(model);
-            this.Flush();
+            lock (this.sessionLock)
+            {
+                this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
+                this.session.Delete(model);
+                this.session.Flush();
+            }
         }
 
         /// <summary>
-        /// The save.
+        /// The delete.
         /// </summary>
         /// <param name="models">
         /// The models.
         /// </param>
-        public void Save(IEnumerable<T> models)
+        public void Delete(IEnumerable<T> models)
         {
-            models.ForEach(this.DoSave);
-            this.Flush();
+            lock (this.sessionLock)
+            {
+                this.DoDelete(models);
+                this.session.Flush();
+            }
+        }
+
+        /// <summary>
+        /// The delete.
+        /// </summary>
+        /// <param name="criterion">
+        /// The criterion.
+        /// </param>
+        public void Delete(ICriterion criterion)
+        {
+            lock (this.sessionLock)
+            {
+                var deleteList = this.session.CreateCriteria<T>().Add(criterion).List<T>();
+                this.DoDelete(deleteList);
+
+                this.session.Flush();
+            }
+        }
+
+        /// <summary>
+        /// The dispose.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -108,6 +195,26 @@ namespace Helpmebot.Repositories
             lock (this.sessionLock)
             {
                 list = this.session.CreateCriteria<T>().List<T>();
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// The get.
+        /// </summary>
+        /// <param name="criterion">
+        /// The criterion.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IEnumerable{WelcomeUser}"/>.
+        /// </returns>
+        public IEnumerable<T> Get(ICriterion criterion)
+        {
+            IList<T> list;
+            lock (this.sessionLock)
+            {
+                list = this.session.CreateCriteria<T>().Add(criterion).List<T>();
             }
 
             return list;
@@ -134,100 +241,10 @@ namespace Helpmebot.Repositories
         }
 
         /// <summary>
-        /// The get.
-        /// </summary>
-        /// <param name="criterion">
-        /// The criterion.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IEnumerable{WelcomeUser}"/>.
-        /// </returns>
-        public IEnumerable<T> Get(ICriterion criterion)
-        {
-            IList<T> list;
-            lock (this.sessionLock)
-            {
-                list = this.session.CreateCriteria<T>().Add(criterion).List<T>();
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// The delete.
-        /// </summary>
-        /// <param name="model">
-        /// The model.
-        /// </param>
-        public void Delete(T model)
-        {
-            this.DoDelete(model);
-            this.Flush();
-        }
-
-        /// <summary>
-        /// The delete.
-        /// </summary>
-        /// <param name="models">
-        /// The models.
-        /// </param>
-        public void Delete(IEnumerable<T> models)
-        {
-            models.ForEach(this.Delete);
-            this.Flush();
-        }
-
-        /// <summary>
-        /// The delete.
-        /// </summary>
-        /// <param name="criterion">
-        /// The criterion.
-        /// </param>
-        public void Delete(ICriterion criterion)
-        {
-            var deleteList = this.session.CreateCriteria<T>().Add(criterion).List<T>();
-            this.Delete(deleteList);
-        }
-
-        /// <summary>
-        /// The flush.
-        /// </summary>
-        public void Flush()
-        {
-            lock (this.sessionLock)
-            {
-                this.session.Flush();
-            }
-        }
-
-        /// <summary>
-        /// The begin transaction.
-        /// </summary>
-        /// <param name="level">
-        /// The transaction isolation level.
-        /// </param>
-        /// <returns>
-        /// Returns <c>true</c> if the transaction was started successfully.
-        /// </returns>
-        public virtual bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable)
-        {
-            lock (this.sessionLock)
-            {
-                var transaction = this.session.BeginTransaction(level);
-
-                if (!transaction.IsActive)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        /// <summary>
         /// The roll back.
         /// </summary>
-        public virtual void RollBack()
+        [Obsolete("Use Transactionally()")]
+        public void RollBack()
         {
             lock (this.sessionLock)
             {
@@ -244,28 +261,74 @@ namespace Helpmebot.Repositories
         }
 
         /// <summary>
-        /// The commit.
+        /// The save.
         /// </summary>
-        public virtual void Commit()
+        /// <param name="model">
+        /// The model.
+        /// </param>
+        public void Save(T model)
         {
-            if (this.session.Transaction.IsActive)
+            lock (this.sessionLock)
             {
-                this.session.Transaction.Commit();
-            }
-            else
-            {
-                this.Logger.Warn("Skipped committing non-existing transaction!");
+                this.DoSave(model);
+                this.session.Flush();
             }
         }
 
         /// <summary>
-        /// The dispose.
+        /// The save.
         /// </summary>
-        public void Dispose()
+        /// <param name="models">
+        /// The models.
+        /// </param>
+        public void Save(IEnumerable<T> models)
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            lock (this.sessionLock)
+            {
+                models.ForEach(this.DoSave);
+                this.session.Flush();
+            }
         }
+
+        /// <summary>
+        /// Executes a callback in the context of a transaction.
+        /// </summary>
+        /// <param name="callback">
+        /// The callback.
+        /// </param>
+        /// <param name="level">
+        /// The level.
+        /// </param>
+        public void Transactionally(Action<ISession> callback, IsolationLevel level = IsolationLevel.Serializable)
+        {
+            lock (this.sessionLock)
+            {
+                var transaction = this.session.BeginTransaction(level);
+
+                if (!transaction.IsActive)
+                {
+                    throw new TransactionException("Could not start transaction!");
+                }
+
+                try
+                {
+                    callback(this.session);
+
+                    this.Logger.Debug("Transactional function succeeded.");
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.Error("Transactional function failed", ex);
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// The dispose.
@@ -277,40 +340,53 @@ namespace Helpmebot.Repositories
         {
             if (disposing)
             {
-                this.Flush();
-                this.session.Close();
-                this.session.Dispose();
+                lock (this.sessionLock)
+                {
+                    this.session.Flush();
+                    this.session.Close();
+                    this.session.Dispose();
+                }
             }
         }
 
         /// <summary>
-        /// The do save.
+        /// Deletes a list of models
         /// </summary>
-        /// <param name="model">
-        /// The model.
+        /// <param name="deleteList">
+        /// The delete list.
         /// </param>
-        protected virtual void DoSave(T model)
+        private void DoDelete(IEnumerable<T> deleteList)
         {
-            lock (this.sessionLock)
+            foreach (var model in deleteList)
             {
-                this.Logger.DebugFormat("Saving model {0} ({1})...", model, model.GetType().Name);
-                this.session.SaveOrUpdate(model);
-            }
-        }        
-        
-        /// <summary>
-        /// The delete.
-        /// </summary>
-        /// <param name="model">
-        /// The model.
-        /// </param>
-        protected virtual void DoDelete(T model)
-        {
-            lock (this.sessionLock)
-            {
-                this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
-                this.session.Delete(model);
+                this.DoDelete(model);
             }
         }
+
+        /// <summary>
+        /// Actually deletes a model
+        /// </summary>
+        /// <param name="model">
+        /// The model.
+        /// </param>
+        private void DoDelete(T model)
+        {
+            this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
+            this.session.Delete(model);
+        }
+
+        /// <summary>
+        /// Perform the actual save
+        /// </summary>
+        /// <param name="model">
+        /// The model.
+        /// </param>
+        private void DoSave(T model)
+        {
+            this.Logger.DebugFormat("Saving model {0} ({1})...", model, model.GetType().Name);
+            this.session.SaveOrUpdate(model);
+        }
+
+        #endregion
     }
 }

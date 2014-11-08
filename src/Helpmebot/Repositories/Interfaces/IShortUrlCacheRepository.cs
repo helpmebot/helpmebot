@@ -17,6 +17,8 @@
 
 namespace Helpmebot.Repositories.Interfaces
 {
+    using System;
+
     using Helpmebot.Model;
 
     /// <summary>
@@ -38,5 +40,19 @@ namespace Helpmebot.Repositories.Interfaces
         ShortUrlCacheEntry GetByLongUrl(string url);
 
         #endregion
+
+        /// <summary>
+        /// The get short url.
+        /// </summary>
+        /// <param name="longUrl">
+        /// The long url.
+        /// </param>
+        /// <param name="cacheMissCallback">
+        /// The cache miss callback.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        string GetShortUrl(string longUrl, Func<string, string> cacheMissCallback);
     }
 }

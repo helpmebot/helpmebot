@@ -17,6 +17,7 @@
 
 namespace Helpmebot.Repositories
 {
+    using System;
     using System.Linq;
 
     using Castle.Core.Logging;
@@ -61,9 +62,62 @@ namespace Helpmebot.Repositories
         /// <returns>
         /// The <see cref="ShortUrlCacheEntry"/>.
         /// </returns>
+        [Obsolete]
         public ShortUrlCacheEntry GetByLongUrl(string url)
         {
             return this.Get(Restrictions.Eq("LongUrl", url)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// The get short url.
+        /// </summary>
+        /// <param name="longUrl">
+        /// The long url.
+        /// </param>
+        /// <param name="cacheMissCallback">
+        /// The cache miss callback.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public string GetShortUrl(string longUrl, Func<string, string> cacheMissCallback)
+        {
+            string result = longUrl;
+            try
+            {
+                this.Transactionally(
+                    session =>
+                        {
+                            this.Logger.DebugFormat("Searching cache for {0}", longUrl);
+                            var shortUrlCacheEntry =
+                                session.CreateCriteria<ShortUrlCacheEntry>()
+                                    .Add(Restrictions.Eq("LongUrl", longUrl))
+                                    .List<ShortUrlCacheEntry>()
+                                    .FirstOrDefault();
+                        
+                            if (shortUrlCacheEntry == null)
+                            {
+                                this.Logger.DebugFormat("Cache MISS for {0}", longUrl);
+
+                                string shortUrl = cacheMissCallback(longUrl);
+
+                                shortUrlCacheEntry = new ShortUrlCacheEntry { LongUrl = longUrl, ShortUrl = shortUrl };
+                                session.SaveOrUpdate(shortUrlCacheEntry);
+                                result = shortUrlCacheEntry.ShortUrl;
+                            }
+                            else
+                            {
+                                this.Logger.DebugFormat("Cache HIT for {0}", longUrl);
+                                result = shortUrlCacheEntry.ShortUrl;
+                            }
+                        });
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error encountered resolving URL", e);
+            }
+
+            return result;
         }
 
         #endregion

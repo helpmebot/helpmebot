@@ -24,6 +24,7 @@ namespace Helpmebot.Repositories.Interfaces
     using System.Collections.Generic;
     using System.Data;
 
+    using NHibernate;
     using NHibernate.Criterion;
 
     /// <summary>
@@ -87,11 +88,6 @@ namespace Helpmebot.Repositories.Interfaces
         void Delete(IEnumerable<T> models);
 
         /// <summary>
-        /// The flush.
-        /// </summary>
-        void Flush();
-
-        /// <summary>
         /// The begin transaction.
         /// </summary>
         /// <param name="level">
@@ -130,5 +126,18 @@ namespace Helpmebot.Repositories.Interfaces
         /// The <see cref="T"/>.
         /// </returns>
         T GetById(int id);
+
+        /// <summary>
+        /// Executes a callback in the context of a transaction.
+        /// </summary>
+        /// <param name="callback">
+        /// The callback.
+        /// </param>
+        /// <param name="level">
+        /// The level.
+        /// </param>
+        void Transactionally(
+            Action<ISession> callback,
+            IsolationLevel level = IsolationLevel.Serializable);
     }
 }
