@@ -43,7 +43,6 @@ namespace helpmebot6.Commands
         /// </summary>
         private readonly IKeywordService keywordService;
 
-
         /// <summary>
         /// Initialises a new instance of the <see cref="Learn"/> class.
         /// </summary>

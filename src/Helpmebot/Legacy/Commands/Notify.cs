@@ -24,10 +24,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// The notify.
@@ -84,13 +81,15 @@ namespace helpmebot6.Commands
                 }
             }
 
-            if (toNotify != null)
+            if (toNotify == null)
             {
-                string message = this.CommandServiceHelper.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
-                foreach (LegacyUser user in toNotify)
-                {
-                    this.CommandServiceHelper.Client.SendMessage(user.Nickname, message);
-                }
+                return;
+            }
+            
+            var message = this.CommandServiceHelper.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
+            foreach (var user in toNotify)
+            {
+                this.CommandServiceHelper.Client.SendMessage(user.Nickname, message);
             }
         }
 

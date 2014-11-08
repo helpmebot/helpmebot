@@ -58,8 +58,8 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            string cmd = GlobalFunctions.PopFromFront(ref args);
-            string dst = GlobalFunctions.PopFromFront(ref args);
+            var cmd = GlobalFunctions.PopFromFront(ref args);
+            var dst = GlobalFunctions.PopFromFront(ref args);
             
             this.CommandServiceHelper.Client.SendMessage(dst, string.Join(" ", args).SetupForCtcp(cmd));
 

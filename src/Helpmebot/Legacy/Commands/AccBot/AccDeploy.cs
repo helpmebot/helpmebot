@@ -26,11 +26,8 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-
-    using Microsoft.Practices.ServiceLocation;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -67,9 +64,9 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] args = this.Arguments;
+            var args = this.Arguments;
             
-            string deployInProgressMessage = this.CommandServiceHelper.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
+            var deployInProgressMessage = this.CommandServiceHelper.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
             this.CommandServiceHelper.Client.SendMessage(this.Channel, deployInProgressMessage);
 
             string revision;

@@ -20,10 +20,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.IRC;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Send a raw line to IRC

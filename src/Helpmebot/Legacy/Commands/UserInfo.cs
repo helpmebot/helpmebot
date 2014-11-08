@@ -139,7 +139,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
 
-                string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
+                var notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
                 this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 
@@ -243,7 +243,7 @@ namespace helpmebot6.Commands
 
                 initial.EditRate = initial.EditCount / initial.UserAge.TotalDays;
 
-                string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
+                var baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
                 // FIXME: ServiceLocator - mw site repo
                 var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();

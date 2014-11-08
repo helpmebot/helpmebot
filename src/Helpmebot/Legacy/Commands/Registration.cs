@@ -101,7 +101,7 @@ namespace helpmebot6.Commands
 
             // FIXME: ServiceLocator
             var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-            MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             var creader =
                 new XmlTextReader(
