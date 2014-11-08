@@ -75,7 +75,7 @@ namespace helpmebot6.Commands
                 return response;
             }
 
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - welcomeuserrepo
             var repository = ServiceLocator.Current.GetInstance<IWelcomeUserRepository>();
 
             List<string> argumentsList = this.Arguments.ToList();

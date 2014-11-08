@@ -99,7 +99,7 @@ namespace helpmebot6.Commands
                 return RegistrationCache[baseWiki + "||" + username];
             }
 
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - mwrepo
             var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
             var mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 

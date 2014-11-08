@@ -69,9 +69,7 @@ namespace helpmebot6.Commands
                     message += " (message: \"" + string.Join(" ", this.Arguments) + "\")";
                 }
 
-                // FIXME: ServiceLocator
-                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-                ircClient.SendNotice("#wikipedia-en-helpers", message);
+                this.CommandServiceHelper.Client.SendNotice("#wikipedia-en-helpers", message);
             }
 
             return null;

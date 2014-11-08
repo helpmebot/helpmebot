@@ -157,7 +157,7 @@ namespace Helpmebot.Monitoring
         {
             if (instance == null)
             {
-                // FIXME: ServiceLocator usages
+                // FIXME: ServiceLocator - ALL THE THINGS!
                 var ms = ServiceLocator.Current.GetInstance<IMessageService>();
                 var ss = ServiceLocator.Current.GetInstance<IUrlShorteningService>();
                 var wcrepo = ServiceLocator.Current.GetInstance<IWatchedCategoryRepository>();

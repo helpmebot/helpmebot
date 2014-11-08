@@ -222,7 +222,7 @@ namespace Helpmebot.Legacy
              * Check for a learned word
              */
             {
-                // FIXME: ServiceLocator
+                // FIXME: ServiceLocator - keywordservice
                 var keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
 
                 Keyword keyword = keywordService.Get(command);
