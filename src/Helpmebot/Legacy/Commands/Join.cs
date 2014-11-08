@@ -71,7 +71,7 @@ namespace helpmebot6.Commands
         /// TODO: this should probably be elsewhere
         public static CommandResponseHandler JoinChannel(string channelName, uint network)
         {
-            // FIXME: servicelocator call
+            // FIXME: ServiceLocator - channelrepo & Ircclient
             var channelRepo = ServiceLocator.Current.GetInstance<IChannelRepository>();
             var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
 

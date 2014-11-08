@@ -67,13 +67,10 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: ServiceLocator call
-            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-
             string[] args = this.Arguments;
             
             string deployInProgressMessage = this.CommandServiceHelper.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
-            ircClient.SendMessage(this.Channel, deployInProgressMessage);
+            this.CommandServiceHelper.Client.SendMessage(this.Channel, deployInProgressMessage);
 
             string revision;
 

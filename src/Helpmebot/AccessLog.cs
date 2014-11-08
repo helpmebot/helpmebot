@@ -51,7 +51,7 @@ namespace Helpmebot
         /// </summary>
         protected AccessLog()
         {
-            // FIXME: Servicelocator
+            // FIXME: ServiceLocator - legacydatabase
             this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 

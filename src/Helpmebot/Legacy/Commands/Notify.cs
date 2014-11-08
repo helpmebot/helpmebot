@@ -86,13 +86,10 @@ namespace helpmebot6.Commands
 
             if (toNotify != null)
             {
-                // FIXME: servicelocator
-                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-
                 string message = this.CommandServiceHelper.MessageService.RetrieveMessage("notifyJoin", this.Channel, new[] { source.Nickname, channel });
                 foreach (LegacyUser user in toNotify)
                 {
-                    ircClient.SendMessage(user.Nickname, message);
+                    this.CommandServiceHelper.Client.SendMessage(user.Nickname, message);
                 }
             }
         }

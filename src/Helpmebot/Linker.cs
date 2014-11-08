@@ -64,7 +64,7 @@ namespace Helpmebot
         /// </summary>
         protected Linker()
         {
-            // FIXME: servicelocator call
+            // FIXME: ServiceLocator - iircclient
             this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
          
             this.ircClient.ReceivedMessage += this.IrcPrivateMessageEvent;
@@ -95,7 +95,7 @@ namespace Helpmebot
         {
             string iwprefix = link.Split(':')[0];
 
-            // FIXME: servicelocator call
+            // FIXME: servicelocator call - iwprefix repo
             var interwikiPrefixRepository = ServiceLocator.Current.GetInstance<IInterwikiPrefixRepository>();
             var prefix = interwikiPrefixRepository.GetByPrefix(iwprefix);
 

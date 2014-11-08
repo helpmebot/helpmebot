@@ -59,7 +59,7 @@ namespace Helpmebot.Legacy.Model
         /// </summary>
         public LegacyUser()
         {
-            // FIXME: servicelocator
+            // FIXME: ServiceLocator - legacydatabase
             this.db = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 

@@ -80,7 +80,7 @@ namespace helpmebot6.Commands
 
             string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - mw site repo
             var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
             MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 

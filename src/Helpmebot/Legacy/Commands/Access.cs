@@ -64,7 +64,7 @@ namespace helpmebot6.Commands
         public Access(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
-            // FIXME: servicelocator
+            // FIXME: ServiceLocator - legacydatabase
             this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
         }
 

@@ -23,10 +23,7 @@ namespace Helpmebot.Commands.FunStuff
     using System.Linq;
 
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// The protected targeted command.
@@ -70,10 +67,7 @@ namespace Helpmebot.Commands.FunStuff
                     return this.Source.Nickname;
                 }
 
-                // FIXME: servicelocator call
-                var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-
-                if (base.CommandTarget.ToLower() == ircClient.Nickname.ToLower())
+                if (base.CommandTarget.ToLower() == this.CommandServiceHelper.Client.Nickname.ToLower())
                 {
                     return this.Source.Nickname;
                 }

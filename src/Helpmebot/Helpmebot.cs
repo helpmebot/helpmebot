@@ -218,7 +218,7 @@ namespace Helpmebot
         /// </param>
         private static void IrcInviteEvent(object sender, InviteEventArgs e)
         {
-            // FIXME: Remove service locator!
+            // FIXME: ServiceLocator - CSH
             new Join(
                 LegacyUser.NewFromOtherUser(e.User),
                 e.Nickname,
@@ -260,7 +260,7 @@ namespace Helpmebot
         {
             try
             {
-                // FIXME: Remove service locator!
+                // FIXME: ServiceLocator - CSH
                 var commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
 
                 var legacyUser = LegacyUser.NewFromOtherUser(e.User);
@@ -323,7 +323,7 @@ namespace Helpmebot
         /// </summary>
         private static void JoinChannels()
         {
-            // FIXME: remove servicelocator
+            // FIXME: ServiceLocator - channelrepo
             var channelRepository = ServiceLocator.Current.GetInstance<IChannelRepository>();
             
             foreach (var channel in channelRepository.GetEnabled())

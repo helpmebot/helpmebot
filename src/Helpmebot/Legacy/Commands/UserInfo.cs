@@ -30,7 +30,6 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -89,9 +88,6 @@ namespace helpmebot6.Commands
         /// <returns>The <see cref="CommandResponseHandler"/>.</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: servicelocator
-            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-
             var args = this.Arguments;
 
             bool useLongInfo = bool.Parse(LegacyConfig.Singleton()["useLongUserInfo", this.Channel]);
@@ -144,7 +140,7 @@ namespace helpmebot6.Commands
                 string[] messageParameters = { "userinfo", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
 
                 string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
-                ircClient.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
+                this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 
             return this.response;
@@ -249,7 +245,7 @@ namespace helpmebot6.Commands
 
                 string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
-                // FIXME: ServiceLocator
+                // FIXME: ServiceLocator - mw site repo
                 var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
                 MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
                 BlockInformation bi = mediaWikiSite.GetBlockInformation(userName).FirstOrDefault();

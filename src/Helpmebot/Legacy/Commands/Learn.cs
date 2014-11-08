@@ -27,7 +27,6 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -44,10 +43,6 @@ namespace helpmebot6.Commands
         /// </summary>
         private readonly IKeywordService keywordService;
 
-        /// <summary>
-        /// The IRC access layer.
-        /// </summary>
-        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Learn"/> class.
@@ -67,9 +62,8 @@ namespace helpmebot6.Commands
         public Learn(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - keywordservice
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
-            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
         }
 
         /// <summary>
@@ -104,12 +98,12 @@ namespace helpmebot6.Commands
                     this.Log.Error("Error learning command", ex);
                 }
 
-                this.ircClient.SendNotice(this.Source.Nickname, message);
+                this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, message);
             }
             else
             {
                 string[] messageParameters = { "learn", "2", args.Count.ToString(CultureInfo.InvariantCulture) };
-                this.ircClient.SendNotice(
+                this.CommandServiceHelper.Client.SendNotice(
                     this.Source.Nickname,
                     messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

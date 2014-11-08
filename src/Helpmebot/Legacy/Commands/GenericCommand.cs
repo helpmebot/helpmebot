@@ -58,7 +58,7 @@ namespace helpmebot6.Commands
         /// </param>
         protected GenericCommand(ICommandServiceHelper commandServiceHelper)
         {
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - genericlogger & legacydatabase
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
             this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
 

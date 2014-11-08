@@ -62,17 +62,14 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: servicelocator
-            var ircClientIface = ServiceLocator.Current.GetInstance<IIrcClient>();
-
-            var ircClient = ircClientIface as IrcClient;
+            var ircClient = this.CommandServiceHelper.Client as IrcClient;
             if (ircClient != null)
             {
                 ircClient.Inject(this.Arguments.Implode());
             }
             else
             {
-                ircClientIface.SendMessage(this.Source.Nickname, "Error injecting message into network stream.");
+                this.CommandServiceHelper.Client.SendMessage(this.Source.Nickname, "Error injecting message into network stream.");
             }
 
             return new CommandResponseHandler();

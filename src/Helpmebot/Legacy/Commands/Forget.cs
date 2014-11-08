@@ -25,7 +25,6 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -41,11 +40,6 @@ namespace helpmebot6.Commands
         /// The keyword service.
         /// </summary>
         private readonly IKeywordService keywordService;
-
-        /// <summary>
-        /// The IRC access layer.
-        /// </summary>
-        private readonly IIrcClient ircClient;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="Forget"/> class.
@@ -65,9 +59,8 @@ namespace helpmebot6.Commands
         public Forget(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
-            // FIXME: ServiceLocator
+            // FIXME: ServiceLocator - keywordservice
             this.keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
-            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
         }
 
         /// <summary>
@@ -95,12 +88,12 @@ namespace helpmebot6.Commands
                     forgottenMessage = messageService.RetrieveMessage("cmdForgetError", this.Channel, null);
                 }
                 
-                this.ircClient.SendNotice(this.Source.Nickname, forgottenMessage);
+                this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, forgottenMessage);
             }
             else
             {
                 string[] messageParameters = { "forget", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
-                this.ircClient.SendNotice(
+                this.CommandServiceHelper.Client.SendNotice(
                     this.Source.Nickname,
                     messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }

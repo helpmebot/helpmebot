@@ -47,7 +47,7 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static GeolocateResult GetLocation(this IPAddress ip)
         {
-            // FIXME: remove servicelocator
+            // FIXME: ServiceLocator - logger & privateconfig
             var config = ServiceLocator.Current.GetInstance<IPrivateConfiguration>();
             var logger = ServiceLocator.Current.GetInstance<ILogger>().CreateChildLogger("IPAddressExtensions");
 

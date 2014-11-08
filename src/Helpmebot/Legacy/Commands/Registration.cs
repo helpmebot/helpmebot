@@ -23,7 +23,6 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -145,9 +144,6 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // FIXME: servicelocator
-            var ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-
             var crh = new CommandResponseHandler();
             var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length > 0)
@@ -183,7 +179,7 @@ namespace helpmebot6.Commands
                     };
 
                 string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
-                ircClient.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
+                this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
             }
 
             return crh;
