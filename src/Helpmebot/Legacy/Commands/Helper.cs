@@ -18,10 +18,7 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Triggers an inter-channel alert
