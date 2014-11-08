@@ -96,11 +96,13 @@ namespace Helpmebot.Repositories.Interfaces
         /// <returns>
         /// Returns <c>true</c> if the transaction was started successfully.
         /// </returns>
+        [Obsolete]
         bool BeginTransaction(IsolationLevel level = IsolationLevel.Serializable);
 
         /// <summary>
         /// The roll back.
         /// </summary>
+        [Obsolete]
         void RollBack();
 
         /// <summary>
@@ -114,6 +116,7 @@ namespace Helpmebot.Repositories.Interfaces
         /// <summary>
         /// The commit.
         /// </summary>
+        [Obsolete]
         void Commit();
 
         /// <summary>

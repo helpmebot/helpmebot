@@ -20,10 +20,9 @@
 
 namespace Helpmebot.Repositories
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
 
+    using Castle.Core.Internal;
     using Castle.Core.Logging;
 
     using Helpmebot.Model;
@@ -58,25 +57,14 @@ namespace Helpmebot.Repositories
         /// </returns>
         public IEnumerable<Notification> RetrieveLatest()
         {
-            var list = new List<Notification>();
+            IEnumerable<Notification> list = new List<Notification>();
 
-            if (!this.BeginTransaction())
-            {
-                this.Logger.Warn("Transaction failed to start!");
-                return list;
-            }
-
-            try
-            {
-                list = this.Get().ToList();
-                this.Delete(list);
-                this.Commit();
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Error("Error in transaction.", ex);
-                this.RollBack();
-            }
+            this.Transactionally(
+                session =>
+                    {
+                        list = session.CreateCriteria<Notification>().List<Notification>();
+                        list.ForEach(session.Delete);
+                    });
 
             return list;
         }

@@ -69,22 +69,7 @@ namespace Helpmebot.Services
         /// </param>
         public void Delete(string name)
         {
-            if (!this.repository.BeginTransaction())
-            {
-                this.logger.Warn("Transaction failed to start!");
-                return;
-            }
-
-            try
-            {
-                this.repository.Delete(Restrictions.Eq("Name", name));
-                this.repository.Commit();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error("Error in transaction.", ex);
-                this.repository.RollBack();
-            }
+            this.repository.Delete(Restrictions.Eq("Name", name));
         }
 
         /// <summary>
@@ -101,29 +86,7 @@ namespace Helpmebot.Services
         /// </param>
         public void Create(string name, string response, bool action)
         {
-            if (!this.repository.BeginTransaction())
-            {
-                this.logger.Warn("Transaction failed to start!");
-                return;
-            }
-
-            try
-            {
-                Keyword existing = this.repository.GetByName(name).Any()
-                                       ? this.repository.GetByName(name).First()
-                                       : new Keyword { Name = name };
-
-                existing.Action = action;
-                existing.Response = response;
-
-                this.repository.Save(existing);
-                this.repository.Commit();
-            }
-            catch (Exception ex)
-            {
-                this.logger.Error("Error in transaction.", ex);
-                this.repository.RollBack();
-            }
+            this.repository.Create(name, response, action);
         }
 
         /// <summary>

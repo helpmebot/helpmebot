@@ -21,6 +21,7 @@
 namespace Helpmebot.Repositories
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using Castle.Core.Logging;
 
@@ -61,6 +62,42 @@ namespace Helpmebot.Repositories
         public IEnumerable<Keyword> GetByName(string name)
         {
             return this.Get(Restrictions.Eq("Name", name));
+        }
+
+        /// <summary>
+        /// The create.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        /// <param name="action">
+        /// The action.
+        /// </param>
+        public void Create(string name, string response, bool action)
+        {
+            this.Transactionally(
+                session =>
+                    {
+                        var existing =
+                            session.CreateCriteria<Keyword>()
+                                .Add(Restrictions.Eq("Name", name))
+                                .List<Keyword>()
+                                .FirstOrDefault();
+
+                        if (existing == null)
+                        {
+                            existing = new Keyword();
+                        }
+
+                        existing.Name = name;
+                        existing.Response = response;
+                        existing.Action = action;
+
+                        session.SaveOrUpdate(existing);
+                    });
         }
 
         /// <summary>

@@ -39,5 +39,19 @@ namespace Helpmebot.Repositories.Interfaces
         /// The <see cref="Keyword"/>.
         /// </returns>
         IEnumerable<Keyword> GetByName(string name);
+
+        /// <summary>
+        /// The create.
+        /// </summary>
+        /// <param name="name">
+        /// The name.
+        /// </param>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        /// <param name="action">
+        /// The action.
+        /// </param>
+        void Create(string name, string response, bool action);
     }
 }
