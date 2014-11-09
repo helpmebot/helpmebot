@@ -844,41 +844,69 @@ namespace Helpmebot.IRC
             List<string> parameters = e.Message.Parameters.ToList();
             string newNickname = parameters[0];
             string oldNickname = user.Nickname;
-            lock (this.userOperationLock)
+
+            this.logger.InfoFormat("Changing {0} to {1} in nick tracking database.", oldNickname, newNickname);
+
+            try
             {
-                // firstly, update the user cache.
-                IrcUser ircUser = this.UserCache[oldNickname];
-                this.UserCache.Remove(oldNickname);
-
-                ircUser.Nickname = newNickname;
-
-                this.UserCache.Add(newNickname, ircUser);
-
-                // secondly, update the channels this user is in.
-                foreach (var channelPair in this.channels)
+                lock (this.userOperationLock)
                 {
-                    if (channelPair.Value.Users.ContainsKey(oldNickname))
+                    // firstly, update the user cache.
+                    IrcUser ircUser = this.UserCache[oldNickname];
+                    ircUser.Nickname = newNickname;
+
+                    try
                     {
-                        IrcChannelUser channelUser = channelPair.Value.Users[oldNickname];
+                        this.UserCache.Remove(oldNickname);
+                        this.UserCache.Add(newNickname, ircUser);
+                    }
+                    catch (ArgumentException)
+                    {
+                        this.logger.Warn("Couldn't add the new entry to the dictionary. Nick tracking is no longer valid.");
+                        this.nickTrackingValid = false;
+                        throw;
+                    }
 
-                        if (!channelUser.User.Equals(ircUser))
+                    // secondly, update the channels this user is in.
+                    foreach (var channelPair in this.channels)
+                    {
+                        if (channelPair.Value.Users.ContainsKey(oldNickname))
                         {
-                            this.logger.ErrorFormat(
-                                "Channel user {0} doesn't match irc user {1} for NICK in {2}", 
-                                channelUser.User, 
-                                ircUser, 
-                                channelPair.Value.Name);
+                            IrcChannelUser channelUser = channelPair.Value.Users[oldNickname];
 
-                            this.logger.Error("Nick tracking is no longer valid.");
-                            this.nickTrackingValid = false;
+                            if (!channelUser.User.Equals(ircUser))
+                            {
+                                this.logger.ErrorFormat(
+                                    "Channel user {0} doesn't match irc user {1} for NICK in {2}", 
+                                    channelUser.User, 
+                                    ircUser, 
+                                    channelPair.Value.Name);
 
-                            throw new Exception("Channel user doesn't match irc user");
+                                this.logger.Error("Nick tracking is no longer valid.");
+                                this.nickTrackingValid = false;
+
+                                throw new Exception("Channel user doesn't match irc user");
+                            }
+
+                            try
+                            {
+                                channelPair.Value.Users.Remove(oldNickname);
+                                channelPair.Value.Users.Add(newNickname, channelUser);
+                            }
+                            catch (ArgumentException)
+                            {
+                                this.logger.Warn("Couldn't add the new entry to the dictionary. Nick tracking is no longer valid.");
+                                this.nickTrackingValid = false;
+                                throw;
+                            }
                         }
-
-                        channelPair.Value.Users.Remove(oldNickname);
-                        channelPair.Value.Users.Add(newNickname, channelUser);
                     }
                 }
+            }
+            catch (Exception exception)
+            {
+                this.logger.Error("Nickname tracking is no longer valid.", exception);
+                this.nickTrackingValid = false;
             }
         }
 
