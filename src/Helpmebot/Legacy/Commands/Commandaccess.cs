@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Globalization;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
@@ -74,11 +75,11 @@ namespace helpmebot6.Commands
 
                 return // instantiate a new instance of the command, and get it's access level
                     new CommandResponseHandler(
-                        ((GenericCommand)Activator.CreateInstance(cmd, this.Source, this.Channel, this.Arguments))
+                        ((GenericCommand)Activator.CreateInstance(cmd, this.Source, this.Channel, this.Arguments, this.CommandServiceHelper))
                             .AccessLevel.ToString());
             }
 
-            string[] messageParameters = { "commandaccess", "1", this.Arguments.Length.ToString() };
+            string[] messageParameters = { "commandaccess", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) };
             return new CommandResponseHandler(this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
         }
     }
