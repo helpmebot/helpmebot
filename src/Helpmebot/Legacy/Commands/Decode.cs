@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using System;
     using System.Net;
     using System.Net.Sockets;
+    using System.Text.RegularExpressions;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
@@ -67,18 +68,21 @@ namespace helpmebot6.Commands
                 return new CommandResponseHandler(messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
-            if (this.Arguments[0].Length != 8)
+            var validHexIp = new Regex("^[0-9A-Fa-f]{8}$");
+
+
+            if (!validHexIp.Match(this.Arguments[0]).Success)
             {
-                return null;
+                return new CommandResponseHandler(messageService.RetrieveMessage("DecodeBadInput", this.Channel, new string[0]));
             }
 
-            byte[] ip = new byte[4];
+            var ip = new byte[4];
             ip[0] = Convert.ToByte(this.Arguments[0].Substring(0, 2), 16);
             ip[1] = Convert.ToByte(this.Arguments[0].Substring(2, 2), 16);
             ip[2] = Convert.ToByte(this.Arguments[0].Substring(4, 2), 16);
             ip[3] = Convert.ToByte(this.Arguments[0].Substring(6, 2), 16);
 
-            IPAddress ipAddr = new IPAddress(ip);
+            var ipAddr = new IPAddress(ip);
 
             string hostname = string.Empty;
 
