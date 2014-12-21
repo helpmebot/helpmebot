@@ -30,6 +30,8 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
 
+    using NHibernate.Param;
+
     /// <summary>
     /// Discovers the location of an IP address
     /// </summary>
@@ -81,9 +83,15 @@ namespace helpmebot6.Commands
                 return new CommandResponseHandler(messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
             }
 
-            GeolocateResult location = IPAddress.Parse(this.Arguments[0]).GetLocation();
-            string[] messageArgs = { location.ToString() };
-            return new CommandResponseHandler(messageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
+            IPAddress address;
+            if (IPAddress.TryParse(this.Arguments[0], out address))
+            {
+                GeolocateResult location = address.GetLocation();
+                string[] messageArgs = { location.ToString() };
+                return new CommandResponseHandler(messageService.RetrieveMessage("locationMessage", this.Channel, messageArgs));
+            }
+
+            return new CommandResponseHandler(messageService.RetrieveMessage("BadIpAddress", this.Channel, new string[0]));
         }
     }
 }
