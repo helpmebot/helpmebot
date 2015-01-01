@@ -72,8 +72,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest0()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test0.log", "stwalker|test");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test0.log", "stwalker|test");
 
             // assert
             this.networkClient.Verify(x => x.Send("WHO ##stwalkerster %uhnatfc,001"));
@@ -102,8 +102,8 @@ namespace Helpmebot.Tests.IRC
 #endif        
         public void ParserTest1()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test1.log", "stwalker|test");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test1.log", "stwalker|test");
 
             // assert
             this.networkClient.Verify(x => x.Send("WHO ##stwalkerster %uhnatfc,001"));
@@ -140,8 +140,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest2()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test2.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test2.log", "stwalkerster___");
         }
 
         /// <summary>
@@ -153,8 +153,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest3()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test3.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test3.log", "stwalkerster___");
         }
 
         /// <summary>
@@ -166,8 +166,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest4()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test4.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test4.log", "stwalkerster___");
 
             Assert.That(this.client.Channels["#wikipedia-en"].Users.ContainsKey("FunPika_"), Is.False);
             Assert.That(this.client.Channels["#wikipedia-en"].Users.ContainsKey("FunPikachu"), Is.True);
@@ -182,8 +182,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest5()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test5.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test5.log", "stwalkerster___");
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest6()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test6.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test6.log", "stwalkerster___");
         }
 
         /// <summary>
@@ -208,8 +208,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTest7()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test7.log", "stwalkerster___");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test7.log", "stwalkerster___");
         }
 
         /// <summary>
@@ -221,8 +221,8 @@ namespace Helpmebot.Tests.IRC
 #endif
         public void ParserTestNickChange()
         {
-            // run the test file from \\DORADO\store
-            this.RunTestFile(@"A:\home\helpmebot\parsertests\test0.log", "stwalker|test");
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test0.log", "stwalker|test");
 
             var channels = this.client.Channels;
 
