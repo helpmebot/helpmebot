@@ -698,6 +698,7 @@ namespace Helpmebot.IRC
                 }
                 else
                 {
+                    // todo: check cache?
                     user = IrcUser.FromPrefix(e.Message.Prefix);
                 }
             }
@@ -929,6 +930,17 @@ namespace Helpmebot.IRC
 
                 lock (this.userOperationLock)
                 {
+                    var channelUsers = this.channels[channel].Users.Select(x => x.Key);
+                    foreach (var u in channelUsers.Where(u => this.channels.Count(x => x.Value.Users.ContainsKey(u)) == 0))
+                    {
+                        this.logger.InfoFormat(
+                            "{0} is no longer in any channel I'm in, removing them from tracking",
+                            user,
+                            channel);
+
+                        this.userCache.Remove(u);
+                    }
+
                     this.channels.Remove(channel);
                 }
             }
@@ -937,9 +949,19 @@ namespace Helpmebot.IRC
                 lock (this.userOperationLock)
                 {
                     this.channels[channel].Users.Remove(user.Nickname);
-                }
 
-                this.logger.InfoFormat("{0} has left channel {1}.", user, channel);
+                    this.logger.InfoFormat("{0} has left channel {1}.", user, channel);
+
+                    if (this.channels.Count(x => x.Value.Users.ContainsKey(user.Nickname)) == 0)
+                    {
+                        this.logger.InfoFormat(
+                            "{0} has left all channels I'm in, removing them from tracking",
+                            user,
+                            channel);
+
+                        this.userCache.Remove(user.Nickname);
+                    }
+                }
             }
         }
 

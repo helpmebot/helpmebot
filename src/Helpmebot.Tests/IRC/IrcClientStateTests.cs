@@ -268,6 +268,74 @@ namespace Helpmebot.Tests.IRC
         }
 
         /// <summary>
+        /// Fixes for HMB-85
+        /// </summary>
+        [Test]
+#if ! PARSERTESTS
+        [Ignore("Parser tests disabled.")]
+#endif
+        public void ParserTestNickTracking()
+        {
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test0.log", "stwalker|test");
+
+            var channels = this.client.Channels;
+
+            Assert.That(channels.ContainsKey("##stwalkerster-development"), Is.True);
+            Assert.That(channels.ContainsKey("##stwalkerster"), Is.True);
+
+            Assert.That(channels["##stwalkerster"].Users.Count, Is.EqualTo(3));
+            Assert.That(channels["##stwalkerster-development"].Users.Count, Is.EqualTo(4));
+
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+
+            this.RaiseEvent(":Aranda56_!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net JOIN ##stwalkerster-development * :New Now Know How");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.True);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.True);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+
+            this.RaiseEvent(":Aranda56_!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net JOIN ##stwalkerster * :New Now Know How");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.True);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.True);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.True);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+
+            this.RaiseEvent(":Aranda56_!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net NICK Aranda56");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.True);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.True);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.True);
+
+            this.RaiseEvent(":Aranda56!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net PART ##stwalkerster-development :Parting");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.True);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.True);
+
+            this.RaiseEvent(":Aranda56!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net PART ##stwalkerster :quitting");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+        }
+
+        /// <summary>
         /// The run test file.
         /// </summary>
         /// <param name="fileName">
