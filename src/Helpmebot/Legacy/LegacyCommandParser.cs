@@ -152,9 +152,17 @@ namespace Helpmebot.Legacy
         {
             this.Log.Debug("Handling recieved message...");
 
+            // user is null (!)
+            if (source == null)
+            {
+                this.Log.Debug("Ignoring message from null user.");
+                return;
+            }
+
             // if on ignore list, ignore!
             if (source.AccessLevel == LegacyUser.UserRights.Ignored)
             {
+                this.Log.Debug("Ignoring message from ignored user.");
                 return;
             }
 

@@ -116,7 +116,16 @@ namespace helpmebot6.Commands
                                     break;
                             }
 
-                            crh = this.AddAccessEntry(LegacyUser.NewFromString(this.Arguments[1]), aL);
+                            var legacyUser = LegacyUser.NewFromString(this.Arguments[1]);
+
+                            if (legacyUser == null)
+                            {
+                                string[] errArgs = { this.Arguments[1] };
+                                crh.Respond(messageService.RetrieveMessage("cmdAccessInvalidUser", this.Channel, errArgs));
+                                return crh;
+                            }
+
+                            crh = this.AddAccessEntry(legacyUser, aL);
                         }
                         else
                         {

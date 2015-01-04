@@ -270,6 +270,11 @@ namespace Helpmebot.Legacy.Model
                 ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
             }
 
+            if (nick == null)
+            {
+                return null;
+            }
+
             var ret = new LegacyUser { Hostname = host, Nickname = nick, Username = user, Network = network };
             return ret;
         }
@@ -309,6 +314,11 @@ namespace Helpmebot.Legacy.Model
         public static LegacyUser NewFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
         {
             LegacyUser u = NewFromString(source, network);
+            if (u == null)
+            {
+                return null;
+            }
+
             u.accessLevel = accessLevel;
             return u;
         }

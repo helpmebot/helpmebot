@@ -218,9 +218,16 @@ namespace Helpmebot
         /// </param>
         private static void IrcInviteEvent(object sender, InviteEventArgs e)
         {
+            var legacyUser = LegacyUser.NewFromOtherUser(e.User);
+
+            if (legacyUser == null)
+            {
+                throw new NullReferenceException(string.Format("Legacy user creation failed from user {0}", e.User));
+            }
+
             // FIXME: ServiceLocator - CSH
             new Join(
-                LegacyUser.NewFromOtherUser(e.User),
+                legacyUser,
                 e.Nickname,
                 new[] { e.Channel },
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>()).RunCommand();
@@ -264,6 +271,11 @@ namespace Helpmebot
                 var commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
 
                 var legacyUser = LegacyUser.NewFromOtherUser(e.User);
+                if (legacyUser == null)
+                {
+                    throw new NullReferenceException(string.Format("Legacy user creation failed from user {0}", e.User));
+                }
+
                 new Notify(legacyUser, e.Channel, new string[0], commandServiceHelper).NotifyJoin(legacyUser, e.Channel);
             }
             catch (Exception exception)
