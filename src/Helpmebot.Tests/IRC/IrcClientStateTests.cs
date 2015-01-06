@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Tests.IRC
 {
+    using System;
     using System.IO;
     using System.Linq;
 
@@ -99,7 +100,7 @@ namespace Helpmebot.Tests.IRC
         [Test]
 #if ! PARSERTESTS
         [Ignore("Parser tests disabled.")]
-#endif        
+#endif
         public void ParserTest1()
         {
             // run the test file from ninetales local disk

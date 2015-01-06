@@ -668,6 +668,11 @@ namespace Helpmebot.IRC
                             user.Nickname, 
                             new IrcChannelUser((IrcUser)user, channelName));
                     }
+                    else
+                    {
+                        this.logger.Error("Nickname tracking no longer valid.");
+                        this.nickTrackingValid = false;
+                    }
                 }
 
                 EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
