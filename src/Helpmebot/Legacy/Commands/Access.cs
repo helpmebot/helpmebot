@@ -178,7 +178,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler OnAccessDenied()
         {
             CommandResponseHandler crh =
-                new Myaccess(this.Source, this.Channel, this.Arguments, this.CommandServiceHelper).RunCommand();
+                new Myaccess(this.Source, this.Channel, new string[0], this.CommandServiceHelper).RunCommand();
             return crh;
         }
 
