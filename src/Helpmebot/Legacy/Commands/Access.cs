@@ -91,14 +91,6 @@ namespace helpmebot6.Commands
 
                             switch (this.Arguments[2].ToLower())
                             {
-                                case "developer":
-                                    if (this.Source.AccessLevel == LegacyUser.UserRights.Developer)
-                                    {
-                                        return base.OnAccessDenied();
-                                    }
-
-                                    aL = LegacyUser.UserRights.Developer;
-                                    break;
                                 case "superuser":
                                     aL = LegacyUser.UserRights.Superuser;
                                     break;
