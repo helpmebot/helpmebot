@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -103,30 +104,34 @@ namespace helpmebot6.Commands
             var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
             var mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
-            var creader =
-                new XmlTextReader(
-                    HttpRequest.Get(
-                        mediaWikiSite.Api + "?action=query&list=users&usprop=registration&format=xml&ususers="
-                        + username));
-            do
-            {
-                creader.Read();
-            }
-            while (creader.Name != "user");
+            var uri = string.Format(
+                "{0}?action=query&list=users&usprop=registration&format=xml&ususers={1}",
+                mediaWikiSite.Api,
+                username);
 
-            string apiRegDate = creader.GetAttribute("registration");
-            if (apiRegDate != null)
+            using (var xmlFragment = HttpRequest.Get(uri).ToStream())
             {
-                if (apiRegDate == string.Empty)
+                var creader = new XmlTextReader(xmlFragment);
+                do
                 {
-                    var registrationDate = new DateTime(1970, 1, 1, 0, 0, 0);
-                    RegistrationCache.Add(baseWiki + "||" + username, registrationDate);
-                    return registrationDate;
+                    creader.Read();
                 }
+                while (creader.Name != "user");
 
-                DateTime regDate = DateTime.Parse(apiRegDate);
-                RegistrationCache.Add(baseWiki + "||" + username, regDate);
-                return regDate;
+                string apiRegDate = creader.GetAttribute("registration");
+                if (apiRegDate != null)
+                {
+                    if (apiRegDate == string.Empty)
+                    {
+                        var registrationDate = new DateTime(1970, 1, 1, 0, 0, 0);
+                        RegistrationCache.Add(baseWiki + "||" + username, registrationDate);
+                        return registrationDate;
+                    }
+
+                    DateTime regDate = DateTime.Parse(apiRegDate);
+                    RegistrationCache.Add(baseWiki + "||" + username, regDate);
+                    return regDate;
+                }
             }
 
             return new DateTime(0);

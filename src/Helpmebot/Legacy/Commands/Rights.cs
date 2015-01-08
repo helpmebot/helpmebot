@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -86,37 +87,43 @@ namespace helpmebot6.Commands
 
             string returnStr = string.Empty;
             int rightsCount = 0;
-            var creader =
-                new XmlTextReader(
-                    HttpRequest.Get(
-                        mediaWikiSite.Api + "?action=query&list=users&usprop=groups&format=xml&ususers=" + username));
-            do
-            {
-                creader.Read();
-            }
-            while (creader.Name != "user");
 
-            creader.Read();
-            if (creader.Name == "groups")
+            var uri = string.Format(
+                "{0}?action=query&list=users&usprop=groups&format=xml&ususers={1}",
+                mediaWikiSite.Api,
+                username);
+
+            using (var stream = HttpRequest.Get(uri).ToStream())
             {
-                // the start of the group list
+                var creader = new XmlTextReader(stream);
                 do
                 {
                     creader.Read();
-                    string rightsList = creader.ReadString();
-                    if (!(rightsList == string.Empty || rightsList == "*"))
-                    {
-                        returnStr = returnStr + rightsList + ", ";
-                    }
-
-                    rightsCount = rightsCount + 1;
                 }
-                while (creader.Name == "g"); // each group should be added
+                while (creader.Name != "user");
+
+                creader.Read();
+                if (creader.Name == "groups")
+                {
+                    // the start of the group list
+                    do
+                    {
+                        creader.Read();
+                        string rightsList = creader.ReadString();
+                        if (!(rightsList == string.Empty || rightsList == "*"))
+                        {
+                            returnStr = returnStr + rightsList + ", ";
+                        }
+
+                        rightsCount = rightsCount + 1;
+                    }
+                    while (creader.Name == "g"); // each group should be added
+                }
+
+                returnStr = rightsCount == 0 ? string.Empty : returnStr.Remove(returnStr.Length - 2);
+
+                return returnStr;
             }
-
-            returnStr = rightsCount == 0 ? string.Empty : returnStr.Remove(returnStr.Length - 2);
-
-            return returnStr;
         }
 
         #endregion

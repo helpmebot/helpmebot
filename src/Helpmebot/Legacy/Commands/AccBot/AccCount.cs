@@ -22,6 +22,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
@@ -79,48 +80,51 @@ namespace helpmebot6.Commands
 
             username = HttpUtility.UrlEncode(username);
 
-            var xpd =
-                new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=count&user=" + username));
-
-            XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
-
-            if (xpni.MoveNext())
+            var uri = "http://accounts.wmflabs.org/api.php?action=count&user=" + username;
+            using (var data = HttpRequest.Get(uri).ToStream())
             {
-                IMessageService messageService = this.CommandServiceHelper.MessageService;
-                if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
+                var xpd = new XPathDocument(data);
+
+                XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
+
+                if (xpni.MoveNext())
                 {
-                    string[] msgparams = { username };
-                    string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
-                    return new CommandResponseHandler(msg);
+                    IMessageService messageService = this.CommandServiceHelper.MessageService;
+                    if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
+                    {
+                        string[] msgparams = { username };
+                        string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
+                        return new CommandResponseHandler(msg);
+                    }
+
+                    string[] adminparams =
+                        {
+                            xpni.Current.GetAttribute("suspended", string.Empty),
+                            xpni.Current.GetAttribute("promoted", string.Empty),
+                            xpni.Current.GetAttribute("approved", string.Empty),
+                            xpni.Current.GetAttribute("demoted", string.Empty),
+                            xpni.Current.GetAttribute("declined", string.Empty),
+                            xpni.Current.GetAttribute("renamed", string.Empty),
+                            xpni.Current.GetAttribute("edited", string.Empty),
+                            xpni.Current.GetAttribute("prefchange", string.Empty)
+                        };
+
+                    string adminmessage = messageService.RetrieveMessage("CmdAccCountAdmin", this.Channel, adminparams);
+
+                    string[] messageParams =
+                        {
+                            username, // username
+                            xpni.Current.GetAttribute("level", string.Empty), // accesslevel
+                            xpni.Current.GetAttribute("created", string.Empty), // numclosed
+                            xpni.Current.GetAttribute("today", string.Empty), // today
+                            xpni.Current.GetAttribute("level", string.Empty) == "Admin"
+                                ? adminmessage
+                                : string.Empty // admin
+                        };
+
+                    string message = messageService.RetrieveMessage("CmdAccCount", this.Channel, messageParams);
+                    return new CommandResponseHandler(message);
                 }
-
-                string[] adminparams =
-                    {
-                        xpni.Current.GetAttribute("suspended", string.Empty), 
-                        xpni.Current.GetAttribute("promoted", string.Empty), 
-                        xpni.Current.GetAttribute("approved", string.Empty), 
-                        xpni.Current.GetAttribute("demoted", string.Empty), 
-                        xpni.Current.GetAttribute("declined", string.Empty), 
-                        xpni.Current.GetAttribute("renamed", string.Empty), 
-                        xpni.Current.GetAttribute("edited", string.Empty), 
-                        xpni.Current.GetAttribute("prefchange", string.Empty)
-                    };
-
-                string adminmessage = messageService.RetrieveMessage("CmdAccCountAdmin", this.Channel, adminparams);
-
-                string[] messageParams =
-                    {
-                        username, // username
-                        xpni.Current.GetAttribute("level", string.Empty), // accesslevel
-                        xpni.Current.GetAttribute("created", string.Empty), // numclosed
-                        xpni.Current.GetAttribute("today", string.Empty), // today
-                        xpni.Current.GetAttribute("level", string.Empty) == "Admin"
-                            ? adminmessage
-                            : string.Empty // admin
-                    };
-
-                string message = messageService.RetrieveMessage("CmdAccCount", this.Channel, messageParams);
-                return new CommandResponseHandler(message);
             }
 
             throw new ArgumentException();

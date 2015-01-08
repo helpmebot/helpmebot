@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot
 {
+    using System;
     using System.IO;
     using System.Net;
 
@@ -51,7 +52,7 @@ namespace Helpmebot
         /// <returns>
         /// The <see cref="Stream"/>.
         /// </returns>
-        public static Stream Get(string uri, int timeout = -1)
+        public static string Get(string uri, int timeout = -1)
         {
             if (configurationHelper == null)
             {
@@ -61,9 +62,24 @@ namespace Helpmebot
             var hwr = (HttpWebRequest)WebRequest.Create(uri);
             hwr.UserAgent = configurationHelper.CoreConfiguration.UserAgent;
             hwr.Timeout = timeout == -1 ? configurationHelper.CoreConfiguration.HttpTimeout : timeout;
-            var resp = (HttpWebResponse)hwr.GetResponse();
 
-            return resp.GetResponseStream();
+            string data;
+
+            using (var resp = (HttpWebResponse)hwr.GetResponse())
+            {
+                Stream responseStream = resp.GetResponseStream();
+
+                if (responseStream == null)
+                {
+                    throw new NullReferenceException("Returned web request response stream was null.");
+                }
+
+                var streamReader = new StreamReader(responseStream);
+                data = streamReader.ReadToEnd();
+                streamReader.Close();
+            }
+
+            return data;
         }
 
         #endregion

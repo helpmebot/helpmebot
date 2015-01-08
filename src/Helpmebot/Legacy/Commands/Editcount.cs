@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -91,26 +92,30 @@ namespace helpmebot6.Commands
             username = HttpUtility.UrlEncode(username);
 
             // TODO: Linq-to-XML in MediaWikiSite extension method
-            var xpd =
-                new XPathDocument(
-                    HttpRequest.Get(
-                        mediaWikiSite.Api + "?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers="
-                        + username));
+            var uri = string.Format(
+                "{0}?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers={1}",
+                mediaWikiSite.Api,
+                username);
 
-            XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
-
-            if (xpni.MoveNext())
+            using (var data = HttpRequest.Get(uri).ToStream())
             {
-                string editcount = xpni.Current.GetAttribute("editcount", string.Empty);
-                if (editcount != string.Empty)
-                {
-                    return int.Parse(editcount);
-                }
+                var xpd = new XPathDocument(data);
 
-                if (xpni.Current.GetAttribute("missing", string.Empty) == string.Empty)
+                XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
+
+                if (xpni.MoveNext())
                 {
-                    // TODO: uint? rather than -1
-                    return -1;
+                    string editcount = xpni.Current.GetAttribute("editcount", string.Empty);
+                    if (editcount != string.Empty)
+                    {
+                        return int.Parse(editcount);
+                    }
+
+                    if (xpni.Current.GetAttribute("missing", string.Empty) == string.Empty)
+                    {
+                        // TODO: uint? rather than -1
+                        return -1;
+                    }
                 }
             }
 

@@ -21,6 +21,7 @@
 namespace Helpmebot.ExtensionMethods
 {
     using System;
+    using System.IO;
     using System.Text;
 
     /// <summary>
@@ -40,6 +41,25 @@ namespace Helpmebot.ExtensionMethods
         public static string ToBase64(this string data)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
+        }
+
+        /// <summary>
+        /// The to stream.
+        /// </summary>
+        /// <param name="data">
+        /// The string.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Stream"/>.
+        /// </returns>
+        public static Stream ToStream(this string data)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(data);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
     }
 }

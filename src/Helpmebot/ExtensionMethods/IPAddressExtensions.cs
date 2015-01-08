@@ -57,43 +57,51 @@ namespace Helpmebot.ExtensionMethods
                 return new GeolocateResult();
             }
 
-            Stream s = HttpRequest.Get("http://api.ipinfodb.com/v3/ip-city/?key=" + config.IpInfoDbApiKey + "&ip=" + ip + "&format=xml");
-            var xtr = new XmlTextReader(s);
-            var result = new GeolocateResult();
+            var requestData =
+                HttpRequest.Get(
+                    "http://api.ipinfodb.com/v3/ip-city/?key=" + config.IpInfoDbApiKey + "&ip=" + ip + "&format=xml");
 
-            while (!xtr.EOF)
+            using (Stream s = requestData.ToStream())
             {
-                xtr.Read();
-                switch (xtr.Name)
+                using (var xtr = new XmlTextReader(s))
                 {
-                    case "statusCode":
-                        result.Status = xtr.ReadElementContentAsString();
-                        break;
-                    case "countryCode":
-                        result.CountryCode = xtr.ReadElementContentAsString();
-                        break;
-                    case "countryName":
-                        result.Country = xtr.ReadElementContentAsString();
-                        break;
-                    case "regionName":
-                        result.Region = xtr.ReadElementContentAsString();
-                        break;
-                    case "cityName":
-                        result.City = xtr.ReadElementContentAsString();
-                        break;
-                    case "zipCode":
-                        result.ZipPostalCode = xtr.ReadElementContentAsString();
-                        break;
-                    case "latitude":
-                        result.Latitude = xtr.ReadElementContentAsFloat();
-                        break;
-                    case "longitude":
-                        result.Longitude = xtr.ReadElementContentAsFloat();
-                        break;
+                    var result = new GeolocateResult();
+
+                    while (!xtr.EOF)
+                    {
+                        xtr.Read();
+                        switch (xtr.Name)
+                        {
+                            case "statusCode":
+                                result.Status = xtr.ReadElementContentAsString();
+                                break;
+                            case "countryCode":
+                                result.CountryCode = xtr.ReadElementContentAsString();
+                                break;
+                            case "countryName":
+                                result.Country = xtr.ReadElementContentAsString();
+                                break;
+                            case "regionName":
+                                result.Region = xtr.ReadElementContentAsString();
+                                break;
+                            case "cityName":
+                                result.City = xtr.ReadElementContentAsString();
+                                break;
+                            case "zipCode":
+                                result.ZipPostalCode = xtr.ReadElementContentAsString();
+                                break;
+                            case "latitude":
+                                result.Latitude = xtr.ReadElementContentAsFloat();
+                                break;
+                            case "longitude":
+                                result.Longitude = xtr.ReadElementContentAsFloat();
+                                break;
+                        }
+                    }
+
+                    return result;
                 }
             }
-
-            return result;
         }
     }
 }

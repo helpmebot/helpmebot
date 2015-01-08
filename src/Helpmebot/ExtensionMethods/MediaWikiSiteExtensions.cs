@@ -53,50 +53,31 @@ namespace Helpmebot.ExtensionMethods
                 userName, 
                 site.Api);
 
-            Stream xmlFragment = HttpRequest.Get(apiParams);
+            using (Stream xmlFragment = HttpRequest.Get(apiParams).ToStream())
+            {
+                XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
 
-            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
+                //// ReSharper disable PossibleNullReferenceException
+                var blocks = from item in xdoc.Descendants("block")
+                             select
+                                 new BlockInformation
+                                     {
+                                         Id = item.Attribute("id").Value,
+                                         Target = item.Attribute("user").Value,
+                                         BlockedBy = item.Attribute("by").Value,
+                                         Start = item.Attribute("timestamp").Value,
+                                         Expiry = item.Attribute("expiry").Value,
+                                         BlockReason = item.Attribute("reason").Value,
+                                         AutoBlock = item.Attribute("autoblock") != null,
+                                         NoCreate = item.Attribute("nocreate") != null,
+                                         NoEmail = item.Attribute("noemail") != null,
+                                         AllowUserTalk = item.Attribute("allowusertalk") != null,
+                                         AnonOnly = item.Attribute("anononly") != null
+                                     };
 
-            //// ReSharper disable PossibleNullReferenceException
-            IEnumerable<BlockInformation> blockInformations = from item in xdoc.Descendants("block")
-                                                              select
-                                                                  new BlockInformation
-                                                                      {
-                                                                          Id = item.Attribute("id").Value, 
-                                                                          Target =
-                                                                              item.Attribute("user")
-                                                                              .Value, 
-                                                                          BlockedBy =
-                                                                              item.Attribute("by").Value, 
-                                                                          Start =
-                                                                              item.Attribute("timestamp")
-                                                                              .Value, 
-                                                                          Expiry =
-                                                                              item.Attribute("expiry")
-                                                                              .Value, 
-                                                                          BlockReason =
-                                                                              item.Attribute("reason")
-                                                                              .Value, 
-                                                                          AutoBlock =
-                                                                              item.Attribute("autoblock")
-                                                                              != null, 
-                                                                          NoCreate =
-                                                                              item.Attribute("nocreate")
-                                                                              != null, 
-                                                                          NoEmail =
-                                                                              item.Attribute("noemail")
-                                                                              != null, 
-                                                                          AllowUserTalk =
-                                                                              item.Attribute(
-                                                                                  "allowusertalk")
-                                                                              != null, 
-                                                                          AnonOnly =
-                                                                              item.Attribute("anononly")
-                                                                              != null
-                                                                      };
-
-            //// ReSharper restore PossibleNullReferenceException
-            return blockInformations;
+                //// ReSharper restore PossibleNullReferenceException
+                return blocks;
+            }
         }
 
         /// <summary>
@@ -121,21 +102,24 @@ namespace Helpmebot.ExtensionMethods
                 category, 
                 site.Api);
 
-            Stream xmlFragment = HttpRequest.Get(apiCall);
-
-            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-            IEnumerable<int> countEnumerable = from item in xdoc.Descendants("categoryinfo")
-                                               let xAttribute = item.Attribute("pages")
-                                               where xAttribute != null
-                                               select int.Parse(xAttribute.Value);
-            List<int> countList = countEnumerable.ToList();
-            if (!countList.Any())
+            using (Stream xmlFragment = HttpRequest.Get(apiCall).ToStream())
             {
-                throw new ArgumentException("Category does not exist!");
-            }
+                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
 
-            return countList.FirstOrDefault();
+                var countEnumerable = from item in xdoc.Descendants("categoryinfo")
+                                      let xAttribute = item.Attribute("pages")
+                                      where xAttribute != null
+                                      select int.Parse(xAttribute.Value);
+
+                var countList = countEnumerable.ToList();
+
+                if (!countList.Any())
+                {
+                    throw new ArgumentException("Category does not exist!");
+                }
+
+                return countList.FirstOrDefault();
+            }
         }
 
         /// <summary>
@@ -154,16 +138,18 @@ namespace Helpmebot.ExtensionMethods
         {
             string uri = site.Api + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
                          + category;
-            Stream xmlFragment = HttpRequest.Get(uri);
 
-            XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
+            using (Stream xmlFragment = HttpRequest.Get(uri).ToStream())
+            {
+                XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
 
-            IEnumerable<string> pages = from item in xdoc.Descendants("cm")
-                                        let xAttribute = item.Attribute("title")
-                                        where xAttribute != null
-                                        select xAttribute.Value;
+                IEnumerable<string> pages = from item in xdoc.Descendants("cm")
+                                            let xAttribute = item.Attribute("title")
+                                            where xAttribute != null
+                                            select xAttribute.Value;
 
-            return pages.ToList();
+                return pages.ToList();
+            }
         }
 
         #endregion

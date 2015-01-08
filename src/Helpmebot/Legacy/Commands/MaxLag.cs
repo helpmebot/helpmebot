@@ -20,6 +20,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
@@ -70,8 +71,8 @@ namespace helpmebot6.Commands
         }
 
         /// <summary>
-        ///     Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
-        ///     channel.
+        /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
+        /// channel.
         /// </summary>
         /// <returns>The maximum replication lag</returns>
         private string GetMaxLag()
@@ -80,21 +81,24 @@ namespace helpmebot6.Commands
             string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
 
             // get api
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
             // TODO: use Linq-to-XML
-            var mlreader =
-                new XmlTextReader(
-                    HttpRequest.Get(mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml"));
-            do
+            var uri = mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml";
+            using (var data = HttpRequest.Get(uri).ToStream())
             {
-                mlreader.Read();
+                var mlreader = new XmlTextReader(data);
+
+                do
+                {
+                    mlreader.Read();
+                }
+                while (mlreader.Name != "db");
+
+                string lag = mlreader.GetAttribute("lag");
+
+                return lag;
             }
-            while (mlreader.Name != "db");
-
-            string lag = mlreader.GetAttribute("lag");
-
-            return lag;
         }
 
         #endregion

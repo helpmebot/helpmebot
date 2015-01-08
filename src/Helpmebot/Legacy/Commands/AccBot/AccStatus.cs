@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
 
     /// <summary>
@@ -60,28 +61,31 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            var xpd = new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status"));
-
-            XPathNodeIterator xpni = xpd.CreateNavigator().Select("//status");
-
-            if (xpni.MoveNext())
+            using (var data = HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status").ToStream())
             {
-                string[] messageParams =
-                    {
-                        xpni.Current.GetAttribute("open", string.Empty), 
-                        xpni.Current.GetAttribute("admin", string.Empty), 
-                        xpni.Current.GetAttribute("checkuser", string.Empty), 
-                        xpni.Current.GetAttribute("bans", string.Empty), 
-                        xpni.Current.GetAttribute("useradmin", string.Empty), 
-                        xpni.Current.GetAttribute("user", string.Empty), 
-                        xpni.Current.GetAttribute("usernew", string.Empty)
-                    };
+                var xpd = new XPathDocument(data);
 
-                string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
-                    "CmdAccStatus", 
-                    this.Channel, 
-                    messageParams);
-                return new CommandResponseHandler(message);
+                XPathNodeIterator xpni = xpd.CreateNavigator().Select("//status");
+
+                if (xpni.MoveNext())
+                {
+                    string[] messageParams =
+                        {
+                            xpni.Current.GetAttribute("open", string.Empty),
+                            xpni.Current.GetAttribute("admin", string.Empty),
+                            xpni.Current.GetAttribute("checkuser", string.Empty),
+                            xpni.Current.GetAttribute("bans", string.Empty),
+                            xpni.Current.GetAttribute("useradmin", string.Empty),
+                            xpni.Current.GetAttribute("user", string.Empty),
+                            xpni.Current.GetAttribute("usernew", string.Empty)
+                        };
+
+                    string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                        "CmdAccStatus",
+                        this.Channel,
+                        messageParams);
+                    return new CommandResponseHandler(message);
+                }
             }
 
             throw new ArgumentException();

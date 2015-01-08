@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
 
@@ -96,20 +97,23 @@ namespace helpmebot6.Commands
 
             string requestUri = "http://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
 
-            var r = new StreamReader(HttpRequest.Get(requestUri, 1000 * 30 /* 30 sec timeout */));
-
-            var crh = new CommandResponseHandler();
-            if (showUrl)
+            using (Stream data = HttpRequest.Get(requestUri, 1000 * 30 /* 30 sec timeout */).ToStream())
             {
-                crh.Respond(requestUri, CommandResponseDestination.PrivateMessage);
-            }
+                var r = new StreamReader(data);
 
-            foreach (var x in r.ReadToEnd().Split('\n', '\r'))
-            {
-                crh.Respond(x);
-            }
+                var crh = new CommandResponseHandler();
+                if (showUrl)
+                {
+                    crh.Respond(requestUri, CommandResponseDestination.PrivateMessage);
+                }
 
-            return crh;
+                foreach (var x in r.ReadToEnd().Split('\n', '\r'))
+                {
+                    crh.Respond(x);
+                }
+
+                return crh;
+            }
         }
 
         #endregion

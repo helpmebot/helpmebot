@@ -22,11 +22,13 @@ namespace helpmebot6.Commands
 {
     using System;
     using System.Collections;
+    using System.Globalization;
     using System.IO;
     using System.Xml;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
 
     /// <summary>
@@ -61,86 +63,88 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             // TODO: link to basewiki
-            Stream rawDataStream =
-                HttpRequest.Get(
-                    "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
-                    + string.Join(" ", this.Arguments));
-
-            XmlTextReader xtr = new XmlTextReader(rawDataStream);
-
-            CommandResponseHandler crh = new CommandResponseHandler();
-
-            string redirects = null;
-            ArrayList protection = new ArrayList();
-            string title;
-            string size;
-            string comment;
-            DateTime touched = DateTime.MinValue;
-            string user = title = comment = size = null;
-
-            var messageService = this.CommandServiceHelper.MessageService;
-            while (!xtr.EOF)
+            var uri = "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
+                      + string.Join(" ", this.Arguments);
+            using (Stream rawDataStream = HttpRequest.Get(uri).ToStream())
             {
-                xtr.Read();
-                if (xtr.IsStartElement())
-                {
-                    switch (xtr.Name)
-                    {
-                        case "r":
-                            // redirect!
-                            // <r from="Sausages" to="Sausage" />
-                            redirects = xtr.GetAttribute("from");
-                            break;
-                        case "page":
-                            if (xtr.GetAttribute("missing") != null)
-                            {
-                                return new CommandResponseHandler(messageService.RetrieveMessage("pageMissing", this.Channel, null));
-                            }
-                            
-                            title = xtr.GetAttribute("title");
-                            touched = DateTime.Parse(xtr.GetAttribute("touched"));
 
-                            break;
-                        case "rev":
-                            // user, comment
-                            // <rev user="RjwilmsiBot" comment="..." />
-                            user = xtr.GetAttribute("user");
-                            comment = xtr.GetAttribute("comment");
-                            break;
-                        case "pr":
-                            // protections  
-                            // <pr type="edit" level="autoconfirmed" expiry="2010-06-30T18:36:52Z" />
-                            string time = xtr.GetAttribute("expiry");
-                            protection.Add(
-                                new PageProtection(
-                                    xtr.GetAttribute("type"),
-                                    xtr.GetAttribute("level"),
-                                    time == "infinity" ? DateTime.MaxValue : DateTime.Parse(time)));
-                            break;
+                var xtr = new XmlTextReader(rawDataStream);
+
+                var crh = new CommandResponseHandler();
+
+                string redirects = null;
+                var protection = new ArrayList();
+                string title;
+                string size;
+                string comment;
+                DateTime touched = DateTime.MinValue;
+                string user = title = comment = size = null;
+
+                var messageService = this.CommandServiceHelper.MessageService;
+                while (!xtr.EOF)
+                {
+                    xtr.Read();
+                    if (xtr.IsStartElement())
+                    {
+                        switch (xtr.Name)
+                        {
+                            case "r":
+                                // redirect!
+                                // <r from="Sausages" to="Sausage" />
+                                redirects = xtr.GetAttribute("from");
+                                break;
+                            case "page":
+                                if (xtr.GetAttribute("missing") != null)
+                                {
+                                    var msg = messageService.RetrieveMessage("pageMissing", this.Channel, null);
+                                    return new CommandResponseHandler(msg);
+                                }
+
+                                title = xtr.GetAttribute("title");
+                                touched = DateTime.Parse(xtr.GetAttribute("touched"));
+
+                                break;
+                            case "rev":
+                                // user, comment
+                                // <rev user="RjwilmsiBot" comment="..." />
+                                user = xtr.GetAttribute("user");
+                                comment = xtr.GetAttribute("comment");
+                                break;
+                            case "pr":
+                                // protections  
+                                // <pr type="edit" level="autoconfirmed" expiry="2010-06-30T18:36:52Z" />
+                                string time = xtr.GetAttribute("expiry");
+                                protection.Add(
+                                    new PageProtection(
+                                        xtr.GetAttribute("type"),
+                                        xtr.GetAttribute("level"),
+                                        time == "infinity" ? DateTime.MaxValue : DateTime.Parse(time)));
+                                break;
+                        }
                     }
                 }
+
+                if (redirects != null)
+                {
+                    string[] redirArgs = { redirects, title };
+                    crh.Respond(messageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
+                }
+
+                string[] margs = { title, user, touched.ToString(CultureInfo.InvariantCulture), comment, size };
+                crh.Respond(messageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
+
+                foreach (PageProtection p in protection)
+                {
+                    string[] pargs =
+                        {
+                            title, p.Type, p.Level,
+                            p.Expiry == DateTime.MaxValue ? "infinity" : p.Expiry.ToString()
+                        };
+                    crh.Respond(messageService.RetrieveMessage("pageProtected", this.Channel, pargs));
+                }
+
+                return crh;
             }
-
-            if (redirects != null)
-            {
-                string[] redirArgs = { redirects, title };
-                crh.Respond(messageService.RetrieveMessage("pageRedirect", this.Channel, redirArgs));
-            }
-
-            string[] margs = { title, user, touched.ToString(), comment, size };
-            crh.Respond(messageService.RetrieveMessage("pageMainResponse", this.Channel, margs));
-
-            foreach (PageProtection p in protection)
-            {
-                string[] pargs =
-                    {
-                        title, p.Type, p.Level,
-                        p.Expiry == DateTime.MaxValue ? "infinity" : p.Expiry.ToString()
-                    };
-                crh.Respond(messageService.RetrieveMessage("pageProtected", this.Channel, pargs));
-            }
-
-            return crh;
         }
     }
 }

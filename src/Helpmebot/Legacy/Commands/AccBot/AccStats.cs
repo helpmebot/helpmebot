@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
 
     using HttpRequest = Helpmebot.HttpRequest;
@@ -76,34 +77,38 @@ namespace helpmebot6.Commands
 
             username = HttpUtility.UrlEncode(username);
 
-            XPathDocument xpd =
-                new XPathDocument(HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=stats&user=" + username));
+            string uri = "http://accounts.wmflabs.org/api.php?action=stats&user=" + username;
 
-            XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
-
-            if (xpni.MoveNext())
+            using (var data = HttpRequest.Get(uri).ToStream())
             {
-                var messageService = this.CommandServiceHelper.MessageService;
-                if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
+                var xpd = new XPathDocument(data);
+
+                XPathNodeIterator xpni = xpd.CreateNavigator().Select("//user");
+
+                if (xpni.MoveNext())
                 {
-                    string[] msgparams = { username };
-                    string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
-                    return new CommandResponseHandler(msg);
-                }
-
-                string[] messageParams =
+                    var messageService = this.CommandServiceHelper.MessageService;
+                    if (xpni.Current.GetAttribute("missing", string.Empty) == "true")
                     {
-                        username, // username
-                        xpni.Current.GetAttribute("status", string.Empty), // accesslevel
-                        xpni.Current.GetAttribute("lastactive", string.Empty),
-                        xpni.Current.GetAttribute("welcome_template", string.Empty) == "0"
-                            ? "disabled"
-                            : "enabled",
-                        xpni.Current.GetAttribute("onwikiname", string.Empty)
-                    };
+                        string[] msgparams = { username };
+                        string msg = messageService.RetrieveMessage("noSuchUser", this.Channel, msgparams);
+                        return new CommandResponseHandler(msg);
+                    }
 
-                string message = messageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);
-                return new CommandResponseHandler(message);
+                    string[] messageParams =
+                        {
+                            username, // username
+                            xpni.Current.GetAttribute("status", string.Empty), // accesslevel
+                            xpni.Current.GetAttribute("lastactive", string.Empty),
+                            xpni.Current.GetAttribute("welcome_template", string.Empty) == "0"
+                                ? "disabled"
+                                : "enabled",
+                            xpni.Current.GetAttribute("onwikiname", string.Empty)
+                        };
+
+                    string message = messageService.RetrieveMessage("CmdAccStats", this.Channel, messageParams);
+                    return new CommandResponseHandler(message);
+                }
             }
 
             throw new ArgumentException();
