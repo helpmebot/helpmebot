@@ -67,7 +67,6 @@ namespace helpmebot6.Commands
                       + string.Join(" ", this.Arguments);
             using (Stream rawDataStream = HttpRequest.Get(uri).ToStream())
             {
-
                 var xtr = new XmlTextReader(rawDataStream);
 
                 var crh = new CommandResponseHandler();
