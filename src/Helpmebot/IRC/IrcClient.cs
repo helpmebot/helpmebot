@@ -703,8 +703,17 @@ namespace Helpmebot.IRC
                 }
                 else
                 {
-                    // todo: check cache?
+                    // parse it into something reasonable
                     user = IrcUser.FromPrefix(e.Message.Prefix);
+
+                    lock (this.userOperationLock)
+                    {
+                        // attempt to load from cache
+                        if (this.nickTrackingValid && this.userCache.ContainsKey(user.Nickname))
+                        {
+                            user = this.userCache[user.Nickname];
+                        }
+                    }
                 }
             }
 
