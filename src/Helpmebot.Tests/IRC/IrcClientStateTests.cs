@@ -20,7 +20,6 @@
 
 namespace Helpmebot.Tests.IRC
 {
-    using System;
     using System.IO;
     using System.Linq;
 
@@ -334,6 +333,36 @@ namespace Helpmebot.Tests.IRC
             Assert.That(channels["##stwalkerster-development"].Users.ContainsKey("Aranda56"), Is.False);
             Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56_"), Is.False);
             Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+        }
+
+        /// <summary>
+        /// Fixes for HMB-97
+        /// </summary>
+        [Test]
+#if ! PARSERTESTS
+        [Ignore("Parser tests disabled.")]
+#endif
+        public void ParserTestKickTracking()
+        {
+            // run the test file from ninetales local disk
+            this.RunTestFile(@"K:\Shares\Homes\stwalkerster\Projects\Helpmebot Test Cases\parsertests\test0.log", "stwalker|test");
+
+            var channels = this.client.Channels;
+
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+
+            this.RaiseEvent(":Aranda56!~chatzilla@c-98-242-146-227.hsd1.fl.comcast.net JOIN ##stwalkerster * :New Now Know How");
+            Assert.That(this.client.UserCache.ContainsKey("stwalker|test"), Is.True);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("stwalker|test"), Is.True);
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.True);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.True);
+
+            this.RaiseEvent(":stwalker|test!~stwalkers@wikimedia/stwalkerster KICK ##stwalkerster Aranda56 :Aranda56");
+            Assert.That(this.client.UserCache.ContainsKey("Aranda56"), Is.False);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("Aranda56"), Is.False);
+            Assert.That(this.client.UserCache.ContainsKey("stwalker|test"), Is.True);
+            Assert.That(channels["##stwalkerster"].Users.ContainsKey("stwalker|test"), Is.True);
         }
 
         /// <summary>

@@ -763,6 +763,11 @@ namespace Helpmebot.IRC
                 this.OnPartMessageReceived(e, user);
             }
 
+            if (e.Message.Command == "KICK")
+            {
+                this.OnKickMessageReceived(e);
+            }
+
             if (e.Message.Command == "ACCOUNT" && user != null)
             {
                 this.OnAccountMessageReceived(e, user);
@@ -949,7 +954,7 @@ namespace Helpmebot.IRC
                     {
                         this.logger.InfoFormat(
                             "{0} is no longer in any channel I'm in, removing them from tracking",
-                            user,
+                            u,
                             channel);
 
                         this.userCache.Remove(u);
@@ -974,6 +979,59 @@ namespace Helpmebot.IRC
                             channel);
 
                         this.userCache.Remove(user.Nickname);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// The on kick message received.
+        /// </summary>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void OnKickMessageReceived(MessageReceivedEventArgs e)
+        {
+            // Kick format is:
+            // :n!u@h KICK #chan nick :reason
+            List<string> parameters = e.Message.Parameters.ToList();
+            string channel = parameters[0];
+            if (parameters[1] == this.Nickname)
+            {
+                this.logger.WarnFormat("Kicked from channel {1}.", channel);
+
+                lock (this.userOperationLock)
+                {
+                    var channelUsers = this.channels[channel].Users.Select(x => x.Key);
+                    foreach (var u in channelUsers.Where(u => this.channels.Count(x => x.Value.Users.ContainsKey(u)) == 0))
+                    {
+                        this.logger.InfoFormat(
+                            "{0} is no longer in any channel I'm in, removing them from tracking",
+                            u,
+                            channel);
+
+                        this.userCache.Remove(u);
+                    }
+
+                    this.channels.Remove(channel);
+                }
+            }
+            else
+            {
+                lock (this.userOperationLock)
+                {
+                    this.channels[channel].Users.Remove(parameters[1]);
+
+                    this.logger.InfoFormat("{0} has beem kicked from channel {1}.", parameters[1], channel);
+
+                    if (this.channels.Count(x => x.Value.Users.ContainsKey(parameters[1])) == 0)
+                    {
+                        this.logger.InfoFormat(
+                            "{0} has left all channels I'm in, removing them from tracking",
+                            parameters[1],
+                            channel);
+
+                        this.userCache.Remove(parameters[1]);
                     }
                 }
             }
