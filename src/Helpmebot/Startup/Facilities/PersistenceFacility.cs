@@ -66,6 +66,7 @@ namespace Helpmebot.Startup.Facilities
                 Fluently.Configure()
                     .Database(this.SetupDatabase)
                     .Mappings(a => a.FluentMappings.AddFromAssemblyOf<EntityBase>())
+                    .Cache(x => x.Not.UseSecondLevelCache())
                     .ExposeConfiguration(this.ConfigurePersistence)
                     .BuildConfiguration();
         }
