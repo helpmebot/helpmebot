@@ -334,8 +334,10 @@ namespace Helpmebot.Legacy
 
                     args = newArray;
                 }
+
                 a++;
             }
+
             return directedTo;
         }
 
@@ -430,4 +432,3 @@ namespace Helpmebot.Legacy
         #endregion
     }
 }
-
