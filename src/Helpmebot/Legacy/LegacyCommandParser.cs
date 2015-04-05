@@ -43,7 +43,7 @@ namespace Helpmebot.Legacy
     /// <summary>
     ///     A command parser
     /// </summary>
-    internal class LegacyCommandParser
+    public class LegacyCommandParser
     {
         #region Constants
 
@@ -302,7 +302,7 @@ namespace Helpmebot.Legacy
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private static string FindRedirection(ref string[] args)
+        public static string FindRedirection(ref string[] args)
         {
             string directedTo = string.Empty;
 
