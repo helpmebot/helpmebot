@@ -17,7 +17,6 @@
 //   Defines the IPAddressExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.ExtensionMethods
 {
     using System.IO;
@@ -36,6 +35,8 @@ namespace Helpmebot.ExtensionMethods
     /// </summary>
     public static class IPAddressExtensions
     {
+        #region Public Methods and Operators
+
         /// <summary>
         /// The get location.
         /// </summary>
@@ -63,45 +64,46 @@ namespace Helpmebot.ExtensionMethods
 
             using (Stream s = requestData.ToStream())
             {
-                using (var xtr = new XmlTextReader(s))
+                var xtr = new XmlTextReader(s);
+
+                var result = new GeolocateResult();
+
+                while (!xtr.EOF)
                 {
-                    var result = new GeolocateResult();
-
-                    while (!xtr.EOF)
+                    xtr.Read();
+                    switch (xtr.Name)
                     {
-                        xtr.Read();
-                        switch (xtr.Name)
-                        {
-                            case "statusCode":
-                                result.Status = xtr.ReadElementContentAsString();
-                                break;
-                            case "countryCode":
-                                result.CountryCode = xtr.ReadElementContentAsString();
-                                break;
-                            case "countryName":
-                                result.Country = xtr.ReadElementContentAsString();
-                                break;
-                            case "regionName":
-                                result.Region = xtr.ReadElementContentAsString();
-                                break;
-                            case "cityName":
-                                result.City = xtr.ReadElementContentAsString();
-                                break;
-                            case "zipCode":
-                                result.ZipPostalCode = xtr.ReadElementContentAsString();
-                                break;
-                            case "latitude":
-                                result.Latitude = xtr.ReadElementContentAsFloat();
-                                break;
-                            case "longitude":
-                                result.Longitude = xtr.ReadElementContentAsFloat();
-                                break;
-                        }
+                        case "statusCode":
+                            result.Status = xtr.ReadElementContentAsString();
+                            break;
+                        case "countryCode":
+                            result.CountryCode = xtr.ReadElementContentAsString();
+                            break;
+                        case "countryName":
+                            result.Country = xtr.ReadElementContentAsString();
+                            break;
+                        case "regionName":
+                            result.Region = xtr.ReadElementContentAsString();
+                            break;
+                        case "cityName":
+                            result.City = xtr.ReadElementContentAsString();
+                            break;
+                        case "zipCode":
+                            result.ZipPostalCode = xtr.ReadElementContentAsString();
+                            break;
+                        case "latitude":
+                            result.Latitude = xtr.ReadElementContentAsFloat();
+                            break;
+                        case "longitude":
+                            result.Longitude = xtr.ReadElementContentAsFloat();
+                            break;
                     }
-
-                    return result;
                 }
+
+                return result;
             }
         }
+
+        #endregion
     }
 }
