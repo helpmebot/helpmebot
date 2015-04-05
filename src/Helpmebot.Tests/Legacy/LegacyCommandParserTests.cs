@@ -47,21 +47,21 @@ namespace Helpmebot.Tests.Legacy
         /// <param name="expectedRedir">
         /// The expected redir.
         /// </param>
-        //[TestCaseSource(typeof(RedirectionDataSource))]
+        ////[TestCaseSource(typeof(RedirectionDataSource))]
         [TestCase("a b c", "a b c", "")]
         [TestCase("a", "a", "")]
         [TestCase(">foo", "", "foo")]
         [TestCase("> foo", "", "foo")]
         [TestCase("a >b c", "a c", "b")]
-        [TestCase("a > b c", "a c", "b", Ignore = true)]
-        [TestCase("a >b >c d", "a d", "b c", Ignore = true)]
+        [TestCase("a > b c", "a c", "b", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
+        [TestCase("a >b >c d", "a d", "b c", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         [TestCase("a >b", "a", "b")]
         [TestCase(">a b", "b", "a")]
         [TestCase("a > b", "a", "b")]
-        [TestCase("> a b", "b", "a", Ignore = true)]
+        [TestCase("> a b", "b", "a", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         [TestCase("a> b", "a> b", "")]
         [TestCase("a >", "a >", "")]
-        [TestCase("a b >>>", "a b >>>", "", Ignore = true)]
+        [TestCase("a b >>>", "a b >>>", "", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         public void TestFindRedirection(string inputdata, string expecteddata, string expectedRedir)
         {
             // arrange
@@ -86,21 +86,21 @@ namespace Helpmebot.Tests.Legacy
         /// <param name="expectedRedir">
         /// The expected redir.
         /// </param>
-        //[TestCaseSource(typeof(RedirectionDataSource))]
+        ////[TestCaseSource(typeof(RedirectionDataSource))]
         [TestCase("a b c", "a b c", "")]
         [TestCase("a", "a", "")]
         [TestCase(">foo", "", "foo")]
         [TestCase("> foo", "", "foo")]
         [TestCase("a >b c", "a c", "b")]
-        [TestCase("a > b c", "a c", "b", Ignore = true)]
+        [TestCase("a > b c", "a c", "b", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         [TestCase("a >b >c d", "a d", "b c")]
         [TestCase("a >b", "a", "b")]
         [TestCase(">a b", "b", "a")]
         [TestCase("a > b", "a", "b")]
-        [TestCase("> a b", "b", "a", Ignore = true)]
+        [TestCase("> a b", "b", "a", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         [TestCase("a> b", "a> b", "")]
-        [TestCase("a >", "a >", "", Ignore = true)]
-        [TestCase("a b >>>", "a b >>>", "", Ignore = true)]
+        [TestCase("a >", "a >", "", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
+        [TestCase("a b >>>", "a b >>>", "", Ignore = true, IgnoreReason = "Long-term issue, re-enable when this starts passing.")]
         public void TestPostRedirectionMessage(string inputdata, string expecteddata, string expectedRedir)
         {
             // arrange
