@@ -20,6 +20,7 @@
 
 namespace Helpmebot.ExtensionMethods
 {
+    using System;
     using System.Linq;
 
     /// <summary>
@@ -40,7 +41,7 @@ namespace Helpmebot.ExtensionMethods
         /// The needle.
         /// </param>
         /// <returns>
-        /// The <see cref="int?"/>.
+        /// The <see cref="Nullable{Int32}"/>.
         /// </returns>
         public static int? PositionOf<T>(this T[] haystack, T needle)
         {
@@ -56,6 +57,31 @@ namespace Helpmebot.ExtensionMethods
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Get an sub-array of the array
+        /// </summary>
+        /// <typeparam name="T">
+        /// The type parameter
+        /// </typeparam>
+        /// <param name="data">
+        /// The array.
+        /// </param>
+        /// <param name="index">
+        /// The index of the starting element of the sub-array.
+        /// </param>
+        /// <param name="length">
+        /// The length of the sub-array.
+        /// </param>
+        /// <returns>
+        /// The resulting sub-array.
+        /// </returns>
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            var result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
         }
 
         /// <summary>

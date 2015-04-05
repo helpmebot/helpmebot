@@ -305,26 +305,37 @@ namespace Helpmebot.Legacy
         public static string FindRedirection(ref string[] args)
         {
             string directedTo = string.Empty;
-
-            foreach (string arg in args.Where(x => x.StartsWith(">")))
+            int a = 0;
+            foreach (string arg in args)
             {
-                directedTo = arg.Substring(1);
-
-                var count = args.Count(i => i == arg);
-
-                var newArray = new string[args.Length - count];
-
-                var nextAddition = 0;
-
-                foreach (var i in args.Where(i => i != arg))
+                if (arg == ">")
                 {
-                    newArray[nextAddition] = i;
-                    nextAddition++;
+                    // The target comes in the next argument(s)
+                    var target = args.SubArray(a + 1, args.Length - a - 1);
+                    args = args.SubArray(0, a);
+                    directedTo = string.Join(" ", target);
                 }
+                else if (arg.StartsWith(">"))
+                {
+                    // The target nick is in the argument
+                    directedTo = arg.Substring(1);
 
-                args = newArray;
+                    var count = args.Count(i => i == arg);
+
+                    var newArray = new string[args.Length - count];
+
+                    var nextAddition = 0;
+
+                    foreach (var i in args.Where(i => i != arg))
+                    {
+                        newArray[nextAddition] = i;
+                        nextAddition++;
+                    }
+
+                    args = newArray;
+                }
+                a++;
             }
-
             return directedTo;
         }
 
@@ -419,3 +430,4 @@ namespace Helpmebot.Legacy
         #endregion
     }
 }
+
