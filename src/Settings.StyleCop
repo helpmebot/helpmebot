@@ -11,6 +11,7 @@
       <Value>Wikipedian</Value>
       <Value>Helpmebot</Value>
       <Value>transclusion</Value>
+      <Value>callback</Value>
     </CollectionProperty>
     <StringProperty Name="Culture">en-GB</StringProperty>
   </GlobalSettings>

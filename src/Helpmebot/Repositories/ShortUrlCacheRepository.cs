@@ -54,21 +54,6 @@ namespace Helpmebot.Repositories
         #region Public Methods and Operators
 
         /// <summary>
-        /// The get by long url.
-        /// </summary>
-        /// <param name="url">
-        /// The url.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ShortUrlCacheEntry"/>.
-        /// </returns>
-        [Obsolete]
-        public ShortUrlCacheEntry GetByLongUrl(string url)
-        {
-            return this.Get(Restrictions.Eq("LongUrl", url)).FirstOrDefault();
-        }
-
-        /// <summary>
         /// The get short url.
         /// </summary>
         /// <param name="longUrl">
