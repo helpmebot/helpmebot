@@ -267,7 +267,7 @@ namespace helpmebot6.Commands
         /// <param name="userInformation">The user information.</param>
         private void SendShortUserInfo(UserInformation userInformation)
         {
-            const string Regex = "^http://en.wikipedia.org/wiki/";
+            const string Regex = "^https://en.wikipedia.org/wiki/";
             const string ShortUrlAlias = "http://enwp.org/";
             var r = new Regex(Regex);
 
