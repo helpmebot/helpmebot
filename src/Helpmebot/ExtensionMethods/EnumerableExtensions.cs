@@ -20,7 +20,6 @@
 
 namespace Helpmebot.ExtensionMethods
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -44,26 +43,6 @@ namespace Helpmebot.ExtensionMethods
         public static string Implode(this IEnumerable<string> value, string separator = " ")
         {
             return string.Join(separator, value.ToArray());
-        }
-
-        /// <summary>
-        /// The apply.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type of enumerable
-        /// </typeparam>
-        /// <param name="value">
-        /// The value.
-        /// </param>
-        /// <param name="action">
-        /// The action.
-        /// </param>
-        public static void Apply<T>(this IEnumerable<T> value, Action<T> action)
-        {
-            foreach (var x in value)
-            {
-                action(x);
-            }
         }
     }
 }

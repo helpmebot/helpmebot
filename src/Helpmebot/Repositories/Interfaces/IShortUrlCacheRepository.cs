@@ -28,17 +28,6 @@ namespace Helpmebot.Repositories.Interfaces
     {
         #region Public Methods and Operators
 
-        /// <summary>
-        /// The get by long url.
-        /// </summary>
-        /// <param name="url">
-        /// The url.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ShortUrlCacheEntry"/>.
-        /// </returns>
-        ShortUrlCacheEntry GetByLongUrl(string url);
-
         #endregion
 
         /// <summary>

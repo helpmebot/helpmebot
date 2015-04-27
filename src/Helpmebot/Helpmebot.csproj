@@ -88,7 +88,6 @@
     <Compile Include="Configuration\XmlSections\Interfaces\IPrivateConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\Interfaces\IIrcConfiguration.cs" />
     <Compile Include="Configuration\XmlSections\IrcConfiguration.cs" />
-    <Compile Include="ExtensionMethods\DictionaryExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
@@ -122,7 +121,6 @@
     <Compile Include="Configuration\XmlSections\PrivateConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
-    <Compile Include="ExtensionMethods\DateExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />

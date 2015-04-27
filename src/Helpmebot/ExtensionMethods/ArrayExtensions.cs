@@ -29,37 +29,6 @@ namespace Helpmebot.ExtensionMethods
     internal static class ArrayExtensions
     {
         /// <summary>
-        /// The contains.
-        /// </summary>
-        /// <typeparam name="T">
-        /// The type parameter
-        /// </typeparam>
-        /// <param name="haystack">
-        /// The haystack.
-        /// </param>
-        /// <param name="needle">
-        /// The needle.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Nullable{Int32}"/>.
-        /// </returns>
-        public static int? PositionOf<T>(this T[] haystack, T needle)
-        {
-            var id = 0;
-            foreach (var straw in haystack)
-            {
-                if (needle.Equals(straw))
-                {
-                    return id;
-                }
-
-                id++;
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Get an sub-array of the array
         /// </summary>
         /// <typeparam name="T">
@@ -82,37 +51,6 @@ namespace Helpmebot.ExtensionMethods
             var result = new T[length];
             Array.Copy(data, index, result, 0, length);
             return result;
-        }
-
-        /// <summary>
-        /// The contains prefix.
-        /// </summary>
-        /// <param name="haystack">
-        /// The haystack.
-        /// </param>
-        /// <param name="needlehead">
-        /// The needle head.
-        /// </param>
-        /// <returns>
-        /// The position, or null.
-        /// </returns>
-        public static int? ContainsPrefix(this string[] haystack, string needlehead)
-        {
-            var id = 0;
-            foreach (var straw in haystack)
-            {
-                if (straw.Length >= needlehead.Length)
-                {
-                    if (needlehead == straw.Substring(0, needlehead.Length))
-                    {
-                        return id;
-                    }
-                }
-
-                id++;
-            }
-
-            return null;
         }
 
         /// <summary>

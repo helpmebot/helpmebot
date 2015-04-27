@@ -20,7 +20,6 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
     using System.Globalization;
     using System.Net;
 
@@ -55,17 +54,6 @@ namespace helpmebot6.Commands
         public Geolocate(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
-        }
-
-        /// <summary>
-        /// Gets the location of the IP address.
-        /// </summary>
-        /// <param name="ip">The ip.</param>
-        /// <returns>The location of the address</returns>
-        [Obsolete("Use extension method.")]
-        public static GeolocateResult GetLocation(IPAddress ip)
-        {
-            return ip.GetLocation();
         }
 
         /// <summary>
