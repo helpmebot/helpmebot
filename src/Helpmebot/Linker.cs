@@ -247,17 +247,18 @@ namespace Helpmebot
                 .Replace("(", "%28")
                 .Replace(")", "%29")
                 .Replace(";", "%3B")
-                
                 // .Replace(":", "%3A")
                 .Replace("@", "%40")
-                .Replace("&", "%26")
-                .Replace("=", "%3D")
+                // .Replace("&", "%26")
+                // .Replace("=", "%3D")
                 .Replace("+", "%2B")
                 .Replace("$", "%24")
                 .Replace(",", "%2C")
-                
                 // .Replace("/", "%2F")
-                .Replace("?", "%3F").Replace("#", "%23").Replace("[", "%5B").Replace("]", "%5D");
+                // .Replace("?", "%3F")
+                // .Replace("#", "%23")
+                .Replace("[", "%5B")
+                .Replace("]", "%5D");
         }
 
         /// <summary>
