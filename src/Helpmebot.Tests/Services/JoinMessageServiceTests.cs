@@ -22,16 +22,15 @@ namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
 
-    using Castle.Core.Logging;
-
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Model.Interfaces;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
 
     using Moq;
+
+    using NHibernate;
 
     using NUnit.Framework;
 
@@ -39,37 +38,69 @@ namespace Helpmebot.Tests.Services
     /// The join message service tests.
     /// </summary>
     [TestFixture]
-    public class JoinMessageServiceTests
+    public class JoinMessageServiceTests : TestBase
     {
         /// <summary>
         /// The message service.
         /// </summary>
         private readonly Mock<IMessageService> messageService = new Mock<IMessageService>();
-
-        /// <summary>
-        /// The user repo.
-        /// </summary>
-        private readonly Mock<IWelcomeUserRepository> userRepo = new Mock<IWelcomeUserRepository>();
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly Mock<ILogger> logger = new Mock<ILogger>();
         
+        /// <summary>
+        /// The welcome user.
+        /// </summary>
+        private WelcomeUser welcomeUser;
+
+        /// <summary>
+        /// The ignore user.
+        /// </summary>
+        private WelcomeUser ignoreUser;
+
+        /// <summary>
+        /// The join message service.
+        /// </summary>
+        private Mock<JoinMessageService> joinMessageService;
+
+        /// <summary>
+        /// The IRC network.
+        /// </summary>
+        private Mock<IIrcClient> ircNetwork;
+
+        /// <summary>
+        /// The session.
+        /// </summary>
+        private Mock<ISession> session;
+
         /// <summary>
         /// The setup.
         /// </summary>
-        [TestFixtureSetUp]
-        public void Setup()
+        public override void LocalSetup()
         {
-            var welcomeUser = new WelcomeUser { Host = "ab/.*", User = ".*", Nick = ".*" };
-            var ignoreUser = new WelcomeUser { Host = ".*", User = "ign", Nick = ".*" };
+            this.welcomeUser = new WelcomeUser { Host = "ab/.*", User = ".*", Nick = ".*" };
+            this.ignoreUser = new WelcomeUser { Host = ".*", User = "ign", Nick = ".*", Exception = true };
 
-            this.userRepo.Setup(x => x.GetWelcomeForChannel("ab"))
-                .Returns(new List<WelcomeUser> { welcomeUser });
+            this.session = new Mock<ISession>();
+        }
 
-            this.userRepo.Setup(x => x.GetExceptionsForChannel("ab"))
-                .Returns(new List<WelcomeUser> { ignoreUser });
+        /// <summary>
+        /// The test setup.
+        /// </summary>
+        [SetUp]
+        public void TestSetup()
+        {
+            this.ircNetwork = new Mock<IIrcClient>();
+
+            this.joinMessageService = new Mock<JoinMessageService>(
+                this.ircNetwork.Object,
+                this.Logger.Object,
+                this.messageService.Object,
+                this.session.Object);
+
+            this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
+                .Returns(new List<WelcomeUser> { this.welcomeUser });
+            this.joinMessageService.Setup(x => x.GetExceptions("ab"))
+                .Returns(new List<WelcomeUser> { this.ignoreUser });
+
+            this.joinMessageService.CallBase = true;
         }
 
         /// <summary>
@@ -79,13 +110,6 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUnknownUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcClient>();
-            var joinMessageService = new JoinMessageService(
-                ircNetwork.Object,
-                this.logger.Object,
-                this.userRepo.Object,
-                this.messageService.Object);
-
             var networkUser = new Mock<IUser>();
 
             networkUser.SetupAllProperties();
@@ -94,26 +118,19 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "cd/test";
 
             // act
-            joinMessageService.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
 
         /// <summary>
         /// The should get message.
         /// </summary>
-        [Test, Ignore]
+        [Test]
         public void ShouldNotWelcomeIgnoredUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcClient>();
-            var joinMessageService = new JoinMessageService(
-                ircNetwork.Object,
-                this.logger.Object,
-                this.userRepo.Object,
-                this.messageService.Object);
-
             var networkUser = new Mock<IUser>();
 
             networkUser.SetupAllProperties();
@@ -122,10 +139,10 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             // act
-            joinMessageService.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
 
         /// <summary>
@@ -135,13 +152,6 @@ namespace Helpmebot.Tests.Services
         public void ShouldWelcomeUser()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcClient>();
-            var joinMessageService = new JoinMessageService(
-                ircNetwork.Object,
-                this.logger.Object,
-                this.userRepo.Object,
-                this.messageService.Object);
-
             var networkUser = new Mock<IUser>();
             
             networkUser.SetupAllProperties();
@@ -150,10 +160,10 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             // act
-            joinMessageService.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
 
             // assert
-            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
         }
 
         /// <summary>
@@ -163,12 +173,10 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUserOnUnknownChannel()
         {
             // arrange
-            var ircNetwork = new Mock<IIrcClient>();
-            var joinMessageService = new JoinMessageService(
-                ircNetwork.Object,
-                this.logger.Object,
-                this.userRepo.Object,
-                this.messageService.Object);
+            this.joinMessageService.Setup(x => x.GetWelcomeUsers("cd"))
+                .Returns(new List<WelcomeUser>());
+            this.joinMessageService.Setup(x => x.GetExceptions("cd"))
+                .Returns(new List<WelcomeUser>());
 
             var networkUser = new Mock<IUser>();
 
@@ -178,11 +186,11 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             // act
-            joinMessageService.Welcome(networkUser.Object, "cd");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "cd");
 
             // assert
-            ircNetwork.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
-            ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircNetwork.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
     }
 }

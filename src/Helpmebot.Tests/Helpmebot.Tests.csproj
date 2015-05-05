@@ -51,6 +51,10 @@
     <Reference Include="Moq">
       <HintPath>..\..\lib\moq\Moq.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>A:\home\stwalkerster\Projects\helpmebot\src\Helpmebot.Tests\bin\Debug\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\nunit.framework\nunit.framework.dll</HintPath>

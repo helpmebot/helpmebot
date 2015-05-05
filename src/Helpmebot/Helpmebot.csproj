@@ -174,7 +174,6 @@
     <Compile Include="Repositories\Interfaces\IKeywordRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IWelcomeUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="IRC\IrcClient.cs" />
     <Compile Include="IRC\Messages\IMessage.cs" />
@@ -186,7 +185,6 @@
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
-    <Compile Include="Repositories\WelcomeUserRepository.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />

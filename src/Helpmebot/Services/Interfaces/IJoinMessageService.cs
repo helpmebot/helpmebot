@@ -17,9 +17,11 @@
 //   Defines the IJoinMessageService type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.Services.Interfaces
 {
+    using System.Collections.Generic;
+
+    using Helpmebot.Model;
     using Helpmebot.Model.Interfaces;
 
     /// <summary>
@@ -27,6 +29,30 @@ namespace Helpmebot.Services.Interfaces
     /// </summary>
     public interface IJoinMessageService
     {
+        #region Public Methods and Operators
+
+        /// <summary>
+        /// The get exceptions.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IList"/>.
+        /// </returns>
+        IList<WelcomeUser> GetExceptions(string channel);
+
+        /// <summary>
+        /// The get welcome users.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IList"/>.
+        /// </returns>
+        IList<WelcomeUser> GetWelcomeUsers(string channel);
+
         /// <summary>
         /// The welcome.
         /// </summary>
@@ -37,5 +63,7 @@ namespace Helpmebot.Services.Interfaces
         /// The channel.
         /// </param>
         void Welcome(IUser user, string channel);
+
+        #endregion
     }
 }

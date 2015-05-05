@@ -51,5 +51,16 @@ namespace Helpmebot.Model
         /// Gets or sets a value indicating whether exception.
         /// </summary>
         public virtual bool Exception { get; set; }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format("Host: {0} {1}", this.Host, this.Exception ? "(!)" : string.Empty);
+        }
     }
 }

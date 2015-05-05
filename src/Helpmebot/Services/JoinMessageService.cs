@@ -29,8 +29,9 @@ namespace Helpmebot.Services
     using Helpmebot.IRC.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Model.Interfaces;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+
+    using NHibernate;
 
     /// <summary>
     /// The join message service.
@@ -48,14 +49,14 @@ namespace Helpmebot.Services
         private readonly ILogger logger;
 
         /// <summary>
-        /// The repository.
-        /// </summary>
-        private readonly IWelcomeUserRepository repository;
-
-        /// <summary>
         /// The message service.
         /// </summary>
         private readonly IMessageService messageService;
+
+        /// <summary>
+        /// The session.
+        /// </summary>
+        private readonly ISession session;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="JoinMessageService"/> class.
@@ -66,18 +67,18 @@ namespace Helpmebot.Services
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="repository">
-        /// The repository.
-        /// </param>
         /// <param name="messageService">
         /// The message Service.
         /// </param>
-        public JoinMessageService(IIrcClient ircClient, ILogger logger, IWelcomeUserRepository repository, IMessageService messageService)
+        /// <param name="session">
+        /// The session.
+        /// </param>
+        public JoinMessageService(IIrcClient ircClient, ILogger logger, IMessageService messageService, ISession session)
         {
             this.ircClient = ircClient;
             this.logger = logger;
-            this.repository = repository;
             this.messageService = messageService;
+            this.session = session;
         }
 
         /// <summary>
@@ -91,7 +92,13 @@ namespace Helpmebot.Services
         /// </param>
         public void Welcome(IUser networkUser, string channel)
         {
-            List<WelcomeUser> users = this.repository.GetWelcomeForChannel(channel).ToList();
+            // status
+            bool match = false;
+
+            this.logger.DebugFormat("Searching for welcome matches for {0} in {1}...", networkUser, channel);
+
+            var users = this.GetWelcomeUsers(channel);
+
             if (users.Any())
             {
                 foreach (var welcomeUser in users)
@@ -102,25 +109,86 @@ namespace Helpmebot.Services
 
                     if (nick.Success && user.Success && host.Success)
                     {
-                        var welcomeMessage = this.messageService.RetrieveMessage(
-                            "WelcomeMessage",
+                        this.logger.DebugFormat(
+                            "Found a match for {0} in {1} with {2}",
+                            networkUser,
                             channel,
-                            new[] { networkUser.Nickname, channel });
-
-                        this.logger.DebugFormat("Welcoming {0} in channel {1}", networkUser, channel);
-
-                        this.ircClient.SendMessage(channel, welcomeMessage);
-                    }
-                    else
-                    {
-                        this.logger.InfoFormat("Unable to find welcomer match for {0} in channel {1}", networkUser, channel);
+                            welcomeUser);
+                        match = true;
+                        break;
                     }
                 }
             }
-            else
+
+            if (!match)
             {
-                this.logger.InfoFormat("No welcome definitions for {0} were found.", channel);
+                this.logger.InfoFormat("No welcome matches found for {0} in {1}.", networkUser, channel);
+                return;
             }
+
+            this.logger.DebugFormat("Searching for exception matches for {0} in {1}...", networkUser, channel);
+
+            var exceptions = this.GetExceptions(channel);
+
+            if (exceptions.Any())
+            {
+                foreach (var welcomeUser in exceptions)
+                {
+                    Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
+                    Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
+                    Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
+
+                    if (nick.Success && user.Success && host.Success)
+                    {
+                        this.logger.DebugFormat(
+                            "Found an exception match for {0} in {1} with {2}",
+                            networkUser,
+                            channel,
+                            welcomeUser);
+
+                        return;
+                    }
+                }
+            }
+
+            this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
+
+            var welcomeMessage = this.messageService.RetrieveMessage(
+                "WelcomeMessage",
+                channel,
+                new[] { networkUser.Nickname, channel });
+
+            this.ircClient.SendMessage(channel, welcomeMessage);
+        }
+
+        /// <summary>
+        /// The get exceptions.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IList"/>.
+        /// </returns>
+        public virtual IList<WelcomeUser> GetExceptions(string channel)
+        {
+            var exceptions = this.session.QueryOver<WelcomeUser>().Where(x => x.Channel == channel && x.Exception).List();
+            return exceptions;
+        }
+
+        /// <summary>
+        /// The get welcome users.
+        /// </summary>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IList"/>.
+        /// </returns>
+        public virtual IList<WelcomeUser> GetWelcomeUsers(string channel)
+        {
+            var users = this.session.QueryOver<WelcomeUser>().Where(x => x.Channel == channel && x.Exception == false).List();
+            return users;
         }
     }
 }

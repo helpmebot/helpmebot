@@ -17,10 +17,11 @@
 //   Controls the newbie welcomer
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace helpmebot6.Commands
 {
+    using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
 
     using Helpmebot;
@@ -28,11 +29,10 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
-    using NHibernate.Criterion;
+    using NHibernate;
     using NHibernate.Linq;
 
     /// <summary>
@@ -40,6 +40,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Welcomer : GenericCommand
     {
+        /// <summary>
+        /// The database session.
+        /// </summary>
+        private readonly ISession databaseSession;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="Welcomer"/> class.
         /// </summary>
@@ -58,6 +63,7 @@ namespace helpmebot6.Commands
         public Welcomer(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
+            this.databaseSession = ServiceLocator.Current.GetInstance<ISession>();
         }
 
         /// <summary>
@@ -68,68 +74,145 @@ namespace helpmebot6.Commands
         {
             var response = new CommandResponseHandler();
 
-            var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length == 0)
             {
-                response.Respond(messageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
+                response.Respond(this.CommandServiceHelper.MessageService.NotEnoughParameters(this.Channel, "Welcomer", 1, 0));
                 return response;
             }
-
-            // FIXME: ServiceLocator - welcomeuserrepo
-            var repository = ServiceLocator.Current.GetInstance<IWelcomeUserRepository>();
-
+            
             List<string> argumentsList = this.Arguments.ToList();
             var mode = argumentsList.PopFromFront();
+
+            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
 
             switch (mode.ToLower())
             {
                 case "enable":
                 case "disable":
                     response.Respond(
-                        messageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
+                        this.CommandServiceHelper.MessageService.RetrieveMessage("Welcomer-ObsoleteOption", this.Channel, new[] { mode }),
                         CommandResponseDestination.PrivateMessage);
                     break;
                 case "add":
-                    var welcomeUser = new WelcomeUser
-                                          {
-                                              Nick = ".*",
-                                              User = ".*",
-                                              Host = string.Join(" ", argumentsList.ToArray()),
-                                              Channel = this.Channel,
-                                              Exception = false
-                                          };
-                    repository.Save(welcomeUser);
-
-                    response.Respond(messageService.Done(this.Channel));
+                    this.AddMode(argumentsList, response);
                     break;
                 case "del":
-                case "Delete":
+                case "delete":
                 case "remove":
-
-                    this.Log.Debug("Getting list of welcomeusers ready for deletion!");
-
-                    // TODO: move to repository.
-                    var criteria = Restrictions.And(
-                        Restrictions.Eq("Host", string.Join(" ", argumentsList.ToArray())),
-                        Restrictions.Eq("Channel", this.Channel));
-
-                    var welcomeUsers = repository.Get(criteria);
-
-                    this.Log.Debug("Got list of WelcomeUsers, proceeding to Delete...");
-
-                    repository.Delete(welcomeUsers);
-
-                    this.Log.Debug("All done, cleaning up and sending message to IRC");
-
-                    response.Respond(messageService.Done(this.Channel));
+                    this.DeleteMode(argumentsList, response);
                     break;
                 case "list":
-                    var welcomeForChannel = repository.GetWelcomeForChannel(this.Channel);
-                    welcomeForChannel.ForEach(x => response.Respond(x.Host));
+                    this.ListMode(response);
                     break;
             }
             
             return response;
+        }
+
+        /// <summary>
+        /// The delete mode.
+        /// </summary>
+        /// <param name="argumentsList">
+        /// The arguments list.
+        /// </param>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        private void DeleteMode(List<string> argumentsList, CommandResponseHandler response)
+        {
+            try
+            {
+                this.Log.Debug("Getting list of welcomeusers ready for deletion!");
+
+                var exception = false;
+
+                if (argumentsList[0] == "@ignore")
+                {
+                    exception = true;
+                    argumentsList.RemoveAt(0);
+                }
+
+                var implode = argumentsList.Implode();
+
+                var welcomeUsers =
+                    this.databaseSession.QueryOver<WelcomeUser>()
+                        .Where(x => x.Exception == exception && x.Host == implode && x.Channel == this.Channel)
+                        .List();
+
+                this.Log.Debug("Got list of WelcomeUsers, proceeding to Delete...");
+
+                welcomeUsers.ForEach(this.databaseSession.Delete);
+
+                this.Log.Debug("All done, cleaning up and sending message to IRC");
+
+                response.Respond(this.CommandServiceHelper.MessageService.Done(this.Channel));
+
+                this.databaseSession.Transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                this.Log.Error("Error occurred during addition of welcome mask.", e);
+                response.Respond(e.Message);
+                this.databaseSession.Transaction.Rollback();
+            }
+        }
+
+        /// <summary>
+        /// The add mode.
+        /// </summary>
+        /// <param name="argumentsList">
+        /// The arguments list.
+        /// </param>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        private void AddMode(List<string> argumentsList, CommandResponseHandler response)
+        {
+            try
+            {
+                var exception = false;
+
+                if (argumentsList[0] == "@ignore")
+                {
+                    exception = true;
+                    argumentsList.RemoveAt(0);
+                }
+
+                var welcomeUser = new WelcomeUser
+                                      {
+                                          Nick = ".*",
+                                          User = ".*",
+                                          Host = argumentsList.Implode(),
+                                          Channel = this.Channel,
+                                          Exception = exception
+                                      };
+
+                this.databaseSession.Save(welcomeUser);
+
+                response.Respond(this.CommandServiceHelper.MessageService.Done(this.Channel));
+
+                this.databaseSession.Transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                this.Log.Error("Error occurred during addition of welcome mask.", e);
+                response.Respond(e.Message);
+
+                this.databaseSession.Transaction.Rollback();
+            }
+        }
+
+        /// <summary>
+        /// The list mode.
+        /// </summary>
+        /// <param name="response">
+        /// The response.
+        /// </param>
+        private void ListMode(CommandResponseHandler response)
+        {
+            var welcomeForChannel =
+                this.databaseSession.QueryOver<WelcomeUser>().Where(x => x.Channel == this.Channel).List();
+            welcomeForChannel.ForEach(x => response.Respond(x.ToString()));
         }
     }
 }
