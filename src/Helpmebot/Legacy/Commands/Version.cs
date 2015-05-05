@@ -22,7 +22,6 @@ namespace helpmebot6.Commands
 {
 #if !DEBUG
     using System;
-    using Helpmebot.ExtensionMethods;
 #endif
 
     using System.Collections.Generic;
@@ -82,7 +81,7 @@ namespace helpmebot6.Commands
 #else
                                       version.Build.ToString(CultureInfo.InvariantCulture),
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
-                                      date.ToInternetFormat()
+                                      date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 #endif
                                   };
 
