@@ -126,7 +126,12 @@ namespace Helpmebot.Legacy.Model
                         command.Parameters.AddWithValue("@user", this.Username);
                         command.Parameters.AddWithValue("@host", this.Hostname);
 
-                        string accesslevel = this.db.ExecuteScalarSelect(command) ?? "Normal";
+                        string accesslevel = this.db.ExecuteScalarSelect(command);
+
+                        if (string.IsNullOrEmpty(accesslevel))
+                        {
+                            accesslevel = "Normal";
+                        }
 
                         var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);
 
@@ -243,6 +248,9 @@ namespace Helpmebot.Legacy.Model
         {
             string user, host;
             string nick = user = host = null;
+
+            var logger = ServiceLocator.Current.GetInstance<ILogger>();
+
             try
             {
                 if (source.Contains("@") && source.Contains("!"))
@@ -267,7 +275,7 @@ namespace Helpmebot.Legacy.Model
             }
             catch (IndexOutOfRangeException ex)
             {
-                ServiceLocator.Current.GetInstance<ILogger>().Error(ex.Message, ex);
+                logger.Error(ex.Message, ex);
             }
 
             if (nick == null)
@@ -275,7 +283,7 @@ namespace Helpmebot.Legacy.Model
                 return null;
             }
 
-            var ret = new LegacyUser { Hostname = host, Nickname = nick, Username = user, Network = network };
+            var ret = new LegacyUser { Hostname = host, Nickname = nick, Username = user, Network = network, Log = logger };
             return ret;
         }
 
