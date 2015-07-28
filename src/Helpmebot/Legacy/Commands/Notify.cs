@@ -21,10 +21,12 @@
 namespace helpmebot6.Commands
 {
     using System.Collections.Generic;
+    using System.Globalization;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
 
     /// <summary>
     /// The notify.
@@ -104,7 +106,12 @@ namespace helpmebot6.Commands
             var messageService = this.CommandServiceHelper.MessageService;
             if (this.Arguments.Length != 1)
             {
-                return new CommandResponseHandler(messageService.RetrieveMessage("argsExpected1", this.Channel, new[] { "nickname" }));
+                return
+                    new CommandResponseHandler(
+                        messageService.RetrieveMessage(
+                            Messages.NotEnoughParameters,
+                            this.Channel,
+                            new[] { "notify", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture) }));
             }
 
             string trigger;
