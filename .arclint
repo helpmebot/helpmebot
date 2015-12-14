@@ -1,8 +1,0 @@
-{
-  "linters": {
-    "sample": {
-      "type": "csharp",
-      "include": "(\\.cs$)"
-    }
-  }
-}
