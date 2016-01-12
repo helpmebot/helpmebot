@@ -97,7 +97,11 @@ namespace Helpmebot.Tests.Services
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
+            this.joinMessageService.Setup(x => x.GetWelcomeUsers("ef"))
+                .Returns(new List<WelcomeUser> { this.welcomeUser });
             this.joinMessageService.Setup(x => x.GetExceptions("ab"))
+                .Returns(new List<WelcomeUser> { this.ignoreUser });
+            this.joinMessageService.Setup(x => x.GetExceptions("ef"))
                 .Returns(new List<WelcomeUser> { this.ignoreUser });
 
             this.joinMessageService.CallBase = true;
@@ -199,6 +203,86 @@ namespace Helpmebot.Tests.Services
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+        }
+
+        /// <summary>
+        /// The should rate limit.
+        /// </summary>
+        [Test]
+        public void ShouldRateLimitByHostname()
+        {
+            var networkUser = new Mock<IUser>();
+            networkUser.SetupAllProperties();
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "ab/test";
+
+            var networkUser2 = new Mock<IUser>();
+            networkUser2.SetupAllProperties();
+            networkUser2.Object.Nickname = "ab";
+            networkUser2.Object.Username = "ab";
+            networkUser2.Object.Hostname = "ab/test2";
+
+            this.joinMessageService.Object.ClearRateLimitCache();
+
+            // act
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser2.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+
+            // assert
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Exactly(2));
+        }
+
+        /// <summary>
+        /// The should rate limit.
+        /// </summary>
+        [Test]
+        public void ShouldRateLimit()
+        {
+            var networkUser = new Mock<IUser>();
+            networkUser.SetupAllProperties();
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "ab/test";
+
+            this.joinMessageService.Object.ClearRateLimitCache();
+
+            // act
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+
+            // assert
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
+        }
+
+        /// <summary>
+        /// The should rate limit.
+        /// </summary>
+        [Test]
+        public void ShouldRateLimitByChannel()
+        {
+            var networkUser = new Mock<IUser>();
+            networkUser.SetupAllProperties();
+            networkUser.Object.Nickname = "ab";
+            networkUser.Object.Username = "ab";
+            networkUser.Object.Hostname = "ab/test";
+
+            this.joinMessageService.Object.ClearRateLimitCache();
+
+            // act
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ef");
+            this.joinMessageService.Object.Welcome(networkUser.Object, "ef");
+
+            // assert
+            this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
+            this.ircNetwork.Verify(x => x.SendMessage("ef", It.IsAny<string>()), Times.Once());
         }
     }
 }
