@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -32,12 +33,36 @@ namespace Helpmebot.Services
     using Helpmebot.Services.Interfaces;
 
     using NHibernate;
+    using NHibernate.Linq;
+
+    using Cache = System.Collections.Generic.Dictionary<string, NHibernate.Linq.Tuple<System.DateTime, int>>;
 
     /// <summary>
     /// The join message service.
     /// </summary>
     public class JoinMessageService : IJoinMessageService
     {
+        /// <summary>
+        /// The rate limit max.
+        /// </summary>
+        /// <remarks>
+        /// TODO: push this into a config option
+        /// </remarks>
+        private const int RateLimitMax = 1;
+
+        /// <summary>
+        /// The rate limit duration in minutes
+        /// </summary>
+        /// <remarks>
+        /// TODO: push this into a config option
+        /// </remarks>
+        private const int RateLimitDuration = 10;
+
+        /// <summary>
+        /// The rate limit cache.
+        /// </summary>
+        private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
+
         /// <summary>
         /// The IRC network.
         /// </summary>
@@ -92,6 +117,12 @@ namespace Helpmebot.Services
         /// </param>
         public void Welcome(IUser networkUser, string channel)
         {
+            // Rate limit this per hostname/channel
+            if (this.RateLimit(networkUser.Hostname, channel))
+            {
+                return;
+            }
+
             // status
             bool match = false;
 
@@ -189,6 +220,105 @@ namespace Helpmebot.Services
         {
             var users = this.session.QueryOver<WelcomeUser>().Where(x => x.Channel == channel && x.Exception == false).List();
             return users;
+        }
+
+        /// <summary>
+        /// The clear rate limit cache.
+        /// </summary>
+        public void ClearRateLimitCache()
+        {
+            lock (this.rateLimitCache)
+            {
+                this.rateLimitCache.Clear();
+            }
+        }
+
+        /// <summary>
+        /// The rate limit.
+        /// </summary>
+        /// <param name="hostname">
+        /// The hostname.
+        /// </param>
+        /// <param name="channel">
+        /// The channel.
+        /// </param>
+        /// <returns>
+        /// true if rate limited, false otherwise
+        /// </returns>
+        private bool RateLimit(string hostname, string channel)
+        {
+            try
+            {
+                // TODO: rate limiting needs to be tidyed up a bit
+                lock (this.rateLimitCache)
+                {
+                    if (!this.rateLimitCache.ContainsKey(channel))
+                    {
+                        this.rateLimitCache.Add(channel, new Cache());
+                    }
+
+                    var channelCache = this.rateLimitCache[channel];
+
+                    if (channelCache.ContainsKey(hostname))
+                    {
+                        this.logger.Debug("Rate limit key found.");
+
+                        var cacheEntry = channelCache[hostname];
+
+                        if (cacheEntry.First.AddMinutes(RateLimitDuration) >= DateTime.Now)
+                        {
+                            this.logger.Debug("Rate limit key NOT expired.");
+
+                            if (cacheEntry.Second >= RateLimitMax)
+                            {
+                                this.logger.Debug("Rate limit HIT");
+
+                                // RATE LIMITED!
+                                return true;
+                            }
+
+                            this.logger.Debug("Rate limit incremented.");
+
+                            // increment counter
+                            cacheEntry.Second++;
+                        }
+                        else
+                        {
+                            this.logger.Debug("Rate limit key is expired, resetting to new value.");
+
+                            // Cache expired
+                            cacheEntry.First = DateTime.Now;
+                            cacheEntry.Second = 1;
+                        }
+                    }
+                    else
+                    {
+                        this.logger.Debug("Rate limit not found, creating key.");
+
+                        // Not in cache.
+                        var cacheEntry = new Tuple<DateTime, int> { First = DateTime.Now, Second = 1 };
+                        channelCache.Add(hostname, cacheEntry);
+                    }
+
+                    // Clean up the channel's cache.
+                    foreach (var key in channelCache.Keys.ToList())
+                    {
+                        if (channelCache[key].First.AddMinutes(RateLimitDuration) < DateTime.Now)
+                        {
+                            // Expired.
+                            channelCache.Remove(key);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // ooh dear. Something went wrong with rate limiting.
+                this.logger.Error("Unknown error during rate limit processing.", ex);
+                return false;
+            }
+
+            return false;
         }
     }
 }

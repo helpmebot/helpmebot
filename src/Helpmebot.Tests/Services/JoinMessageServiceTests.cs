@@ -117,6 +117,8 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Username = "ab";
             networkUser.Object.Hostname = "cd/test";
 
+            this.joinMessageService.Object.ClearRateLimitCache();
+
             // act
             this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
 
@@ -138,6 +140,8 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Username = "ign";
             networkUser.Object.Hostname = "ab/test";
 
+            this.joinMessageService.Object.ClearRateLimitCache();
+
             // act
             this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
 
@@ -158,6 +162,8 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Nickname = "ab";
             networkUser.Object.Username = "ab";
             networkUser.Object.Hostname = "ab/test";
+
+            this.joinMessageService.Object.ClearRateLimitCache();
 
             // act
             this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
@@ -184,6 +190,8 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Nickname = "ab";
             networkUser.Object.Username = "ab";
             networkUser.Object.Hostname = "ab/test";
+
+            this.joinMessageService.Object.ClearRateLimitCache();
 
             // act
             this.joinMessageService.Object.Welcome(networkUser.Object, "cd");

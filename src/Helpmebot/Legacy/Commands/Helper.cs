@@ -16,15 +16,45 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace helpmebot6.Commands
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using Castle.Core;
+
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+
+    using NHibernate.Linq;
 
     /// <summary>
     ///     Triggers an inter-channel alert
     /// </summary>
     internal class Helper : GenericCommand
     {
+        /// <summary>
+        /// The rate limit max.
+        /// </summary>
+        /// <remarks>
+        /// TODO: push this into a config option
+        /// </remarks>
+        private const int RateLimitMax = 2;
+
+        /// <summary>
+        /// The rate limit duration in minutes
+        /// </summary>
+        /// <remarks>
+        /// TODO: push this into a config option
+        /// </remarks>
+        private const int RateLimitDuration = 5;
+
+        /// <summary>
+        /// The rate limit cache.
+        /// </summary>
+        private static readonly Dictionary<string, Tuple<DateTime, int>> RateLimitCache =
+            new Dictionary<string, Tuple<DateTime, int>>();
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -52,7 +82,7 @@ namespace helpmebot6.Commands
         #region Methods
 
         /// <summary>
-        ///     Actual command logic
+        /// Actual command logic
         /// </summary>
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
@@ -60,6 +90,11 @@ namespace helpmebot6.Commands
             // TODO: this needs putting into its own subsystem, messageifying, configifying, etc.
             if (this.Channel == "#wikipedia-en-help")
             {
+                if (this.RateLimit())
+                {
+                    return null;
+                }
+
                 string message = "[HELP]: " + this.Source + " needs help in #wikipedia-en-help !";
                 if (this.Arguments.Length > 0)
                 {
@@ -70,6 +105,72 @@ namespace helpmebot6.Commands
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// The rate limit.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
+        private bool RateLimit()
+        {
+            // TODO: rate limiting needs to be tidyed up a bit
+            lock (RateLimitCache)
+            {
+                if (RateLimitCache.ContainsKey(this.Source.Hostname))
+                {
+                    this.Log.Debug("Rate limit key found.");
+
+                    var cacheEntry = RateLimitCache[this.Source.Hostname];
+
+                    if (cacheEntry.First.AddMinutes(RateLimitDuration) >= DateTime.Now)
+                    {
+                        this.Log.Debug("Rate limit key NOT expired.");
+
+                        if (cacheEntry.Second >= RateLimitMax)
+                        {
+                            this.Log.Debug("Rate limit HIT");
+
+                            // RATE LIMITED!
+                            return true;
+                        }
+
+                        this.Log.Debug("Rate limit incremented.");
+
+                        // increment counter
+                        cacheEntry.Second++;
+                    }
+                    else
+                    {
+                        this.Log.Debug("Rate limit key is expired, resetting to new value.");
+
+                        // Cache expired
+                        cacheEntry.First = DateTime.Now;
+                        cacheEntry.Second = 1;
+                    }
+                }
+                else
+                {
+                    this.Log.Debug("Rate limit not found, creating key.");
+
+                    // Not in cache.
+                    var cacheEntry = new Tuple<DateTime, int> { First = DateTime.Now, Second = 1 };
+                    RateLimitCache.Add(this.Source.Hostname, cacheEntry);
+                }
+
+                // Clean up the cache
+                foreach (var key in RateLimitCache.Keys.ToList())
+                {
+                    if (RateLimitCache[key].First.AddMinutes(RateLimitDuration) < DateTime.Now)
+                    {
+                        // Expired.
+                        RateLimitCache.Remove(key);
+                    }
+                }
+            }
+
+            return false;
         }
 
         #endregion
