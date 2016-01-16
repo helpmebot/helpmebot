@@ -35,7 +35,9 @@ namespace Helpmebot.Services
     using NHibernate;
     using NHibernate.Linq;
 
+    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
     using Cache = System.Collections.Generic.Dictionary<string, NHibernate.Linq.Tuple<System.DateTime, int>>;
+    
 
     /// <summary>
     /// The join message service.
@@ -296,7 +298,7 @@ namespace Helpmebot.Services
                         this.logger.Debug("Rate limit not found, creating key.");
 
                         // Not in cache.
-                        var cacheEntry = new Tuple<DateTime, int> { First = DateTime.Now, Second = 1 };
+                        var cacheEntry = new RateLimitCacheEntry { First = DateTime.Now, Second = 1 };
                         channelCache.Add(hostname, cacheEntry);
                     }
 

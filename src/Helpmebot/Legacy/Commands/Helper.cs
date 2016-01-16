@@ -26,7 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
-    using NHibernate.Linq;
+    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
 
     /// <summary>
     ///     Triggers an inter-channel alert
@@ -52,8 +52,8 @@ namespace helpmebot6.Commands
         /// <summary>
         /// The rate limit cache.
         /// </summary>
-        private static readonly Dictionary<string, Tuple<DateTime, int>> RateLimitCache =
-            new Dictionary<string, Tuple<DateTime, int>>();
+        private static readonly Dictionary<string, RateLimitCacheEntry> RateLimitCache =
+            new Dictionary<string, RateLimitCacheEntry>();
 
         #region Constructors and Destructors
 
@@ -155,7 +155,7 @@ namespace helpmebot6.Commands
                     this.Log.Debug("Rate limit not found, creating key.");
 
                     // Not in cache.
-                    var cacheEntry = new Tuple<DateTime, int> { First = DateTime.Now, Second = 1 };
+                    var cacheEntry = new RateLimitCacheEntry { First = DateTime.Now, Second = 1 };
                     RateLimitCache.Add(this.Source.Hostname, cacheEntry);
                 }
 
