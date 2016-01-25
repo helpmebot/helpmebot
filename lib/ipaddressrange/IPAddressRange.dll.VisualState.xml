@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ShowCheckBoxes="false">
+  <TopNode>[0-1000]C:\Users\Simon\Documents\Visual Studio 2015\Projects\ConsoleApplication1\packages\IPAddressRange.1.0.2.0\lib\net40\IPAddressRange.dll</TopNode>
+  <SelectedNode>[0-1000]C:\Users\Simon\Documents\Visual Studio 2015\Projects\ConsoleApplication1\packages\IPAddressRange.1.0.2.0\lib\net40\IPAddressRange.dll</SelectedNode>
+  <ExcludeCategories>false</ExcludeCategories>
+  <Nodes />
+</VisualState>

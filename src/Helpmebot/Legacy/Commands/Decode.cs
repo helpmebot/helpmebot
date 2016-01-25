@@ -70,19 +70,14 @@ namespace helpmebot6.Commands
 
             var validHexIp = new Regex("^[0-9A-Fa-f]{8}$");
 
+            var input = this.Arguments[0];
 
-            if (!validHexIp.Match(this.Arguments[0]).Success)
+            if (!validHexIp.Match(input).Success)
             {
                 return new CommandResponseHandler(messageService.RetrieveMessage("DecodeBadInput", this.Channel, new string[0]));
             }
 
-            var ip = new byte[4];
-            ip[0] = Convert.ToByte(this.Arguments[0].Substring(0, 2), 16);
-            ip[1] = Convert.ToByte(this.Arguments[0].Substring(2, 2), 16);
-            ip[2] = Convert.ToByte(this.Arguments[0].Substring(4, 2), 16);
-            ip[3] = Convert.ToByte(this.Arguments[0].Substring(6, 2), 16);
-
-            var ipAddr = new IPAddress(ip);
+            var ipAddr = GetIpAddressFromHex(input);
 
             string hostname = string.Empty;
 
@@ -96,14 +91,35 @@ namespace helpmebot6.Commands
 
             if (hostname != string.Empty)
             {
-                string[] messageargs = { this.Arguments[0], ipAddr.ToString(), hostname };
+                string[] messageargs = { input, ipAddr.ToString(), hostname };
                 return new CommandResponseHandler(messageService.RetrieveMessage("hexDecodeResult", this.Channel, messageargs));
             }
             else
             {
-                string[] messageargs = { this.Arguments[0], ipAddr.ToString() };
+                string[] messageargs = { input, ipAddr.ToString() };
                 return new CommandResponseHandler(messageService.RetrieveMessage("hexDecodeResultNoResolve", this.Channel, messageargs));
             }
+        }
+
+        /// <summary>
+        /// The get ip address from hex.
+        /// </summary>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// The <see cref="IPAddress"/>.
+        /// </returns>
+        public static IPAddress GetIpAddressFromHex(string input)
+        {
+            var ip = new byte[4];
+            ip[0] = Convert.ToByte(input.Substring(0, 2), 16);
+            ip[1] = Convert.ToByte(input.Substring(2, 2), 16);
+            ip[2] = Convert.ToByte(input.Substring(4, 2), 16);
+            ip[3] = Convert.ToByte(input.Substring(6, 2), 16);
+
+            var ipAddr = new IPAddress(ip);
+            return ipAddr;
         }
     }
 }

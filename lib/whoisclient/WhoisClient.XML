@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WhoisClient</name>
+    </assembly>
+    <members>
+        <member name="M:Whois.NET.WhoisClient.Query(System.String,System.String,System.Int32,System.Text.Encoding)">
+            <summary>
+            Send WHOIS query to WHOIS server, requery to referral servers recursive, and return the response from WHOIS server.
+            </summary>
+            <param name="query">domain name (ex."nic.ad.jp")or IP address (ex."192.41.192.40") to be queried.</param>
+            <param name="server">FQDN of whois server (ex."whois.arin.net"). This parameter is optional (default value is null) to determine server automatically.</param>
+            <param name="port">TCP port number to connect whois server. This parameter is optional, and default value is 43.</param>
+            <param name="encoding">Encoding method to decode the result of query. This parameter is optional (default value is null) to using ASCII encoding.</param>
+            <returns>The strong typed result of query which responded from WHOIS server.</returns>
+        </member>
+        <member name="M:Whois.NET.WhoisClient.RawQuery(System.String,System.String,System.Int32,System.Text.Encoding)">
+            <summary>
+            Send simple WHOIS query to WHOIS server, and return the response from WHOIS server.
+            (No requery to referral servers, and No parse the result of query.)
+            </summary>
+            <param name="query">domain name (ex."nic.ad.jp")or IP address (ex."192.41.192.40") to be queried.</param>
+            <param name="server">FQDN of whois server (ex."whois.arin.net").</param>
+            <param name="port">TCP port number to connect whois server. This parameter is optional, and default value is 43.</param>
+            <param name="encoding">Encoding method to decode the result of query. This parameter is optional (default value is null) to using ASCII encoding.</param>
+            <returns>The raw data decoded by encoding parameter from WHOIS server responded.</returns>
+        </member>
+        <member name="P:Whois.NET.WhoisResponse.RespondedServers">
+            <summary>
+            FQDN of WHOIS servers which sent query. The last element is the WHOIS server name that latest queried.
+            </summary>
+        </member>
+    </members>
+</doc>
