@@ -56,37 +56,37 @@ namespace helpmebot6.Commands
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
-        {
-            return this.GetSizeOfCategory("Pending AfC submissions");
-            if (CommandResponseHandler(message) = 0) {
-                "There are no new AfC submissions."
+        {\
+            int size = this.GetSizeOfCategory("Pending AfC submissions");
+            if(size = 0){
+              return new CommandResponseHandler("There are no new AfC submissions.");
             }
-            else if (CommandResponseHandler(message) < 200) {
-                "AfC is clearing out."
+            else if (size < 200) {
+                return new CommandResponseHandler("AfC is clearing out.");
             }
-            else if (CommandResponseHandler(message) < 400) {
-                "There is a normal backlog at AfC."
+            else if (size < 400) {
+                return new CommandResponseHandler("There is a normal backlog at AfC.");
             }
-            else if (CommandResponseHandler(message) < 650) {
-                "AfC is semi-backlogged at the moment."
+            else if (size < 650) {
+                return new CommandResponseHandler("AfC is semi-backlogged at the moment.");
             }
-            else if (CommandResponseHandler(message) < 900) {
-                "There is a backlog at AfC."
+            else if (size < 900) {
+                return new CommandResponseHandler("There is a backlog at AfC.");
             }
-            else if (CommandResponseHandler(message) < 1200) {
-                "AfC is highly backlogged at the moment."
+            else if (size < 1200) {
+                return new CommandResponseHandler("AfC is highly backlogged at the moment.");
             }
-            else if (CommandResponseHandler(message) < 2000) {
-                "There is a severe backlog at AfC."
+            else if (size < 2000) {
+                return new CommandResponseHandler("There is a severe backlog at AfC.");
             }
-            else if (CommandResponseHandler(message) < 4000) {
-                "AfC is critically backlogged."
+            else if (size < 4000) {
+                return new CommandResponseHandler("AfC is critically backlogged.");
             }
-            else if (CommandResponseHandler(message) < 10000) {
-                "AfC is out of order."
+            else if (size < 10000) {
+                return new CommandResponseHandler("AfC is out of order.");
             }
             else {
-                "I am clueless to the backlog at AfC. Please contact my owner, stwalkster."
+                return new CommandResponseHandler("I am clueless to the backlog at AfC. Please contact my owner, stwalkster.");
             }
         }
     }
