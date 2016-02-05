@@ -56,7 +56,7 @@ namespace helpmebot6.Commands
         /// The <see cref="CommandResponseHandler"/>.
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
-        {\
+        {
             int size = this.GetSizeOfCategory("Pending AfC submissions");
             if(size = 0){
               return new CommandResponseHandler("There are no new AfC submissions.");
