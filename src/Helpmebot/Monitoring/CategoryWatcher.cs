@@ -20,6 +20,7 @@ namespace Helpmebot.Monitoring
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
 
     using Castle.Core.Logging;
@@ -276,11 +277,25 @@ namespace Helpmebot.Monitoring
                 while (true)
                 {
                     Thread.Sleep(this.SleepTime * 1000);
-                    IEnumerable<string> categoryResults = this.DoCategoryCheck().ToList();
-                    if (categoryResults.Any())
+
+                    try
                     {
-                        this.CategoryHasItemsEvent(this, new CategoryHasItemsEventArgs(categoryResults, this.key));
+                        var categoryCheckResult = this.DoCategoryCheck();
+                        IEnumerable<string> categoryResults = categoryCheckResult.ToList();
+                        
+                        if (categoryResults.Any())
+                        {
+                            var onCategoryHasItemsEvent = this.CategoryHasItemsEvent;
+                            if (onCategoryHasItemsEvent != null)
+                            {
+                                onCategoryHasItemsEvent(this, new CategoryHasItemsEventArgs(categoryResults, this.key));
+                            }
+                        }
                     }
+                    catch (WebException e)
+                    {
+                        this.logger.Warn(e.Message, e);
+                    }                    
                 }
             }
             catch (ThreadAbortException)
