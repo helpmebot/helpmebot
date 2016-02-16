@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Globalization;
     using System.IO;
     using System.Web;
 
@@ -29,6 +30,7 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Model;
 
     using HttpRequest = Helpmebot.HttpRequest;
 
@@ -66,29 +68,26 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             var args = this.Arguments;
-            
-            var deployInProgressMessage = this.CommandServiceHelper.MessageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
+
+            var messageService = this.CommandServiceHelper.MessageService;
+
+            var deployInProgressMessage = messageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
             this.CommandServiceHelper.Client.SendMessage(this.Channel, deployInProgressMessage);
 
             string revision;
 
-            bool showUrl = false;
+            if (args.Length <= 0 || args[0] == string.Empty)
+            {
+                string[] messageParameters = { "accdeploy", "1", args.Length.ToString(CultureInfo.InvariantCulture) };
+                this.CommandServiceHelper.Client.SendNotice(
+                    this.Source.Nickname,
+                    messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters));
 
-            if (args[0].ToLower() == "@url")
-            {
-                showUrl = true;
-                GlobalFunctions.PopFromFront(ref args);
+                return null;
             }
 
-            if (args.Length > 0 && args[0] != string.Empty)
-            {
-                revision = string.Join(" ", args);
-            }
-            else
-            {
-                throw new ArgumentException();
-            }
-            
+            revision = string.Join(" ", args);
+
             string apiDeployPassword = LegacyConfig.Singleton()["accDeployPassword"];
 
             string key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
@@ -102,10 +101,6 @@ namespace helpmebot6.Commands
                 var r = new StreamReader(data);
 
                 var crh = new CommandResponseHandler();
-                if (showUrl)
-                {
-                    crh.Respond(requestUri, CommandResponseDestination.PrivateMessage);
-                }
 
                 foreach (var x in r.ReadToEnd().Split('\n', '\r'))
                 {

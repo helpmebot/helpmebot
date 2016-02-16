@@ -74,10 +74,13 @@ namespace helpmebot6.Commands
             var action = false;
             var args = this.Arguments.ToList();
 
-            if (args[0] == "@action")
+            if (args.Count > 3)
             {
-                action = true;
-                args.PopFromFront();
+                if (args[0] == "@action")
+                {
+                    action = true;
+                    args.PopFromFront();
+                }
             }
 
             var messageService = this.CommandServiceHelper.MessageService;
