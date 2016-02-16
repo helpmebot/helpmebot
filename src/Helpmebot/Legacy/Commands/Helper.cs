@@ -115,6 +115,12 @@ namespace helpmebot6.Commands
         /// </returns>
         private bool RateLimit()
         {
+            if (this.Source == null || this.Source.Hostname == null)
+            {
+                this.Log.Error("Rate limiting called with no source or no source hostname!");
+                return true;
+            }
+
             // TODO: rate limiting needs to be tidyed up a bit
             lock (RateLimitCache)
             {

@@ -35,8 +35,8 @@ namespace Helpmebot.Services
     using NHibernate;
     using NHibernate.Linq;
 
-    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
     using Cache = System.Collections.Generic.Dictionary<string, NHibernate.Linq.Tuple<System.DateTime, int>>;
+    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
     
 
     /// <summary>
@@ -249,6 +249,13 @@ namespace Helpmebot.Services
         /// </returns>
         private bool RateLimit(string hostname, string channel)
         {
+            if (string.IsNullOrEmpty(hostname) || string.IsNullOrEmpty(channel))
+            {
+                // sanity check - this probably chanserv.
+                this.logger.Error("JoinMessage ratelimiting called with null channel or null hostname!");
+                return true;
+            }
+
             try
             {
                 // TODO: rate limiting needs to be tidyed up a bit
