@@ -152,7 +152,10 @@ namespace helpmebot6.Commands
             }
             else
             {
-                string[] messageParameters = { editCount.ToString(CultureInfo.InvariantCulture), userName };
+                var xtoolsUrl = string.Format("https://tools.wmflabs.org/xtools-ec/index.php?user={0}&project=en.wikipedia.org", userName);
+                var xtoolsShortUrl = this.CommandServiceHelper.UrlShorteningService.Shorten(xtoolsUrl);
+
+                string[] messageParameters = { editCount.ToString(CultureInfo.InvariantCulture), userName, xtoolsShortUrl };
 
                 string message = messageService.RetrieveMessage("editCount", this.Channel, messageParameters);
 
