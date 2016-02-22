@@ -538,7 +538,7 @@ namespace Helpmebot.IRC
                     cachedUser.Account = parameters[0];
 
                     // flesh out the skeleton
-                    if (cachedUser.Skeleton)
+                    if (cachedUser.Skeleton && !((IrcUser)user).Skeleton)
                     {
                         cachedUser.Username = user.Username;
                         cachedUser.Hostname = user.Hostname;
@@ -649,7 +649,7 @@ namespace Helpmebot.IRC
                     var cachedUser = this.userCache[user1.Nickname];
 
                     // flesh out the skeleton
-                    if (cachedUser.Skeleton)
+                    if (cachedUser.Skeleton && !((IrcUser)user).Skeleton)
                     {
                         cachedUser.Hostname = user1.Hostname;
                         cachedUser.Username = user1.Username;
@@ -741,7 +741,17 @@ namespace Helpmebot.IRC
                         // attempt to load from cache
                         if (this.nickTrackingValid && this.userCache.ContainsKey(user.Nickname))
                         {
-                            user = this.userCache[user.Nickname];
+                            var cachedUser = this.userCache[user.Nickname];
+
+                            if (cachedUser.Skeleton)
+                            {
+                                cachedUser.Account = user.Account;
+                                cachedUser.Username = user.Username;
+                                cachedUser.Hostname = user.Hostname;
+                                cachedUser.Skeleton = false;
+                            }
+
+                            user = cachedUser;
                         }
                     }
                 }
@@ -906,7 +916,7 @@ namespace Helpmebot.IRC
                     ircUser.Nickname = newNickname;
                     
                     // flesh out the skeleton
-                    if (ircUser.Skeleton)
+                    if (ircUser.Skeleton && !((IrcUser)user).Skeleton)
                     {
                         ircUser.Username = user.Username;
                         ircUser.Hostname = user.Hostname;
