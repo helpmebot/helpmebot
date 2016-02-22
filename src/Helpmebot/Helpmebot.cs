@@ -317,7 +317,7 @@ namespace Helpmebot
                 {
                     cmd.OverrideBotSilence = overrideSilence;
                     string[] messageWords = message.Split(' ');
-                    string command = messageWords[0];
+                    string command = messageWords[0].ToLowerInvariant();
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 

@@ -50,7 +50,7 @@ namespace Helpmebot.Legacy
         /// <summary>
         ///     The allowed command name chars.
         /// </summary>
-        private const string AllowedCommandNameChars = "0-9a-z-_";
+        private const string AllowedCommandNameChars = "0-9A-Za-z-_";
 
         #endregion
 
@@ -150,7 +150,7 @@ namespace Helpmebot.Legacy
         /// </param>
         public void HandleCommand(LegacyUser source, string destination, string command, string[] args)
         {
-            this.Log.Debug("Handling recieved message...");
+            this.Log.Debug("Handling received message...");
 
             // user is null (!)
             if (source == null)
