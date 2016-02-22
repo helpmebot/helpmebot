@@ -1162,6 +1162,10 @@ namespace Helpmebot.IRC
                 this.serverPrefix = message.Prefix;
                 this.connectionRegistered = true;
                 this.connectionRegistrationSemaphore.Release();
+
+                // block forwarding
+                this.Send(new Message("MODE", new[] { this.Nickname, "+Q" }));
+
                 this.syncLogger.Debug("RegisterConnection() released connectionRegistration semaphore.");
 
                 this.RaiseDataEvent(message);
