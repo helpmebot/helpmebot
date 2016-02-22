@@ -21,6 +21,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Net;
     using System.Web;
     using System.Xml.XPath;
 
@@ -79,7 +80,19 @@ namespace helpmebot6.Commands
 
             string uri = "http://accounts.wmflabs.org/api.php?action=stats&user=" + username;
 
-            using (var data = HttpRequest.Get(uri).ToStream())
+            string httpResponseData;
+
+            try
+            {
+                httpResponseData = HttpRequest.Get(uri);
+            }
+            catch (WebException e)
+            {
+                this.Log.Warn("Error getting remote data", e);
+                return new CommandResponseHandler(e.Message);
+            }
+
+            using (var data = httpResponseData.ToStream())
             {
                 var xpd = new XPathDocument(data);
 

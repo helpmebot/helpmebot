@@ -17,6 +17,7 @@
 namespace helpmebot6.Commands
 {
     using System;
+    using System.Net;
     using System.Xml.XPath;
 
     using Helpmebot;
@@ -61,7 +62,19 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            using (var data = HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status").ToStream())
+            string httpResponseData;
+
+            try
+            {
+                httpResponseData = HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status");
+            }
+            catch (WebException e)
+            {
+                this.Log.Warn("Error getting remote data", e);
+                return new CommandResponseHandler(e.Message);
+            }
+
+            using (var data = httpResponseData.ToStream())
             {
                 var xpd = new XPathDocument(data);
 
