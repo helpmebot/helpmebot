@@ -24,9 +24,6 @@
         [Test]
         public void TestJoinProcessedCorrectly()
         {
-            this.Logger.Setup(x => x.DebugFormat(It.IsAny<string>(), It.IsAny<object[]>()))
-                .Callback<string, object[]>((x, p) => Debugger.Break());
-
             var network = new Mock<INetworkClient>();
             this.IrcConfiguration.Setup(x => x.Nickname).Returns("nickname");
             this.IrcConfiguration.Setup(x => x.Username).Returns("username");
@@ -34,21 +31,29 @@
             var client = new IrcClient(network.Object, this.Logger.Object, this.IrcConfiguration.Object, string.Empty);
 
             // init IRC
+            // Setup capabilities
             network.Raise(
                 x => x.DataReceived += null, 
                 new DataReceivedEventArgs(":testnet CAP * ACK :account-notify extended-join multi-prefix"));
+
+            // Complete registration
             network.Raise(x => x.DataReceived += null, new DataReceivedEventArgs(":testnet 001 nickname :Welcome"));
+
+            // Join a channel
             network.Raise(
                 x => x.DataReceived += null, 
                 new DataReceivedEventArgs(":nickname!username@hostname JOIN #channel * :real name"));
 
+            // Grab the actual user out when a JOIN event is raised
             IUser actualUser = null;
             client.JoinReceivedEvent += (sender, args) => actualUser = args.User;
 
+            // get ChanServ to join the channel
             network.Raise(
                 x => x.DataReceived += null, 
                 new DataReceivedEventArgs(":ChanServ!ChanServ@services. JOIN #channel * :Channel Services"));
 
+            // Double check we got it
             Assert.That(actualUser, Is.Not.Null);
             Assert.That(actualUser.Nickname, Is.EqualTo("ChanServ"));
             Assert.That(actualUser.Username, Is.EqualTo("ChanServ"));

@@ -4,12 +4,10 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
-//   
 //   Helpmebot is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
-//   
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
@@ -17,7 +15,6 @@
 //   Defines the IrcUser type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace Helpmebot.IRC.Model
 {
     using Helpmebot.Model.Interfaces;
@@ -31,21 +28,6 @@ namespace Helpmebot.IRC.Model
         /// The account.
         /// </summary>
         private string account;
-
-        /// <summary>
-        /// Gets or sets the nickname.
-        /// </summary>
-        public string Nickname { get; set; }
-
-        /// <summary>
-        /// Gets or sets the username.
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
-        /// Gets or sets the hostname.
-        /// </summary>
-        public string Hostname { get; set; }
 
         /// <summary>
         /// Gets or sets the account.
@@ -74,7 +56,27 @@ namespace Helpmebot.IRC.Model
         /// Gets or sets a value indicating whether away.
         /// </summary>
         public bool Away { get; set; }
-        
+
+        /// <summary>
+        /// Gets or sets the hostname.
+        /// </summary>
+        public string Hostname { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nickname.
+        /// </summary>
+        public string Nickname { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether skeleton.
+        /// </summary>
+        public bool Skeleton { get; set; }
+
+        /// <summary>
+        /// Gets or sets the username.
+        /// </summary>
+        public string Username { get; set; }
+
         /// <summary>
         /// The from prefix.
         /// </summary>
@@ -111,23 +113,7 @@ namespace Helpmebot.IRC.Model
                 nick = prefix;
             }
 
-            return new IrcUser { Hostname = host, Username = user, Nickname = nick };
-        }
-
-        /// <summary>
-        /// The to string.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(this.Account))
-            {
-                return string.Format("{0}!{1}@{2}", this.Nickname, this.Username, this.Hostname);
-            }
-
-            return string.Format("{0} [{1}!{2}@{3}]", this.Account, this.Nickname, this.Username, this.Hostname);
+            return new IrcUser { Hostname = host, Username = user, Nickname = nick, Skeleton = false };
         }
 
         /// <summary>
@@ -168,6 +154,22 @@ namespace Helpmebot.IRC.Model
         public override int GetHashCode()
         {
             return this.Nickname != null ? this.Nickname.GetHashCode() : 0;
+        }
+
+        /// <summary>
+        /// The to string.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(this.Account))
+            {
+                return string.Format("{0}!{1}@{2}", this.Nickname, this.Username, this.Hostname);
+            }
+
+            return string.Format("{0} [{1}!{2}@{3}]", this.Account, this.Nickname, this.Username, this.Hostname);
         }
 
         /// <summary>

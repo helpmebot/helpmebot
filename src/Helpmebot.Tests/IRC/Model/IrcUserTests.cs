@@ -114,5 +114,27 @@ namespace Helpmebot.Tests.IRC.Model
             // assert
             Assert.That(actual, Is.EqualTo(expected));
         }
+
+        /// <summary>
+        /// The should create from prefix.
+        /// </summary>
+        [Test]
+        public void ShouldCreateFromPrefix5()
+        {
+            // arrange
+            const string Prefix = "ChanServ!ChanServ@services.";
+            var expected = new IrcUser
+            {
+                Hostname = "services.",
+                Username = "ChanServ",
+                Nickname = "ChanServ"
+            };
+
+            // act
+            var actual = IrcUser.FromPrefix(Prefix);
+
+            // assert
+            Assert.That(actual, Is.EqualTo(expected));
+        }
     }
 }

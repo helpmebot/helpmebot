@@ -438,14 +438,15 @@ namespace Helpmebot.IRC
                 lock (this.userOperationLock)
                 {
                     var ircUser = new IrcUser();
-                    if (this.UserCache.ContainsKey(nick))
+                    if (this.userCache.ContainsKey(nick))
                     {
-                        ircUser = this.UserCache[nick];
+                        ircUser = this.userCache[nick];
                     }
                     else
                     {
                         ircUser.Nickname = nick;
-                        this.UserCache.Add(nick, ircUser);
+
+                        this.userCache.Add(nick, ircUser);
                     }
 
                     ircUser.Account = account;
@@ -531,13 +532,22 @@ namespace Helpmebot.IRC
             lock (this.userOperationLock)
             {
                 this.logger.DebugFormat("Seen {0} change account name to {1}", user, parameters[0]);
-                if (this.UserCache.ContainsKey(user.Nickname))
+                if (this.userCache.ContainsKey(user.Nickname))
                 {
-                    this.UserCache[user.Nickname].Account = parameters[0];
+                    var cachedUser = this.userCache[user.Nickname];
+                    cachedUser.Account = parameters[0];
+
+                    // flesh out the skeleton
+                    if (cachedUser.Skeleton)
+                    {
+                        cachedUser.Username = user.Username;
+                        cachedUser.Hostname = user.Hostname;
+                        cachedUser.Skeleton = false;
+                    }
                 }
                 else
                 {
-                    this.UserCache.Add(user.Nickname, (IrcUser)user);
+                    this.userCache.Add(user.Nickname, (IrcUser)user);
                     user.Account = parameters[0];
                 }
             }
@@ -624,17 +634,37 @@ namespace Helpmebot.IRC
             // :stwalkerster!stwalkerst@wikimedia/stwalkerster JOIN ##stwalkerster
             List<string> parametersList = e.Message.Parameters.ToList();
 
+            IUser user1 = user;
             lock (this.userOperationLock)
             {
-                if (this.userCache.ContainsKey(user.Nickname))
+                if (this.userCache.ContainsKey(user1.Nickname))
                 {
-                    user = this.userCache[user.Nickname];
+                    // debugging hook for HMB-169
+                    if (user1.Nickname == "ChanServ")
+                    {
+                        this.logger.DebugFormat("HMB-169 Debug pre-cache: {0}", user1);
+                        this.logger.DebugFormat("HMB-169 Debug cache: {0}", this.userCache[user1.Nickname]);
+                    }
+                    
+                    var cachedUser = this.userCache[user1.Nickname];
+
+                    // flesh out the skeleton
+                    if (cachedUser.Skeleton)
+                    {
+                        cachedUser.Hostname = user1.Hostname;
+                        cachedUser.Username = user1.Username;
+                        cachedUser.Skeleton = false;
+                    }
+
+                    user1 = cachedUser;
                 }
                 else
                 {
-                    this.userCache.Add(user.Nickname, (IrcUser)user);
+                    this.userCache.Add(user1.Nickname, (IrcUser)user1);
                 }
             }
+
+            user = user1;
 
             if (this.capExtendedJoin)
             {
@@ -832,14 +862,14 @@ namespace Helpmebot.IRC
                     }
                     else
                     {
-                        var ircUser = new IrcUser { Nickname = parsedName };
-                        if (this.UserCache.ContainsKey(parsedName))
+                        var ircUser = new IrcUser { Nickname = parsedName, Skeleton = true };
+                        if (this.userCache.ContainsKey(parsedName))
                         {
-                            ircUser = this.UserCache[parsedName];
+                            ircUser = this.userCache[parsedName];
                         }
                         else
                         {
-                            this.UserCache.Add(parsedName, ircUser);
+                            this.userCache.Add(parsedName, ircUser);
                         }
 
                         var channelUser = new IrcChannelUser(ircUser, channel) { Voice = voice, Operator = op };
@@ -872,13 +902,21 @@ namespace Helpmebot.IRC
                 lock (this.userOperationLock)
                 {
                     // firstly, update the user cache.
-                    IrcUser ircUser = this.UserCache[oldNickname];
+                    IrcUser ircUser = this.userCache[oldNickname];
                     ircUser.Nickname = newNickname;
+                    
+                    // flesh out the skeleton
+                    if (ircUser.Skeleton)
+                    {
+                        ircUser.Username = user.Username;
+                        ircUser.Hostname = user.Hostname;
+                        ircUser.Skeleton = false;
+                    }
 
                     try
                     {
-                        this.UserCache.Remove(oldNickname);
-                        this.UserCache.Add(newNickname, ircUser);
+                        this.userCache.Remove(oldNickname);
+                        this.userCache.Add(newNickname, ircUser);
                     }
                     catch (ArgumentException)
                     {
@@ -1049,7 +1087,7 @@ namespace Helpmebot.IRC
 
             lock (this.userOperationLock)
             {
-                this.UserCache.Remove(user.Nickname);
+                this.userCache.Remove(user.Nickname);
 
                 foreach (var channel in this.channels)
                 {
