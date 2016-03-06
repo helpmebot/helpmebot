@@ -115,8 +115,13 @@
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
     <Compile Include="Legacy\Commands\Date.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Chillpill.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Game.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Kill.cs" />
     <Compile Include="Legacy\Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Sir.cs" />
     <Compile Include="Legacy\Commands\FunStuff\TargetedFunCommand.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Whistle.cs" />
     <Compile Include="Legacy\Commands\Google.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="Configuration\ConfigurationHelper.cs" />
