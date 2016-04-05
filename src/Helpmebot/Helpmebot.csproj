@@ -196,6 +196,8 @@
     <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Services\AccessLogService.cs" />
+    <Compile Include="Services\BlockMonitoringService.cs" />
+    <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />

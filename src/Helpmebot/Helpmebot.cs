@@ -86,6 +86,11 @@ namespace Helpmebot
         private static IJoinMessageService joinMessageService;
 
         /// <summary>
+        /// The block monitoring service.
+        /// </summary>
+        private static IBlockMonitoringService blockMonitoringService;
+
+        /// <summary>
         /// Gets or sets the Castle.Windsor Logger
         /// </summary>
         public static ILogger Log { get; set; }
@@ -186,6 +191,7 @@ namespace Helpmebot
             container.Register(Component.For<IIrcClient>().Instance(newIrc));
 
             joinMessageService = container.Resolve<IJoinMessageService>();
+            blockMonitoringService = container.Resolve<IBlockMonitoringService>();
 
             SetupEvents();
 
@@ -199,12 +205,26 @@ namespace Helpmebot
         private static void SetupEvents()
         {
             newIrc.JoinReceivedEvent += WelcomeNewbieOnJoinEvent;
-
             newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
+            newIrc.JoinReceivedEvent += BlockMonitoringOnJoinEvent;
 
             newIrc.ReceivedMessage += ReceivedMessage;
 
             newIrc.InviteReceivedEvent += IrcInviteEvent;
+        }
+
+        /// <summary>
+        /// The block monitoring on join event.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="joinEventArgs">
+        /// The join event args.
+        /// </param>
+        private static void BlockMonitoringOnJoinEvent(object sender, JoinEventArgs joinEventArgs)
+        {
+            blockMonitoringService.DoEventProcessing(joinEventArgs.Channel, joinEventArgs.User, (IIrcClient)sender);
         }
 
         /// <summary>
