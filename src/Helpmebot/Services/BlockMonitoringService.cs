@@ -97,7 +97,7 @@ namespace Helpmebot.Services
 
             BlockInformation blockInformation = mediaWikiSite.GetBlockInformation(ip.ToString()).FirstOrDefault();
 
-            if (blockInformation.Id != string.Empty)
+            if (blockInformation.Id != null)
             {
                 var message = string.Format(
                     "Joined user {0} ({4}) in channel {1} is blocked ({2}) because: {3}",
