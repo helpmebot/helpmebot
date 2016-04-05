@@ -82,32 +82,39 @@ namespace Helpmebot.Services
         /// </param>
         public void DoEventProcessing(string channel, IUser user, IIrcClient client)
         {
-            // channel checks
-            var alertChannel = this.GetAlertChannel(channel);
-            if (alertChannel == null)
+            try
             {
-                return;
+                // channel checks
+                var alertChannel = this.GetAlertChannel(channel);
+                if (alertChannel == null)
+                {
+                    return;
+                }
+
+                var ip = this.GetIpAddress(user);
+
+                string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
+
+                MediaWikiSite mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+                BlockInformation blockInformation = mediaWikiSite.GetBlockInformation(ip.ToString()).FirstOrDefault();
+
+                if (blockInformation.Id != null)
+                {
+                    var message = string.Format(
+                        "Joined user {0} ({4}) in channel {1} is blocked ({2}) because: {3}",
+                        user.Nickname,
+                        channel,
+                        blockInformation.Target,
+                        blockInformation.BlockReason,
+                        ip);
+
+                    client.SendMessage(alertChannel, message);
+                }
             }
-
-            var ip = this.GetIpAddress(user);
-
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-            MediaWikiSite mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
-
-            BlockInformation blockInformation = mediaWikiSite.GetBlockInformation(ip.ToString()).FirstOrDefault();
-
-            if (blockInformation.Id != null)
+            catch (Exception ex)
             {
-                var message = string.Format(
-                    "Joined user {0} ({4}) in channel {1} is blocked ({2}) because: {3}",
-                    user.Nickname,
-                    channel,
-                    blockInformation.Target,
-                    blockInformation.BlockReason,
-                    ip);
-
-                client.SendMessage(alertChannel, message);
+                this.logger.Error("Unknown error occurred in BlockMonitoringService", ex);
             }
         }
 
