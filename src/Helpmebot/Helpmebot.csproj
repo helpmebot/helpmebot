@@ -332,9 +332,6 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\..\lib\castle.windsor\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="IPAddressRange">
-      <HintPath>..\..\lib\ipaddressrange\IPAddressRange.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\log4net\log4net.dll</HintPath>
@@ -367,9 +364,6 @@
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Xml.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WhoisClient">
-      <HintPath>..\..\lib\whoisclient\WhoisClient.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.release.config">

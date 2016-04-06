@@ -25,14 +25,11 @@ namespace helpmebot6.Commands
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
-
-    using global::Whois.NET;
-
+    
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Model;
-
     using Helpmebot.IRC.Model;
+    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
 
     /// <summary>
@@ -77,19 +74,16 @@ namespace helpmebot6.Commands
                     return new CommandResponseHandler("Unable to find IP address to query.");
                 }
 
-                var whoisResult = WhoisClient.Query(ip.ToString());
-
-                var orgname = whoisResult.OrganizationName ?? "(unknown)";
-                var range = whoisResult.AddressRange == null
-                                ? "(unknown)"
-                                : string.Format(
-                                    "{0} - {1}",
-                                    whoisResult.AddressRange.Begin,
-                                    whoisResult.AddressRange.End);
-
-                var msg = string.Format("Whois for {2} (requested {0}) gives organisation {1}", ip, orgname, range);
-
-                return new CommandResponseHandler(msg);
+                var textResult = HttpRequest.Get(string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
+                var resultData = textResult.Split('\r', '\n');
+                if (resultData.FirstOrDefault() == "success")
+                {
+                    var orgname = resultData[1];
+                    var msg = string.Format("Whois for {0} gives organisation {1}", ip, orgname);
+                    return new CommandResponseHandler(msg);
+                }
+                
+                return new CommandResponseHandler(string.Format("Whois for {0} failed.", ip));
             }
             else
             {
