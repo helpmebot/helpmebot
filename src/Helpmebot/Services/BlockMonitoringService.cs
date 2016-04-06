@@ -106,15 +106,41 @@ namespace Helpmebot.Services
 
                 if (blockInformation.Id != null)
                 {
+                    string orgname = null;
+
+                    var textResult = HttpRequest.Get(string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
+                    var resultData = textResult.Split('\r', '\n');
+                    if (resultData.FirstOrDefault() == "success")
+                    {
+                        orgname = string.Format(", org: {0}", resultData[1]);
+                    }
+
                     var message = string.Format(
-                        "Joined user {0} ({4}) in channel {1} is blocked ({2}) because: {3}",
+                        "Joined user {0} ({4}{5}) in channel {1} is blocked ({2}) because: {3}",
                         user.Nickname,
                         channel,
                         blockInformation.Target,
                         blockInformation.BlockReason,
-                        ip);
+                        ip,
+                        orgname);
 
                     client.SendMessage(alertChannel, message);
+                }
+                else
+                {
+                    var textResult = HttpRequest.Get(string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
+                    var resultData = textResult.Split('\r', '\n');
+                    if (resultData.FirstOrDefault() == "success")
+                    {
+                        var message = string.Format(
+                            "Joined user {0} ({2}{3}) in channel {1}",
+                            user.Nickname,
+                            channel,
+                            ip,
+                            resultData[1]);
+
+                        client.SendMessage(alertChannel, message);
+                    }
                 }
             }
             catch (Exception ex)
