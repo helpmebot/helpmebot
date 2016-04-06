@@ -93,6 +93,11 @@ namespace Helpmebot.Services
 
                 var ip = this.GetIpAddress(user);
 
+                if (ip == null)
+                {
+                    return;
+                }
+
                 string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
 
                 MediaWikiSite mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
