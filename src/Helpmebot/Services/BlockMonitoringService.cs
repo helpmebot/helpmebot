@@ -126,22 +126,6 @@ namespace Helpmebot.Services
 
                     client.SendMessage(alertChannel, message);
                 }
-                else
-                {
-                    var textResult = HttpRequest.Get(string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
-                    var resultData = textResult.Split('\r', '\n');
-                    if (resultData.FirstOrDefault() == "success")
-                    {
-                        var message = string.Format(
-                            "Joined user {0} ({2}{3}) in channel {1}",
-                            user.Nickname,
-                            channel,
-                            ip,
-                            resultData[1]);
-
-                        client.SendMessage(alertChannel, message);
-                    }
-                }
             }
             catch (Exception ex)
             {
