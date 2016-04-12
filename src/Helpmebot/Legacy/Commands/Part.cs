@@ -57,6 +57,11 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            if (!this.Channel.StartsWith("#"))
+            {
+                return new CommandResponseHandler("Must be executed from the channel!", CommandResponseDestination.PrivateMessage);
+            }
+
             var channelRepository = this.CommandServiceHelper.ChannelRepository;
 
             var channel = channelRepository.GetByName(this.Channel);
