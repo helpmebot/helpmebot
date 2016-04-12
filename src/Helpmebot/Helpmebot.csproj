@@ -115,6 +115,7 @@
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
     <Compile Include="Legacy\Commands\Date.cs" />
+    <Compile Include="Legacy\Commands\FunStuff\Champagne.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Chillpill.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Game.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Kill.cs" />
