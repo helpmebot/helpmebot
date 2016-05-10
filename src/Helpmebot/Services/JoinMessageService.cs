@@ -120,7 +120,7 @@ namespace Helpmebot.Services
         public void Welcome(IUser networkUser, string channel)
         {
             // Rate limit this per hostname/channel
-            if (this.RateLimit(networkUser.Hostname, channel))
+            if (this.RateLimit(networkUser.Username, channel))
             {
                 return;
             }

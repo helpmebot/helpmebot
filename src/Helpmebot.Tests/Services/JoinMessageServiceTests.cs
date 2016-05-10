@@ -220,7 +220,7 @@ namespace Helpmebot.Tests.Services
             var networkUser2 = new Mock<IUser>();
             networkUser2.SetupAllProperties();
             networkUser2.Object.Nickname = "ab";
-            networkUser2.Object.Username = "ab";
+            networkUser2.Object.Username = "ab2";
             networkUser2.Object.Hostname = "ab/test2";
 
             this.joinMessageService.Object.ClearRateLimitCache();
