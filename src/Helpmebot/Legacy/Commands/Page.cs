@@ -63,7 +63,7 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             // TODO: link to basewiki
-            var uri = "http://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
+            var uri = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
                       + string.Join(" ", this.Arguments);
             using (Stream rawDataStream = HttpRequest.Get(uri).ToStream())
             {

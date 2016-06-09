@@ -94,7 +94,7 @@ namespace helpmebot6.Commands
 
             revision = HttpUtility.UrlEncode(revision);
 
-            string requestUri = "http://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
+            string requestUri = "https://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
 
             using (Stream data = HttpRequest.Get(requestUri, 1000 * 30 /* 30 sec timeout */).ToStream())
             {

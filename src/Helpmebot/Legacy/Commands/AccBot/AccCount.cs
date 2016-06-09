@@ -81,7 +81,7 @@ namespace helpmebot6.Commands
 
             username = HttpUtility.UrlEncode(username);
 
-            var uri = "http://accounts.wmflabs.org/api.php?action=count&user=" + username;
+            var uri = "https://accounts.wmflabs.org/api.php?action=count&user=" + username;
 
             string httpResponseData;
             try

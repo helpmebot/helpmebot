@@ -60,7 +60,7 @@ namespace Helpmebot.ExtensionMethods
 
             var requestData =
                 HttpRequest.Get(
-                    "http://api.ipinfodb.com/v3/ip-city/?key=" + config.IpInfoDbApiKey + "&ip=" + ip + "&format=xml");
+                    "https://api.ipinfodb.com/v3/ip-city/?key=" + config.IpInfoDbApiKey + "&ip=" + ip + "&format=xml");
 
             using (Stream s = requestData.ToStream())
             {

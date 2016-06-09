@@ -110,7 +110,7 @@ namespace Helpmebot.Services
         {
             var wrq =
                 (HttpWebRequest)
-                WebRequest.Create("http://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
+                WebRequest.Create("https://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
             wrq.UserAgent = this.configurationHelper.CoreConfiguration.UserAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)

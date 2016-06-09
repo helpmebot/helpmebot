@@ -66,7 +66,7 @@ namespace helpmebot6.Commands
 
             try
             {
-                httpResponseData = HttpRequest.Get("http://accounts.wmflabs.org/api.php?action=status");
+                httpResponseData = HttpRequest.Get("https://accounts.wmflabs.org/api.php?action=status");
             }
             catch (WebException e)
             {
