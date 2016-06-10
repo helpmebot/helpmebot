@@ -36,3 +36,5 @@ StyleCopViolations.xml
 .hmbot
 database.config
 mediawiki.xml
+src/.idea/*
+src/*.iml
