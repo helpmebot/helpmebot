@@ -312,14 +312,20 @@ namespace Helpmebot.Legacy.Configuration
         /// </param>
         private void SetLocalOption(string channel, string optionName, string newValue)
         {
-            string channelId = this.GetChannelId(channel);
+            this.Log.InfoFormat("Setting local option {0} in {1} to {2}", optionName, channel, newValue);
 
+            string channelId = this.GetChannelId(channel);
+            
             string configId = this.GetOptionId(optionName);
+
+            this.Log.DebugFormat("Using channelId '{0}' and configId '{1}'", channelId, configId);
 
             // does setting exist in local table?
             // INNER JOIN `channel` ON `channel_id` = `cc_channel` WHERE `channel_name` = '##helpmebot' AND `configuration_name` = 'silence'
             if (newValue == null)
             {
+                this.Log.Debug("Deleting local setting");
+
                 var deleteCommand =
                     new MySqlCommand(
                         "DELETE FROM channelconfig WHERE cc_config = @config AND cc_channel = @channel LIMIT 1;");
@@ -341,6 +347,8 @@ namespace Helpmebot.Legacy.Configuration
 
             if (count == "1")
             {
+                this.Log.Debug("Updating local setting");
+
                 // yes: Update
                 var command =
                     new MySqlCommand(
@@ -354,6 +362,8 @@ namespace Helpmebot.Legacy.Configuration
             }
             else
             {
+                this.Log.Debug("inserting local setting");
+
                 // no: Insert
                 var command = new MySqlCommand("INSERT INTO channelconfig VALUES ( @channel, @config, @value );");
                 command.Parameters.AddWithValue("@channel", channel);
