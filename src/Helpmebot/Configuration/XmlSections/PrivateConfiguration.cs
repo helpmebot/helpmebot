@@ -145,6 +145,18 @@ namespace Helpmebot.Configuration.XmlSections
             }
         }
 
+        /// <summary>
+        ///     Gets the Google API key.
+        /// </summary>
+        [ConfigurationProperty("googleApiKey", DefaultValue = "")]
+        public string GoogleApiKey
+        {
+            get
+            {
+                return (string)base["googleApiKey"];
+            }
+        }
+
         #endregion
     }
 }

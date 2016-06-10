@@ -76,7 +76,6 @@ namespace Helpmebot
 
                 var streamReader = new StreamReader(responseStream);
                 data = streamReader.ReadToEnd();
-                streamReader.Close();
 
                 resp.Close();
             }

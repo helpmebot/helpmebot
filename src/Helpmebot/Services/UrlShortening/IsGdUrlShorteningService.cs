@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="UrlShorteningService.cs" company="Helpmebot Development Team">
+// <copyright file="IsGdUrlShorteningService.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,9 +14,8 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Services
+namespace Helpmebot.Services.UrlShortening
 {
-    using System;
     using System.IO;
     using System.Net;
     using System.Web;
@@ -24,38 +23,17 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Shortens URLs
     /// </summary>
-    public class UrlShorteningService : IUrlShorteningService
+    public class IsGdUrlShorteningService : UrlShorteningServiceBase
     {
-        #region Fields
-
-        /// <summary>
-        ///     Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        private readonly ILogger logger;
-
-        /// <summary>
-        ///     The short url cache repository.
-        /// </summary>
-        private readonly IShortUrlCacheRepository shortUrlCacheRepository;
-
-        /// <summary>
-        /// The configuration helper.
-        /// </summary>
-        private readonly IConfigurationHelper configurationHelper;
-
-        #endregion
-
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="UrlShorteningService"/> class.
+        /// Initializes a new instance of the <see cref="IsGdUrlShorteningService"/> class.
         /// </summary>
         /// <param name="logger">
         /// The logger.
@@ -66,31 +44,9 @@ namespace Helpmebot.Services
         /// <param name="configurationHelper">
         /// The configuration Helper.
         /// </param>
-        public UrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository, IConfigurationHelper configurationHelper)
+        public IsGdUrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository, IConfigurationHelper configurationHelper)
+            : base(logger, shortUrlCacheRepository, configurationHelper)
         {
-            this.logger = logger;
-            this.shortUrlCacheRepository = shortUrlCacheRepository;
-            this.configurationHelper = configurationHelper;
-        }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The shorten.
-        /// </summary>
-        /// <param name="longUrl">
-        /// The long url.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public string Shorten(string longUrl)
-        {
-            this.logger.InfoFormat("Getting short url for {0}...", longUrl);
-
-            return this.shortUrlCacheRepository.GetShortUrl(longUrl, this.GetShortUrl);
         }
 
         #endregion
@@ -106,12 +62,12 @@ namespace Helpmebot.Services
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private string GetShortUrl(string longUrl)
+        protected override string GetShortUrl(string longUrl)
         {
             var wrq =
                 (HttpWebRequest)
                 WebRequest.Create("https://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
-            wrq.UserAgent = this.configurationHelper.CoreConfiguration.UserAgent;
+            wrq.UserAgent = this.ConfigurationHelper.CoreConfiguration.UserAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

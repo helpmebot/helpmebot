@@ -26,6 +26,8 @@ namespace Helpmebot.Startup.Installers
 
     using Helpmebot.Commands;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Services.Interfaces;
+    using Helpmebot.Services.UrlShortening;
 
     /// <summary>
     /// The service installer.
@@ -46,6 +48,8 @@ namespace Helpmebot.Startup.Installers
         {
             container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces());
             container.Register(Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>());
+
+            container.Register(Component.For<IUrlShorteningService>().ImplementedBy<GooglUrlShorteningService>());
         }
     }
 }

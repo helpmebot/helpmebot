@@ -74,6 +74,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("ipInfoDbApiKey", DefaultValue = "")]
         string IpInfoDbApiKey { get; }
 
+        /// <summary>
+        ///     Gets the Google API key.
+        /// </summary>
+        [ConfigurationProperty("googleApiKey", DefaultValue = "")]
+        string GoogleApiKey { get; }
+
         #endregion
     }
 }
