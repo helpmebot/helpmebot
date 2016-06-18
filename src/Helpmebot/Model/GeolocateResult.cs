@@ -60,12 +60,12 @@ namespace Helpmebot.Model
         /// <summary>
         /// Gets or sets the latitude.
         /// </summary>
-        public float Latitude { get; set; }
+        public double? Latitude { get; set; }
 
         /// <summary>
         /// Gets or sets the longitude.
         /// </summary>
-        public float Longitude { get; set; }
+        public double? Longitude { get; set; }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents this geolocate result.
@@ -101,11 +101,16 @@ namespace Helpmebot.Model
                     string.Join(", ", locationParameters.ToArray()));
             }
 
-            return string.Format(
-                "Latitude: {0}N, Longitude: {1}E{2}",
-                this.Latitude,
-                this.Longitude,
-                estimatedLocation);
+            if (this.Latitude.HasValue && this.Longitude.HasValue)
+            {
+                return string.Format(
+                    "Latitude: {0}N, Longitude: {1}E{2}",
+                    this.Latitude.Value,
+                    this.Longitude.Value,
+                    estimatedLocation);
+            }
+
+            return estimatedLocation;
         }
     }
 }

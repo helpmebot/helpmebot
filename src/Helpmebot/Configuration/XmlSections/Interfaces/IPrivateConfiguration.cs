@@ -80,6 +80,12 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         [ConfigurationProperty("googleApiKey", DefaultValue = "")]
         string GoogleApiKey { get; }
 
+        /// <summary>
+        /// Gets the max mind database path.
+        /// </summary>
+        [ConfigurationProperty("maxMindDatabasePath", DefaultValue = "")]
+        string MaxMindDatabasePath { get; }
+
         #endregion
     }
 }

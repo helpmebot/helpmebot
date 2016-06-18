@@ -157,6 +157,18 @@ namespace Helpmebot.Configuration.XmlSections
             }
         }
 
+        /// <summary>
+        ///     Gets the MaxMind Database Path.
+        /// </summary>
+        [ConfigurationProperty("maxMindDatabasePath", DefaultValue = "")]
+        public string MaxMindDatabasePath
+        {
+            get
+            {
+                return (string)base["maxMindDatabasePath"];
+            }
+        }
+
         #endregion
     }
 }

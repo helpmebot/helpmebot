@@ -26,6 +26,7 @@ namespace Helpmebot.Startup.Installers
 
     using Helpmebot.Commands;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Services.Geolocation;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Services.UrlShortening;
 
@@ -50,6 +51,7 @@ namespace Helpmebot.Startup.Installers
             container.Register(Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>());
 
             container.Register(Component.For<IUrlShorteningService>().ImplementedBy<GooglUrlShorteningService>());
+            container.Register(Component.For<IGeolocationService>().ImplementedBy<MaxMindGeolocationService>());
         }
     }
 }
