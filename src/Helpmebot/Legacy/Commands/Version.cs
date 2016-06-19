@@ -32,6 +32,10 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
+    using NHibernate.Cfg;
+
+    using Environment = System.Environment;
+
     /// <summary>
     ///   Returns the current version of the bot.
     /// </summary>
@@ -63,6 +67,7 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            
             System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
 
 #if !DEBUG
@@ -77,12 +82,14 @@ namespace helpmebot6.Commands
 #if DEBUG
                                       "*",
                                       "*",
-                                      "DEBUG"
+                                      "DEBUG",
 #else
                                       version.Build.ToString(CultureInfo.InvariantCulture),
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
-                                      date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+                                      date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"),
 #endif
+                                      Environment.OSVersion.ToString(),
+                                      Environment.Version.ToString()
                                   };
 
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
