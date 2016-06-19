@@ -33,11 +33,8 @@ namespace Helpmebot.Services
     using Helpmebot.Services.Interfaces;
 
     using NHibernate;
-    using NHibernate.Linq;
 
-    using Cache = System.Collections.Generic.Dictionary<string, NHibernate.Linq.Tuple<System.DateTime, int>>;
-    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
-    
+    using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
 
     /// <summary>
     /// The join message service.
@@ -274,11 +271,11 @@ namespace Helpmebot.Services
 
                         var cacheEntry = channelCache[hostname];
 
-                        if (cacheEntry.First.AddMinutes(RateLimitDuration) >= DateTime.Now)
+                        if (cacheEntry.Expiry.AddMinutes(RateLimitDuration) >= DateTime.Now)
                         {
                             this.logger.Debug("Rate limit key NOT expired.");
 
-                            if (cacheEntry.Second >= RateLimitMax)
+                            if (cacheEntry.Counter >= RateLimitMax)
                             {
                                 this.logger.Debug("Rate limit HIT");
 
@@ -289,15 +286,15 @@ namespace Helpmebot.Services
                             this.logger.Debug("Rate limit incremented.");
 
                             // increment counter
-                            cacheEntry.Second++;
+                            cacheEntry.Counter++;
                         }
                         else
                         {
                             this.logger.Debug("Rate limit key is expired, resetting to new value.");
 
                             // Cache expired
-                            cacheEntry.First = DateTime.Now;
-                            cacheEntry.Second = 1;
+                            cacheEntry.Expiry = DateTime.Now;
+                            cacheEntry.Counter = 1;
                         }
                     }
                     else
@@ -305,14 +302,14 @@ namespace Helpmebot.Services
                         this.logger.Debug("Rate limit not found, creating key.");
 
                         // Not in cache.
-                        var cacheEntry = new RateLimitCacheEntry { First = DateTime.Now, Second = 1 };
+                        var cacheEntry = new RateLimitCacheEntry { Expiry = DateTime.Now, Counter = 1 };
                         channelCache.Add(hostname, cacheEntry);
                     }
 
                     // Clean up the channel's cache.
                     foreach (var key in channelCache.Keys.ToList())
                     {
-                        if (channelCache[key].First.AddMinutes(RateLimitDuration) < DateTime.Now)
+                        if (channelCache[key].Expiry.AddMinutes(RateLimitDuration) < DateTime.Now)
                         {
                             // Expired.
                             channelCache.Remove(key);

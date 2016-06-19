@@ -20,13 +20,10 @@ namespace helpmebot6.Commands
     using System.Collections.Generic;
     using System.Linq;
 
-    using Castle.Core;
-
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using RateLimitCacheEntry = NHibernate.Linq.Tuple<System.DateTime, int>;
+    using Helpmebot.Model;
 
     /// <summary>
     ///     Triggers an inter-channel alert
@@ -130,11 +127,11 @@ namespace helpmebot6.Commands
 
                     var cacheEntry = RateLimitCache[this.Source.Hostname];
 
-                    if (cacheEntry.First.AddMinutes(RateLimitDuration) >= DateTime.Now)
+                    if (cacheEntry.Expiry.AddMinutes(RateLimitDuration) >= DateTime.Now)
                     {
                         this.Log.Debug("Rate limit key NOT expired.");
 
-                        if (cacheEntry.Second >= RateLimitMax)
+                        if (cacheEntry.Counter >= RateLimitMax)
                         {
                             this.Log.Debug("Rate limit HIT");
 
@@ -145,15 +142,15 @@ namespace helpmebot6.Commands
                         this.Log.Debug("Rate limit incremented.");
 
                         // increment counter
-                        cacheEntry.Second++;
+                        cacheEntry.Counter++;
                     }
                     else
                     {
                         this.Log.Debug("Rate limit key is expired, resetting to new value.");
 
                         // Cache expired
-                        cacheEntry.First = DateTime.Now;
-                        cacheEntry.Second = 1;
+                        cacheEntry.Expiry = DateTime.Now;
+                        cacheEntry.Counter = 1;
                     }
                 }
                 else
@@ -161,14 +158,14 @@ namespace helpmebot6.Commands
                     this.Log.Debug("Rate limit not found, creating key.");
 
                     // Not in cache.
-                    var cacheEntry = new RateLimitCacheEntry { First = DateTime.Now, Second = 1 };
+                    var cacheEntry = new RateLimitCacheEntry { Expiry = DateTime.Now, Counter = 1 };
                     RateLimitCache.Add(this.Source.Hostname, cacheEntry);
                 }
 
                 // Clean up the cache
                 foreach (var key in RateLimitCache.Keys.ToList())
                 {
-                    if (RateLimitCache[key].First.AddMinutes(RateLimitDuration) < DateTime.Now)
+                    if (RateLimitCache[key].Expiry.AddMinutes(RateLimitDuration) < DateTime.Now)
                     {
                         // Expired.
                         RateLimitCache.Remove(key);

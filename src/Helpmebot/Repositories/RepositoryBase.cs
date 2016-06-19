@@ -23,6 +23,7 @@ namespace Helpmebot.Repositories
     using System.Collections.Generic;
     using System.Data;
 
+    using Castle.Core.Internal;
     using Castle.Core.Logging;
 
     using Helpmebot.Repositories.Interfaces;
