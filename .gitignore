@@ -36,5 +36,11 @@ StyleCopViolations.xml
 .hmbot
 database.config
 mediawiki.xml
+
+#idea
 src/.idea/*
 src/*.iml
+
+#nuget
+packages/
+!packages/repositories.config
