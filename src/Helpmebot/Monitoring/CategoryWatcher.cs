@@ -19,6 +19,7 @@ namespace Helpmebot.Monitoring
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Threading;
@@ -116,6 +117,8 @@ namespace Helpmebot.Monitoring
             this.key = category.Keyword;
             this.sleepTime = category.SleepTime;
 
+            this.logger.DebugFormat("Initial sleep time is {0}", this.sleepTime);
+
             this.RegisterInstance();
 
             this.watcherThread = new Thread(this.WatcherThreadMethod);
@@ -155,7 +158,7 @@ namespace Helpmebot.Monitoring
             set
             {
                 this.sleepTime = value;
-                this.logger.Info("Restarting watcher...");
+                this.logger.InfoFormat("Restarting watcher due to time change (new time {0})...", value);
                 this.watcherThread.Abort();
                 Thread.Sleep(500);
                 this.watcherThread = new Thread(this.WatcherThreadMethod);
@@ -276,7 +279,11 @@ namespace Helpmebot.Monitoring
             {
                 while (true)
                 {
+                    this.logger.DebugFormat("Sleeping thread for {0} seconds", this.SleepTime);
+                    var stopwatch = Stopwatch.StartNew();
                     Thread.Sleep(this.SleepTime * 1000);
+                    stopwatch.Stop();
+                    this.logger.DebugFormat("Thread has woken after {0}ms", stopwatch.ElapsedMilliseconds);
 
                     try
                     {

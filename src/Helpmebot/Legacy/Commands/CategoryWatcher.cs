@@ -78,7 +78,7 @@ namespace helpmebot6.Commands
                                  this.Arguments[1].Substring(1).ToLower());
                 if (subCmdType != null)
                 {
-                    return ((GenericCommand)Activator.CreateInstance(subCmdType, this.Source, this.Channel, this.Arguments)).RunCommand();
+                    return ((GenericCommand)Activator.CreateInstance(subCmdType, this.Source, this.Channel, this.Arguments, this.CommandServiceHelper)).RunCommand();
                 }
             }
 
