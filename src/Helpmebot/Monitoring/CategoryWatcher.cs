@@ -280,11 +280,22 @@ namespace Helpmebot.Monitoring
                 while (true)
                 {
                     this.logger.DebugFormat("Sleeping thread for {0} seconds", this.SleepTime);
-                    var stopwatch = Stopwatch.StartNew();
-                    Thread.Sleep(this.SleepTime * 1000);
-                    stopwatch.Stop();
-                    this.logger.DebugFormat("Thread has woken after {0}ms", stopwatch.ElapsedMilliseconds);
+                    int remaining = this.SleepTime * 1000;
 
+                    // iteratively sleep (yuck) until we've got less than a second of our sleep remaining - sounds like a good enough tolerance for me.
+                    while (remaining > 1000)
+                    {
+                        var millisecondsTimeout = remaining / 2;
+                        var stopwatch = Stopwatch.StartNew();
+                        Thread.Sleep(millisecondsTimeout);
+                        stopwatch.Stop();
+
+                        remaining -= (int)stopwatch.ElapsedMilliseconds;
+                        this.logger.DebugFormat("Thread has woken after {0}ms, with {1} ms remaining", stopwatch.ElapsedMilliseconds, remaining);
+                    }
+
+                    this.logger.DebugFormat("Thread wakeup", this.SleepTime);
+                    
                     try
                     {
                         var categoryCheckResult = this.DoCategoryCheck();
