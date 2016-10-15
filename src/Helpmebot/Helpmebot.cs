@@ -22,6 +22,7 @@ namespace Helpmebot
 {
     using System;
     using System.Linq;
+    using System.Net;
 
     using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
@@ -109,6 +110,13 @@ namespace Helpmebot
         /// </summary>
         private static void Main()
         {
+            // DO NOT DO THIS.
+            // EVER.
+            // BLAME GLOBALSIGN FOR THIS.
+            //
+            // (please don't think any less of me for this...)
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+
             BootstrapContainer();
 
             Log = ServiceLocator.Current.GetInstance<ILogger>();
