@@ -327,6 +327,51 @@ namespace Helpmebot.Repositories
             this.session.SaveOrUpdate(model);
         }
 
+
+        /// <summary>
+        /// Refresh the model from the database, bypassing the NHibernate level-one cache.
+        /// </summary>
+        /// <param name="model">
+        /// The model to be refreshed
+        /// </param>
+        public void Refresh(T model)
+        {
+            lock (this.sessionLock)
+            {
+                this.DoRefresh(model);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes an IEnumerable of models from the database, bypassing the NHibernate level-one cache.
+        /// </summary>
+        /// <param name="models">
+        /// The models to be refreshed
+        /// </param>
+        public void Refresh(IEnumerable<T> models)
+        {
+            lock (this.sessionLock)
+            {
+                foreach (var model in models)
+                {
+                    this.DoRefresh(model);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Perform the actual refresh operation, refreshing the given model from the database while bypassing the
+        /// NHibernate level-one cache.
+        /// </summary>
+        /// <param name="model">
+        /// The model to be refreshed
+        /// </param>
+        private void DoRefresh(T model)
+        {
+            this.Logger.DebugFormat("Refreshing model {0} ({1})...", model, model.GetType().Name);
+            this.session.Refresh(model);
+        }
+
         #endregion
     }
 }

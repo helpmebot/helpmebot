@@ -126,6 +126,7 @@
     <Compile Include="Legacy\Commands\FunStuff\TargetedFunCommand.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Whistle.cs" />
     <Compile Include="Legacy\Commands\Google.cs" />
+    <Compile Include="Legacy\Commands\Refresh.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="Configuration\ConfigurationHelper.cs" />
     <Compile Include="Configuration\XmlSections\PrivateConfiguration.cs" />

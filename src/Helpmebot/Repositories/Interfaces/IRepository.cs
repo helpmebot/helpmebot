@@ -107,6 +107,22 @@ namespace Helpmebot.Repositories.Interfaces
         T GetById(int id);
 
         /// <summary>
+        /// Refresh the model from the database, bypassing the NHibernate level-one cache.
+        /// </summary>
+        /// <param name="model">
+        /// The model to be refreshed
+        /// </param>
+        void Refresh(T model);
+
+        /// <summary>
+        /// Refreshes an IEnumerable of models from the database, bypassing the NHibernate level-one cache.
+        /// </summary>
+        /// <param name="models">
+        /// The models to be refreshed
+        /// </param>
+        void Refresh(IEnumerable<T> models);
+
+        /// <summary>
         /// Executes a callback in the context of a transaction.
         /// </summary>
         /// <param name="callback">

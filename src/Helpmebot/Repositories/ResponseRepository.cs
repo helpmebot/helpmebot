@@ -66,6 +66,15 @@ namespace Helpmebot.Repositories
             return this.Get(Restrictions.Eq("Name", Encoding.UTF8.GetBytes(messageKey))).FirstOrDefault();
         }
 
+        /// <summary>
+        /// This rather expensive operation forces NHibernate to re-read all <see cref="Response">Responses</see> from
+        /// the database.
+        /// </summary>
+        public void RefreshAllResponses()
+        {
+            this.Refresh(this.Get());
+        }
+
         #endregion
 
         #region Methods

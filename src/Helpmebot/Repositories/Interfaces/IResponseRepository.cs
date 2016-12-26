@@ -34,5 +34,11 @@ namespace Helpmebot.Repositories.Interfaces
         /// The <see cref="Response"/>.
         /// </returns>
         Response GetByName(string messageKey);
+
+        /// <summary>
+        /// This rather expensive operation forces NHibernate to re-read all <see cref="Response">Responses</see> from
+        /// the database.
+        /// </summary>
+        void RefreshAllResponses();
     }
 }

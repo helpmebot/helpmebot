@@ -74,5 +74,11 @@ namespace Helpmebot.Services.Interfaces
         /// The <see cref="string"/>.
         /// </returns>
         string Done(object context);
+
+        /// <summary>
+        /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the
+        /// database.
+        /// </summary>
+        void RefreshResponseRepository();
     }
 }

@@ -166,6 +166,16 @@ namespace Helpmebot.Services
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
 
+
+        /// <summary>
+        /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the
+        /// database.
+        /// </summary>
+        public void RefreshResponseRepository()
+        {
+            this.responseRepository.RefreshAllResponses();
+        }
+
         #endregion
 
         #region Methods
