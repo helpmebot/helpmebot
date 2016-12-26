@@ -58,9 +58,9 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             this.CommandServiceHelper.MessageService.RefreshResponseRepository();
-            this.CommandServiceHelper.Client.SendMessage(this.Source.Nickname, "Done.");
 
-            return new CommandResponseHandler();
+            return new CommandResponseHandler(this.CommandServiceHelper.MessageService.Done(this.Channel),
+                CommandResponseDestination.PrivateMessage);
         }
 
         #endregion
