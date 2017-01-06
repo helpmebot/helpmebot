@@ -200,12 +200,12 @@ namespace Helpmebot.Services
             if (!results.Any())
             {
                 // nothing found, fall back on the value with no context.
-                results = this.GetRawMessageFromDatabase(messageKey).ToList();
-
                 this.Log.InfoFormat(
-                    "Message {0} with context path {1} not found: Falling back to non-context-sensitive message.", 
-                    messageKey, 
+                    "Message {0} with context path {1} not found: Falling back to non-context-sensitive message.",
+                    messageKey,
                     contextPath);
+
+                results = this.GetRawMessageFromDatabase(messageKey).ToList();
             }
 
             if (results.Any())
@@ -262,7 +262,14 @@ namespace Helpmebot.Services
                 messageKey = messageKey.Substring(0, 1).ToUpper() + messageKey.Substring(1);
             }
 
-            List<string> messages = this.GetMessageFromDatabase(messageKey, contextPath).ToList();
+            var messageFromDatabase = this.GetMessageFromDatabase(messageKey, contextPath);
+
+            if (messageFromDatabase == null)
+            {
+                return null;
+            }
+
+            List<string> messages = messageFromDatabase.ToList();
 
             // let's grab a random message from the tin:
             int randomNumber;

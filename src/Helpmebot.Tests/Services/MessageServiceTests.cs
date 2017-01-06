@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Castle.Core.Logging;
+
 namespace Helpmebot.Tests.Services
 {
     using System;
@@ -55,13 +58,14 @@ namespace Helpmebot.Tests.Services
         [TestFixtureSetUp]
         public void CustomSetup()
         {
-            const string Value = "test {0} {1}";
-
             this.responseRepositoryMock = new Mock<IResponseRepository>();
-            this.responseRepositoryMock.Setup(x => x.GetByName(It.IsAny<string>()))
-                .Returns(new Response { Text = Encoding.UTF8.GetBytes(Value) });
+            this.responseRepositoryMock.Setup(x => x.GetByName("Test"))
+                .Returns(new Response { Text = Encoding.UTF8.GetBytes("test {0} {1}") });
+            this.responseRepositoryMock.Setup(x => x.GetByName("Test/context"))
+                .Returns(new Response { Text = Encoding.UTF8.GetBytes("test context {0} {1}") });
 
             this.messageService = new MessageService(this.responseRepositoryMock.Object);
+            this.messageService.Log = new Mock<ILogger>().Object;
         }
 
         /// <summary>
@@ -76,7 +80,7 @@ namespace Helpmebot.Tests.Services
             string result = this.messageService.RetrieveMessage("test", "context", new[] { "arg1", "arg2" });
 
             // assert
-            Assert.That(result, Is.EqualTo("test arg1 arg2"));
+            Assert.That(result, Is.EqualTo("test context arg1 arg2"));
         }
 
         /// <summary>
@@ -91,7 +95,7 @@ namespace Helpmebot.Tests.Services
             string result = this.messageService.RetrieveMessage("test", "context", null);
 
             // assert
-            Assert.That(result, Is.EqualTo("test {0} {1}"));
+            Assert.That(result, Is.EqualTo("test context {0} {1}"));
         }
 
         /// <summary>
