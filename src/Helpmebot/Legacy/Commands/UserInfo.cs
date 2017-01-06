@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Web;
+
 namespace helpmebot6.Commands
 {
     using System;
@@ -205,7 +207,14 @@ namespace helpmebot6.Commands
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            return Linker.GetRealLink(channel, "Special:Log?type=block&page=User:" + userName, true);
+            var blockLogUrl = new UriBuilder(Linker.GetRealLink(channel, "Special:Log", true));
+
+            var queryParts = HttpUtility.ParseQueryString(blockLogUrl.Query);
+            queryParts["type"] = "block";
+            queryParts["page"] = "User:" + userName;
+            blockLogUrl.Query = queryParts.ToString();
+
+            return blockLogUrl.ToString();
         }
 
         // TODO: tidy up! why return a value when it's passed by ref anyway?
