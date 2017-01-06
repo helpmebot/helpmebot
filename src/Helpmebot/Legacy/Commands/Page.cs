@@ -21,6 +21,7 @@
 using System.Web;
 using Helpmebot.Legacy.Configuration;
 using Helpmebot.Model;
+using NHibernate.Util;
 
 namespace helpmebot6.Commands
 {
@@ -66,15 +67,9 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var pageTitle = GetPageTitle();
 
-            UriBuilder builder = new UriBuilder(mediaWikiSite.Api);
-            var query = HttpUtility.ParseQueryString(
-                "action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml");
-            query["titles"] = string.Join(" ", this.Arguments);
-            builder.Query = query.ToString();
-            var uri = builder.ToString();
+            var uri = GetApiCallUri(pageTitle);
 
             using (Stream rawDataStream = HttpRequest.Get(uri).ToStream())
             {
@@ -155,6 +150,37 @@ namespace helpmebot6.Commands
 
                 return crh;
             }
+        }
+
+        private string GetPageTitle()
+        {
+            // FIXME: ServiceLocator / Singleton
+            var linker = Linker.Instance();
+
+            var naiveTitle = string.Join(" ", this.Arguments);
+
+            var parsedPageTitles = linker.ReallyParseMessage(naiveTitle);
+
+            if (parsedPageTitles.Count == 0)
+            {
+                return naiveTitle;
+            }
+
+            return (string)parsedPageTitles.First();
+        }
+
+        private string GetApiCallUri(string pageTitle)
+        {
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+            UriBuilder builder = new UriBuilder(mediaWikiSite.Api);
+            var query = HttpUtility.ParseQueryString(
+                "action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml");
+            query["titles"] = pageTitle;
+            builder.Query = query.ToString();
+            var uri = builder.ToString();
+            return uri;
         }
     }
 }
