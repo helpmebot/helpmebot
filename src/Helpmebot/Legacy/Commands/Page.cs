@@ -18,6 +18,10 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Web;
+using Helpmebot.Legacy.Configuration;
+using Helpmebot.Model;
+
 namespace helpmebot6.Commands
 {
     using System;
@@ -62,9 +66,16 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            // TODO: link to basewiki
-            var uri = "https://en.wikipedia.org/w/api.php?action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml&titles="
-                      + string.Join(" ", this.Arguments);
+            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+
+            UriBuilder builder = new UriBuilder(mediaWikiSite.Api);
+            var query = HttpUtility.ParseQueryString(
+                "action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml");
+            query["titles"] = string.Join(" ", this.Arguments);
+            builder.Query = query.ToString();
+            var uri = builder.ToString();
+
             using (Stream rawDataStream = HttpRequest.Get(uri).ToStream())
             {
                 var xtr = new XmlTextReader(rawDataStream);
