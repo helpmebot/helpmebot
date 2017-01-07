@@ -212,6 +212,8 @@ namespace Helpmebot.IRC
         /// </summary>
         public event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
 
+        public event EventHandler<KickedEventArgs> BotKickedEvent;
+
         #endregion
 
         #region Public Properties
@@ -1046,7 +1048,7 @@ namespace Helpmebot.IRC
             string channel = parameters[0];
             if (parameters[1] == this.Nickname)
             {
-                this.logger.WarnFormat("Kicked from channel {1}.", channel);
+                this.logger.WarnFormat("Kicked from channel {0}.", channel);
 
                 lock (this.userOperationLock)
                 {
@@ -1063,6 +1065,8 @@ namespace Helpmebot.IRC
 
                     this.channels.Remove(channel);
                 }
+
+                this.OnBotKickedEvent(new KickedEventArgs(channel));
             }
             else
             {
@@ -1352,5 +1356,14 @@ namespace Helpmebot.IRC
         }
 
         #endregion
+
+        protected virtual void OnBotKickedEvent(KickedEventArgs e)
+        {
+            var handler = BotKickedEvent;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
     }
 }

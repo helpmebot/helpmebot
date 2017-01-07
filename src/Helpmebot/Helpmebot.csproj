@@ -95,6 +95,7 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="IRC\Events\JoinEventArgs.cs" />
+    <Compile Include="IRC\Events\KickedEventArgs.cs" />
     <Compile Include="IRC\Events\UserEventArgsBase.cs" />
     <Compile Include="IRC\Interfaces\IIrcClient.cs" />
     <Compile Include="IRC\Events\InviteEventArgs.cs" />

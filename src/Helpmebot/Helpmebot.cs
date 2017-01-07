@@ -219,6 +219,18 @@ namespace Helpmebot
             newIrc.ReceivedMessage += ReceivedMessage;
 
             newIrc.InviteReceivedEvent += IrcInviteEvent;
+
+            newIrc.BotKickedEvent += OnBotKickedFromChannel;
+        }
+
+        private static void OnBotKickedFromChannel(object sender, KickedEventArgs e)
+        {
+            // FIXME: service locator
+            var channelRepository = ServiceLocator.Current.GetInstance<IChannelRepository>();
+
+            var channel = channelRepository.GetByName(e.Channel);
+            channel.Enabled = false;
+            channelRepository.Save(channel);
         }
 
         /// <summary>
