@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Castle.Core.Internal;
+
 namespace Helpmebot.Legacy
 {
     using System;
@@ -218,11 +221,11 @@ namespace Helpmebot.Legacy
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
-                CommandResponseHandler response =
-                    ((GenericCommand)
-                     Activator.CreateInstance(commandHandler, source, destination, args, this.commandServiceHelper))
-                        .RunCommand();
-                this.HandleCommandResponseHandler(source, destination, directedTo, response);
+                var cmd = (GenericCommand)
+                    Activator.CreateInstance(commandHandler, source, destination, args, this.commandServiceHelper);
+                cmd.Redirection = directedTo;
+                CommandResponseHandler response = cmd.RunCommand();
+                this.HandleCommandResponseHandler(source, destination, cmd.Redirection, response);
                 return;
             }
 
@@ -403,7 +406,7 @@ namespace Helpmebot.Legacy
                 {
                     string message = item.Message;
 
-                    if (directedTo != string.Empty)
+                    if (!directedTo.IsNullOrEmpty())
                     {
                         message = directedTo + ": " + message;
                     }

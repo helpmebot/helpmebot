@@ -64,11 +64,13 @@ namespace Helpmebot.Commands.FunStuff
             {
                 if (this.forbiddenTargets.Contains(base.CommandTarget.ToLower()))
                 {
+                    this.Redirection = null;
                     return this.Source.Nickname;
                 }
 
                 if (base.CommandTarget.ToLower() == this.CommandServiceHelper.Client.Nickname.ToLower())
                 {
+                    this.Redirection = null;
                     return this.Source.Nickname;
                 }
 

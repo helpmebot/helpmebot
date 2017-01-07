@@ -142,6 +142,8 @@ namespace helpmebot6.Commands
         /// </summary>
         public LegacyUser Source { get; set; }
 
+        public string Redirection { get; set; }
+
         #endregion
 
         #region Public Methods and Operators

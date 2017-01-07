@@ -33,6 +33,8 @@ namespace Helpmebot.Commands.FunStuff
     /// </summary>
     public abstract class TargetedFunCommand : FunCommand
     {
+        private string commandTarget = null;
+
         /// <summary>
         /// Initialises a new instance of the <see cref="TargetedFunCommand"/> class.
         /// </summary>
@@ -60,8 +62,31 @@ namespace Helpmebot.Commands.FunStuff
         {
             get
             {
-                return this.Arguments.Any() ? string.Join(" ", this.Arguments) : this.Source.Nickname;
+                if (this.commandTarget == null)
+                {
+                    this.commandTarget = this.GetCommandTarget();
+                }
+
+                return this.commandTarget;
             }
+        }
+
+        private string GetCommandTarget()
+        {
+            if (this.Arguments.Any())
+            {
+                this.Redirection = null;
+                return string.Join(" ", this.Arguments);
+            }
+
+            if (!string.IsNullOrEmpty(this.Redirection))
+            {
+                var commandTarget = this.Redirection;
+                this.Redirection = null;
+                return commandTarget;
+            }
+
+            return this.Source.Nickname;
         }
 
         /// <summary>
