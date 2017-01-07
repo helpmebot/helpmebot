@@ -285,15 +285,27 @@ namespace helpmebot6.Commands
             userInformation.UserBlockLog = r.Replace(userInformation.UserBlockLog, ShortUrlAlias);
             userInformation.UserContributions = r.Replace(userInformation.UserContributions, ShortUrlAlias);
 
+            var urlShorteningService = this.CommandServiceHelper.UrlShorteningService;
+
+            var age = string.Format("{0}y {1}d {2}h {3}m",
+                (userInformation.UserAge.Days / 365).ToString(CultureInfo.InvariantCulture),
+                (userInformation.UserAge.Days % 365).ToString(CultureInfo.InvariantCulture),
+                userInformation.UserAge.Hours.ToString(CultureInfo.InvariantCulture),
+                userInformation.UserAge.Minutes.ToString(CultureInfo.InvariantCulture));
+
             string[] messageParameters =
                 {
-                    userInformation.UserName, userInformation.UserPage, userInformation.TalkPage,
-                    userInformation.UserContributions, userInformation.UserBlockLog,
-                    userInformation.UserGroups, userInformation.UserAge.ToString(),
-                    userInformation.RegistrationDate.ToString(CultureInfo.InvariantCulture),
-                    userInformation.EditRate.ToString(CultureInfo.InvariantCulture), 
+                    userInformation.UserName,
+                    urlShorteningService.Shorten(userInformation.UserPage),
+                    urlShorteningService.Shorten(userInformation.TalkPage),
+                    urlShorteningService.Shorten(userInformation.UserContributions),
+                    urlShorteningService.Shorten(userInformation.UserBlockLog),
+                    userInformation.UserGroups,
+                    age,
+                    userInformation.RegistrationDate.ToString("u"),
+                    Math.Round(userInformation.EditRate, 3).ToString(CultureInfo.InvariantCulture),
                     userInformation.EditCount.ToString(CultureInfo.InvariantCulture),
-                    userInformation.BlockInformation == string.Empty ? string.Empty : "BLOCKED"
+                    userInformation.BlockInformation == string.Empty ? string.Empty : "| BLOCKED"
                 };
 
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
