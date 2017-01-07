@@ -214,7 +214,7 @@ namespace helpmebot6.Commands
             queryParts["page"] = "User:" + userName;
             blockLogUrl.Query = queryParts.ToString();
 
-            return blockLogUrl.ToString();
+            return blockLogUrl.Uri.ToString();
         }
 
         // TODO: tidy up! why return a value when it's passed by ref anyway?

@@ -179,7 +179,7 @@ namespace helpmebot6.Commands
                 "action=query&prop=revisions|info&rvprop=user|comment&redirects&inprop=protection&format=xml");
             query["titles"] = pageTitle;
             builder.Query = query.ToString();
-            var uri = builder.ToString();
+            var uri = builder.Uri.ToString();
             return uri;
         }
     }
