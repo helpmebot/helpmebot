@@ -87,7 +87,11 @@ namespace helpmebot6.Commands
                             xpni.Current.GetAttribute("open", string.Empty),
                             xpni.Current.GetAttribute("admin", string.Empty),
                             xpni.Current.GetAttribute("checkuser", string.Empty),
+                            xpni.Current.GetAttribute("hold", string.Empty),
+                            xpni.Current.GetAttribute("proxy", string.Empty),
+
                             xpni.Current.GetAttribute("bans", string.Empty),
+
                             xpni.Current.GetAttribute("useradmin", string.Empty),
                             xpni.Current.GetAttribute("user", string.Empty),
                             xpni.Current.GetAttribute("usernew", string.Empty)
