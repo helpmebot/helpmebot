@@ -349,7 +349,8 @@ namespace Helpmebot
 
             var cmd = new LegacyCommandParser(
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>(),
-                Log.CreateChildLogger("LegacyCommandParser"));
+                Log.CreateChildLogger("LegacyCommandParser"),
+                ServiceLocator.Current.GetInstance<IRedirectionParserService>());
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;

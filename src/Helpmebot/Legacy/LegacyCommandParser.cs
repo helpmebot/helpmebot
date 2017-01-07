@@ -15,6 +15,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Web.Configuration;
 using Castle.Core.Internal;
 
 namespace Helpmebot.Legacy
@@ -64,6 +65,8 @@ namespace Helpmebot.Legacy
         /// </summary>
         private readonly ICommandServiceHelper commandServiceHelper;
 
+        private readonly IRedirectionParserService redirectionParserService;
+
         #endregion
 
         #region Constructors and Destructors
@@ -72,14 +75,16 @@ namespace Helpmebot.Legacy
         /// Initialises a new instance of the <see cref="LegacyCommandParser"/> class.
         /// </summary>
         /// <param name="commandServiceHelper">
-        /// The command Service Helper.
+        ///   The command Service Helper.
         /// </param>
         /// <param name="logger">
-        /// The logger.
+        ///   The logger.
         /// </param>
-        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger)
+        /// <param name="redirectionParserService"></param>
+        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger, IRedirectionParserService redirectionParserService)
         {
             this.commandServiceHelper = commandServiceHelper;
+            this.redirectionParserService = redirectionParserService;
             this.Log = logger;
 
             this.OverrideBotSilence = false;
@@ -195,10 +200,12 @@ namespace Helpmebot.Legacy
                 }
 
                 newArgs[0] = command;
-                string directedTo = FindRedirection(ref newArgs);
+
+                var redirectionResult = this.redirectionParserService.Parse(newArgs);
                 CommandResponseHandler crh =
-                    new CategoryWatcher(source, destination, newArgs, this.commandServiceHelper).RunCommand();
-                this.HandleCommandResponseHandler(source, destination, directedTo, crh);
+                    new CategoryWatcher(source, destination, redirectionResult.Message.ToArray(),
+                        this.commandServiceHelper).RunCommand();
+                this.HandleCommandResponseHandler(source, destination, redirectionResult.Destination, crh);
                 return;
             }
 
@@ -216,16 +223,19 @@ namespace Helpmebot.Legacy
             // check the type exists
             if (commandHandler != null)
             {
-                string directedTo = FindRedirection(ref args);
+                var redirectionResult = this.redirectionParserService.Parse(args);
 
                 // create a new instance of the commandhandler.
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
                 var cmd = (GenericCommand)
-                    Activator.CreateInstance(commandHandler, source, destination, args, this.commandServiceHelper);
-                cmd.Redirection = directedTo;
+                    Activator.CreateInstance(commandHandler, source, destination, redirectionResult.Message.ToArray(),
+                        this.commandServiceHelper);
+                cmd.Redirection = redirectionResult.Destination;
+
                 CommandResponseHandler response = cmd.RunCommand();
                 this.HandleCommandResponseHandler(source, destination, cmd.Redirection, response);
+
                 return;
             }
 
@@ -282,7 +292,11 @@ namespace Helpmebot.Legacy
                         }
                         else
                         {
-                            directedTo = FindRedirection(ref args);
+                            var redirectionResult = this.redirectionParserService.Parse(args);
+
+                            directedTo = redirectionResult.Destination;
+                            args = redirectionResult.Message.ToArray();
+
                             crh.Respond(wordResponse);
                         }
 
@@ -295,54 +309,6 @@ namespace Helpmebot.Legacy
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Finds the redirection.
-        /// </summary>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string FindRedirection(ref string[] args)
-        {
-            string directedTo = string.Empty;
-            int a = 0;
-            foreach (string arg in args)
-            {
-                if (arg == ">")
-                {
-                    // The target comes in the next argument(s)
-                    var target = args.SubArray(a + 1, args.Length - a - 1);
-                    args = args.SubArray(0, a);
-                    directedTo = string.Join(" ", target);
-                }
-                else if (arg.StartsWith(">"))
-                {
-                    // The target nick is in the argument
-                    directedTo = arg.Substring(1);
-
-                    var count = args.Count(i => i == arg);
-
-                    var newArray = new string[args.Length - count];
-
-                    var nextAddition = 0;
-
-                    foreach (var i in args.Where(i => i != arg))
-                    {
-                        newArray[nextAddition] = i;
-                        nextAddition++;
-                    }
-
-                    args = newArray;
-                }
-
-                a++;
-            }
-
-            return directedTo;
-        }
 
         /// <summary>
         /// The parse raw line for message.
