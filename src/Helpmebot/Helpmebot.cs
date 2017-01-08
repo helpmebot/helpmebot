@@ -201,6 +201,10 @@ namespace Helpmebot
             joinMessageService = container.Resolve<IJoinMessageService>();
             blockMonitoringService = container.Resolve<IBlockMonitoringService>();
 
+            // horrible, horrible hack
+            // initialises the linker and connects it to events
+            Linker.Instance();
+
             SetupEvents();
 
             // initialise the deferred installers.
