@@ -204,6 +204,9 @@ namespace helpmebot6.Commands
                 response.Respond("Error adding denied entry to access log.", CommandResponseDestination.ChannelDebug);
             }
 
+            // don't redirect access denied messages.
+            this.Redirection = null;
+
             return response;
         }
 
