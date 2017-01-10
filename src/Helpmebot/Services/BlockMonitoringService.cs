@@ -195,7 +195,7 @@ namespace Helpmebot.Services
 
             if (channel == "#wikipedia-en-help")
             {
-                return "##helpmebot";
+                return "#wikipedia-en-helpers";
             }
 
             return null;
