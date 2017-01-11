@@ -117,6 +117,7 @@
     <Compile Include="Legacy\Commands\Afccount.cs" />
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
+    <Compile Include="Legacy\Commands\Blockmonitor.cs" />
     <Compile Include="Legacy\Commands\Date.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Champagne.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Chillpill.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Legacy\Commands\Whois.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
+    <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\RateLimitCacheEntry.cs" />
@@ -159,6 +161,7 @@
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
+    <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
@@ -173,8 +176,10 @@
     <Compile Include="Persistence\Mappings\ShortUrlCacheEntryMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
+    <Compile Include="Repositories\BlockMonitorRepository.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IBlockMonitorRepository.cs" />
     <Compile Include="Repositories\Interfaces\IInterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\Interfaces\IMediaWikiSiteRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />

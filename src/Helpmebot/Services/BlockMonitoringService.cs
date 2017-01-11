@@ -18,6 +18,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Helpmebot.Monitoring;
+using NHibernate;
+using NHibernate.Criterion;
+
 namespace Helpmebot.Services
 {
     using System;
@@ -53,6 +59,10 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
 
+        private readonly IBlockMonitorRepository blockMonitorRepository;
+
+        private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BlockMonitoringService"/> class.
         /// </summary>
@@ -62,10 +72,23 @@ namespace Helpmebot.Services
         /// <param name="mediaWikiSiteRepository">
         /// The media wiki site repository.
         /// </param>
-        public BlockMonitoringService(ILogger logger, IMediaWikiSiteRepository mediaWikiSiteRepository)
+        public BlockMonitoringService(ILogger logger, IMediaWikiSiteRepository mediaWikiSiteRepository,
+            IBlockMonitorRepository blockMonitorRepository)
         {
             this.logger = logger;
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
+            this.blockMonitorRepository = blockMonitorRepository;
+
+            // initialise the store
+            foreach (var blockMonitor in this.blockMonitorRepository.Get())
+            {
+                if (!this.monitors.ContainsKey(blockMonitor.MonitorChannel))
+                {
+                    this.monitors[blockMonitor.MonitorChannel] = new HashSet<string>();
+                }
+
+                this.monitors[blockMonitor.MonitorChannel].Add(blockMonitor.ReportChannel);
+            }
         }
 
         /// <summary>
@@ -88,6 +111,7 @@ namespace Helpmebot.Services
                 var alertChannel = this.GetAlertChannel(channel);
                 if (alertChannel == null)
                 {
+                    this.logger.Debug("No block monitoring alert channels found");
                     return;
                 }
 
@@ -95,6 +119,7 @@ namespace Helpmebot.Services
 
                 if (ip == null)
                 {
+                    this.logger.Debug("Could not detect IP address for user");
                     return;
                 }
 
@@ -108,7 +133,8 @@ namespace Helpmebot.Services
                 {
                     string orgname = null;
 
-                    var textResult = HttpRequest.Get(string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
+                    var textResult = HttpRequest.Get(
+                        string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
                     var resultData = textResult.Split('\r', '\n');
                     if (resultData.FirstOrDefault() == "success")
                     {
@@ -124,12 +150,49 @@ namespace Helpmebot.Services
                         ip,
                         orgname);
 
-                    client.SendMessage(alertChannel, message);
+                    foreach (var c in alertChannel)
+                    {
+
+                        client.SendMessage(c, message);
+                    }
+                }
+                else
+                {
+                    this.logger.Debug("No blocks found for joined user.");
                 }
             }
             catch (Exception ex)
             {
                 this.logger.Error("Unknown error occurred in BlockMonitoringService", ex);
+            }
+        }
+
+        public void AddMap(string monitorChannel, string reportChannel)
+        {
+            lock (this.monitors)
+            {
+                var monitor = new BlockMonitor {MonitorChannel = monitorChannel, ReportChannel = reportChannel};
+                this.blockMonitorRepository.Save(monitor);
+
+                if (!this.monitors.ContainsKey(monitorChannel))
+                {
+                    this.monitors[monitorChannel] = new HashSet<string>();
+                }
+
+                this.monitors[monitorChannel].Add(reportChannel);
+            }
+        }
+
+        public void DeleteMap(string monitorChannel, string reportChannel)
+        {
+            lock (this.monitors)
+            {
+                this.blockMonitorRepository.Delete(Restrictions.And(
+                    Restrictions.Eq("MonitorChannel", monitorChannel),
+                    Restrictions.Eq("ReportChannel", reportChannel)
+                ));
+
+                this.monitors[monitorChannel].Remove(reportChannel);
             }
         }
 
@@ -181,24 +244,17 @@ namespace Helpmebot.Services
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        private string GetAlertChannel(string channel)
+        private IEnumerable<string> GetAlertChannel(string channel)
         {
-            if (channel == "##stwalkerster")
+            lock (this.monitors)
             {
-                return "##stwalkerster";
-            }
+                if (this.monitors.ContainsKey(channel))
+                {
+                    return this.monitors[channel];
+                }
 
-            if (channel == "##stwalkerster-development")
-            {
-                return "##stwalkerster";
+                return null;
             }
-
-            if (channel == "#wikipedia-en-help")
-            {
-                return "#wikipedia-en-helpers";
-            }
-
-            return null;
         }
     }
 }

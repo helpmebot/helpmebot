@@ -41,5 +41,8 @@ namespace Helpmebot.Services.Interfaces
         /// The sender.
         /// </param>
         void DoEventProcessing(string channel, IUser user, IIrcClient sender);
+
+        void AddMap(string monitorChannel, string reportChannel);
+        void DeleteMap(string monitorChannel, string reportChannel);
     }
 }
