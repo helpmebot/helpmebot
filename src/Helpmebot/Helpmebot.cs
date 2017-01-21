@@ -162,6 +162,7 @@ namespace Helpmebot
 
             if (!dbal.Connect())
             {
+				Log.Error("Unable to connect to the DB on INIT");
                 // can't Connect to database, DIE
                 return;
             }
