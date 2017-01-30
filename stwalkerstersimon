@@ -1,0 +1,3 @@
+public interface {{CheckUser}} {
+  int CheckUser = 1; // means check it now 1 is on 0 is off duh
+}
