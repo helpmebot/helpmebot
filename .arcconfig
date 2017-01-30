@@ -1,5 +1,4 @@
 {
   "phabricator.uri" : "https://phabricator.stwalkerster.co.uk/",
   "repository.callsign" : "HMB",
-  "history.immutable": true
-}
+  "history.immutable": trueCheckUser now
