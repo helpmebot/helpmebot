@@ -27,7 +27,7 @@ namespace Helpmebot.Commands.Interfaces
     /// <summary>
     /// The Command interface.
     /// </summary>
-    public interface ICommand
+    public interface CheckUser
     {
         /// <summary>
         /// Gets the flag.
