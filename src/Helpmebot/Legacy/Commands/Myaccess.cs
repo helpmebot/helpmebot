@@ -74,7 +74,18 @@ namespace helpmebot6.Commands
                         continue;
                     }
 
-                    string[] cmdArgs = { s, legacyUser.AccessLevel.ToString() };
+                    if (!s.Contains("@") || !s.Contains("!"))
+                    {
+                        if (this.CommandServiceHelper.Client.UserCache.ContainsKey(legacyUser.Nickname))
+                        {
+                            var ircUser = this.CommandServiceHelper.Client.UserCache[legacyUser.Nickname];
+
+                            legacyUser = LegacyUser.NewFromOtherUser(ircUser);
+                        }
+                    }
+
+
+                    string[] cmdArgs = { legacyUser.ToString(), legacyUser.AccessLevel.ToString() };
                     crh.Respond(messageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
                 }
             }

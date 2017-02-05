@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using NHibernate.Linq.Functions;
+
 namespace helpmebot6.Commands
 {
     using System.Globalization;
@@ -111,12 +114,22 @@ namespace helpmebot6.Commands
                                     break;
                             }
 
-                            var legacyUser = LegacyUser.NewFromString(this.Arguments[1]);
+                            var s = this.Arguments[1];
+                            var legacyUser = LegacyUser.NewFromString(s);
 
                             if (legacyUser == null)
                             {
-                                string[] errArgs = { this.Arguments[1] };
-                                crh.Respond(messageService.RetrieveMessage("cmdAccessInvalidUser", this.Channel, errArgs));
+                                string[] errArgs = {s};
+                                crh.Respond(
+                                    messageService.RetrieveMessage("cmdAccessInvalidUser", this.Channel, errArgs));
+                                return crh;
+                            }
+
+                            if (!s.Contains("@") || !s.Contains("!"))
+                            {
+                                string[] errArgs = {s};
+                                crh.Respond(
+                                    messageService.RetrieveMessage("cmdAccessInvalidNuh", this.Channel, errArgs));
                                 return crh;
                             }
 
@@ -125,21 +138,26 @@ namespace helpmebot6.Commands
                         else
                         {
                             string[] messageParameters =
-                                {
-                                    "access add", "3", 
-                                    this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
-                                };
+                            {
+                                "access add", "3",
+                                this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
+                            };
                             return
                                 new CommandResponseHandler(
                                     messageService.RetrieveMessage(
-                                        "notEnoughParameters", 
-                                        this.Channel, 
+                                        "notEnoughParameters",
+                                        this.Channel,
                                         messageParameters));
                         }
 
                         break;
                     case "del":
                         crh = this.DeleteAccessEntry(int.Parse(this.Arguments[1]));
+                        break;
+                    default:
+                        crh = new CommandResponseHandler();
+                        crh.Respond(
+                            messageService.RetrieveMessage("CmdAccessInvalidSubcommand", this.Channel, new string[0]));
                         break;
                 }
 
@@ -172,8 +190,17 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            CommandResponseHandler crh =
-                new Myaccess(this.Source, this.Channel, new string[0], this.CommandServiceHelper).RunCommand();
+            if (this.Arguments.Length > 0 && (this.Arguments[0] == "add" || this.Arguments[0] == "del"))
+            {
+                return base.OnAccessDenied();
+            }
+
+            var crh = new Myaccess(this.Source, this.Channel, this.Arguments, this.CommandServiceHelper).RunCommand();
+            var message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdAccessAccessDenied",
+                this.Channel,
+                new string[0]);
+
+            crh.Respond(message, CommandResponseDestination.PrivateMessage);
             return crh;
         }
 
