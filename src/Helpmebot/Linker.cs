@@ -201,7 +201,7 @@ namespace Helpmebot
         {
             var newLinks = new ArrayList();
 
-            var linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{([^{}\|]*)(?:}}|\|)");
+            var linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{(?:subst:)?([^{}\|]*)(?:}}|\|)");
             Match m = linkRegex.Match(message);
             while (m.Length > 0)
             {
