@@ -197,9 +197,10 @@ namespace Helpmebot.Monitoring
                 // Create the XML Reader
                 pages = this.site.GetPagesInCategory(this.category);
             }
-            catch (Exception ex)
+            catch (WebException ex)
             {
-                this.logger.Error("Error contacting API (" + this.site.Api + ") ", ex);
+                this.logger.Warn("Error contacting API (" + this.site.Api + ") ", ex);
+                throw;
             }
 
             IEnumerable<string> pageList = pages;

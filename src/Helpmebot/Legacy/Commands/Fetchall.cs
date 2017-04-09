@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Net;
+
 namespace helpmebot6.Commands
 {
     using System.Collections.Generic;
@@ -84,7 +86,15 @@ namespace helpmebot6.Commands
             {
                 foreach (string key in kc)
                 {
-                    crh.Respond(WatcherController.Instance().ForceUpdate(key, this.Channel), CommandResponseDestination.PrivateMessage);
+                    try
+                    {
+                        crh.Respond(WatcherController.Instance().ForceUpdate(key, this.Channel),
+                            CommandResponseDestination.PrivateMessage);
+                    }
+                    catch (WebException ex)
+                    {
+                        crh.Respond(string.Format("Unable to contact Wikipedia API while processing key {0}: {1}", key, ex.Message));
+                    }
                 }
             }
             

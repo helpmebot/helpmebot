@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Net;
+
 namespace Helpmebot.Monitoring
 {
     using System;
@@ -228,11 +231,18 @@ namespace Helpmebot.Monitoring
             this.logger.InfoFormat("Forcing update for {0} at {1}.", key, destination);
 
             CategoryWatcher cw;
-            if (this.watchers.TryGetValue(key, out cw))
+            try
             {
-                List<string> items = cw.DoCategoryCheck().ToList();
-                this.UpdateDatabaseTable(items, key);
-                return this.CompileMessage(items, key, destination, true);
+                if (this.watchers.TryGetValue(key, out cw))
+                {
+                    List<string> items = cw.DoCategoryCheck().ToList();
+                    this.UpdateDatabaseTable(items, key);
+                    return this.CompileMessage(items, key, destination, true);
+                }
+            }
+            catch (WebException ex)
+            {
+                return "Unable to contact Wikipedia API: " + ex.Message;
             }
 
             return null;
