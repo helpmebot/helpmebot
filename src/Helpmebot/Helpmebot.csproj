@@ -96,6 +96,7 @@
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="IRC\Events\JoinEventArgs.cs" />
     <Compile Include="IRC\Events\KickedEventArgs.cs" />
+    <Compile Include="IRC\Events\ModeEventArgs.cs" />
     <Compile Include="IRC\Events\UserEventArgsBase.cs" />
     <Compile Include="IRC\Interfaces\IIrcClient.cs" />
     <Compile Include="IRC\Events\InviteEventArgs.cs" />
@@ -144,6 +145,8 @@
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
+    <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
+    <Compile Include="Model\ModeMonitoring\ModeChanges.cs" />
     <Compile Include="Model\RateLimitCacheEntry.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\WatchedCategory.cs" />
@@ -210,6 +213,7 @@
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeoloationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
+    <Compile Include="Services\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
@@ -220,6 +224,7 @@
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
+    <Compile Include="Services\ModeMonitoringService.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
@@ -449,5 +454,4 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
 </Project>

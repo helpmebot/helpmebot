@@ -23,6 +23,7 @@ namespace Helpmebot.IRC
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Security;
@@ -37,6 +38,8 @@ namespace Helpmebot.IRC
     using Helpmebot.IRC.Messages;
     using Helpmebot.IRC.Model;
     using Helpmebot.Model.Interfaces;
+
+    using DataReceivedEventArgs = Helpmebot.IRC.Events.DataReceivedEventArgs;
 
     /// <summary>
     ///     The IRC client.
@@ -206,6 +209,7 @@ namespace Helpmebot.IRC
         ///     The join received event.
         /// </summary>
         public event EventHandler<JoinEventArgs> JoinReceivedEvent;
+        public event EventHandler<JoinEventArgs> PartReceivedEvent;
 
         /// <summary>
         ///     The received message.
@@ -213,6 +217,8 @@ namespace Helpmebot.IRC
         public event EventHandler<MessageReceivedEventArgs> ReceivedMessage;
 
         public event EventHandler<KickedEventArgs> BotKickedEvent;
+
+        public event EventHandler<ModeEventArgs> ModeReceivedEvent;
 
         #endregion
 
@@ -380,6 +386,11 @@ namespace Helpmebot.IRC
         public void SendNotice(string destination, string message)
         {
             this.Send(new Message("NOTICE", new[] { destination, message }));
+        }
+
+        public void Mode(string target, string changes)
+        {
+            this.networkClient.Send(string.Format("MODE {0} {1}", target, changes));
         }
 
         #endregion
@@ -682,6 +693,9 @@ namespace Helpmebot.IRC
                 this.logger.Debug("Requesting WHOX a information");
                 this.Send(new Message("WHO", new[] { channelName, "%uhnatfc,001" }));
 
+                this.logger.Debug("Requesting MODE information");
+                this.Send(new Message("MODE", new[] { channelName }));
+
                 lock (this.userOperationLock)
                 {
                     // add the channel to the list of channels I'm in.
@@ -706,12 +720,12 @@ namespace Helpmebot.IRC
                         this.nickTrackingValid = false;
                     }
                 }
+            }
 
-                EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
-                if (temp != null)
-                {
-                    temp(this, new JoinEventArgs(e.Message, user, channelName));
-                }
+            EventHandler<JoinEventArgs> temp = this.JoinReceivedEvent;
+            if (temp != null)
+            {
+                temp(this, new JoinEventArgs(e.Message, user, channelName));
             }
         }
 
@@ -791,12 +805,32 @@ namespace Helpmebot.IRC
                 string target = parameters[0];
                 if (target.StartsWith("#"))
                 {
+                    this.logger.Debug("Received channel mode message");
                     this.OnChannelModeReceived(parameters);
                 }
                 else
                 {
                     // User mode message
                     this.logger.Debug("Received user mode message. Not processing.");
+                }
+
+                var modeEvent = this.ModeReceivedEvent;
+                if (modeEvent != null)
+                {
+                    modeEvent(this, new ModeEventArgs(e.Message, user, parameters[0], parameters.Skip(1).ToList()));
+                }
+            }
+
+            if (e.Message.Command == Numerics.CurrentChannelMode && user != null)
+            {
+                List<string> parameters = e.Message.Parameters.Skip(1).ToList();
+
+                this.OnChannelModeReceived(parameters);
+                
+                var modeEvent = this.ModeReceivedEvent;
+                if (modeEvent != null)
+                {
+                    modeEvent(this, new ModeEventArgs(e.Message, user, parameters[0], parameters.Skip(1).ToList()));
                 }
             }
 
@@ -1031,6 +1065,12 @@ namespace Helpmebot.IRC
                         this.userCache.Remove(user.Nickname);
                     }
                 }
+            }
+
+            var onPartReceivedEvent = this.PartReceivedEvent;
+            if (onPartReceivedEvent != null)
+            {
+                onPartReceivedEvent(this, new JoinEventArgs(e.Message, user, channel));
             }
         }
 

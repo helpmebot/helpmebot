@@ -45,6 +45,8 @@ namespace Helpmebot
 
     using helpmebot6.Commands;
 
+    using Helpmebot.Services;
+
     using Microsoft.Practices.ServiceLocation;
 
 #if PERFCOUNTER
@@ -192,6 +194,12 @@ namespace Helpmebot
                     container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
                     configurationHelper.IrcConfiguration,
                     configurationHelper.PrivateConfiguration.IrcPassword);
+
+            var modeMonitor = new ModeMonitoringService(
+                newIrc,
+                container.Resolve<ILogger>().CreateChildLogger("ModeMonitoringService"));
+
+            container.Register(Component.For<IModeMonitoringService>().Instance(modeMonitor).IsDefault().NamedAutomatically("modemon"));
 
             JoinChannels();
             

@@ -41,11 +41,14 @@ namespace Helpmebot.IRC.Interfaces
         /// The join received event.
         /// </summary>
         event EventHandler<JoinEventArgs> JoinReceivedEvent;
+        event EventHandler<JoinEventArgs> PartReceivedEvent;
 
         /// <summary>
         /// The invite received event.
         /// </summary>
         event EventHandler<InviteEventArgs> InviteReceivedEvent;
+
+        event EventHandler<ModeEventArgs> ModeReceivedEvent;
 
         /// <summary>
         /// Gets or sets the nickname.
@@ -120,5 +123,7 @@ namespace Helpmebot.IRC.Interfaces
         /// The message.
         /// </param>
         void Send(IMessage message);
+
+        void Mode(string target, string changes);
     }
 }

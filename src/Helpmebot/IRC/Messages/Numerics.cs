@@ -93,5 +93,13 @@ namespace Helpmebot.IRC.Messages
         /// The who x reply.
         /// </summary>
         public const string WhoXReply = "354";
+
+        public const string BanListEntry = "367";
+        public const string QuietListEntry = "728";
+        public const string ExemptListEntry = "348";
+        public const string BanListEnd = "368";
+        public const string QuietListEnd = "729";
+        public const string ExemptListEnd = "349";
+        public const string CurrentChannelMode = "324";
     }
 }
