@@ -22,7 +22,8 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly Dictionary<string, string> watchedChannels = new Dictionary<string, string>
                                                                           {
-            { "##stwalkerster", "##stwalkerster-development" }
+            { "##stwalkerster", "##stwalkerster-development" },
+            { "#wikipedia-en-help", "#wikipedia-en-helpers" }
                                                                           };
         
         private readonly Dictionary<string, ChannelStatus> channelStatus = new Dictionary<string, ChannelStatus>();
