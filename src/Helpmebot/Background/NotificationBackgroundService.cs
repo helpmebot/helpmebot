@@ -110,10 +110,15 @@ namespace Helpmebot.Background
                             destination = "#wikipedia-en-accounts-devs";
                             break;
                     }
-
-                    this.ircClient.SendMessage(destination, notification.Text);
+                    
+                    this.ircClient.SendMessage(destination, this.SanitiseMessage(notification.Text));
                 }
             }
+        }
+
+        private string SanitiseMessage(string text)
+        {
+            return text.Replace("\r", "").Replace("\n", "");
         }
     }
 }
