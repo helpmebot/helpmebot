@@ -16,16 +16,49 @@
 //   IN THE SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
-using System.Collections.Generic;
-using System.Linq;
-
 namespace Helpmebot.Model.ModeMonitoring
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using FluentNHibernate.Conventions;
 
     internal class ModeChanges
     {
+        public ModeChanges()
+        {
+            this.Ops = new List<string>();
+            this.Deops = new List<string>();
+            this.Bans = new List<string>();
+            this.Unbans = new List<string>();
+            this.Quiets = new List<string>();
+            this.Unquiets = new List<string>();
+            this.Exempts = new List<string>();
+            this.Unexempts = new List<string>();
+        }
+
+        public List<string> Bans { get; private set; }
+
+        public List<string> Deops { get; private set; }
+
+        public List<string> Exempts { get; private set; }
+
+        public bool? Moderated { get; set; }
+
+        public List<string> Ops { get; private set; }
+
+        public List<string> Quiets { get; private set; }
+
+        public bool? ReducedModeration { get; set; }
+
+        public bool? RegisteredOnly { get; set; }
+
+        public List<string> Unbans { get; private set; }
+
+        public List<string> Unexempts { get; private set; }
+
+        public List<string> Unquiets { get; private set; }
+
         public static ModeChanges FromChangeList(IEnumerable<string> rawChangeList)
         {
             var changeList = rawChangeList.ToList();
@@ -56,6 +89,7 @@ namespace Helpmebot.Model.ModeMonitoring
                         {
                             changes.Deops.Add(op);
                         }
+
                         break;
                     case 'b':
                         var ban = modeParameters.First();
@@ -68,6 +102,7 @@ namespace Helpmebot.Model.ModeMonitoring
                         {
                             changes.Unbans.Add(ban);
                         }
+
                         break;
                     case 'q':
                         var quiet = modeParameters.First();
@@ -80,6 +115,7 @@ namespace Helpmebot.Model.ModeMonitoring
                         {
                             changes.Unquiets.Add(quiet);
                         }
+
                         break;
                     case 'e':
                         var exempt = modeParameters.First();
@@ -92,6 +128,7 @@ namespace Helpmebot.Model.ModeMonitoring
                         {
                             changes.Unexempts.Add(exempt);
                         }
+
                         break;
                     case 'z':
                         changes.ReducedModeration = adding;
@@ -114,32 +151,22 @@ namespace Helpmebot.Model.ModeMonitoring
             return changes;
         }
 
-        public ModeChanges()
+        public bool IsEmpty()
         {
-            this.Ops = new List<string>();
-            this.Deops = new List<string>();
-            this.Bans = new List<string>();
-            this.Unbans = new List<string>();
-            this.Quiets = new List<string>();
-            this.Unquiets = new List<string>();
-            this.Exempts = new List<string>();
-            this.Unexempts = new List<string>();
+            if (this.Bans.Any()) return false;
+            if (this.Deops.Any()) return false;
+            if (this.Exempts.Any()) return false;
+            if (this.Ops.Any()) return false;
+            if (this.Quiets.Any()) return false;
+            if (this.Unbans.Any()) return false;
+            if (this.Unexempts.Any()) return false;
+            if (this.Unquiets.Any()) return false;
+
+            if (this.Moderated.HasValue) return false;
+            if (this.ReducedModeration.HasValue) return false;
+            if (this.RegisteredOnly.HasValue) return false;
+
+            return true;
         }
-
-        public List<string> Ops { get; private set; }
-        public List<string> Deops { get; private set; }
-
-        public List<string> Bans { get; private set; }
-        public List<string> Unbans { get; private set; }
-
-        public List<string> Quiets { get; private set; }
-        public List<string> Unquiets { get; private set; }
-
-        public List<string> Exempts { get; private set; }
-        public List<string> Unexempts { get; private set; }
-
-        public bool? ReducedModeration { get; set; }
-        public bool? Moderated { get; set; }
-        public bool? RegisteredOnly { get; set; }
     }
 }

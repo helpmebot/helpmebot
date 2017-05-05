@@ -50,29 +50,17 @@ namespace Helpmebot.Services
             this.ircClient.ModeReceivedEvent += this.OnModeReceived;
             this.ircClient.JoinReceivedEvent += this.OnJoinReceived;
             this.ircClient.PartReceivedEvent += this.OnPartReceived;
-            this.ircClient.ReceivedMessage += this.OnReceivedMessage;
+            this.ircClient.ReceivedMessage += this.OnMessageReceived;
             this.logger.Info("Hooked into IRC events");
         }
 
         public void ResyncChannel(string channel)
         {
             this.logger.InfoFormat("Resyncing channel status for {0}", channel);
-
-            lock (this.channelStatus)
-            {
-                this.ircClient.Mode(channel, "-o " + this.ircClient.Nickname);
-
-                this.logger.InfoFormat("Requesting chanops for {0}", channel);
-                this.ircClient.SendMessage("ChanServ", string.Format("OP {0} {1}", channel, this.ircClient.Nickname));
-                this.channelStatus[channel].BotOpsRequested = true;
-                this.channelStatus[channel].FirstTimeSyncComplete = false;
-
-                this.logger.InfoFormat("Requesting ban/quiet lists for {0}", channel);
-                this.ircClient.Mode(channel, "");
-                this.ircClient.Mode(channel, "b");
-                this.ircClient.Mode(channel, "q");
-            }
+            // TODO: implement
         }
+
+        #region Basic IRC Events
 
         private void OnPartReceived(object sender, JoinEventArgs e)
         {
@@ -80,16 +68,50 @@ namespace Helpmebot.Services
             {
                 return;
             }
-
-            this.logger.InfoFormat("Left channel {0}, ending tracking", e.Channel);
-
+            
             lock (this.channelStatus)
             {
-                this.channelStatus.Remove(e.Channel.ToLowerInvariant());
+                var channelName = e.Channel.ToLowerInvariant();
+                if (this.channelStatus.ContainsKey(channelName))
+                {
+                    this.logger.InfoFormat("Left channel {0}, ending tracking", channelName);
+                    this.channelStatus.Remove(channelName);
+                }
             }
         }
 
-        private void OnReceivedMessage(object sender, MessageReceivedEventArgs e)
+        private void OnNoticeReceived(MessageReceivedEventArgs e, IUser user)
+        {
+            var target = e.Message.Parameters.First();
+            var message = e.Message.Parameters.Skip(1).First();
+
+            this.logger.DebugFormat("Received notice from {0} for {1} with content: {2}", user, target, message);
+
+            if (user.Nickname == "ChanServ")
+            {
+                var match = this.noChanopsPattern.Match(message);
+                if (match.Success)
+                {
+                    // oops, we don't have ops here.
+                    string channel = match.Groups["channel"].Value;
+                    this.logger.ErrorFormat("Cannot obtain ops for channel {0}, skipping", channel);
+
+                    this.ircClient.SendMessage(
+                        this.watchedChannels[channel],
+                        string.Format(
+                            "Unable to obtain ops from ChanServ in {0}; I won't be monitoring this channel for ban exemptions",
+                            channel));
+
+                    lock (this.channelStatus)
+                    {
+                        this.watchedChannels.Remove(channel.ToLowerInvariant());
+                        this.channelStatus.Remove(channel.ToLowerInvariant());
+                    }
+                }
+            }
+        }
+
+        private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             if (e.Message.Command == "NOTICE")
             {
@@ -135,6 +157,94 @@ namespace Helpmebot.Services
             }
         }
 
+        private void OnModeReceived(object sender, ModeEventArgs e)
+        {
+            var channel = e.Target.ToLowerInvariant();
+
+            if (this.watchedChannels.ContainsKey(channel))
+            {
+                var changes = ModeChanges.FromChangeList(e.Changes);
+
+                var triggerBotOpped = false;
+                var triggerBotDeOpped = false;
+
+                this.logger.DebugFormat("Mode change seen on {0}: {1}", channel, string.Join(" ", e.Changes));
+
+                lock (this.channelStatus)
+                {
+                    if (changes.Ops.Contains(this.ircClient.Nickname))
+                    {
+                        triggerBotOpped = true;
+                        changes.Ops.Remove(this.ircClient.Nickname);
+                    }
+
+                    if (changes.Deops.Contains(this.ircClient.Nickname))
+                    {
+                        triggerBotDeOpped = true;
+                        changes.Deops.Remove(this.ircClient.Nickname);
+                    }
+
+                    this.SyncChangesToChannel(this.channelStatus[channel], changes);
+                }
+
+                if (triggerBotOpped)
+                {
+                    this.logger.InfoFormat("Bot opped on {0}", channel);
+                    this.OnBotOpped(channel);
+                }
+
+                if (triggerBotDeOpped)
+                {
+                    this.logger.InfoFormat("Bot deopped on {0}", channel);
+                    this.OnBotDeOpped(channel);
+                }
+
+                if (!changes.IsEmpty())
+                {
+                    this.logger.InfoFormat("Mode change on {0}", channel);
+                    this.OnModeChange(channel);
+                }
+                
+            }
+
+        }
+
+        private void OnJoinReceived(object sender, JoinEventArgs e)
+        {
+            // is this me?
+            if (e.User.Nickname == this.ircClient.Nickname)
+            {
+                this.logger.Debug("Seen self-join");
+
+                var channel = e.Channel.ToLowerInvariant();
+
+                // is this one of our channels?
+                if (this.watchedChannels.ContainsKey(channel))
+                {
+                    this.logger.DebugFormat("Self-join monitored channel {0}", channel);
+
+                    lock (this.channelStatus)
+                    {
+                        if (this.channelStatus.ContainsKey(channel))
+                        {
+                            this.channelStatus.Remove(channel);
+                        }
+
+                        this.channelStatus.Add(channel, new ChannelStatus());
+                    }
+
+                    this.logger.InfoFormat("Requesting ban/quiet lists for {0}", channel);
+                    this.ircClient.Mode(channel, "b");
+                    this.ircClient.Mode(channel, "q");
+                }
+
+            }
+        }
+
+        #endregion
+
+        #region Banlist stuff
+
         private void ProcessBanListEntry(string ban, string channel, string type)
         {
             var banlistKey = string.Format("{0}/{1}", type, channel);
@@ -146,6 +256,7 @@ namespace Helpmebot.Services
 
             this.banlist[banlistKey].Add(ban);
         }
+
         private void ProcessBanListEnd(string channel, string type)
         {
             var banlistKey = string.Format("{0}/{1}", type, channel);
@@ -185,225 +296,111 @@ namespace Helpmebot.Services
                         throw new ArgumentOutOfRangeException("type");
                 }
 
-                readyToAnalyse = this.channelStatus[channel].ExemptListDownloaded
-                                 && this.channelStatus[channel].BanListDownloaded
-                                 && this.channelStatus[channel].QuietListDownloaded
-                                 && (!this.channelStatus[channel].FirstTimeSyncComplete);
+                readyToAnalyse = this.channelStatus[channel].BanListDownloaded
+                                 && this.channelStatus[channel].QuietListDownloaded;
             }
 
             if (readyToAnalyse)
             {
-                this.PerformFirstTimeAnalysis(channel, false);
+                if (type == "e")
+                {
+                    this.FixChannel(channel);
+                }
+                else
+                {
+                    this.CheckRestrictivity(channel);
+                }
             }
         }
 
-        private void FixChannel(ChannelStatus status, string channel, string modechange, bool changeSettings, string message)
+        #endregion
+
+        #region Mode changes
+
+        private void OnBotOpped(string channel)
         {
-            if (changeSettings)
+            lock (this.channelStatus)
             {
-                status.LastOverrideTime = DateTime.Now;
-                this.ircClient.Mode(channel, modechange);
+                this.channelStatus[channel].BotOpsHeld = true;
             }
-            else
-            {
-                this.ircClient.SendMessage(this.watchedChannels[channel], string.Format(message, channel));
-            }
+
+            // request exemption lists
+            this.ircClient.Mode(channel, "e");
+            this.logger.DebugFormat("Requested exemption lists for {0}", channel);
         }
 
-        private void PerformFirstTimeAnalysis(string channel, bool changeSettings)
+        private void OnBotDeOpped(string channel)
         {
-            this.logger.InfoFormat("Performing analysis for channel {0}", channel);
-            
+            lock (this.channelStatus)
+            {
+                this.channelStatus[channel].BotOpsHeld = false;
+            }
+
+            this.CheckRestrictivity(channel);
+        }
+
+        private void OnModeChange(string channel)
+        {
+            this.CheckRestrictivity(channel);
+        }
+
+        #endregion
+
+        #region Channel fixing
+
+        private void CheckRestrictivity(string channel)
+        {
+            bool needsChanges = false;
+            bool needsOps = false;
+
+            bool hasOps = false;
+
             lock (this.channelStatus)
             {
                 var status = this.channelStatus[channel];
-                status.FirstTimeSyncComplete = true;
 
-             //   if (status.Moderated && !status.ReducedModeration)
-             //   {
-             //       string message =
-             //               "WARNING - the channel is currently configured as +m, but without +z. This means that helpees will be unable to speak. Ops: please consider +q $~a with an exemption for gateway users instead.";
-             //       this.FixChannel(status, channel, "-m+qez $~a *!*@gateway/web/*", changeSettings, message);
-             //       return;
-             //   }
-             //   
-             //   if (status.RegisteredOnly)
-             //   {
-             //       this.FixChannel(status, channel, "-r+qez $~a *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +r. This means that only NickServ-authed users will be able to join, but not helpees. Ops: please consider +q $~a with an exemption for gateway users instead.");
-             //   }
-             //
-             //   var channelOpCount =
-             //       this.ircClient.Channels[channel].Users.Count(
-             //           x => x.Value.Operator && x.Key != this.ircClient.Nickname && x.Key != "ChanServ");
-             //   
-             //   if (status.Moderated && status.ReducedModeration && channelOpCount < 1)
-             //   {
-             //       // WARN channel closed, no ops and +mz
-             //       this.FixChannel(status, channel, "-m+qe $~a *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +mz, but nobody is opped. Helpees will be requesing help, but nobody will hear them. Ops: please consider +q $~a with an exemption for gateway users instead.");
-             //       return;
-             //   }
-             //
-             //   if (status.Moderated && status.ReducedModeration && channelOpCount > 0)
-             //   {
-             //       // WARN +mz, consider +q $~a with exemption to allow others to help.
-             //       this.FixChannel(status, channel, "-m+qe $~a *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +mz. Helpees will be requesing help, but only opped users will hear them. Ops: please consider +q $~a with an exemption for gateway users instead.");
-             //       return;
-             //   }
-             //   
-             //   if (status.Quiets.Contains("$~a"))
-             //   {
-             //       if (status.Exempts.Exists(x => x.Contains("kiwiirc.com") || x.Contains("gateway/")))
-             //       {
-             //           // quiet with exemption, OK.
-             //       }
-             //       else
-             //       {
-             //           if (channelOpCount == 0)
-             //           {
-             //               if (status.ReducedModeration)
-             //               {
-             //                   this.FixChannel(status, channel, "+e *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +qz $~a, but without an exemption. Helpees will be requesing help, but nobody is opped to hear them. Ops: please consider an exemption for gateway users too.");
-             //                   return;
-             //               }
-             //               else
-             //               {
-             //                   this.FixChannel(status, channel, "+ze *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +q $~a. Helpees will be unable to speak. Ops: please consider an exemption for gateway users too.");
-             //                   return;
-             //               }
-             //           }
-             //           else
-             //           {
-             //               // WARN quiet with no exemption
-             //               if (status.ReducedModeration)
-             //               {
-             //                   this.FixChannel(status, channel, "+e *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +q $~a, but without an exemption. Helpees will be requesing help, but they will only be heard by ops. Ops: please consider an exemption for gateway users too.");
-             //                   return;
-             //               }
-             //               else
-             //               {
-             //                   this.FixChannel(status, channel, "+ze *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +q $~a, but without an exemption. Helpees will unable to speak. Ops: please consider an exemption for gateway users too.");
-             //                   return;
-             //               }
-             //           }
-             //       }
-             //   }
-             //
-             //   if (status.Bans.Contains("$~a"))
-             //   {
-             //       if (status.Exempts.Exists(x => x.Contains("kiwiirc.com") || x.Contains("gateway/")))
-             //       {
-             //           // ban with exemption, OK
-             //       }
-             //       else
-             //       {
-             //           // WARN channel closed
-             //           this.FixChannel(status, channel, "+ze *!*@gateway/web/*", changeSettings, "WARNING - the channel is currently configured as +b $~a, but without an exemption. Helpees will be unable to join the channel. Ops: please consider +q $~a with an exemption for gateway users instead.");
-             //           return;
-             //       }
-             //   }
-            }
-        }
-
-        private void PerformChangeAnalysis(string channel, ModeChanges changes)
-        {
-        }
-
-        private void OnNoticeReceived(MessageReceivedEventArgs e, IUser user)
-        {
-            var target = e.Message.Parameters.First();
-            var message = e.Message.Parameters.Skip(1).First();
-
-            this.logger.DebugFormat("Received notice from {0} for {1} with content: {2}", user, target, message);
-
-            if (user.Nickname == "ChanServ")
-            {
-                var match = this.noChanopsPattern.Match(message);
-                if (match.Success)
+                if (status.RegisteredOnly || status.Moderated)
                 {
-                    // oops, we don't have ops here.
-                    string channel = match.Groups["channel"].Value;
-                    this.logger.ErrorFormat("Cannot obtain ops for channel {0}, skipping", channel);
-
-                    this.ircClient.SendMessage(
-                        this.watchedChannels[channel],
-                        string.Format(
-                            "Unable to obtain ops from ChanServ in {0}; I won't be monitoring this channel for ban exemptions",
-                            channel));
-
-                    lock (this.channelStatus)
-                    {
-                        this.watchedChannels.Remove(channel.ToLowerInvariant());
-                        this.channelStatus.Remove(channel.ToLowerInvariant());
-                    }
-                }
-            }
-        }
-
-        private void OnJoinReceived(object sender, JoinEventArgs e)
-        {
-            // is this me?
-            if (e.User.Nickname == this.ircClient.Nickname)
-            {
-                this.logger.Debug("Seen self-join");
-
-                var channel = e.Channel.ToLowerInvariant();
-
-                // is this one of our channels?
-                if (this.watchedChannels.ContainsKey(channel))
-                {
-                    this.logger.DebugFormat("Self-join monitored channel {0}", channel);
-
-                    lock (this.channelStatus)
-                    {
-                        if (this.channelStatus.ContainsKey(channel))
-                        {
-                            this.channelStatus.Remove(channel);
-                        }
-
-                        this.channelStatus.Add(channel, new ChannelStatus());
-                    }
-
-                    this.logger.InfoFormat("Requesting chanops for {0}", channel);
-                    this.ircClient.SendMessage(
-                        "ChanServ",
-                        string.Format("OP {0} {1}", channel, this.ircClient.Nickname));
-                    this.channelStatus[channel].BotOpsRequested = true;
-
-                    this.logger.InfoFormat("Requesting ban/quiet lists for {0}", channel);
-                    this.ircClient.Mode(channel, "b");
-                    this.ircClient.Mode(channel, "q");
+                    needsChanges = true;
                 }
 
-            }
-        }
-
-        private void OnModeReceived(object sender, ModeEventArgs modeEventArgs)
-        {
-            var channel = modeEventArgs.Target.ToLowerInvariant();
-
-            if (this.watchedChannels.ContainsKey(channel))
-            {
-                var changes = ModeChanges.FromChangeList(modeEventArgs.Changes);
-                
-                lock (this.channelStatus)
+                if (status.Bans.Contains("$~a") || status.Quiets.Contains("$~a"))
                 {
-                    if (this.channelStatus[channel].BotOpsRequested && changes.Ops.Contains(this.ircClient.Nickname))
-                    {
-                        this.logger.DebugFormat("Opped in {0}, requesting exemption list.", channel);
-                        this.ircClient.Mode(channel, "e");
-                    }
-
-                    this.SyncChangesToChannel(this.channelStatus[channel], changes);
+                    needsOps = true;
                 }
-                
-                this.logger.DebugFormat("Mode change seen on {0}: {1}",
-                    channel,
-                    string.Join(" ", modeEventArgs.Changes));
 
-                this.PerformChangeAnalysis(channel, changes);
+                hasOps = status.BotOpsHeld;
             }
+
+            needsOps |= needsChanges;
+
+            if (hasOps && !needsOps)
+            {
+                // drop ops
+                this.logger.DebugFormat("Detected we have ops, and don't need it. Dropping for {0}", channel);
+                this.ircClient.Mode(channel, "-o " + this.ircClient.Nickname);
+            }
+
+            if (needsOps && !hasOps)
+            {
+                this.logger.DebugFormat("Detected we need ops, and don't have it. Requesting on {0}", channel);
+                this.ircClient.SendMessage("ChanServ", "op " + channel);
+            }
+            
         }
 
+        private void FixChannel(string channel)
+        {
+            
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Updates the channel status object with the changes. Must be called inside a lock() only.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="modeChanges"></param>
         private void SyncChangesToChannel(ChannelStatus status, ModeChanges modeChanges)
         {
             if (modeChanges.Ops.Contains(this.ircClient.Nickname))
@@ -440,6 +437,5 @@ namespace Helpmebot.Services
             modeChanges.Quiets.ForEach(x => status.Quiets.Add(x));
             modeChanges.Exempts.ForEach(x => status.Exempts.Add(x));
         }
-
     }
 }
