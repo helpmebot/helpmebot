@@ -93,14 +93,7 @@ namespace Helpmebot.Legacy.Database
                 lock (this)
                 {
                     this.Log.Info("Opening database connection...");
-                    var csb = new MySqlConnectionStringBuilder
-                                  {
-                                      Database = privateConfiguration.Schema, 
-                                      Password = privateConfiguration.Password, 
-                                      Server = privateConfiguration.Hostname, 
-                                      UserID = privateConfiguration.Username, 
-                                      Port = (uint)privateConfiguration.Port
-                                  };
+                    var csb = privateConfiguration.ConnectionString;
 
                     this.connection = new MySqlConnection(csb.ConnectionString);
                     this.connection.Open();

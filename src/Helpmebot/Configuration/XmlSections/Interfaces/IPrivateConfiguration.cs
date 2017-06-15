@@ -49,6 +49,9 @@ namespace Helpmebot.Configuration.XmlSections.Interfaces
         /// </summary>
         [ConfigurationProperty("port", DefaultValue = 3306, IsRequired = true)]
         int Port { get; }
+        
+        [ConfigurationProperty("charset", DefaultValue = "utf8")]
+        string CharacterSet { get; }
 
         /// <summary>
         ///     Gets the schema.

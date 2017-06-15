@@ -53,7 +53,8 @@ namespace Helpmebot.Configuration.XmlSections
                                                     Password = this.Password, 
                                                     Server = this.Hostname, 
                                                     UserID = this.Username, 
-                                                    Port = (uint)this.Port
+                                                    Port = (uint)this.Port,
+                                                    CharacterSet = this.CharacterSet
                                                 };
                 }
 
@@ -94,6 +95,18 @@ namespace Helpmebot.Configuration.XmlSections
             get
             {
                 return (int)base["port"];
+            }
+        }
+
+        /// <summary>
+        ///     Gets the port.
+        /// </summary>
+        [ConfigurationProperty("charset", DefaultValue = "utf8")]
+        public string CharacterSet
+        {
+            get
+            {
+                return (string)base["charset"];
             }
         }
 
