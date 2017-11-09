@@ -42,7 +42,7 @@ namespace Helpmebot.Background
         /// </summary>
         private readonly ILogger logger;
 
-        private readonly INetworkClient networkClient;
+        private readonly IIrcClient networkClient;
 
         /// <summary>
         ///     The _monitor thread.
@@ -79,7 +79,7 @@ namespace Helpmebot.Background
         /// The logger.
         /// </param>
         public SystemMonitoringClientService(int systemMonitoringPort, string systemMonitoringMessage,
-            bool systemMonitoringEnabled, ILogger logger, INetworkClient networkClient)
+            bool systemMonitoringEnabled, ILogger logger, IIrcClient networkClient)
         {
             this.enabled = systemMonitoringEnabled;
             this.logger = logger;
@@ -168,7 +168,7 @@ namespace Helpmebot.Background
 
                 var sw = new StreamWriter(client.GetStream());
 
-                if (!this.networkClient.Connected)
+                if (!this.networkClient.NetworkConnected)
                 {
                     sw.WriteLine("IRC client is not connected to the network!");
                 }

@@ -74,6 +74,8 @@ namespace Helpmebot.IRC.Interfaces
         /// Gets a value indicating whether the client logged in to a nickserv account
         /// </summary>
         bool ServicesLoggedIn { get; }
+        
+        bool NetworkConnected { get; }
 
         /// <summary>
         /// The join.

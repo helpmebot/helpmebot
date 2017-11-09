@@ -285,6 +285,11 @@ namespace Helpmebot.IRC
             }
         }
 
+        public bool NetworkConnected
+        {
+            get { return this.networkClient.Connected; }
+        }
+
         #endregion
 
         #region Public Methods and Operators
