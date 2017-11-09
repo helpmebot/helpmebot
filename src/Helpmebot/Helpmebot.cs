@@ -103,8 +103,15 @@ namespace Helpmebot
         /// </summary>
         public static void Stop()
         {
-            ThreadList.GetInstance().Stop();
-            container.Dispose();
+            try
+            {
+                ThreadList.GetInstance().Stop();
+                container.Dispose();
+            }
+            finally 
+            {
+                Environment.Exit(0);
+            }
         }
 
         /// <summary>

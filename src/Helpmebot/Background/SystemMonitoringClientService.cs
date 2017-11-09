@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Helpmebot.IRC.Interfaces;
+
 namespace Helpmebot.Background
 {
     using System.IO;
@@ -38,6 +41,8 @@ namespace Helpmebot.Background
         ///     The logger.
         /// </summary>
         private readonly ILogger logger;
+
+        private readonly INetworkClient networkClient;
 
         /// <summary>
         ///     The _monitor thread.
@@ -73,10 +78,12 @@ namespace Helpmebot.Background
         /// <param name="logger">
         /// The logger.
         /// </param>
-        public SystemMonitoringClientService(int systemMonitoringPort, string systemMonitoringMessage, bool systemMonitoringEnabled, ILogger logger)
+        public SystemMonitoringClientService(int systemMonitoringPort, string systemMonitoringMessage,
+            bool systemMonitoringEnabled, ILogger logger, INetworkClient networkClient)
         {
             this.enabled = systemMonitoringEnabled;
             this.logger = logger;
+            this.networkClient = networkClient;
             this.Port = systemMonitoringPort;
             this.Message = systemMonitoringMessage;
 
@@ -161,7 +168,15 @@ namespace Helpmebot.Background
 
                 var sw = new StreamWriter(client.GetStream());
 
-                sw.WriteLine(this.Message);
+                if (!this.networkClient.Connected)
+                {
+                    sw.WriteLine("IRC client is not connected to the network!");
+                }
+                else
+                {
+                    sw.WriteLine(this.Message);                    
+                }
+                
                 sw.Flush();
                 client.Close();
             }

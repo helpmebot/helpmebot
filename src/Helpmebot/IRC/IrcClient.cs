@@ -511,7 +511,8 @@ namespace Helpmebot.IRC
                 string errorMessage = message.Parameters.First();
                 this.logger.Fatal(errorMessage);
                 this.networkClient.Disconnect();
-                throw new IOException(errorMessage);
+                
+                Helpmebot6.Stop();
             }
 
             if (message.Command == "PING")

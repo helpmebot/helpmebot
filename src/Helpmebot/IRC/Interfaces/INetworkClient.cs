@@ -44,6 +44,8 @@ namespace Helpmebot.IRC.Interfaces
         /// Gets the port.
         /// </summary>
         int Port { get; }
+        
+        bool Connected { get; }
 
         /// <summary>
         /// The send.

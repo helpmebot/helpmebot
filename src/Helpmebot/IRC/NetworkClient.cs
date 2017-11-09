@@ -188,6 +188,11 @@ namespace Helpmebot.IRC
             }
         }
 
+        public bool Connected
+        {
+            get { return this.client.Connected; }
+        }
+
         #endregion
 
         #region Properties
