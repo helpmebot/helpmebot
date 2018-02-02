@@ -189,6 +189,13 @@ namespace Helpmebot.Services
                 new[] { networkUser.Nickname, channel });
 
             this.ircClient.SendMessage(channel, welcomeMessage);
+
+            this.session.Save(new WelcomeLog
+            {
+                Channel = channel,
+                Usermask = networkUser.ToString(),
+                WelcomeTimestamp = DateTime.Now
+            });
         }
 
         /// <summary>
