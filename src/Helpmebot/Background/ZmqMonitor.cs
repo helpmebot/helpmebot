@@ -31,7 +31,7 @@ namespace Helpmebot.Background
         private void ThreadWork()
         {
             var sock = new ZSocket(new ZContext(), ZSocketType.SUB);
-            sock.Connect("spearow.lon.stwalkerster.net:3357");
+            sock.Connect("tcp://spearow.lon.stwalkerster.net:3357");
             sock.SubscribeAll();
 
             while (this.active)
