@@ -18,12 +18,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Services.Interfaces
 {
     using System;
     using System.Collections.Generic;
-
-    using Helpmebot.Model.Interfaces;
 
     /// <summary>
     /// The AccessLogService interface.

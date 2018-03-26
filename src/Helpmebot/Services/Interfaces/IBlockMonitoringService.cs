@@ -18,10 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Services.Interfaces
 {
-    using Helpmebot.IRC.Interfaces;
-    using Helpmebot.Model.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
     /// The BlockMonitoringService interface.

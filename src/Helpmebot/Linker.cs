@@ -22,8 +22,8 @@ namespace Helpmebot
     using System.Text;
     using System.Text.RegularExpressions;
 
-    using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Repositories.Interfaces;
 

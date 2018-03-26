@@ -14,12 +14,14 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Stwalkerster.IrcClient;
+
 namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC;
     using Helpmebot.Legacy.Model;
 
     /// <summary>

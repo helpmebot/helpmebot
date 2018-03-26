@@ -95,20 +95,6 @@
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
-    <Compile Include="IRC\Events\JoinEventArgs.cs" />
-    <Compile Include="IRC\Events\KickedEventArgs.cs" />
-    <Compile Include="IRC\Events\ModeEventArgs.cs" />
-    <Compile Include="IRC\Events\UserEventArgsBase.cs" />
-    <Compile Include="IRC\Interfaces\IIrcClient.cs" />
-    <Compile Include="IRC\Events\InviteEventArgs.cs" />
-    <Compile Include="IRC\Model\IrcChannel.cs" />
-    <Compile Include="IRC\Events\MessageReceivedEventArgs.cs" />
-    <Compile Include="IRC\Interfaces\INetworkClient.cs" />
-    <Compile Include="IRC\Messages\Numerics.cs" />
-    <Compile Include="IRC\Model\IrcChannelUser.cs" />
-    <Compile Include="IRC\Model\IrcUser.cs" />
-    <Compile Include="IRC\Model\ServerUser.cs" />
-    <Compile Include="IRC\SslNetworkClient.cs" />
     <Compile Include="Commands\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
@@ -153,7 +139,6 @@
     <Compile Include="Model\WatchedCategory.cs" />
     <Compile Include="Model\Channel.cs" />
     <Compile Include="Model\IgnoredPage.cs" />
-    <Compile Include="Model\Interfaces\IUser.cs" />
     <Compile Include="Model\FlagGroupUser.cs" />
     <Compile Include="Model\FlagGroupAssoc.cs" />
     <Compile Include="Model\FlagGroup.cs" />
@@ -202,10 +187,6 @@
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IFlagGroupRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
-    <Compile Include="IRC\IrcClient.cs" />
-    <Compile Include="IRC\Messages\IMessage.cs" />
-    <Compile Include="IRC\Messages\Message.cs" />
-    <Compile Include="IRC\NetworkClient.cs" />
     <Compile Include="Repositories\Interfaces\IShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\KeywordRepository.cs" />
     <Compile Include="Repositories\NotificationRepository.cs" />
@@ -241,7 +222,6 @@
     <Compile Include="Startup\Installers\RepositoryInstaller.cs" />
     <Compile Include="Startup\Installers\ConfigurationInstaller.cs" />
     <Compile Include="Startup\Installers\ServiceInstaller.cs" />
-    <Compile Include="IRC\Events\DataReceivedEventArgs.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
@@ -340,9 +320,8 @@
     <Compile Include="Startup\WindsorServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
+      <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Facilities.Logging, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.LoggingFacility.3.3.0\lib\net45\Castle.Facilities.Logging.dll</HintPath>
@@ -392,6 +371,9 @@
     <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Stwalkerster.IrcClient, Version=7.0.11.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.IrcClient.7.0.11\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

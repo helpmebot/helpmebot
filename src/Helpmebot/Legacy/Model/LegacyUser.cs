@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Legacy.Model
 {
     using System;
@@ -22,7 +25,6 @@ namespace Helpmebot.Legacy.Model
     using Castle.Core.Logging;
 
     using Helpmebot.Legacy.Database;
-    using Helpmebot.Model.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 

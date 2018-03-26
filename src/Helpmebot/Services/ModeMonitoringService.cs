@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
-using Helpmebot.IRC.Model;
-using Helpmebot.Model.Interfaces;
+using Stwalkerster.IrcClient.Model;
+using Stwalkerster.IrcClient.Model.Interfaces;
 
 namespace Helpmebot.Services
 {
@@ -9,9 +9,9 @@ namespace Helpmebot.Services
     using System.Collections.Generic;
 
     using Castle.Core.Logging;
-    using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Interfaces;
-    using Helpmebot.IRC.Messages;
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Messages;
     using Helpmebot.Model.ModeMonitoring;
     using Helpmebot.Services.Interfaces;
     

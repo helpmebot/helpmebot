@@ -17,6 +17,9 @@
 //   The repository base.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using NHibernate.Util;
+
 namespace Helpmebot.Repositories
 {
     using System;

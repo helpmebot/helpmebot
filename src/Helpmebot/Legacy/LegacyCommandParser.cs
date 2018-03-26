@@ -17,6 +17,7 @@
 
 using System.Web.Configuration;
 using Castle.Core.Internal;
+using Stwalkerster.IrcClient.Interfaces;
 
 namespace Helpmebot.Legacy
 {
@@ -31,7 +32,6 @@ namespace Helpmebot.Legacy
 
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;

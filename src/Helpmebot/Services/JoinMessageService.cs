@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Services
 {
     using System;
@@ -27,9 +29,8 @@ namespace Helpmebot.Services
 
     using Castle.Core.Logging;
 
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     using NHibernate;

@@ -15,17 +15,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Helpmebot.IRC.Interfaces;
-
 namespace Helpmebot.Background
 {
     using System.IO;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-
     using Castle.Core.Logging;
-
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Background.Interfaces;
 
     /// <summary>

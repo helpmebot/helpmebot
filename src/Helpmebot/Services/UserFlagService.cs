@@ -18,13 +18,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Services
 {
     using System;
     using System.Collections.Generic;
 
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 

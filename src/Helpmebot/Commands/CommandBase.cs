@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Commands
 {
     using System.Collections.Generic;
@@ -28,7 +30,6 @@ namespace Helpmebot.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>

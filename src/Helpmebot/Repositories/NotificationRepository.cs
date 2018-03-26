@@ -18,6 +18,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using NHibernate.Util;
+
 namespace Helpmebot.Repositories
 {
     using System.Collections.Generic;

@@ -18,15 +18,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+
 namespace Helpmebot.Background
 {
     using System.Linq;
     using System.Timers;
-
     using Castle.Core.Logging;
-
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Background.Interfaces;
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Repositories.Interfaces;
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using Castle.Core;
 using Castle.Core.Logging;
-using Helpmebot.IRC.Interfaces;
+using Stwalkerster.IrcClient.Interfaces;
 using ZeroMQ;
 
 namespace Helpmebot.Background

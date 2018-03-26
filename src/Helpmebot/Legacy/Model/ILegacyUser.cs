@@ -18,9 +18,10 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Legacy.Model
 {
-    using Helpmebot.Model.Interfaces;
 
     /// <summary>
     /// The User interface.

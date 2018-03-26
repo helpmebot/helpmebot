@@ -28,7 +28,7 @@ namespace Helpmebot.Monitoring
 
     using Castle.Core.Logging;
 
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Model;

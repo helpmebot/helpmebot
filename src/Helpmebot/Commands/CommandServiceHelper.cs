@@ -18,7 +18,7 @@ namespace Helpmebot.Commands
 {
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 

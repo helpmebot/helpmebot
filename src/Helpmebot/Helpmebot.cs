@@ -31,9 +31,10 @@ namespace Helpmebot
 
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
-    using Helpmebot.IRC;
-    using Helpmebot.IRC.Events;
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient;
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Network;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
@@ -68,7 +69,7 @@ namespace Helpmebot
         /// <summary>
         /// The new IRC client.
         /// </summary>
-        private static IrcClient newIrc;
+        private static IIrcClient newIrc;
 
         /// <summary>
         /// The container.
@@ -179,28 +180,22 @@ namespace Helpmebot
 
             var configurationHelper = container.Resolve<IConfigurationHelper>();
 
-            INetworkClient networkClient;
-            if (configurationHelper.IrcConfiguration.Ssl)
-            {
-                networkClient = new SslNetworkClient(
-                    configurationHelper.IrcConfiguration.Hostname,
-                    configurationHelper.IrcConfiguration.Port,
-                    container.Resolve<ILogger>().CreateChildLogger("NetworkClient"));
-            }
-            else
-            {
-                networkClient = new NetworkClient(
-                    configurationHelper.IrcConfiguration.Hostname,
-                    configurationHelper.IrcConfiguration.Port,
-                    container.Resolve<ILogger>().CreateChildLogger("NetworkClient"));
-            }
+            var ircConfig = new IrcConfiguration(
+                configurationHelper.IrcConfiguration.Hostname,
+                configurationHelper.IrcConfiguration.Port,
+                configurationHelper.IrcConfiguration.AuthToServices,
+                configurationHelper.IrcConfiguration.Nickname,
+                configurationHelper.IrcConfiguration.Username,
+                configurationHelper.IrcConfiguration.RealName,
+                configurationHelper.IrcConfiguration.Ssl,
+                "Primary",
+                configurationHelper.PrivateConfiguration.IrcPassword
+                );
+
+            container.Register(Component.For<IIrcConfiguration>().Instance(ircConfig));
+            container.Register(Component.For<ISupportHelper>().ImplementedBy<SupportHelper>());
             
-            newIrc =
-                new IrcClient(
-                    networkClient,
-                    container.Resolve<ILogger>().CreateChildLogger("IrcClient"),
-                    configurationHelper.IrcConfiguration,
-                    configurationHelper.PrivateConfiguration.IrcPassword);
+            newIrc = container.Resolve<IIrcClient>();
 
             var modeMonitor = new ModeMonitoringService(
                 newIrc,

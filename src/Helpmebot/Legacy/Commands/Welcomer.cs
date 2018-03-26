@@ -17,6 +17,9 @@
 //   Controls the newbie welcomer
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using NHibernate.Util;
+
 namespace helpmebot6.Commands
 {
     using System;

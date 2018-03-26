@@ -17,12 +17,14 @@
 //   Defines the IJoinMessageService type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Services.Interfaces
 {
     using System.Collections.Generic;
 
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
 
     /// <summary>
     /// The JoinMessageService interface.

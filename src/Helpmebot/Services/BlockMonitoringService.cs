@@ -23,6 +23,7 @@ using System.Security.Cryptography.X509Certificates;
 using Helpmebot.Monitoring;
 using NHibernate;
 using NHibernate.Criterion;
+using Stwalkerster.IrcClient.Model.Interfaces;
 
 namespace Helpmebot.Services
 {
@@ -35,10 +36,9 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
 
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.IRC.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 

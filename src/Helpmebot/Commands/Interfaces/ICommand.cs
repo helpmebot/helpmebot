@@ -18,11 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Stwalkerster.IrcClient.Model.Interfaces;
+
 namespace Helpmebot.Commands.Interfaces
 {
     using System.Collections.Generic;
-
-    using Helpmebot.Model.Interfaces;
 
     /// <summary>
     /// The Command interface.
