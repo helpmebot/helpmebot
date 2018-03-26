@@ -55,7 +55,7 @@ namespace Helpmebot.Tests.Services
         /// <summary>
         ///     The custom setup.
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void CustomSetup()
         {
             this.responseRepositoryMock = new Mock<IResponseRepository>();
@@ -117,13 +117,14 @@ namespace Helpmebot.Tests.Services
         ///     Should get a message when a context is passed in
         /// </summary>
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ShouldGetMessageOnNullMessage()
         {
             // arrange
 
             // act
-            this.messageService.RetrieveMessage(null, null, null);
+            Assert.Throws<ArgumentNullException>(
+                () =>
+                    this.messageService.RetrieveMessage(null, null, null));
 
             // assert
         }

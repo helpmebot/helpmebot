@@ -25,6 +25,7 @@ namespace Helpmebot
     using System.Net;
 
     using Castle.Core.Logging;
+    using Castle.Facilities.Startable;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using Castle.Windsor.Installer;
@@ -34,7 +35,6 @@ namespace Helpmebot
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
-    using Stwalkerster.IrcClient.Network;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
@@ -194,6 +194,8 @@ namespace Helpmebot
 
             container.Register(Component.For<IIrcConfiguration>().Instance(ircConfig));
             container.Register(Component.For<ISupportHelper>().ImplementedBy<SupportHelper>());
+            container.Register(Component.For<IIrcClient>().ImplementedBy<IrcClient>().Start());
+            
             
             newIrc = container.Resolve<IIrcClient>();
 
@@ -205,9 +207,6 @@ namespace Helpmebot
 
             JoinChannels();
             
-            // TODO: remove me!
-            container.Register(Component.For<IIrcClient>().Instance(newIrc));
-
             joinMessageService = container.Resolve<IJoinMessageService>();
             blockMonitoringService = container.Resolve<IBlockMonitoringService>();
 
@@ -234,7 +233,9 @@ namespace Helpmebot
 
             newIrc.InviteReceivedEvent += IrcInviteEvent;
 
-            newIrc.BotKickedEvent += OnBotKickedFromChannel;
+            newIrc.WasKickedEvent += OnBotKickedFromChannel;
+
+            newIrc.DisconnectedEvent += (sender, args) => Stop();
         }
 
         private static void OnBotKickedFromChannel(object sender, KickedEventArgs e)

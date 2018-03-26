@@ -55,7 +55,7 @@ namespace Helpmebot.Tests
         /// <summary>
         /// The common setup.
         /// </summary>
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void CommonSetup()
         {
             this.Logger = new Mock<ILogger>();

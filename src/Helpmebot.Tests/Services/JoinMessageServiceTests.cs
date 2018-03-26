@@ -22,9 +22,7 @@ namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
 
-    using Helpmebot.IRC.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Model.Interfaces;
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
 
@@ -33,6 +31,8 @@ namespace Helpmebot.Tests.Services
     using NHibernate;
 
     using NUnit.Framework;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The join message service tests.
