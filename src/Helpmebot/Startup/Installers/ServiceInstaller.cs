@@ -50,7 +50,7 @@ namespace Helpmebot.Startup.Installers
             container.Register(Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces());
             container.Register(Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>());
 
-            container.Register(Component.For<IUrlShorteningService>().ImplementedBy<GooglUrlShorteningService>());
+            container.Register(Component.For<IUrlShorteningService>().ImplementedBy<IsGdUrlShorteningService>());
             container.Register(Component.For<IGeolocationService>().ImplementedBy<MaxMindGeolocationService>());
         }
     }
