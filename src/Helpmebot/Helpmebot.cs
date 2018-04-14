@@ -50,12 +50,6 @@ namespace Helpmebot
 
     using Microsoft.Practices.ServiceLocation;
 
-#if PERFCOUNTER
-    using System.Security;
-    using Castle.MicroKernel.Releasers;
-    using Castle.Windsor.Diagnostics;
-#endif
-
     /// <summary>
     /// Helpmebot main class
     /// </summary>
@@ -145,22 +139,6 @@ namespace Helpmebot
             ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
 
             container.Install(FromAssembly.This(new WindsorBootstrap()));
-
-#if PERFCOUNTER
-            // setup castle windsor performance counters if possible
-            try
-            {
-                var diagnostic = LifecycledComponentsReleasePolicy.GetTrackedComponentsDiagnostic(container.Kernel);
-                var counter =
-                    LifecycledComponentsReleasePolicy.GetTrackedComponentsPerformanceCounter(
-                        new PerformanceMetricsFactory());
-                container.Kernel.ReleasePolicy = new LifecycledComponentsReleasePolicy(diagnostic, counter);
-            }
-            catch (SecurityException ex)
-            {
-                ServiceLocator.Current.GetInstance<ILogger>().Warn("Unable to set up performance counter.");
-            }
-#endif
         }
 
         /// <summary>
