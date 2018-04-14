@@ -1,20 +1,18 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
-using Stwalkerster.IrcClient.Model;
-using Stwalkerster.IrcClient.Model.Interfaces;
-
-namespace Helpmebot.Services
+﻿namespace Helpmebot.Background
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Linq;
+    using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
+    using Helpmebot.Model.ModeMonitoring;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
-    using Helpmebot.Model.ModeMonitoring;
-    using Helpmebot.Services.Interfaces;
-    
+    using Stwalkerster.IrcClient.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
+
     public class ModeMonitoringService : IModeMonitoringService
     {
         /// <summary>
@@ -437,6 +435,14 @@ namespace Helpmebot.Services
             modeChanges.Bans.ForEach(x => status.Bans.Add(x));
             modeChanges.Quiets.ForEach(x => status.Quiets.Add(x));
             modeChanges.Exempts.ForEach(x => status.Exempts.Add(x));
+        }
+
+        public void Start()
+        {
+        }
+
+        public void Stop()
+        {
         }
     }
 }

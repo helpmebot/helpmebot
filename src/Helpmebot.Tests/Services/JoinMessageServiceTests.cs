@@ -31,6 +31,7 @@ namespace Helpmebot.Tests.Services
     using NHibernate;
 
     using NUnit.Framework;
+    using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -90,7 +91,6 @@ namespace Helpmebot.Tests.Services
             this.ircNetwork = new Mock<IIrcClient>();
 
             this.joinMessageService = new Mock<JoinMessageService>(
-                this.ircNetwork.Object,
                 this.Logger.Object,
                 this.messageService.Object,
                 this.session.Object);
@@ -123,8 +123,10 @@ namespace Helpmebot.Tests.Services
 
             this.joinMessageService.Object.ClearRateLimitCache();
 
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
+            
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
@@ -145,10 +147,11 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             this.joinMessageService.Object.ClearRateLimitCache();
-
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
+            
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
         }
@@ -168,9 +171,10 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             this.joinMessageService.Object.ClearRateLimitCache();
-
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
+            
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
@@ -196,9 +200,10 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             this.joinMessageService.Object.ClearRateLimitCache();
+            var ea = new JoinEventArgs(null, networkUser.Object, "cd", this.ircNetwork.Object);
 
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "cd");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
@@ -224,13 +229,15 @@ namespace Helpmebot.Tests.Services
             networkUser2.Object.Hostname = "ab/test2";
 
             this.joinMessageService.Object.ClearRateLimitCache();
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
+            var ea2 = new JoinEventArgs(null, networkUser2.Object, "ab", this.ircNetwork.Object);
 
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser2.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea2);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Exactly(2));
@@ -249,12 +256,13 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             this.joinMessageService.Object.ClearRateLimitCache();
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
 
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
@@ -273,12 +281,14 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Hostname = "ab/test";
 
             this.joinMessageService.Object.ClearRateLimitCache();
+            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircNetwork.Object);
+            var ea2 = new JoinEventArgs(null, networkUser.Object, "ef", this.ircNetwork.Object);
 
             // act
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ab");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ef");
-            this.joinMessageService.Object.Welcome(networkUser.Object, "ef");
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea2);
+            this.joinMessageService.Object.OnJoinEvent(this.ircNetwork.Object, ea2);
 
             // assert
             this.ircNetwork.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());

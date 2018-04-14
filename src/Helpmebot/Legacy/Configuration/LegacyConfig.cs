@@ -32,15 +32,6 @@ namespace Helpmebot.Legacy.Configuration
     /// </summary>
     internal class LegacyConfig
     {
-        #region Static Fields
-
-        /// <summary>
-        ///     The _singleton.
-        /// </summary>
-        private static LegacyConfig singleton;
-
-        #endregion
-
         #region Fields
 
         /// <summary>
@@ -60,11 +51,10 @@ namespace Helpmebot.Legacy.Configuration
         /// <summary>
         ///     Initialises a new instance of the <see cref="LegacyConfig" /> class.
         /// </summary>
-        protected LegacyConfig()
+        public LegacyConfig(ILegacyDatabase legacyDatabase, ILogger logger)
         {
-            // FIXME: ServiceLocator - Legacy database
-            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
-            this.Log = ServiceLocator.Current.GetInstance<ILogger>().CreateChildLogger("LegacyConfig");
+            this.legacyDatabase = legacyDatabase;
+            this.Log = logger;
 
             this.configurationCache = new Dictionary<string, ConfigurationSetting>();
         }
@@ -145,7 +135,7 @@ namespace Helpmebot.Legacy.Configuration
         /// </returns>
         public static LegacyConfig Singleton()
         {
-            return singleton ?? (singleton = new LegacyConfig());
+            return ServiceLocator.Current.GetInstance<LegacyConfig>();
         }
 
         /// <summary>

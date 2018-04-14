@@ -72,9 +72,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessLog.cs" />
+    <Compile Include="Background\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
     <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
+    <Compile Include="Background\ModeMonitoringService.cs" />
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
@@ -189,7 +191,6 @@
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeoloationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
-    <Compile Include="Services\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
@@ -200,7 +201,6 @@
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
-    <Compile Include="Services\ModeMonitoringService.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
@@ -304,6 +304,9 @@
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
       <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.EventWiring, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
+      <HintPath>..\packages\Castle.EventWiringFacility.4.1.0\lib\net45\Castle.Facilities.EventWiring.dll</HintPath>
     </Reference>
     <Reference Include="Castle.Facilities.Logging, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
       <HintPath>..\packages\Castle.LoggingFacility.4.1.0\lib\net45\Castle.Facilities.Logging.dll</HintPath>

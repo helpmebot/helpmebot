@@ -28,13 +28,11 @@ namespace Helpmebot.Services
     using System.Text.RegularExpressions;
 
     using Castle.Core.Logging;
-
-    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
     using NHibernate;
-
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
     using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
 
     /// <summary>
@@ -64,11 +62,6 @@ namespace Helpmebot.Services
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
 
         /// <summary>
-        /// The IRC network.
-        /// </summary>
-        private readonly IIrcClient ircClient;
-
-        /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILogger logger;
@@ -86,9 +79,6 @@ namespace Helpmebot.Services
         /// <summary>
         /// Initialises a new instance of the <see cref="JoinMessageService"/> class.
         /// </summary>
-        /// <param name="ircClient">
-        /// The IRC network.
-        /// </param>
         /// <param name="logger">
         /// The logger.
         /// </param>
@@ -98,24 +88,26 @@ namespace Helpmebot.Services
         /// <param name="session">
         /// The session.
         /// </param>
-        public JoinMessageService(IIrcClient ircClient, ILogger logger, IMessageService messageService, ISession session)
+        public JoinMessageService(ILogger logger, IMessageService messageService, ISession session)
         {
-            this.ircClient = ircClient;
             this.logger = logger;
             this.messageService = messageService;
             this.session = session;
         }
 
-        /// <summary>
-        /// The welcome.
-        /// </summary>
-        /// <param name="networkUser">
-        /// The network User.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public void Welcome(IUser networkUser, string channel)
+        public void OnJoinEvent(object sender, JoinEventArgs e)
+        {
+            try
+            {
+                this.DoWelcome(e.User, e.Channel, e.Client);
+            }
+            catch (Exception exception)
+            {
+                this.logger.Error("Exception encountered in WelcomeNewbieOnJoinEvent", exception);
+            }
+        }
+
+        private void DoWelcome(IUser networkUser, string channel, IIrcClient client)
         {
             // Rate limit this per hostname/channel
             if (this.RateLimit(networkUser.Username, channel))
@@ -187,16 +179,17 @@ namespace Helpmebot.Services
             var welcomeMessage = this.messageService.RetrieveMessage(
                 "WelcomeMessage",
                 channel,
-                new[] { networkUser.Nickname, channel });
+                new[] {networkUser.Nickname, channel});
 
-            this.ircClient.SendMessage(channel, welcomeMessage);
+            client.SendMessage(channel, welcomeMessage);
 
-            this.session.Save(new WelcomeLog
-            {
-                Channel = channel,
-                Usermask = networkUser.ToString(),
-                WelcomeTimestamp = DateTime.Now
-            });
+            this.session.Save(
+                new WelcomeLog
+                {
+                    Channel = channel,
+                    Usermask = networkUser.ToString(),
+                    WelcomeTimestamp = DateTime.Now
+                });
         }
 
         /// <summary>

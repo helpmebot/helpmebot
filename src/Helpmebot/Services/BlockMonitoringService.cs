@@ -18,31 +18,25 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Helpmebot.Monitoring;
-using NHibernate;
-using NHibernate.Criterion;
-using Stwalkerster.IrcClient.Model.Interfaces;
-
 namespace Helpmebot.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
-
     using Castle.Core.Logging;
-
+    using helpmebot6.Commands;
     using Helpmebot.ExtensionMethods;
-    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
-
-    using helpmebot6.Commands;
+    using NHibernate.Criterion;
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The block monitoring service.
@@ -91,6 +85,11 @@ namespace Helpmebot.Services
             }
         }
 
+        public void OnJoinEvent(object sender, JoinEventArgs e)
+        {
+            this.DoEventProcessing(e.Channel, e.User, (IIrcClient) sender);
+        }
+        
         /// <summary>
         /// The do event processing.
         /// </summary>
@@ -103,6 +102,7 @@ namespace Helpmebot.Services
         /// <param name="client">
         /// The client.
         /// </param>
+        [Obsolete] 
         public void DoEventProcessing(string channel, IUser user, IIrcClient client)
         {
             try

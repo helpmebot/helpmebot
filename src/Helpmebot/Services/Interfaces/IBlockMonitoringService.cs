@@ -18,11 +18,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Model.Interfaces;
-
 namespace Helpmebot.Services.Interfaces
 {
+    using System;
+    using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The BlockMonitoringService interface.
@@ -41,7 +42,10 @@ namespace Helpmebot.Services.Interfaces
         /// <param name="sender">
         /// The sender.
         /// </param>
+        [Obsolete]
         void DoEventProcessing(string channel, IUser user, IIrcClient sender);
+
+        void OnJoinEvent(object sender, JoinEventArgs e);
 
         void AddMap(string monitorChannel, string reportChannel);
         void DeleteMap(string monitorChannel, string reportChannel);

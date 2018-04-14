@@ -25,17 +25,13 @@ namespace Helpmebot
     using System.Linq;
     using System.Net;
     using Castle.Core.Logging;
-    using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using helpmebot6.Commands;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Legacy;
-    using Helpmebot.Legacy.Configuration;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
     using Helpmebot.Startup.Installers;
@@ -63,24 +59,6 @@ namespace Helpmebot
         /// The container.
         /// </summary>
         private static IWindsorContainer container;
-
-        /// <summary>
-        /// The DB access layer.
-        /// </summary>
-        private static ILegacyDatabase dbal;
-
-        /// <summary>
-        /// The join message service.
-        /// </summary>
-        /// <para>
-        /// This is the replacement for the newbiewelcomer
-        /// </para>
-        private static IJoinMessageService joinMessageService;
-
-        /// <summary>
-        /// The block monitoring service.
-        /// </summary>
-        private static IBlockMonitoringService blockMonitoringService;
 
         /// <summary>
         /// Gets or sets the Castle.Windsor Logger
@@ -131,57 +109,29 @@ namespace Helpmebot
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 
             container = new WindsorContainer(configurationFile);
-
             ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
-
             container.Install(new MainInstaller());
 
             
             Log = ServiceLocator.Current.GetInstance<ILogger>();
             Log.Info("Initialising Helpmebot...");
-
-            
-            LegacyConfig.Singleton();
             
             newIrc = container.Resolve<IIrcClient>();
 
-            var modeMonitor = new ModeMonitoringService(
-                newIrc,
-                container.Resolve<ILogger>().CreateChildLogger("ModeMonitoringService"));
-
-            container.Register(Component.For<IModeMonitoringService>().Instance(modeMonitor).IsDefault().NamedAutomatically("modemon"));
-
             JoinChannels();
             
-            joinMessageService = container.Resolve<IJoinMessageService>();
-            blockMonitoringService = container.Resolve<IBlockMonitoringService>();
-
             // horrible, horrible hack
             // initialises the linker and connects it to events
             Linker.Instance();
 
-            SetupEvents();
+            newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
+            newIrc.ReceivedMessage += ReceivedMessage;
+            newIrc.InviteReceivedEvent += IrcInviteEvent;
+            newIrc.WasKickedEvent += OnBotKickedFromChannel;
+            newIrc.DisconnectedEvent += (sender, args1) => Stop();
 
             // initialise the deferred installers.
             container.Install(new DeferredInstaller());
-        }
-
-        /// <summary>
-        /// The setup events.
-        /// </summary>
-        private static void SetupEvents()
-        {
-            newIrc.JoinReceivedEvent += WelcomeNewbieOnJoinEvent;
-            newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
-            newIrc.JoinReceivedEvent += BlockMonitoringOnJoinEvent;
-
-            newIrc.ReceivedMessage += ReceivedMessage;
-
-            newIrc.InviteReceivedEvent += IrcInviteEvent;
-
-            newIrc.WasKickedEvent += OnBotKickedFromChannel;
-
-            newIrc.DisconnectedEvent += (sender, args) => Stop();
         }
 
         private static void OnBotKickedFromChannel(object sender, KickedEventArgs e)
@@ -192,20 +142,6 @@ namespace Helpmebot
             var channel = channelRepository.GetByName(e.Channel);
             channel.Enabled = false;
             channelRepository.Save(channel);
-        }
-
-        /// <summary>
-        /// The block monitoring on join event.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="joinEventArgs">
-        /// The join event args.
-        /// </param>
-        private static void BlockMonitoringOnJoinEvent(object sender, JoinEventArgs joinEventArgs)
-        {
-            blockMonitoringService.DoEventProcessing(joinEventArgs.Channel, joinEventArgs.User, (IIrcClient)sender);
         }
 
         /// <summary>
@@ -232,27 +168,6 @@ namespace Helpmebot
                 e.Nickname,
                 new[] { e.Channel },
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>()).RunCommand();
-        }
-
-        /// <summary>
-        /// The welcome newbie on join event.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private static void WelcomeNewbieOnJoinEvent(object sender, JoinEventArgs e)
-        {
-            try
-            {
-                joinMessageService.Welcome(e.User, e.Channel);
-            }
-            catch (Exception exception)
-            {
-                Log.Error("Exception encountered in WelcomeNewbieOnJoinEvent", exception);
-            }
         }
 
         /// <summary>

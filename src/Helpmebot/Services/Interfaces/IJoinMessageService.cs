@@ -18,13 +18,11 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Model.Interfaces;
-
 namespace Helpmebot.Services.Interfaces
 {
     using System.Collections.Generic;
-
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Events;
 
     /// <summary>
     /// The JoinMessageService interface.
@@ -55,16 +53,7 @@ namespace Helpmebot.Services.Interfaces
         /// </returns>
         IList<WelcomeUser> GetWelcomeUsers(string channel);
 
-        /// <summary>
-        /// The welcome.
-        /// </summary>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        void Welcome(IUser user, string channel);
+        void OnJoinEvent(object sender, JoinEventArgs e);
 
         #endregion
     }
