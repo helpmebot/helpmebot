@@ -35,6 +35,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Services;
 
     /// <summary>
     /// Retrieves information on a specific page
@@ -155,7 +156,7 @@ namespace helpmebot6.Commands
         private string GetPageTitle()
         {
             // FIXME: ServiceLocator / Singleton
-            var linker = Linker.Instance();
+            var linker = LinkerService.Instance();
 
             var naiveTitle = string.Join(" ", this.Arguments);
 

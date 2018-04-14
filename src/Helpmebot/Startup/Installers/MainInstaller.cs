@@ -12,7 +12,6 @@
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Services;
-    using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup.Facilities;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
@@ -46,6 +45,10 @@
                         x => x
                             .To<JoinMessageService>(l => l.OnJoinEvent(null, null))
                             .To<BlockMonitoringService>(l => l.OnJoinEvent(null, null)))
+                    .PublishEvent(
+                        p => p.ReceivedMessage += null,
+                        x => x
+                            .To<LinkerService>(l => l.IrcPrivateMessageEvent(null, null)))
             );
         }
     }

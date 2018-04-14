@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Linker.cs" company="Helpmebot Development Team">
+// <copyright file="LinkerService.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,35 +14,25 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot
+namespace Helpmebot.Services
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-
-    using Stwalkerster.IrcClient.Events;
-    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Repositories.Interfaces;
-
+    using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Events;
 
     /// <summary>
-    ///     Linker and link parser
+    ///     LinkerService and link parser
     /// </summary>
-    public class Linker
+    public class LinkerService : ILinkerService
     {
-        #region Static Fields
-
-        /// <summary>
-        /// The _singleton.
-        /// </summary>
-        private static Linker singleton;
-
-        #endregion
-
         #region Fields
 
         /// <summary>
@@ -50,25 +40,15 @@ namespace Helpmebot
         /// </summary>
         private readonly Dictionary<string, string> lastLink;
 
-        /// <summary>
-        /// The IRC client.
-        /// </summary>
-        private readonly IIrcClient ircClient;
-
         #endregion
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="Linker"/> class.
+        /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
-        protected Linker()
+        public LinkerService()
         {
-            // FIXME: ServiceLocator - iircclient
-            this.ircClient = ServiceLocator.Current.GetInstance<IIrcClient>();
-         
-            this.ircClient.ReceivedMessage += this.IrcPrivateMessageEvent;
-
             this.lastLink = new Dictionary<string, string>();
         }
 
@@ -114,25 +94,12 @@ namespace Helpmebot
         /// The instance.
         /// </summary>
         /// <returns>
-        /// The <see cref="Linker"/>.
+        /// The <see cref="ILinkerService"/>.
         /// </returns>
-        public static Linker Instance()
+        [Obsolete]
+        public static ILinkerService Instance()
         {
-            return singleton ?? (singleton = new Linker());
-        }
-
-        /// <summary>
-        /// Gets the link.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public string GetLink(string destination)
-        {
-            return this.GetLink(destination, false);
+            return ServiceLocator.Current.GetInstance<ILinkerService>();
         }
 
         /// <summary>
@@ -160,32 +127,6 @@ namespace Helpmebot
 
             return links.Cast<string>()
                 .Aggregate(string.Empty, (current, link) => current + " " + GetRealLink(destination, link, useSecureServer));
-        }
-
-        /// <summary>
-        /// Parses the message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        public void ParseMessage(string message, string channel)
-        {
-            ArrayList newLink = this.ReallyParseMessage(message);
-            if (newLink.Count == 0)
-            {
-                return;
-            }
-
-            if (this.lastLink.ContainsKey(channel))
-            {
-                this.lastLink.Remove(channel);
-            }
-
-            this.lastLink.Add(channel, message);
-            this.SendLink(channel, message);
         }
 
         /// <summary>
@@ -269,29 +210,33 @@ namespace Helpmebot
         /// <param name="e">
         /// The e.
         /// </param>
-        private void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
+        public void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
         {
-            if (e.Message.Command == "PRIVMSG" || e.Message.Command == "NOTICE")
+            if (e.Message.Command != "PRIVMSG" && e.Message.Command != "NOTICE")
             {
-                var parameters = e.Message.Parameters.ToList();
-                this.ParseMessage(parameters[1], parameters[0]);
+                return;
             }
-        }
 
-        /// <summary>
-        /// The send link.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="link">
-        /// The link.
-        /// </param>
-        private void SendLink(string channel, string link)
-        {
+            var parameters = e.Message.Parameters.ToList();
+            var message = parameters[1];
+            var channel = parameters[0];
+                
+            var newLink = this.ReallyParseMessage(message);
+            if (newLink.Count == 0)
+            {
+                return;
+            }
+
+            if (this.lastLink.ContainsKey(channel))
+            {
+                this.lastLink.Remove(channel);
+            }
+
+            this.lastLink.Add(channel, message);
+            
             if (LegacyConfig.Singleton()["autoLink", channel] == "true")
             {
-                this.ircClient.SendMessage(channel, this.GetLink(link, false));
+                e.Client.SendMessage(channel, this.GetLink(message, false));
             }
         }
 

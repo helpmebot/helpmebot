@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Services;
 
     /// <summary>
     /// Retrieves a link to block a user.
@@ -93,7 +94,7 @@ namespace helpmebot6.Commands
                 }
             }
 
-            string url = Linker.GetRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
+            string url = LinkerService.GetRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
 
             return new CommandResponseHandler(url);
         }

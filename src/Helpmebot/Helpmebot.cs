@@ -120,10 +120,6 @@ namespace Helpmebot
 
             JoinChannels();
             
-            // horrible, horrible hack
-            // initialises the linker and connects it to events
-            Linker.Instance();
-
             newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
             newIrc.ReceivedMessage += ReceivedMessage;
             newIrc.InviteReceivedEvent += IrcInviteEvent;

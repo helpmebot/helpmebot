@@ -28,6 +28,7 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Services;
 
     /// <summary>
     /// Triggers the link parser
@@ -73,20 +74,20 @@ namespace helpmebot6.Commands
 
             if (args.SmartLength() > 0)
             {
-                ArrayList links = Linker.Instance().ReallyParseMessage(string.Join(" ", args));
+                ArrayList links = LinkerService.Instance().ReallyParseMessage(string.Join(" ", args));
 
                 if (links.Count == 0)
                 {
-                    links = Linker.Instance().ReallyParseMessage("[[" + string.Join(" ", args) + "]]");
+                    links = LinkerService.Instance().ReallyParseMessage("[[" + string.Join(" ", args) + "]]");
                 }
 
                 string message = links.Cast<string>()
-                    .Aggregate(string.Empty, (current, link) => current + " " + Linker.GetRealLink(this.Channel, link, secure));
+                    .Aggregate(string.Empty, (current, link) => current + " " + LinkerService.GetRealLink(this.Channel, link, secure));
 
                 return new CommandResponseHandler(message);
             }
 
-            return new CommandResponseHandler(Linker.Instance().GetLink(this.Channel, secure));
+            return new CommandResponseHandler(LinkerService.Instance().GetLink(this.Channel, secure));
         }
     }
 }

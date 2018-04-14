@@ -196,11 +196,13 @@
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
+    <Compile Include="Services\Interfaces\ILinkerService.cs" />
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
+    <Compile Include="Services\LinkerService.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
@@ -283,7 +285,6 @@
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
-    <Compile Include="Linker.cs" />
     <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="Legacy\LegacyCommandParser.cs" />
     <Compile Include="Legacy\Configuration\LegacyConfig.cs" />

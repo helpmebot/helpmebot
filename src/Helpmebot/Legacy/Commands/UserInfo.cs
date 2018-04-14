@@ -36,7 +36,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-
+    using Helpmebot.Services;
     using Microsoft.Practices.ServiceLocation;
 
     /* returns information about a user
@@ -156,7 +156,7 @@ namespace helpmebot6.Commands
         /// <returns>the user page url</returns>
         private static string GetUserPageUrl(string userName, string channel)
         {
-            return Linker.GetRealLink(channel, "User:" + userName, true);
+            return LinkerService.GetRealLink(channel, "User:" + userName, true);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            return Linker.GetRealLink(channel, "User_talk:" + userName, true);
+            return LinkerService.GetRealLink(channel, "User_talk:" + userName, true);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             
-            return Linker.GetRealLink(channel, "Special:Contributions/" + userName, true);
+            return LinkerService.GetRealLink(channel, "Special:Contributions/" + userName, true);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace helpmebot6.Commands
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            var blockLogUrl = new UriBuilder(Linker.GetRealLink(channel, "Special:Log", true));
+            var blockLogUrl = new UriBuilder(LinkerService.GetRealLink(channel, "Special:Log", true));
 
             var queryParts = HttpUtility.ParseQueryString(blockLogUrl.Query);
             queryParts["type"] = "block";
