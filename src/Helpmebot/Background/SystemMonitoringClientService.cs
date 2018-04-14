@@ -24,65 +24,32 @@ namespace Helpmebot.Background
     using Castle.Core.Logging;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Background.Interfaces;
+    using Helpmebot.Configuration;
 
     /// <summary>
     ///     The system monitoring client service.
     /// </summary>
     public class SystemMonitoringClientService : ISystemMonitoringClientService
     {
-        #region Fields
-
         private readonly bool enabled;
+        private readonly string message;
+        private readonly int port;
 
-        /// <summary>
-        ///     The logger.
-        /// </summary>
         private readonly ILogger logger;
-
         private readonly IIrcClient networkClient;
-
-        /// <summary>
-        ///     The _monitor thread.
-        /// </summary>
         private readonly Thread monitorthread;
 
-        /// <summary>
-        ///     The _service.
-        /// </summary>
-        private readonly TcpListener service;
-
-        /// <summary>
-        ///     The _alive.
-        /// </summary>
         private bool alive;
 
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="SystemMonitoringClientService"/> class.
-        /// </summary>
-        /// <param name="systemMonitoringPort">
-        /// The system Monitoring Port.
-        /// </param>
-        /// <param name="systemMonitoringMessage">
-        /// The system Monitoring Message.
-        /// </param>
-        /// <param name="systemMonitoringEnabled">
-        /// The system Monitoring Enabled.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        public SystemMonitoringClientService(int systemMonitoringPort, string systemMonitoringMessage,
-            bool systemMonitoringEnabled, ILogger logger, IIrcClient networkClient)
+        public SystemMonitoringClientService(BotConfiguration configuration,
+            ILogger logger,
+            IIrcClient networkClient)
         {
-            this.enabled = systemMonitoringEnabled;
+            this.enabled = configuration.SystemMonitoringPort.HasValue;
             this.logger = logger;
             this.networkClient = networkClient;
-            this.Port = systemMonitoringPort;
-            this.Message = systemMonitoringMessage;
+            this.port = configuration.SystemMonitoringPort.GetValueOrDefault();
+            this.message = "Helpmebot v6 (Nagios Monitor service)";
 
             if (!this.enabled)
             {
@@ -92,32 +59,9 @@ namespace Helpmebot.Background
 
             this.monitorthread = new Thread(this.ThreadMethod);
 
-            this.service = new TcpListener(IPAddress.Any, this.Port);
-
             this.logger.Info("Initialised Monitoring Client.");
         }
-
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the message.
-        /// </summary>
-        public string Message { get; private set; }
-
-        /// <summary>
-        ///     Gets the port.
-        /// </summary>
-        public int Port { get; private set; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        ///     The start.
-        /// </summary>
+        
         public void Start()
         {
             if (!this.enabled)
@@ -131,7 +75,7 @@ namespace Helpmebot.Background
         }
 
         /// <summary>
-        ///     Stop all threads in this instance to allow for a clean shutdown.
+        /// Stop all threads in this instance to allow for a clean shutdown.
         /// </summary>
         public void Stop()
         {
@@ -139,21 +83,16 @@ namespace Helpmebot.Background
             this.alive = false;
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        ///     The thread method.
-        /// </summary>
         private void ThreadMethod()
         {
             this.alive = true;
-            this.service.Start();
+
+            var service = new TcpListener(IPAddress.Any, this.port);
+            service.Start();
             this.logger.Debug("Started Monitoring Client.");
             while (this.alive)
             {
-                if (!this.service.Pending())
+                if (!service.Pending())
                 {
                     Thread.Sleep(10);
                     continue;
@@ -161,7 +100,7 @@ namespace Helpmebot.Background
 
                 this.logger.Debug("Found waiting request.");
 
-                TcpClient client = this.service.AcceptTcpClient();
+                TcpClient client = service.AcceptTcpClient();
 
                 var sw = new StreamWriter(client.GetStream());
 
@@ -171,17 +110,15 @@ namespace Helpmebot.Background
                 }
                 else
                 {
-                    sw.WriteLine(this.Message);                    
+                    sw.WriteLine(this.message);
                 }
-                
+
                 sw.Flush();
                 client.Close();
             }
 
-            this.service.Stop();
+            service.Stop();
             this.logger.Info("Stopped Monitoring Client.");
         }
-
-        #endregion
     }
 }

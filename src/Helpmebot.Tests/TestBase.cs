@@ -24,10 +24,6 @@ namespace Helpmebot.Tests
     using System.Collections.Generic;
 
     using Castle.Core.Logging;
-
-    using Helpmebot.Configuration;
-    using Helpmebot.Configuration.XmlSections.Interfaces;
-
     using Moq;
 
     using NUnit.Framework;
@@ -38,19 +34,9 @@ namespace Helpmebot.Tests
     public abstract class TestBase
     {
         /// <summary>
-        /// Gets or sets the IRC configuration.
-        /// </summary>
-        protected Mock<IIrcConfiguration> IrcConfiguration { get; set; }
-
-        /// <summary>
         /// Gets or sets the logger.
         /// </summary>
         protected Mock<ILogger> Logger { get; set; }
-
-        /// <summary>
-        /// Gets or sets the configuration helper.
-        /// </summary>
-        protected Mock<IConfigurationHelper> ConfigurationHelper { get; set; }
 
         /// <summary>
         /// The common setup.
@@ -70,16 +56,6 @@ namespace Helpmebot.Tests
             this.Logger.Setup(x => x.Error(It.IsAny<string>(), It.IsAny<Exception>())).Callback(() => Assert.Fail("Logger recorded error."));
             this.Logger.Setup(x => x.ErrorFormat(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded error."));
             this.Logger.Setup(x => x.ErrorFormat(It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded error."));
-
-            var databaseConfig = new Mock<IPrivateConfiguration>();
-            var coreConfig = new Mock<ICoreConfiguration>();
-            this.IrcConfiguration = new Mock<IIrcConfiguration>();
-
-            this.ConfigurationHelper = new Mock<IConfigurationHelper>();
-            this.ConfigurationHelper.Setup(x => x.PrivateConfiguration)
-                .Returns(databaseConfig.Object);
-            this.ConfigurationHelper.Setup(x => x.CoreConfiguration).Returns(coreConfig.Object);
-            this.ConfigurationHelper.Setup(x => x.IrcConfiguration).Returns(this.IrcConfiguration.Object);
 
             this.LocalSetup();
         }

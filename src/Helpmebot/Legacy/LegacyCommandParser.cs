@@ -39,7 +39,7 @@ namespace Helpmebot.Legacy
     using Helpmebot.Services.Interfaces;
 
     using helpmebot6.Commands;
-
+    using Helpmebot.Configuration;
     using Microsoft.Practices.ServiceLocation;
 
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
@@ -66,6 +66,8 @@ namespace Helpmebot.Legacy
         private readonly ICommandServiceHelper commandServiceHelper;
 
         private readonly IRedirectionParserService redirectionParserService;
+        private readonly string commandTrigger;
+        private readonly string debugChannel;
 
         #endregion
 
@@ -81,11 +83,14 @@ namespace Helpmebot.Legacy
         ///   The logger.
         /// </param>
         /// <param name="redirectionParserService"></param>
-        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger, IRedirectionParserService redirectionParserService)
+        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger, IRedirectionParserService redirectionParserService, BotConfiguration configuration)
         {
             this.commandServiceHelper = commandServiceHelper;
             this.redirectionParserService = redirectionParserService;
             this.Log = logger;
+
+            this.commandTrigger = configuration.CommandTrigger;
+            this.debugChannel = configuration.DebugChannel;
 
             this.OverrideBotSilence = false;
         }
@@ -135,10 +140,7 @@ namespace Helpmebot.Legacy
         /// </remarks>
         public bool IsRecognisedMessage(ref string message, ref bool overrideSilence, IIrcClient client)
         {
-            return ParseRawLineForMessage(
-                ref message,
-                client.Nickname,
-                this.commandServiceHelper.ConfigurationHelper.CoreConfiguration.CommandTrigger);
+            return ParseRawLineForMessage(ref message, client.Nickname, this.commandTrigger);
         }
 
         /// <summary>
@@ -388,7 +390,7 @@ namespace Helpmebot.Legacy
 
                             break;
                         case CommandResponseDestination.ChannelDebug:
-                            irc1.SendMessage(this.commandServiceHelper.ConfigurationHelper.CoreConfiguration.DebugChannel, message);
+                            irc1.SendMessage(this.debugChannel, message);
                             break;
                         case CommandResponseDestination.PrivateMessage:
                             irc1.SendMessage(source.Nickname, message);

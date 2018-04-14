@@ -17,8 +17,6 @@
 namespace Helpmebot.Services.UrlShortening
 {
     using Castle.Core.Logging;
-
-    using Helpmebot.Configuration;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
@@ -27,11 +25,6 @@ namespace Helpmebot.Services.UrlShortening
     /// </summary>
     public abstract class UrlShorteningServiceBase : IUrlShorteningService
     {
-        /// <summary>
-        /// The configuration helper.
-        /// </summary>
-        private readonly IConfigurationHelper configurationHelper;
-
         /// <summary>
         ///     Gets or sets the Castle.Windsor Logger
         /// </summary>
@@ -51,28 +44,12 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="shortUrlCacheRepository">
         /// The short url cache repository.
         /// </param>
-        /// <param name="configurationHelper">
-        /// The configuration Helper.
-        /// </param>
         protected UrlShorteningServiceBase(
             ILogger logger, 
-            IShortUrlCacheRepository shortUrlCacheRepository, 
-            IConfigurationHelper configurationHelper)
+            IShortUrlCacheRepository shortUrlCacheRepository)
         {
             this.logger = logger;
             this.shortUrlCacheRepository = shortUrlCacheRepository;
-            this.configurationHelper = configurationHelper;
-        }
-
-        /// <summary>
-        /// Gets the configuration helper.
-        /// </summary>
-        protected IConfigurationHelper ConfigurationHelper
-        {
-            get
-            {
-                return this.configurationHelper;
-            }
         }
 
         /// <summary>

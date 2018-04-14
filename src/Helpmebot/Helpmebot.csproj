@@ -83,12 +83,8 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\Interfaces\ICommandServiceHelper.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
-    <Compile Include="Configuration\IConfigurationHelper.cs" />
-    <Compile Include="Configuration\XmlSections\CoreConfiguration.cs" />
-    <Compile Include="Configuration\XmlSections\Interfaces\ICoreConfiguration.cs" />
-    <Compile Include="Configuration\XmlSections\Interfaces\IPrivateConfiguration.cs" />
-    <Compile Include="Configuration\XmlSections\Interfaces\IIrcConfiguration.cs" />
-    <Compile Include="Configuration\XmlSections\IrcConfiguration.cs" />
+    <Compile Include="Configuration\DatabaseConfiguration.cs" />
+    <Compile Include="Configuration\BotConfiguration.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
@@ -116,8 +112,6 @@
     <Compile Include="Legacy\Commands\Google.cs" />
     <Compile Include="Legacy\Commands\Refresh.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
-    <Compile Include="Configuration\ConfigurationHelper.cs" />
-    <Compile Include="Configuration\XmlSections\PrivateConfiguration.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
@@ -211,15 +205,8 @@
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
     <Compile Include="Services\UserFlagService.cs" />
-    <Compile Include="Startup\DeferredInstallerAttribute.cs" />
-    <Compile Include="Startup\DeferredWindsorBootstrap.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
-    <Compile Include="Startup\Installers\LegacyInstaller.cs" />
-    <Compile Include="Startup\Installers\PersistenceInstaller.cs" />
-    <Compile Include="Startup\Installers\LoggerInstaller.cs" />
-    <Compile Include="Startup\Installers\RepositoryInstaller.cs" />
-    <Compile Include="Startup\Installers\ConfigurationInstaller.cs" />
-    <Compile Include="Startup\Installers\ServiceInstaller.cs" />
+    <Compile Include="Startup\Installers\MainInstaller.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
@@ -308,10 +295,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IMessageService.cs" />
     <Compile Include="Services\MessageService.cs" />
-    <Compile Include="Startup\InstallerPriorityAttribute.cs" />
-    <Compile Include="Startup\Installers\StartableInstaller.cs" />
-    <Compile Include="Startup\Resolvers\AppSettingsDependencyResolver.cs" />
-    <Compile Include="Startup\WindsorBootstrap.cs" />
+    <Compile Include="Startup\Installers\DeferredInstaller.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="Legacy\Model\LegacyUser.cs" />
@@ -388,13 +372,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.release.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="app.config" />
-    <None Include="database.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="logger.release.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -429,6 +407,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="configuration.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets" Condition="Exists('..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets')" />
 </Project>

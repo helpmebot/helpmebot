@@ -25,7 +25,6 @@ namespace Helpmebot.Legacy.Database
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Configuration.XmlSections.Interfaces;
 
     using MySql.Data.MySqlClient;
 
@@ -34,12 +33,11 @@ namespace Helpmebot.Legacy.Database
     /// </summary>
     public class LegacyDatabase : IDisposable, ILegacyDatabase
     {
+        
+
         #region Fields
 
-        /// <summary>
-        ///     The configuration helper.
-        /// </summary>
-        private readonly IConfigurationHelper configurationHelper;
+        private readonly DatabaseConfiguration databaseConfiguration;
 
         /// <summary>
         ///     The connection.
@@ -56,12 +54,11 @@ namespace Helpmebot.Legacy.Database
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="configurationHelper">
-        /// The configuration Helper.
+        /// <param name="databaseConfiguration">
         /// </param>
-        public LegacyDatabase(ILogger logger, IConfigurationHelper configurationHelper)
+        public LegacyDatabase(ILogger logger, DatabaseConfiguration databaseConfiguration)
         {
-            this.configurationHelper = configurationHelper;
+            this.databaseConfiguration = databaseConfiguration;
             this.Log = logger.CreateChildLogger("Helpmebot.Legacy.Database.LegacyDatabase");
         }
 
@@ -86,16 +83,13 @@ namespace Helpmebot.Legacy.Database
         /// </returns>
         public bool Connect()
         {
-            IPrivateConfiguration privateConfiguration = this.configurationHelper.PrivateConfiguration;
-
             try
             {
                 lock (this)
                 {
                     this.Log.Info("Opening database connection...");
-                    var csb = privateConfiguration.ConnectionString;
 
-                    this.connection = new MySqlConnection(csb.ConnectionString);
+                    this.connection = new MySqlConnection(this.databaseConfiguration.ConnectionString);
                     this.connection.Open();
                 }
 
@@ -105,6 +99,15 @@ namespace Helpmebot.Legacy.Database
             {
                 this.Log.Error(ex.Message, ex);
                 return false;
+            }
+        }
+
+        public void Initialize()
+        {
+            if (!this.Connect())
+            {
+                this.Log.Error("Could not connect using legacy database.");
+                throw new Exception("Cannot connect using legacy database.");
             }
         }
 

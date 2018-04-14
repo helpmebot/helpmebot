@@ -26,6 +26,7 @@ namespace Helpmebot.Background
     using Castle.Core.Logging;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Background.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.Repositories.Interfaces;
 
     /// <summary>
@@ -63,8 +64,8 @@ namespace Helpmebot.Background
         /// <param name="enableNotificationService">
         /// The enable Notification Service.
         /// </param>
-        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository, bool enableNotificationService)
-            : base(logger, 5 * 1000, enableNotificationService)
+        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository, BotConfiguration configuration)
+            : base(logger, 5 * 1000, configuration.EnableNotificationService)
         {
             this.ircClient = ircClient;
             this.notificationRepository = notificationRepository;

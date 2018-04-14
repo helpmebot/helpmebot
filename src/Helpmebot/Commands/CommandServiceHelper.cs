@@ -17,7 +17,6 @@
 namespace Helpmebot.Commands
 {
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Configuration;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -38,11 +37,6 @@ namespace Helpmebot.Commands
         ///     The client.
         /// </summary>
         private readonly IIrcClient client;
-
-        /// <summary>
-        ///     The configuration helper.
-        /// </summary>
-        private readonly IConfigurationHelper configurationHelper;
 
         /// <summary>
         ///     The inter-wiki prefix repository.
@@ -69,7 +63,7 @@ namespace Helpmebot.Commands
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initialises a new instance of the <see cref="CommandServiceHelper"/> class.
+        /// Initialises a new instance of the CommandServiceHelper class.
         /// </summary>
         /// <param name="client">
         /// The client.
@@ -79,9 +73,6 @@ namespace Helpmebot.Commands
         /// </param>
         /// <param name="urlShorteningService">
         /// The url Shortening Service.
-        /// </param>
-        /// <param name="configurationHelper">
-        /// The configuration Helper.
         /// </param>
         /// <param name="mediaWikiSiteRepository">
         /// The media Wiki Site Repository.
@@ -96,7 +87,6 @@ namespace Helpmebot.Commands
             IIrcClient client, 
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
-            IConfigurationHelper configurationHelper, 
             IMediaWikiSiteRepository mediaWikiSiteRepository, 
             IInterwikiPrefixRepository interwikiPrefixRepository, 
             IChannelRepository channelRepository)
@@ -104,7 +94,6 @@ namespace Helpmebot.Commands
             this.client = client;
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
-            this.configurationHelper = configurationHelper;
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.channelRepository = channelRepository;
@@ -133,17 +122,6 @@ namespace Helpmebot.Commands
             get
             {
                 return this.client;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the configuration helper.
-        /// </summary>
-        public IConfigurationHelper ConfigurationHelper
-        {
-            get
-            {
-                return this.configurationHelper;
             }
         }
 

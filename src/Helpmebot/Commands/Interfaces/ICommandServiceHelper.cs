@@ -17,7 +17,6 @@
 
 namespace Helpmebot.Commands.Interfaces
 {
-    using Helpmebot.Configuration;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -33,11 +32,6 @@ namespace Helpmebot.Commands.Interfaces
         ///     Gets the client.
         /// </summary>
         IIrcClient Client { get; }
-
-        /// <summary>
-        ///     Gets the configuration helper.
-        /// </summary>
-        IConfigurationHelper ConfigurationHelper { get; }
 
         /// <summary>
         ///     Gets the media wiki site repository.

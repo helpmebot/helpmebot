@@ -24,8 +24,6 @@ namespace Helpmebot.ExtensionMethods
     using System.Xml;
 
     using Castle.Core.Logging;
-
-    using Helpmebot.Configuration.XmlSections.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 

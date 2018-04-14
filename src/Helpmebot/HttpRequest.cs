@@ -34,7 +34,7 @@ namespace Helpmebot
         /// <summary>
         ///     The configuration helper.
         /// </summary>
-        private static IConfigurationHelper configurationHelper;
+        private static BotConfiguration configurationHelper;
 
         #endregion
 
@@ -56,12 +56,12 @@ namespace Helpmebot
         {
             if (configurationHelper == null)
             {
-                configurationHelper = ServiceLocator.Current.GetInstance<IConfigurationHelper>();
+                configurationHelper = ServiceLocator.Current.GetInstance<BotConfiguration>();
             }
 
             var hwr = (HttpWebRequest)WebRequest.Create(uri);
-            hwr.UserAgent = configurationHelper.CoreConfiguration.UserAgent;
-            hwr.Timeout = timeout == -1 ? configurationHelper.CoreConfiguration.HttpTimeout : timeout;
+            hwr.UserAgent = configurationHelper.UserAgent;
+            hwr.Timeout = timeout == -1 ? configurationHelper.HttpTimeout : timeout;
 
             string data;
 

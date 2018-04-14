@@ -21,34 +21,28 @@
 namespace Helpmebot
 {
     using System;
+    using System.IO;
     using System.Linq;
     using System.Net;
-
     using Castle.Core.Logging;
-    using Castle.Facilities.Startable;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
-    using Castle.Windsor.Installer;
-
+    using helpmebot6.Commands;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
-    using Stwalkerster.IrcClient;
-    using Stwalkerster.IrcClient.Events;
-    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
+    using Helpmebot.Startup.Installers;
     using Helpmebot.Threading;
-
-    using helpmebot6.Commands;
-
-    using Helpmebot.Services;
-
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
     /// Helpmebot main class
@@ -112,8 +106,23 @@ namespace Helpmebot
         /// <summary>
         /// The main.
         /// </summary>
-        private static void Main()
+        private static void Main(string[] args)
         {
+            string configurationFile = "configuration.xml";
+            
+            if (args.Length >= 1)
+            {
+                configurationFile = args[0];
+            }
+
+            if (!File.Exists(configurationFile))
+            {
+                var fullPath = Path.GetFullPath(configurationFile);
+
+                Console.WriteLine("Configuration file at {0} does not exist!", fullPath);
+                return;
+            }
+            
             // DO NOT DO THIS.
             // EVER.
             // BLAME GLOBALSIGN FOR THIS.
@@ -121,59 +130,18 @@ namespace Helpmebot
             // (please don't think any less of me for this...)
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
 
-            BootstrapContainer();
-
-            Log = ServiceLocator.Current.GetInstance<ILogger>();
-            Log.Info("Initialising Helpmebot...");
-
-            InitialiseBot();
-        }
-
-        /// <summary>
-        /// The bootstrap container.
-        /// </summary>
-        private static void BootstrapContainer()
-        {
-            container = new WindsorContainer();
+            container = new WindsorContainer(configurationFile);
 
             ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
 
-            container.Install(FromAssembly.This(new WindsorBootstrap()));
-        }
+            container.Install(new MainInstaller());
 
-        /// <summary>
-        /// The initialise bot.
-        /// </summary>
-        private static void InitialiseBot()
-        {
-            dbal = container.Resolve<ILegacyDatabase>();
-
-            if (!dbal.Connect())
-            {
-                // can't Connect to database, DIE
-                return;
-            }
-
-            LegacyConfig.Singleton();
-
-            var configurationHelper = container.Resolve<IConfigurationHelper>();
-
-            var ircConfig = new IrcConfiguration(
-                configurationHelper.IrcConfiguration.Hostname,
-                configurationHelper.IrcConfiguration.Port,
-                configurationHelper.IrcConfiguration.AuthToServices,
-                configurationHelper.IrcConfiguration.Nickname,
-                configurationHelper.IrcConfiguration.Username,
-                configurationHelper.IrcConfiguration.RealName,
-                configurationHelper.IrcConfiguration.Ssl,
-                "Primary",
-                configurationHelper.PrivateConfiguration.IrcPassword
-                );
-
-            container.Register(Component.For<IIrcConfiguration>().Instance(ircConfig));
-            container.Register(Component.For<ISupportHelper>().ImplementedBy<SupportHelper>());
-            container.Register(Component.For<IIrcClient>().ImplementedBy<IrcClient>().Start());
             
+            Log = ServiceLocator.Current.GetInstance<ILogger>();
+            Log.Info("Initialising Helpmebot...");
+
+            
+            LegacyConfig.Singleton();
             
             newIrc = container.Resolve<IIrcClient>();
 
@@ -195,7 +163,7 @@ namespace Helpmebot
             SetupEvents();
 
             // initialise the deferred installers.
-            container.Install(FromAssembly.This(new DeferredWindsorBootstrap()));
+            container.Install(new DeferredInstaller());
         }
 
         /// <summary>
@@ -343,7 +311,8 @@ namespace Helpmebot
             var cmd = new LegacyCommandParser(
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>(),
                 Log.CreateChildLogger("LegacyCommandParser"),
-                ServiceLocator.Current.GetInstance<IRedirectionParserService>());
+                ServiceLocator.Current.GetInstance<IRedirectionParserService>(),
+                ServiceLocator.Current.GetInstance<BotConfiguration>());
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;

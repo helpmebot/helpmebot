@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <components>
+        
+        <!-- IRC configuration -->
+        <component service="Stwalkerster.IrcClient.Interfaces.IIrcConfiguration"
+                   type="Stwalkerster.IrcClient.IrcConfiguration">
+            <parameters>
+                <authToServices>true</authToServices>
+                <ssl>true</ssl>
+                <hostname>chat.freenode.net</hostname>
+                <port>7000</port>
+                <nickname></nickname>
+                <realName></realName>
+                <username></username>
+                <password></password>
+                <clientName>Freenode</clientName>
+            </parameters>
+        </component>
+        
+        <!-- Other configuration -->
+        <component type="BotConfiguration">
+            <parameters>
+                <commandTrigger>!</commandTrigger>
+                <userAgent>Helpmebot (+https://helpmebot.org.uk)</userAgent>
+                <httpTimeout>5000</httpTimeout>
+                <debugChannel></debugChannel>
+                <enableNotificationService>false</enableNotificationService>
+                <!--<googleApiKey></googleApiKey>-->
+                <!--<ipInfoDbApiKey></ipInfoDbApiKey>-->
+                <!--<maxMindDatabasePath></maxMindDatabasePath>-->
+                <!--<systemMonitoringPort></systemMonitoringPort>-->
+            </parameters>
+        </component>
+        
+        <component type="DatabaseConfiguration">
+            <parameters>
+                <hostname></hostname>
+                <!--<port>3306</port>-->
+                <username></username>
+                <password></password>
+                <schema></schema>
+                <!--<charset></charset>-->
+            </parameters>
+        </component>
+        
+        <!-- Swappable components -->
+        <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
+        <component service="IGeolocationService" type="MaxMindGeolocationService" />
+    </components>
+</configuration>

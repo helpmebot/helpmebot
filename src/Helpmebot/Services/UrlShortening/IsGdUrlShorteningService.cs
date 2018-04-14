@@ -30,6 +30,8 @@ namespace Helpmebot.Services.UrlShortening
     /// </summary>
     public class IsGdUrlShorteningService : UrlShorteningServiceBase
     {
+        private readonly string userAgent;
+
         #region Constructors and Destructors
 
         /// <summary>
@@ -41,12 +43,13 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="shortUrlCacheRepository">
         /// The short url cache repository.
         /// </param>
-        /// <param name="configurationHelper">
-        /// The configuration Helper.
-        /// </param>
-        public IsGdUrlShorteningService(ILogger logger, IShortUrlCacheRepository shortUrlCacheRepository, IConfigurationHelper configurationHelper)
-            : base(logger, shortUrlCacheRepository, configurationHelper)
+        /// <param name="config"></param>
+        public IsGdUrlShorteningService(ILogger logger,
+            IShortUrlCacheRepository shortUrlCacheRepository,
+            BotConfiguration config)
+            : base(logger, shortUrlCacheRepository)
         {
+            this.userAgent = config.UserAgent;
         }
 
         #endregion
@@ -67,7 +70,7 @@ namespace Helpmebot.Services.UrlShortening
             var wrq =
                 (HttpWebRequest)
                 WebRequest.Create("https://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
-            wrq.UserAgent = this.ConfigurationHelper.CoreConfiguration.UserAgent;
+            wrq.UserAgent = this.userAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
             if (wrs.StatusCode == HttpStatusCode.OK)
             {

@@ -21,8 +21,7 @@ namespace Helpmebot.Services.Geolocation
     using System.Xml;
 
     using Castle.Core.Logging;
-
-    using Helpmebot.Configuration.XmlSections.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -51,7 +50,7 @@ namespace Helpmebot.Services.Geolocation
         /// <param name="configuration">
         /// The configuration.
         /// </param>
-        public IpInfoDbGeoloationService(ILogger logger, IPrivateConfiguration configuration)
+        public IpInfoDbGeoloationService(ILogger logger, BotConfiguration configuration)
         {
             this.logger = logger;
             this.apiKey = configuration.IpInfoDbApiKey;

@@ -20,8 +20,7 @@ namespace Helpmebot.Services.Geolocation
     using System.Net;
 
     using Castle.Core.Logging;
-
-    using Helpmebot.Configuration.XmlSections.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
@@ -57,7 +56,7 @@ namespace Helpmebot.Services.Geolocation
         /// <param name="configuration">
         /// The configuration.
         /// </param>
-        public MaxMindGeolocationService(ILogger logger, IPrivateConfiguration configuration)
+        public MaxMindGeolocationService(ILogger logger, BotConfiguration configuration)
         {
             this.logger = logger;
             this.databasePath = configuration.MaxMindDatabasePath;

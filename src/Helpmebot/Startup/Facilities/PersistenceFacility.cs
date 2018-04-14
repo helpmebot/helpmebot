@@ -93,9 +93,8 @@ namespace Helpmebot.Startup.Facilities
         /// </returns>
         private IPersistenceConfigurer SetupDatabase()
         {
-            var connectionString = this.Kernel.Resolve<IConfigurationHelper>().PrivateConfiguration.ConnectionString;
-
-            return MySQLConfiguration.Standard.ConnectionString(connectionString.ConnectionString);
+            return MySQLConfiguration.Standard.ConnectionString(
+                this.Kernel.Resolve<DatabaseConfiguration>().ConnectionString);
         }
     }
 }

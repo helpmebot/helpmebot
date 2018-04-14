@@ -32,6 +32,8 @@ namespace Helpmebot.Services.UrlShortening
     /// </summary>
     public class GooglUrlShorteningService : UrlShorteningServiceBase
     {
+        private readonly string apiKey;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GooglUrlShorteningService"/> class.
         /// </summary>
@@ -41,15 +43,14 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="shortUrlCacheRepository">
         /// The short url cache repository.
         /// </param>
-        /// <param name="configurationHelper">
-        /// The configuration Helper.
-        /// </param>
+        /// <param name="botConfiguration"></param>
         public GooglUrlShorteningService(
             ILogger logger, 
-            IShortUrlCacheRepository shortUrlCacheRepository, 
-            IConfigurationHelper configurationHelper)
-            : base(logger, shortUrlCacheRepository, configurationHelper)
+            IShortUrlCacheRepository shortUrlCacheRepository,
+            BotConfiguration botConfiguration)
+            : base(logger, shortUrlCacheRepository)
         {
+            this.apiKey = botConfiguration.GoogleApiKey;
         }
 
         /// <summary>
@@ -63,8 +64,7 @@ namespace Helpmebot.Services.UrlShortening
         /// </returns>
         protected override string GetShortUrl(string longUrl)
         {
-            var googleApiKey = this.ConfigurationHelper.PrivateConfiguration.GoogleApiKey;
-            var url = string.Format("https://www.googleapis.com/urlshortener/v1/url?key={0}", googleApiKey);
+            var url = string.Format("https://www.googleapis.com/urlshortener/v1/url?key={0}", this.apiKey);
 
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = "POST";

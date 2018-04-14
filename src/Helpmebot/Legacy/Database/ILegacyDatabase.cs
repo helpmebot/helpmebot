@@ -21,13 +21,13 @@
 namespace Helpmebot.Legacy.Database
 {
     using System.Collections;
-
+    using Castle.Core;
     using MySql.Data.MySqlClient;
 
     /// <summary>
     /// The LegacyDatabase interface.
     /// </summary>
-    public interface ILegacyDatabase
+    public interface ILegacyDatabase : IInitializable
     {
         /// <summary>
         /// Connects this instance to the database.
