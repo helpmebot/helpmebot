@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System;
+
 namespace Helpmebot.Services.UrlShortening
 {
     using System.IO;
@@ -86,7 +89,36 @@ namespace Helpmebot.Services.UrlShortening
                 return shorturl;
             }
 
-            throw new WebException(wrs.StatusDescription);
+            string error = null;
+            try
+            {
+                Stream responseStream = wrs.GetResponseStream();
+
+                if (responseStream == null)
+                {
+                    throw new WebException("Response stream is null.");
+                }
+
+                var sr = new StreamReader(responseStream);
+                
+                error = sr.ReadToEnd();
+            }
+            // ReSharper disable once EmptyGeneralCatchClause
+            catch (Exception)
+            {
+                // Suppress any errors with the error handling - something already went wrong.
+            }
+
+            if (error != null)
+            {
+                error = wrs.StatusDescription + " " + error;
+            }
+            else
+            {
+                error = wrs.StatusDescription;
+            }
+
+            throw new WebException(error);
         }
 
         #endregion
