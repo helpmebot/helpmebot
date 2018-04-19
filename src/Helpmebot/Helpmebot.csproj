@@ -252,7 +252,6 @@
     <Compile Include="Legacy\Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Cookie.cs" />
     <Compile Include="Legacy\Commands\Gancount.cs" />
-    <Compile Include="Legacy\Commands\Notify.cs" />
     <Compile Include="Legacy\Commands\Editcount.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />

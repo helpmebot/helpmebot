@@ -26,9 +26,7 @@ namespace Helpmebot
     using Castle.Windsor;
     using helpmebot6.Commands;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;
     using Helpmebot.Startup.Installers;
     using Microsoft.Practices.ServiceLocation;
@@ -99,11 +97,8 @@ namespace Helpmebot
             /////////////////////////////////////////////////
             {
                 Log = ServiceLocator.Current.GetInstance<ILogger>();
-                Log.Info("Initialising Helpmebot...");
 
                 newIrc = container.Resolve<IIrcClient>();
-
-                newIrc.JoinReceivedEvent += NotifyOnJoinEvent;
 
                 // initialise the deferred installers.
                 container.Install(new DeferredInstaller());
@@ -117,36 +112,6 @@ namespace Helpmebot
             
             container.Release(application);
             container.Dispose();
-        }
-
-        /// <summary>
-        /// The notify on join event.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
-        private static void NotifyOnJoinEvent(object sender, JoinEventArgs e)
-        {
-            try
-            {
-                // FIXME: ServiceLocator - CSH
-                var commandServiceHelper = ServiceLocator.Current.GetInstance<ICommandServiceHelper>();
-
-                var legacyUser = LegacyUser.NewFromOtherUser(e.User);
-                if (legacyUser == null)
-                {
-                    throw new NullReferenceException(string.Format("Legacy user creation failed from user {0}", e.User));
-                }
-
-                new Notify(legacyUser, e.Channel, new string[0], commandServiceHelper).NotifyJoin(legacyUser, e.Channel);
-            }
-            catch (Exception exception)
-            {
-                Log.Error("Exception encountered in NotifyOnJoinEvent", exception);
-            }
         }
     }
 }
