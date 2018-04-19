@@ -66,6 +66,7 @@ namespace Helpmebot.Services
         /// <param name="mediaWikiSiteRepository">
         /// The media wiki site repository.
         /// </param>
+        /// <param name="blockMonitorRepository"></param>
         public BlockMonitoringService(ILogger logger, IMediaWikiSiteRepository mediaWikiSiteRepository,
             IBlockMonitorRepository blockMonitorRepository)
         {

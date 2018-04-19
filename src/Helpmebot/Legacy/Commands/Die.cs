@@ -23,6 +23,8 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Startup;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Kills the bot.
@@ -55,7 +57,10 @@ namespace helpmebot6.Commands
         /// <returns>null - the bot should be shutting down</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            Helpmebot6.Stop();
+            // FIXME: ServiceLocator
+            var application = ServiceLocator.Current.GetInstance<IApplication>();
+            application.Stop();
+            
             return null;
         }
 

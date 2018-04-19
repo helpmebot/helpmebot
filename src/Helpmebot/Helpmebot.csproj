@@ -122,6 +122,8 @@
     <Compile Include="Legacy\Commands\Whoami.cs" />
     <Compile Include="Legacy\Commands\Whois.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
+    <Compile Include="Legacy\ILegacyCommandHandler.cs" />
+    <Compile Include="Legacy\LegacyCommandHandler.cs" />
     <Compile Include="Legacy\Model\ILegacyUser.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
@@ -193,6 +195,7 @@
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
+    <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
+    <Compile Include="Services\ChannelManagementService.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\LinkerService.cs" />
@@ -209,7 +213,6 @@
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
     <Compile Include="Services\UserFlagService.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
-    <Compile Include="Startup\Installers\MainInstaller.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
@@ -298,6 +301,8 @@
     <Compile Include="Services\Interfaces\IMessageService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\Installers\DeferredInstaller.cs" />
+    <Compile Include="Startup\Launch.cs" />
+    <Compile Include="Startup\MainInstaller.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="Legacy\Model\LegacyUser.cs" />
