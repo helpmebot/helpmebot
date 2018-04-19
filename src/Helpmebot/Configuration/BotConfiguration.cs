@@ -37,6 +37,7 @@
         public int HttpTimeout { get; private set; }
         public string DebugChannel { get; private set; }
         public bool EnableNotificationService { get; private set; }
+        public bool DisableCertificateValidation { get; set; }
         public string GoogleApiKey { get; set; }
         public string IpInfoDbApiKey { get; set; }
         public string MaxMindDatabasePath { get; set; }

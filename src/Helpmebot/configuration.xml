@@ -30,6 +30,7 @@
                 <!--<ipInfoDbApiKey></ipInfoDbApiKey>-->
                 <!--<maxMindDatabasePath></maxMindDatabasePath>-->
                 <!--<systemMonitoringPort></systemMonitoringPort>-->
+                <!--<disableCertificateValidation>false</disableCertificateValidation>-->
             </parameters>
         </component>
         
