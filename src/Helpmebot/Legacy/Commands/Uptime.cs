@@ -19,6 +19,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Startup;
 
     /// <summary>
     ///     Gets the uptime of the bot
@@ -57,11 +58,13 @@ namespace helpmebot6.Commands
         /// <returns>The <see cref="CommandResponseHandler" />.</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
+            var startupTime = Launch.StartupTime;
+            
             string[] messageParams =
                 {
-                    Helpmebot6.StartupTime.DayOfWeek.ToString(), 
-                    Helpmebot6.StartupTime.ToLongDateString(), 
-                    Helpmebot6.StartupTime.ToLongTimeString()
+                    startupTime.DayOfWeek.ToString(), 
+                    startupTime.ToLongDateString(), 
+                    startupTime.ToLongTimeString()
                 };
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
                 "cmdUptimeUpSince", 

@@ -24,6 +24,10 @@
             container.AddFacility<LoggingFacility>(f => f.LogUsing<Log4netFactory>().WithConfig("logger.config"));
             container.AddFacility<PersistenceFacility>();
             container.AddFacility<EventWiringFacility>();
+            container.AddFacility<StartableFacility>(f => f.DeferredStart());
+            
+            // Chainload other installers.
+            container.Install(new Installer());
             
             container.Register(
                 // Legacy stuff
@@ -38,6 +42,7 @@
                 // Registration by convention
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Repositories").WithService.AllInterfaces(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces(),
+                Classes.FromThisAssembly().InNamespace("Helpmebot.Background").WithService.AllInterfaces(),
 
                 // IRC client
                 Component
@@ -62,9 +67,6 @@
                         p => p.WasKickedEvent += null,
                         x => x.To<ChannelManagementService>(l => l.OnKicked(null, null)))
             );
-
-            // Chainload other installers.
-            container.Install(new Installer());
         }
     }
 }
