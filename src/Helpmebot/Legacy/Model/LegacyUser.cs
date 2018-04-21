@@ -20,20 +20,15 @@ using Stwalkerster.IrcClient.Model.Interfaces;
 namespace Helpmebot.Legacy.Model
 {
     using System;
-    using System.Linq;
-
     using Castle.Core.Logging;
-
     using Helpmebot.Legacy.Database;
-
     using Microsoft.Practices.ServiceLocation;
-
     using MySql.Data.MySqlClient;
 
     /// <summary>
     ///     The user.
     /// </summary>
-    public class LegacyUser : ILegacyUser
+    public class LegacyUser
     {
         #region Fields
 
@@ -208,11 +203,6 @@ namespace Helpmebot.Legacy.Model
         public static LegacyUser NewFromOtherUser(IUser source)
         {
             if (source.GetType() == typeof(LegacyUser))
-            {
-                return (LegacyUser)source;
-            }
-
-            if (source.GetType().GetInterfaces().Contains(typeof(ILegacyUser)))
             {
                 return (LegacyUser)source;
             }

@@ -124,7 +124,6 @@
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
     <Compile Include="Legacy\ILegacyCommandHandler.cs" />
     <Compile Include="Legacy\LegacyCommandHandler.cs" />
-    <Compile Include="Legacy\Model\ILegacyUser.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
