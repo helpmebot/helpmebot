@@ -27,11 +27,11 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-
+    using Microsoft.Practices.ServiceLocation;
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
@@ -67,9 +67,20 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            var args = this.Arguments;
-
             var messageService = this.CommandServiceHelper.MessageService;
+            
+            // fixme: servicelocator
+            var apiDeployPassword = ServiceLocator.Current.GetInstance<BotConfiguration>().AccDeploymentPassword;
+            if (apiDeployPassword == null)
+            {
+                this.CommandServiceHelper.Client.SendNotice(
+                    this.Source.Nickname,
+                    "Deployment disabled in configuration");
+
+                return null;
+            }
+            
+            var args = this.Arguments;
 
             var deployInProgressMessage = messageService.RetrieveMessage("DeployInProgress", this.Channel, null); 
             this.CommandServiceHelper.Client.SendMessage(this.Channel, deployInProgressMessage);
@@ -87,8 +98,6 @@ namespace helpmebot6.Commands
             }
 
             revision = string.Join(" ", args);
-
-            string apiDeployPassword = LegacyConfig.Singleton()["accDeployPassword"];
 
             string key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
 

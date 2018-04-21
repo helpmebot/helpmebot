@@ -48,9 +48,6 @@ namespace Helpmebot.Legacy.Configuration
 
         #region Constructors and Destructors
 
-        /// <summary>
-        ///     Initialises a new instance of the <see cref="LegacyConfig" /> class.
-        /// </summary>
         public LegacyConfig(ILegacyDatabase legacyDatabase, ILogger logger)
         {
             this.legacyDatabase = legacyDatabase;
@@ -127,12 +124,6 @@ namespace Helpmebot.Legacy.Configuration
 
         #region Public Methods and Operators
 
-        /// <summary>
-        ///     Singletons this instance.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="LegacyConfig" />.
-        /// </returns>
         public static LegacyConfig Singleton()
         {
             return ServiceLocator.Current.GetInstance<LegacyConfig>();

@@ -65,13 +65,10 @@ namespace Helpmebot.Services
         /// <param name="link">
         /// The link.
         /// </param>
-        /// <param name="useSecureServer">
-        /// if set to <c>true</c> [use secure server].
-        /// </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string GetRealLink(string destination, string link, bool useSecureServer)
+        public static string GetRealLink(string destination, string link)
         {
             string iwprefix = link.Split(':')[0];
 
@@ -83,7 +80,7 @@ namespace Helpmebot.Services
 
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                url = LegacyConfig.Singleton()[useSecureServer ? "wikiSecureUrl" : "wikiUrl", destination];
+                url = LegacyConfig.Singleton()["wikiSecureUrl", destination];
                 return url + Antispace(link);
             }
 
@@ -108,13 +105,10 @@ namespace Helpmebot.Services
         /// <param name="destination">
         /// The destination.
         /// </param>
-        /// <param name="useSecureServer">
-        /// if set to <c>true</c> [use secure server].
-        /// </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public string GetLink(string destination, bool useSecureServer)
+        public string GetLink(string destination)
         {
             string lastLinkedLine;
             bool success = this.lastLink.TryGetValue(destination, out lastLinkedLine);
@@ -126,7 +120,7 @@ namespace Helpmebot.Services
             ArrayList links = this.ReallyParseMessage(lastLinkedLine);
 
             return links.Cast<string>()
-                .Aggregate(string.Empty, (current, link) => current + " " + GetRealLink(destination, link, useSecureServer));
+                .Aggregate(string.Empty, (current, link) => current + " " + GetRealLink(destination, link));
         }
 
         /// <summary>
@@ -236,7 +230,7 @@ namespace Helpmebot.Services
             
             if (LegacyConfig.Singleton()["autoLink", channel] == "true")
             {
-                e.Client.SendMessage(channel, this.GetLink(message, false));
+                e.Client.SendMessage(channel, this.GetLink(message));
             }
         }
 

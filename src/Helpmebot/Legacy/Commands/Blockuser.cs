@@ -22,7 +22,6 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services;
 
@@ -58,21 +57,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             string[] args = this.Arguments;
-
-            bool secure = bool.Parse(LegacyConfig.Singleton()["useSecureWikiServer", this.Channel]);
-            if (args.Length > 0)
-            {
-                if (args[0] == "@secure")
-                {
-                    secure = true;
-                    GlobalFunctions.PopFromFront(ref args);
-                }
-            }
-
             string name = string.Join(" ", args);
-
             string prefix = string.Empty;
-
             string page = "Special:Block/";
 
             if (name.Contains(":"))
@@ -94,7 +80,7 @@ namespace helpmebot6.Commands
                 }
             }
 
-            string url = LinkerService.GetRealLink(this.Channel, prefix + page + name, secure).Replace("\0", string.Empty);
+            string url = LinkerService.GetRealLink(this.Channel, prefix + page + name).Replace("\0", string.Empty);
 
             return new CommandResponseHandler(url);
         }

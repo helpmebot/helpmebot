@@ -11,13 +11,10 @@
         /// <param name="destination">
         /// The destination.
         /// </param>
-        /// <param name="useSecureServer">
-        /// if set to <c>true</c> [use secure server].
-        /// </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        string GetLink(string destination, bool useSecureServer);
+        string GetLink(string destination);
 
         /// <summary>
         /// Really parses the message.

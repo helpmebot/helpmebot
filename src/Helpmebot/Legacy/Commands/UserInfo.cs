@@ -92,7 +92,7 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            bool useLongInfo = bool.Parse(LegacyConfig.Singleton()["useLongUserInfo", this.Channel]);
+            bool useLongInfo = false;
 
             if (args.Length > 0)
             {
@@ -156,7 +156,7 @@ namespace helpmebot6.Commands
         /// <returns>the user page url</returns>
         private static string GetUserPageUrl(string userName, string channel)
         {
-            return LinkerService.GetRealLink(channel, "User:" + userName, true);
+            return LinkerService.GetRealLink(channel, "User:" + userName);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
 
-            return LinkerService.GetRealLink(channel, "User_talk:" + userName, true);
+            return LinkerService.GetRealLink(channel, "User_talk:" + userName);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace helpmebot6.Commands
                 throw new ArgumentNullException();
             }
             
-            return LinkerService.GetRealLink(channel, "Special:Contributions/" + userName, true);
+            return LinkerService.GetRealLink(channel, "Special:Contributions/" + userName);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace helpmebot6.Commands
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            var blockLogUrl = new UriBuilder(LinkerService.GetRealLink(channel, "Special:Log", true));
+            var blockLogUrl = new UriBuilder(LinkerService.GetRealLink(channel, "Special:Log"));
 
             var queryParts = HttpUtility.ParseQueryString(blockLogUrl.Query);
             queryParts["type"] = "block";
