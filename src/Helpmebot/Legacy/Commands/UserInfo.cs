@@ -18,14 +18,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Web;
-
 namespace helpmebot6.Commands
 {
     using System;
     using System.Globalization;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Web;
 
     using Castle.Core.Logging;
 
@@ -36,7 +35,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-    using Helpmebot.Services;
+    using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
 
     /* returns information about a user
@@ -64,6 +63,8 @@ namespace helpmebot6.Commands
         /// </summary>
         private readonly CommandResponseHandler response = new CommandResponseHandler();
 
+        private readonly ILinkerService linker;
+        
         /// <summary>
         /// Initialises a new instance of the <see cref="Userinfo"/> class.
         /// </summary>
@@ -81,7 +82,9 @@ namespace helpmebot6.Commands
         /// </param>
         public Userinfo(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
-        {
+        {   
+            // fixme: servicelocator
+            this.linker = ServiceLocator.Current.GetInstance<ILinkerService>();
         }
 
         /// <summary>
@@ -126,7 +129,7 @@ namespace helpmebot6.Commands
                     return this.response;
                 }
 
-                RetrieveUserInformation(userName, ref userInformation, this.Channel);
+                this.RetrieveUserInformation(userName, ref userInformation, this.Channel);
 
                 if (useLongInfo)
                 {
@@ -154,9 +157,9 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user page url</returns>
-        private static string GetUserPageUrl(string userName, string channel)
+        private string GetUserPageUrl(string userName, string channel)
         {
-            return LinkerService.GetRealLink(channel, "User:" + userName);
+            return this.linker.ConvertWikilinkToUrl(channel, "User:" + userName);
         }
 
         /// <summary>
@@ -165,14 +168,14 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the user talk page url</returns>
-        private static string GetUserTalkPageUrl(string userName, string channel)
+        private string GetUserTalkPageUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
 
-            return LinkerService.GetRealLink(channel, "User_talk:" + userName);
+            return this.linker.ConvertWikilinkToUrl(channel, "User_talk:" + userName);
         }
 
         /// <summary>
@@ -181,14 +184,14 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>the contributions url</returns>
-        private static string GetUserContributionsUrl(string userName, string channel)
+        private string GetUserContributionsUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
                 throw new ArgumentNullException();
             }
             
-            return LinkerService.GetRealLink(channel, "Special:Contributions/" + userName);
+            return this.linker.ConvertWikilinkToUrl(channel, "Special:Contributions/" + userName);
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace helpmebot6.Commands
         /// <param name="userName">Name of the user.</param>
         /// <param name="channel">The channel.</param>
         /// <returns>block log url</returns>
-        private static string GetBlockLogUrl(string userName, string channel)
+        private string GetBlockLogUrl(string userName, string channel)
         {
             if (userName == string.Empty)
             {
@@ -207,7 +210,7 @@ namespace helpmebot6.Commands
             // replace mainpage in mainpage url with user:<username>
             userName = userName.Replace(" ", "_");
 
-            var blockLogUrl = new UriBuilder(LinkerService.GetRealLink(channel, "Special:Log"));
+            var blockLogUrl = new UriBuilder(this.linker.ConvertWikilinkToUrl(channel, "Special:Log"));
 
             var queryParts = HttpUtility.ParseQueryString(blockLogUrl.Query);
             queryParts["type"] = "block";
@@ -227,7 +230,7 @@ namespace helpmebot6.Commands
         /// <param name="channel">The channel.</param>
         /// <returns>the user info</returns>
 // ReSharper disable UnusedMethodReturnValue.Local
-        private static UserInformation RetrieveUserInformation(string userName, ref UserInformation initial, string channel)
+        private UserInformation RetrieveUserInformation(string userName, ref UserInformation initial, string channel)
 // ReSharper restore UnusedMethodReturnValue.Local
         {
             try
@@ -243,10 +246,10 @@ namespace helpmebot6.Commands
 
                 initial.RegistrationDate = Registration.GetRegistrationDate(userName, channel);
 
-                initial.UserPage = GetUserPageUrl(userName, channel);
-                initial.TalkPage = GetUserTalkPageUrl(userName, channel);
-                initial.UserContributions = GetUserContributionsUrl(userName, channel);
-                initial.UserBlockLog = GetBlockLogUrl(userName, channel);
+                initial.UserPage = this.GetUserPageUrl(userName, channel);
+                initial.TalkPage = this.GetUserTalkPageUrl(userName, channel);
+                initial.UserContributions = this.GetUserContributionsUrl(userName, channel);
+                initial.UserBlockLog = this.GetBlockLogUrl(userName, channel);
 
                 initial.UserAge = Age.GetWikipedianAge(userName, channel);
 

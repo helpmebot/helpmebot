@@ -20,15 +20,15 @@
 
 namespace helpmebot6.Commands
 {
-    using System.Collections;
     using System.Linq;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services;
+    using Helpmebot.Services.Interfaces;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Triggers the link parser
@@ -61,24 +61,27 @@ namespace helpmebot6.Commands
         /// <returns>The result</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string[] args = this.Arguments;
+            // fixme: servicelocator
+            var linker = ServiceLocator.Current.GetInstance<ILinkerService>();
+            
+            var args = this.Arguments;
 
             if (args.SmartLength() > 0)
             {
-                ArrayList links = LinkerService.Instance().ReallyParseMessage(string.Join(" ", args));
+                var links = linker.ParseMessageForLinks(string.Join(" ", args));
 
                 if (links.Count == 0)
                 {
-                    links = LinkerService.Instance().ReallyParseMessage("[[" + string.Join(" ", args) + "]]");
+                    links = linker.ParseMessageForLinks("[[" + string.Join(" ", args) + "]]");
                 }
 
-                string message = links.Cast<string>()
-                    .Aggregate(string.Empty, (current, link) => current + " " + LinkerService.GetRealLink(this.Channel, link));
-
-                return new CommandResponseHandler(message);
+                var message = links.Aggregate(
+                    string.Empty,
+                    (current, link) => current + " " + linker.ConvertWikilinkToUrl(this.Channel, link));
+                return new CommandResponseHandler(message.Trim());
             }
 
-            return new CommandResponseHandler(LinkerService.Instance().GetLink(this.Channel));
+            return new CommandResponseHandler(linker.GetLastLinkForChannel(this.Channel));
         }
     }
 }

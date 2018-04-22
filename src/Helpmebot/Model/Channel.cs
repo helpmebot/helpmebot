@@ -38,6 +38,12 @@ namespace Helpmebot.Model
         /// Gets or sets a value indicating whether enabled.
         /// </summary>
         public virtual bool Enabled { get; set; }
+        
+        public virtual bool AutoLink { get; set; }
+        public virtual bool Silenced { get; set; }
+        public virtual bool HedgehogMode { get; set; }
+        
+        public virtual int BaseWiki { get; set; }
 
         /// <summary>
         /// The to string.

@@ -85,6 +85,8 @@ namespace Helpmebot.Monitoring
         /// </summary>
         private readonly ILegacyDatabase legacyDatabase;
 
+        private readonly ILinkerService linker;
+
         #endregion
 
         #region Constructors and Destructors
@@ -93,38 +95,39 @@ namespace Helpmebot.Monitoring
         /// Initialises a new instance of the <see cref="WatcherController"/> class.
         /// </summary>
         /// <param name="messageService">
-        /// The message Service.
+        ///     The message Service.
         /// </param>
         /// <param name="urlShorteningService">
-        /// The url Shortening Service.
+        ///     The url Shortening Service.
         /// </param>
         /// <param name="watchedCategoryRepository">
-        /// The watched Category Repository.
+        ///     The watched Category Repository.
         /// </param>
         /// <param name="mediaWikiSiteRepository">
-        /// The media Wiki Site Repository.
+        ///     The media Wiki Site Repository.
         /// </param>
         /// <param name="ignoredPagesRepository">
-        /// The ignored Pages Repository.
+        ///     The ignored Pages Repository.
         /// </param>
         /// <param name="logger">
-        /// The logger.
+        ///     The logger.
         /// </param>
         /// <param name="ircClient">
-        /// The IRC Client.
+        ///     The IRC Client.
         /// </param>
         /// <param name="legacyDatabase">
-        /// The legacy Database.
+        ///     The legacy Database.
         /// </param>
-        protected WatcherController(
-            IMessageService messageService, 
-            IUrlShorteningService urlShorteningService, 
-            IWatchedCategoryRepository watchedCategoryRepository, 
+        /// <param name="linker"></param>
+        protected WatcherController(IMessageService messageService,
+            IUrlShorteningService urlShorteningService,
+            IWatchedCategoryRepository watchedCategoryRepository,
             IMediaWikiSiteRepository mediaWikiSiteRepository,
             IIgnoredPagesRepository ignoredPagesRepository,
             ILogger logger,
             IIrcClient ircClient,
-            ILegacyDatabase legacyDatabase)
+            ILegacyDatabase legacyDatabase,
+            ILinkerService linker)
         {
             this.messageService = messageService;
             this.urlShorteningService = urlShorteningService;
@@ -144,6 +147,7 @@ namespace Helpmebot.Monitoring
             }
 
             this.legacyDatabase = legacyDatabase;
+            this.linker = linker;
         }
 
         #endregion
@@ -169,8 +173,9 @@ namespace Helpmebot.Monitoring
                 var logger = ServiceLocator.Current.GetInstance<ILogger>();
                 var irc = ServiceLocator.Current.GetInstance<IIrcClient>();
                 var legacyDb = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
+                var linker = ServiceLocator.Current.GetInstance<ILinkerService>();
 
-                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger, irc, legacyDb);
+                instance = new WatcherController(ms, ss, wcrepo, mwrepo, iprepo, logger, irc, legacyDb, linker);
             }
 
             return instance;
@@ -539,10 +544,8 @@ namespace Helpmebot.Monitoring
                     // Display an http URL to the page, if desired
                     if (shortenUrls)
                     {
-                        string urlName = item.Replace(' ', '_');
-
-                        string uriString = LegacyConfig.Singleton()["wikiUrl"] + HttpUtility.UrlEncode(urlName);
-                        listString += this.urlShorteningService.Shorten(uriString);
+                        listString +=
+                            this.urlShorteningService.Shorten(this.linker.ConvertWikilinkToUrl(destination, item));
                     }
 
                     if (showWaitTime)

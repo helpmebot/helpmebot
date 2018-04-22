@@ -16,16 +16,13 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Services
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-    using Helpmebot.Legacy.Configuration;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
-    using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Events;
 
     /// <summary>
@@ -33,108 +30,68 @@ namespace Helpmebot.Services
     /// </summary>
     public class LinkerService : ILinkerService
     {
-        #region Fields
-
-        /// <summary>
-        /// The _last link.
-        /// </summary>
+        private readonly IChannelRepository channelRepository;
+        private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
+        private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
         private readonly Dictionary<string, string> lastLink;
-
-        #endregion
-
-        #region Constructors and Destructors
 
         /// <summary>
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
-        public LinkerService()
+        public LinkerService(IChannelRepository channelRepository,
+            IMediaWikiSiteRepository mediaWikiSiteRepository,
+            IInterwikiPrefixRepository interwikiPrefixRepository)
         {
+            this.channelRepository = channelRepository;
+            this.mediaWikiSiteRepository = mediaWikiSiteRepository;
+            this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.lastLink = new Dictionary<string, string>();
         }
 
-        #endregion
-
         #region Public Methods and Operators
 
-        /// <summary>
-        /// Gets the real link.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="link">
-        /// The link.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string GetRealLink(string destination, string link)
+        public string ConvertWikilinkToUrl(string destination, string link)
         {
-            string iwprefix = link.Split(':')[0];
+            var iwprefix = link.Split(':')[0];
+            var prefix = this.interwikiPrefixRepository.GetByPrefix(iwprefix);
+            
+            var url = prefix == null ? string.Empty : Encoding.UTF8.GetString(prefix.Url);
 
-            // FIXME: servicelocator call - iwprefix repo
-            var interwikiPrefixRepository = ServiceLocator.Current.GetInstance<IInterwikiPrefixRepository>();
-            var prefix = interwikiPrefixRepository.GetByPrefix(iwprefix);
-
-            string url = prefix == null ? string.Empty : Encoding.UTF8.GetString(prefix.Url);
-
+            var source = link;
+            
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                url = LegacyConfig.Singleton()["wikiSecureUrl", destination];
-                return url + Antispace(link);
+                var baseWiki = this.channelRepository.GetByName(destination).BaseWiki;
+                url = this.mediaWikiSiteRepository.GetById(baseWiki).GetArticlePath();
+            }
+            else
+            {
+                source = string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1);
             }
 
-            return url.Replace("$1", Antispace(string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1)));
+            var result = url.Replace("$1", this.Antispace(source));
+            return result;
         }
 
-        /// <summary>
-        /// The instance.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="ILinkerService"/>.
-        /// </returns>
-        [Obsolete]
-        public static ILinkerService Instance()
-        {
-            return ServiceLocator.Current.GetInstance<ILinkerService>();
-        }
-
-        /// <summary>
-        /// Gets the link.
-        /// </summary>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public string GetLink(string destination)
+        public string GetLastLinkForChannel(string destination)
         {
             string lastLinkedLine;
-            bool success = this.lastLink.TryGetValue(destination, out lastLinkedLine);
+            var success = this.lastLink.TryGetValue(destination, out lastLinkedLine);
             if (!success)
             {
                 return string.Empty;
             }
 
-            ArrayList links = this.ReallyParseMessage(lastLinkedLine);
+            var links = this.ParseMessageForLinks(lastLinkedLine);
 
-            return links.Cast<string>()
-                .Aggregate(string.Empty, (current, link) => current + " " + GetRealLink(destination, link));
+            return links.Aggregate(
+                string.Empty,
+                (current, link) => current + " " + this.ConvertWikilinkToUrl(destination, link));
         }
 
-        /// <summary>
-        /// Really parses the message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ArrayList"/>.
-        /// </returns>
-        public ArrayList ReallyParseMessage(string message)
+        public IList<string> ParseMessageForLinks(string message)
         {
-            var newLinks = new ArrayList();
+            var newLinks = new List<string>();
 
             var linkRegex = new Regex(@"\[\[([^\[\]\|]*)(?:\]\]|\|)|{{(?:subst:)?([^{}\|]*)(?:}}|\|)");
             Match m = linkRegex.Match(message);
@@ -172,7 +129,7 @@ namespace Helpmebot.Services
         /// <remarks>
         /// FIXME: UrlEncode?
         /// </remarks>
-        private static string Antispace(string source)
+        private string Antispace(string source)
         {
             return source.Replace(' ', '_')
                 .Replace("%", "%25")
@@ -199,10 +156,10 @@ namespace Helpmebot.Services
         /// The IRC private message event.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        /// The IRC client sending this event.
         /// </param>
         /// <param name="e">
-        /// The e.
+        /// The event args from the IRC event
         /// </param>
         public void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
         {
@@ -215,7 +172,7 @@ namespace Helpmebot.Services
             var message = parameters[1];
             var channel = parameters[0];
                 
-            var newLink = this.ReallyParseMessage(message);
+            var newLink = this.ParseMessageForLinks(message);
             if (newLink.Count == 0)
             {
                 return;
@@ -227,10 +184,11 @@ namespace Helpmebot.Services
             }
 
             this.lastLink.Add(channel, message);
-            
-            if (LegacyConfig.Singleton()["autoLink", channel] == "true")
+
+
+            if (this.channelRepository.GetByName(channel).AutoLink)
             {
-                e.Client.SendMessage(channel, this.GetLink(message));
+                e.Client.SendMessage(channel, this.GetLastLinkForChannel(message));
             }
         }
 

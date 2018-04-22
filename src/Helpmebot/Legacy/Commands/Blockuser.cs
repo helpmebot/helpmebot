@@ -24,6 +24,8 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services;
+    using Helpmebot.Services.Interfaces;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Retrieves a link to block a user.
@@ -80,7 +82,10 @@ namespace helpmebot6.Commands
                 }
             }
 
-            string url = LinkerService.GetRealLink(this.Channel, prefix + page + name).Replace("\0", string.Empty);
+            // fixme: servicelocator
+            var linker = ServiceLocator.Current.GetInstance<ILinkerService>();
+            
+            string url = linker.ConvertWikilinkToUrl(this.Channel, prefix + page + name).Replace("\0", string.Empty);
 
             return new CommandResponseHandler(url);
         }

@@ -21,6 +21,7 @@ namespace Helpmebot.ExtensionMethods
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Runtime.InteropServices.WindowsRuntime;
     using System.Xml.Linq;
 
     using Helpmebot.Model;
@@ -152,6 +153,40 @@ namespace Helpmebot.ExtensionMethods
             }
         }
 
+        public static string GetArticlePath(this MediaWikiSite site)
+        {
+            string apiCall = string.Format("{0}?action=query&format=xml&meta=siteinfo&siprop=general", site.Api);
+            
+            using (Stream xmlFragment = HttpRequest.Get(apiCall).ToStream())
+            {
+                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
+
+                var xElement = xdoc.Element("general");
+
+                if (xElement == null)
+                {
+                    return "https://en.wikipedia.org/wiki/$1";
+                }
+                
+                var articlePathAttribute = xElement.Attribute("articlepath");
+                if (articlePathAttribute == null)
+                {
+                    return "https://en.wikipedia.org/wiki/$1";
+                }
+                
+                var serverAttribute = xElement.Attribute("server");
+                if (serverAttribute == null)
+                {
+                    return "https://en.wikipedia.org/wiki/$1";
+                }
+                
+                var server = serverAttribute.Value;
+                var articlePath = articlePathAttribute.Value;
+
+                return server + articlePath;
+            }
+        }
+        
         #endregion
     }
 }
