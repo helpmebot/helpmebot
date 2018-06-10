@@ -10,8 +10,6 @@
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
-    using Stwalkerster.IrcClient.Model;
-    using Stwalkerster.IrcClient.Model.Interfaces;
 
     public class ModeMonitoringService : IModeMonitoringService
     {
@@ -49,7 +47,8 @@
             this.ircClient.ModeReceivedEvent += this.OnModeReceived;
             this.ircClient.JoinReceivedEvent += this.OnJoinReceived;
             this.ircClient.PartReceivedEvent += this.OnPartReceived;
-            this.ircClient.ReceivedMessage += this.OnMessageReceived;
+            this.ircClient.ReceivedIrcMessage += this.OnMessageReceived;
+            this.ircClient.ReceivedMessage += this.OnNoticeReceived;
             this.logger.Info("Hooked into IRC events");
         }
 
@@ -79,16 +78,18 @@
             }
         }
 
-        private void OnNoticeReceived(MessageReceivedEventArgs e, IUser user)
+        private void OnNoticeReceived(object sender, MessageReceivedEventArgs e)
         {
-            var target = e.Message.Parameters.First();
-            var message = e.Message.Parameters.Skip(1).First();
-
-            this.logger.DebugFormat("Received notice from {0} for {1} with content: {2}", user, target, message);
-
-            if (user.Nickname == "ChanServ")
+            if (!e.IsNotice)
             {
-                var match = this.noChanopsPattern.Match(message);
+                return;
+            }
+            
+            this.logger.DebugFormat("Received notice from {0} for {1} with content: {2}", e.User, e.Target, e.Message);
+
+            if (e.User.Nickname == "ChanServ")
+            {
+                var match = this.noChanopsPattern.Match(e.Message);
                 if (match.Success)
                 {
                     // oops, we don't have ops here.
@@ -110,15 +111,8 @@
             }
         }
 
-        private void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+        private void OnMessageReceived(object sender, IrcMessageReceivedEventArgs e)
         {
-            if (e.Message.Command == "NOTICE")
-            {
-                IUser user = IrcUser.FromPrefix(e.Message.Prefix);
-
-                this.OnNoticeReceived(e, user);
-            }
-
             if (e.Message.Command == Numerics.BanListEntry)
             {
                 var parameters = e.Message.Parameters.ToList();

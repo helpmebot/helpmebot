@@ -163,32 +163,23 @@ namespace Helpmebot.Services
         /// </param>
         public void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
         {
-            if (e.Message.Command != "PRIVMSG" && e.Message.Command != "NOTICE")
-            {
-                return;
-            }
-
-            var parameters = e.Message.Parameters.ToList();
-            var message = parameters[1];
-            var channel = parameters[0];
-                
-            var newLink = this.ParseMessageForLinks(message);
+            var newLink = this.ParseMessageForLinks(e.Message);
             if (newLink.Count == 0)
             {
                 return;
             }
 
-            if (this.lastLink.ContainsKey(channel))
+            if (this.lastLink.ContainsKey(e.Target))
             {
-                this.lastLink.Remove(channel);
+                this.lastLink.Remove(e.Target);
             }
 
-            this.lastLink.Add(channel, message);
+            this.lastLink.Add(e.Target, e.Message);
 
 
-            if (this.channelRepository.GetByName(channel).AutoLink)
+            if (this.channelRepository.GetByName(e.Target).AutoLink)
             {
-                e.Client.SendMessage(channel, this.GetLastLinkForChannel(message));
+                e.Client.SendMessage(e.Target, this.GetLastLinkForChannel(e.Message));
             }
         }
 

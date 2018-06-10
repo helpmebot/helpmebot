@@ -1,7 +1,6 @@
 ﻿namespace Helpmebot.Legacy
 {
     using System;
-    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
@@ -28,16 +27,14 @@
             this.botConfiguration = botConfiguration;
         }
 
-        public void ReceivedMessage(object sender, MessageReceivedEventArgs ea)
+        public void ReceivedMessage(object sender, MessageReceivedEventArgs e)
         {
-            if (ea.Message.Command != "PRIVMSG")
+            if (e.IsNotice)
             {
                 return;
             }
 
-            var parameters = ea.Message.Parameters.ToList();
-
-            string message = parameters[1];
+            string message = e.Message;
 
             var cmd = new LegacyCommandParser(
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>(),
@@ -55,7 +52,7 @@
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.HandleCommand(LegacyUser.NewFromString(ea.Message.Prefix), parameters[0], command, commandArgs);
+                    cmd.HandleCommand(LegacyUser.NewFromOtherUser(e.User), e.Target, command, commandArgs);
                 }
             }
             catch (Exception ex)
