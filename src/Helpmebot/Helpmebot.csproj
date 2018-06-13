@@ -353,7 +353,7 @@
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.0.29-beta\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.0.30-beta\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">

@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
 #endif
 
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Reflection;
 
@@ -33,7 +34,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
 
     using NHibernate.Cfg;
-
+    using Stwalkerster.IrcClient;
     using Environment = System.Environment;
 
     /// <summary>
@@ -68,7 +69,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             
-            System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
 
 #if !DEBUG
             var date = new DateTime(2000, 1, 1, 0, 0, 0);
@@ -88,13 +90,18 @@ namespace helpmebot6.Commands
                                       version.Revision.ToString(CultureInfo.InvariantCulture),
                                       date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"),
 #endif
-                                      Environment.OSVersion.ToString(),
-                                      Environment.Version.ToString()
+                                      ircVersion
                                   };
 
-            string message = this.CommandServiceHelper.MessageService.RetrieveMessage("CmdVersion", this.Channel, messageArgs);
+            string messageFormat = "Version {0}.{1} (Build {2}.{3}, {4}), using Stwalkerster.IrcClient v{5}";
+            string message = string.Format(messageFormat, messageArgs.ToArray());
 
             return new CommandResponseHandler(message);
+        }
+        
+        private string GetFileVersion(Assembly assembly)
+        {
+            return FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
         }
     }
 }
