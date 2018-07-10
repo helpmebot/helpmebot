@@ -21,7 +21,7 @@
 namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
-
+    using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
@@ -93,7 +93,8 @@ namespace Helpmebot.Tests.Services
             this.joinMessageService = new Mock<JoinMessageService>(
                 this.Logger.Object,
                 this.messageService.Object,
-                this.session.Object);
+                this.session.Object,
+                new JoinMessageServiceConfiguration(1, 10));
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
