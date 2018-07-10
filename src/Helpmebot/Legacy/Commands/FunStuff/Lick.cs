@@ -29,6 +29,8 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Lick : TargetedFunCommand
     {
+        private string target = null;
+        
         /// <summary>
         /// Initialises a new instance of the <see cref="Lick"/> class.
         /// </summary>
@@ -56,7 +58,27 @@ namespace helpmebot6.Commands
         {
             get
             {
-                return this.Arguments.Length == 0 ? this.CommandServiceHelper.MessageService.RetrieveMessage("cmdLickSelf", this.Channel, null) : string.Join(" ", this.Arguments);
+                if (this.target != null)
+                {
+                    return this.target;
+                }
+
+                if (this.Arguments.Length == 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(this.Redirection))
+                    {
+                        this.target = this.Redirection;
+                        this.Redirection = null;
+                        return this.target;
+                    }
+
+                    return null;
+                }
+
+                this.Redirection = null;
+                this.target = string.Join(" ", this.Arguments);
+                return this.target;
+
             }
         }
 
@@ -67,6 +89,11 @@ namespace helpmebot6.Commands
         {
             get
             {
+                if (this.CommandTarget == null)
+                {
+                    return "cmdLickSelf";
+                }
+                
                 return "cmdLick";
             }
         }

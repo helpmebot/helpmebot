@@ -14,64 +14,26 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace helpmebot6.Commands
 {
-    using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-
-    using helpmebot6.Commands.FunStuff;
+    using Helpmebot.Commands.FunStuff;
 
     /// <summary>
     ///     The exorcise.
     /// </summary>
-    internal class Exorcise : FunCommand
+    internal class Exorcise : TargetedFunCommand
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Exorcise"/> class.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        /// <param name="commandServiceHelper">
-        /// The message Service.
-        /// </param>
         public Exorcise(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        ///     The execute command.
-        /// </summary>
-        /// <returns>
-        ///     The <see cref="CommandResponseHandler" />.
-        /// </returns>
-        protected override CommandResponseHandler ExecuteCommand()
+        protected override string TargetMessage
         {
-            string name = string.Join(" ", this.Arguments);
-
-            string[] messageparams = { name };
-            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
-                "CmdExorcise", 
-                this.Channel, 
-                messageparams);
-
-            return new CommandResponseHandler(message);
+            get { return "CmdExorcise"; }
         }
-
-        #endregion
     }
 }
