@@ -6,6 +6,7 @@
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.Background.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.Model.ModeMonitoring;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -14,31 +15,32 @@
     public class ModeMonitoringService : IModeMonitoringService
     {
         /// <summary>
-        /// Map of watch => report channels
+        /// Map of watch => report channels, loaded from config.
         /// </summary>
-        private readonly Dictionary<string, string> watchedChannels = new Dictionary<string, string>
-                                                                          {
-            { "##stwalkerster", "##stwalkerster-development" },
-            { "#wikipedia-en-help", "#wikipedia-en-helpers" }
-                                                                          };
-        
-        private readonly Dictionary<string, ChannelStatus> channelStatus = new Dictionary<string, ChannelStatus>();
-
+        private readonly IDictionary<string, string> watchedChannels;
+        private readonly IDictionary<string, ChannelStatus> channelStatus = new Dictionary<string, ChannelStatus>();
+        private readonly IDictionary<string, List<string>> banlist = new Dictionary<string, List<string>>();
         private readonly IIrcClient ircClient;
         private readonly ILogger logger;
 
-        private readonly Dictionary<string, List<string>> banlist = new Dictionary<string, List<string>>();
 
         /// <summary>
         /// Regex for detecting a rejection for chanops by ChanServ
         /// </summary>
         private readonly Regex noChanopsPattern;
 
-        public ModeMonitoringService(IIrcClient ircClient, ILogger logger)
+        public ModeMonitoringService(IIrcClient ircClient, ILogger logger, ModeMonitorConfiguration modeMonitorConfiguration)
         {
             this.ircClient = ircClient;
             this.logger = logger;
+            this.watchedChannels = modeMonitorConfiguration.ChannelMap;
 
+            if (!this.watchedChannels.Any())
+            {
+                this.logger.Warn("No channels configured for mode monitoring; disabling service.");
+                return;
+            }
+            
             var pattern = "you are not authorized to \\(de\\)op \x02" +
                              this.ircClient.Nickname.ToLower() + "\x02 on \x02(?<channel>#[^\\t ]+)\x02";
 
@@ -97,7 +99,7 @@
                     this.logger.ErrorFormat("Cannot obtain ops for channel {0}, skipping", channel);
 
                     this.ircClient.SendMessage(
-                        this.watchedChannels[channel],
+                        this.watchedChannels[channel.ToLowerInvariant()],
                         string.Format(
                             "Unable to obtain ops from ChanServ in {0}; I won't be monitoring this channel for ban exemptions",
                             channel));

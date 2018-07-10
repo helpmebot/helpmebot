@@ -46,6 +46,17 @@
             </parameters>
         </component>
         
+        <!-- configuration for mode monitoring service -->
+        <component type="ModeMonitorConfiguration">
+            <parameters>
+                <channelMap>
+                    <dictionary>
+                        <!--<entry key="#channel-to-monitor">#channel-to-report</entry>-->
+                    </dictionary>
+                </channelMap>
+            </parameters>
+        </component>
+        
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
