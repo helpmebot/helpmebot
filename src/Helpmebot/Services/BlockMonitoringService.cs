@@ -98,7 +98,15 @@ namespace Helpmebot.Services
             try
             {
                 // channel checks
-                var alertChannel = this.GetAlertChannel(channel).ToList();
+                var alertChannelEnumerable = this.GetAlertChannel(channel);
+                if (alertChannelEnumerable == null)
+                {
+                    this.logger.Debug("No block monitoring alert channels found");
+                    return;
+                }
+
+                var alertChannel = alertChannelEnumerable.ToList();
+                
                 if (!alertChannel.Any())
                 {
                     this.logger.Debug("No block monitoring alert channels found");
