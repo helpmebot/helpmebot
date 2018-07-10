@@ -91,76 +91,80 @@ namespace Helpmebot.Services
             this.DoEventProcessing(e.Channel, e.User, (IIrcClient) sender);
         }
         
-        /// <summary>
-        /// The do event processing.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="client">
-        /// The client.
-        /// </param>
+        /// <inheritdoc />
         [Obsolete] 
         public void DoEventProcessing(string channel, IUser user, IIrcClient client)
         {
             try
             {
                 // channel checks
-                var alertChannel = this.GetAlertChannel(channel);
-                if (alertChannel == null)
+                var alertChannel = this.GetAlertChannel(channel).ToList();
+                if (!alertChannel.Any())
                 {
                     this.logger.Debug("No block monitoring alert channels found");
                     return;
                 }
 
-                var ip = this.GetIpAddress(user);
+                var baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
+                var mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
 
+                
+                var ip = this.GetIpAddress(user);
                 if (ip == null)
                 {
-                    this.logger.Debug("Could not detect IP address for user");
-                    return;
-                }
-
-                string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-                MediaWikiSite mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
-
-                BlockInformation blockInformation = mediaWikiSite.GetBlockInformation(ip.ToString()).FirstOrDefault();
-
-                if (blockInformation.Id != null)
-                {
-                    string orgname = null;
-
-                    var textResult = HttpRequest.Get(
-                        string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip));
-                    var resultData = textResult.Split('\r', '\n');
-                    if (resultData.FirstOrDefault() == "success")
-                    {
-                        orgname = string.Format(", org: {0}", resultData[1]);
-                    }
-
-                    var message = string.Format(
-                        "Joined user {0} ({4}{5}) in channel {1} is blocked ({2}) because: {3}",
-                        user.Nickname,
-                        channel,
-                        blockInformation.Target,
-                        blockInformation.BlockReason,
-                        ip,
-                        orgname);
-
-                    foreach (var c in alertChannel)
-                    {
-
-                        client.SendMessage(c, message);
-                    }
+                    this.logger.DebugFormat("Could not detect IP address for user {0}", user);
                 }
                 else
                 {
-                    this.logger.Debug("No blocks found for joined user.");
+                    var ipInfo = string.Format(" ({0})", ip);
+                    
+                    var lookupUrl = string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip);
+                    var textResult = HttpRequest.Get(lookupUrl);
+                    var resultData = textResult.Split('\r', '\n');
+                    if (resultData.FirstOrDefault() == "success")
+                    {
+                        ipInfo = string.Format(" ({1}, org: {0})", resultData[1], ip);
+                    }
+                    
+                    var blockInformationData = mediaWikiSite.GetBlockInformation(ip.ToString());
+                    
+                    foreach (var blockInformation in blockInformationData)
+                    {
+                        var message = string.Format(
+                            "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3}",
+                            user.Nickname,
+                            channel,
+                            blockInformation.Target,
+                            blockInformation.BlockReason,
+                            ipInfo);
+                    
+                        foreach (var c in alertChannel)
+                        {
+                            client.SendMessage(c, message);
+                        }
+                    }
                 }
+                
+                var userBlockInfo = mediaWikiSite.GetBlockInformation(user.Nickname);
+                foreach (var blockInformation in userBlockInfo)
+                {
+                    var message = string.Format(
+                        "Joined user {0} in channel {1} is blocked ({2}) because: {3}",
+                        user.Nickname,
+                        channel,
+                        blockInformation.Target,
+                        blockInformation.BlockReason);
+                    
+                    foreach (var c in alertChannel)
+                    {
+                        client.SendMessage(c, message);
+                    }
+                }
+                
+                
+
+                
+                
             }
             catch (Exception ex)
             {
