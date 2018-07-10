@@ -26,8 +26,8 @@ namespace Helpmebot.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
-
     using Castle.Core.Logging;
+    using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -40,63 +40,32 @@ namespace Helpmebot.Services
     /// </summary>
     public class JoinMessageService : IJoinMessageService
     {
-        /// <summary>
-        /// The rate limit max.
-        /// </summary>
-        /// <remarks>
-        /// TODO: push this into a config option
-        /// </remarks>
-        private const int RateLimitMax = 1;
-
-        /// <summary>
-        /// The rate limit duration in minutes
-        /// </summary>
-        /// <remarks>
-        /// TODO: push this into a config option
-        /// </remarks>
-        private const int RateLimitDuration = 10;
-
-        /// <summary>
-        /// The rate limit cache.
-        /// </summary>
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
         private readonly ILogger logger;
-
-        /// <summary>
-        /// The message service.
-        /// </summary>
         private readonly IMessageService messageService;
-
-        /// <summary>
-        /// The session.
-        /// </summary>
         private readonly ISession session;
+        private readonly JoinMessageServiceConfiguration configuration;
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="JoinMessageService"/> class.
-        /// </summary>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="messageService">
-        /// The message Service.
-        /// </param>
-        /// <param name="session">
-        /// The session.
-        /// </param>
-        public JoinMessageService(ILogger logger, IMessageService messageService, ISession session)
+        public JoinMessageService(
+            ILogger logger,
+            IMessageService messageService,
+            ISession session,
+            JoinMessageServiceConfiguration configuration)
         {
             this.logger = logger;
             this.messageService = messageService;
             this.session = session;
+            this.configuration = configuration;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
         {
+            if (e.User.Nickname == e.Client.Nickname)
+            {
+                this.logger.InfoFormat("Seen self join on channel {0}, not welcoming.", e.Channel);
+                return;
+            }
+
             try
             {
                 this.DoWelcome(e.User, e.Channel, e.Client);
@@ -183,7 +152,7 @@ namespace Helpmebot.Services
 
             client.SendMessage(channel, welcomeMessage);
 
-            this.session.Save(
+            this.session.SaveOrUpdate(
                 new WelcomeLog
                 {
                     Channel = channel,
@@ -199,11 +168,13 @@ namespace Helpmebot.Services
         /// The channel.
         /// </param>
         /// <returns>
-        /// The <see cref="IList"/>.
+        /// The <see cref="IList{WelcomeUser}"/>.
         /// </returns>
         public virtual IList<WelcomeUser> GetExceptions(string channel)
         {
-            var exceptions = this.session.QueryOver<WelcomeUser>().Where(x => x.Channel == channel && x.Exception).List();
+            var exceptions = this.session.QueryOver<WelcomeUser>()
+                .Where(x => x.Channel == channel && x.Exception)
+                .List();
             return exceptions;
         }
 
@@ -214,11 +185,13 @@ namespace Helpmebot.Services
         /// The channel.
         /// </param>
         /// <returns>
-        /// The <see cref="IList"/>.
+        /// The <see cref="IList{WelcomeUser}"/>.
         /// </returns>
         public virtual IList<WelcomeUser> GetWelcomeUsers(string channel)
         {
-            var users = this.session.QueryOver<WelcomeUser>().Where(x => x.Channel == channel && x.Exception == false).List();
+            var users = this.session.QueryOver<WelcomeUser>()
+                .Where(x => x.Channel == channel && x.Exception == false)
+                .List();
             return users;
         }
 
@@ -272,11 +245,11 @@ namespace Helpmebot.Services
 
                         var cacheEntry = channelCache[hostname];
 
-                        if (cacheEntry.Expiry.AddMinutes(RateLimitDuration) >= DateTime.Now)
+                        if (cacheEntry.Expiry.AddMinutes(this.configuration.RateLimitDuration) >= DateTime.Now)
                         {
                             this.logger.Debug("Rate limit key NOT expired.");
 
-                            if (cacheEntry.Counter >= RateLimitMax)
+                            if (cacheEntry.Counter >= this.configuration.RateLimitMax)
                             {
                                 this.logger.Debug("Rate limit HIT");
 
@@ -303,14 +276,14 @@ namespace Helpmebot.Services
                         this.logger.Debug("Rate limit not found, creating key.");
 
                         // Not in cache.
-                        var cacheEntry = new RateLimitCacheEntry { Expiry = DateTime.Now, Counter = 1 };
+                        var cacheEntry = new RateLimitCacheEntry {Expiry = DateTime.Now, Counter = 1};
                         channelCache.Add(hostname, cacheEntry);
                     }
 
                     // Clean up the channel's cache.
                     foreach (var key in channelCache.Keys.ToList())
                     {
-                        if (channelCache[key].Expiry.AddMinutes(RateLimitDuration) < DateTime.Now)
+                        if (channelCache[key].Expiry.AddMinutes(this.configuration.RateLimitDuration) < DateTime.Now)
                         {
                             // Expired.
                             channelCache.Remove(key);

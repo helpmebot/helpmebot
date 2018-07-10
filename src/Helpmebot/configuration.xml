@@ -57,6 +57,13 @@
             </parameters>
         </component>
         
+        <component type="JoinMessageServiceConfiguration">
+            <parameters>
+                <rateLimitDuration>10</rateLimitDuration>
+                <rateLimitMax>1</rateLimitMax>
+            </parameters>
+        </component>
+        
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />

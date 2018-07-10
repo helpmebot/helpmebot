@@ -87,6 +87,7 @@
     <Compile Include="Commands\Interfaces\ICommand.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
     <Compile Include="Configuration\BotConfiguration.cs" />
+    <Compile Include="Configuration\JoinMessageServiceConfiguration.cs" />
     <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
