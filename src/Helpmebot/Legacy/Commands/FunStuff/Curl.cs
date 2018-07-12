@@ -14,13 +14,12 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-
     using helpmebot6.Commands.FunStuff;
 
     /// <summary>
@@ -62,10 +61,13 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            LegacyConfig.Singleton()["hedgehog", this.Channel] = "true";
-            return
-                new CommandResponseHandler(
-                    this.CommandServiceHelper.MessageService.RetrieveMessage("HedgehogCurlup", this.Channel, null));
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            channel.HedgehogMode = true;
+            channelRepository.Save(channel);
+
+            return new CommandResponseHandler(
+                this.CommandServiceHelper.MessageService.RetrieveMessage("HedgehogCurlup", this.Channel, null));
         }
 
         #endregion

@@ -26,9 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Model;
 
     /// <summary>
     /// Count how many articles are in a category.
@@ -88,9 +86,10 @@ namespace helpmebot6.Commands
         /// </remarks>
         protected CommandResponseHandler GetSizeOfCategory(string categoryName)
         {
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
 
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
 
             var messageService = this.CommandServiceHelper.MessageService;
             try

@@ -383,7 +383,10 @@ namespace Helpmebot.Legacy
                     switch (item.Destination)
                     {
                         case CommandResponseDestination.Default:
-                            if (this.OverrideBotSilence || LegacyConfig.Singleton()["silence", destination] != "true")
+                            var channel = this.commandServiceHelper.ChannelRepository.GetByName(destination);
+                            var silenced = channel != null && channel.Silenced;
+
+                            if (this.OverrideBotSilence || !silenced)
                             {
                                 irc1.SendMessage(destination, message);
                             }

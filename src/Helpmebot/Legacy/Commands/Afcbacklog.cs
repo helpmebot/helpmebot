@@ -20,7 +20,6 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
 
@@ -57,9 +56,10 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
 
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
             var size = mediaWikiSite.GetCategorySize("Pending AfC submissions");
 
             if (size == 0)

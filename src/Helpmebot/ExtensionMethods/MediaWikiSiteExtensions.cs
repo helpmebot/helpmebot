@@ -21,10 +21,13 @@ namespace Helpmebot.ExtensionMethods
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Runtime.InteropServices.WindowsRuntime;
+    using System.Web;
+    using System.Xml;
     using System.Xml.Linq;
-
+    using System.Xml.XPath;
+    using Helpmebot.Exceptions;
     using Helpmebot.Model;
+    using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
     ///     The media wiki site extensions.
@@ -184,6 +187,120 @@ namespace Helpmebot.ExtensionMethods
                 var articlePath = articlePathAttribute.Value;
 
                 return server + articlePath;
+            }
+        }
+        
+        public static int GetEditCount(this MediaWikiSite site, string username)
+        {
+            if (username == string.Empty)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            username = HttpUtility.UrlEncode(username);
+            
+            var uri = string.Format(
+                "{0}?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers={1}",
+                site.Api,
+                username);
+            
+            using (var data = HttpRequest.Get(uri).ToStream())
+            {
+                var xpd = new XPathDocument(data);
+                var xpni = xpd.CreateNavigator().Select("//user");
+
+                if (xpni.MoveNext())
+                {
+                    var editcount = xpni.Current.GetAttribute("editcount", string.Empty);
+                    if (editcount != string.Empty)
+                    {
+                        return int.Parse(editcount);
+                    }
+
+                    if (xpni.Current.GetAttribute("missing", string.Empty) == string.Empty)
+                    {
+                        throw new MediawikiApiException("No such user");
+                    }
+                }
+                
+                throw new MediawikiApiException("Unknown response to API query");
+            }
+        }
+
+        public static DateTime? GetRegistrationDate(this MediaWikiSite site, string username)
+        {
+            if (username == string.Empty)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            username = HttpUtility.UrlEncode(username);
+            
+            var uri = string.Format(
+                "{0}?action=query&list=users&usprop=registration&format=xml&ususers={1}",
+                site.Api,
+                username);
+
+            using (var data = HttpRequest.Get(uri).ToStream())
+            {
+                var xpd = new XPathDocument(data);
+                var xpni = xpd.CreateNavigator().Select("//user");
+
+                if (xpni.MoveNext())
+                {
+                    var apiRegDate = xpni.Current.GetAttribute("registration", string.Empty);
+                    if (apiRegDate == string.Empty)
+                    {
+                        return null;
+                    }
+
+                    return DateTime.Parse(apiRegDate);
+                }
+            }
+
+            throw new MediawikiApiException("Unknown response to API query");
+        }
+        
+        public static string GetRights(this MediaWikiSite site, string username)
+        {
+            if (username == string.Empty)
+            {
+                throw new ArgumentNullException();
+            }
+
+            var rights = new List<string>();
+            
+            var uri = string.Format(
+                "{0}?action=query&list=users&usprop=groups&format=xml&ususers={1}",
+                site.Api,
+                username);
+
+            using (var stream = HttpRequest.Get(uri).ToStream())
+            {
+                var creader = new XmlTextReader(stream);
+                do
+                {
+                    creader.Read();
+                }
+                while (creader.Name != "user");
+
+                creader.Read();
+                if (creader.Name == "groups")
+                {
+                    // the start of the group list
+                    do
+                    {
+                        creader.Read();
+                        string right = creader.ReadString();
+                        if (!(right == string.Empty || right == "*"))
+                        {
+                            rights.Add(right);
+                        }
+                    }
+                    while (creader.Name == "g"); // each group should be added
+                }
+                
+                return string.Join(", ", rights);
             }
         }
         

@@ -29,7 +29,6 @@ namespace Helpmebot.Services
     using Castle.Core.Logging;
     using helpmebot6.Commands;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -54,25 +53,20 @@ namespace Helpmebot.Services
         private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
 
         private readonly IBlockMonitorRepository blockMonitorRepository;
+        private readonly IChannelRepository channelRepository;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BlockMonitoringService"/> class.
-        /// </summary>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="mediaWikiSiteRepository">
-        /// The media wiki site repository.
-        /// </param>
-        /// <param name="blockMonitorRepository"></param>
-        public BlockMonitoringService(ILogger logger, IMediaWikiSiteRepository mediaWikiSiteRepository,
-            IBlockMonitorRepository blockMonitorRepository)
+        public BlockMonitoringService(
+            ILogger logger,
+            IMediaWikiSiteRepository mediaWikiSiteRepository,
+            IBlockMonitorRepository blockMonitorRepository,
+            IChannelRepository channelRepository)
         {
             this.logger = logger;
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.blockMonitorRepository = blockMonitorRepository;
+            this.channelRepository = channelRepository;
 
             // initialise the store
             foreach (var blockMonitor in this.blockMonitorRepository.Get())
@@ -90,9 +84,9 @@ namespace Helpmebot.Services
         {
             this.DoEventProcessing(e.Channel, e.User, (IIrcClient) sender);
         }
-        
+
         /// <inheritdoc />
-        [Obsolete] 
+        [Obsolete]
         public void DoEventProcessing(string channel, IUser user, IIrcClient client)
         {
             try
@@ -106,17 +100,16 @@ namespace Helpmebot.Services
                 }
 
                 var alertChannel = alertChannelEnumerable.ToList();
-                
+
                 if (!alertChannel.Any())
                 {
                     this.logger.Debug("No block monitoring alert channels found");
                     return;
                 }
 
-                var baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-                var mediaWikiSite = this.mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+                var mediaWikiSite =
+                    this.mediaWikiSiteRepository.GetById(this.channelRepository.GetByName(channel).BaseWiki);
 
-                
                 var ip = this.GetIpAddress(user);
                 if (ip == null)
                 {
@@ -125,7 +118,7 @@ namespace Helpmebot.Services
                 else
                 {
                     var ipInfo = string.Format(" ({0})", ip);
-                    
+
                     var lookupUrl = string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip);
                     var textResult = HttpRequest.Get(lookupUrl);
                     var resultData = textResult.Split('\r', '\n');
@@ -133,9 +126,9 @@ namespace Helpmebot.Services
                     {
                         ipInfo = string.Format(" ({1}, org: {0})", resultData[1], ip);
                     }
-                    
+
                     var blockInformationData = mediaWikiSite.GetBlockInformation(ip.ToString());
-                    
+
                     foreach (var blockInformation in blockInformationData)
                     {
                         var message = string.Format(
@@ -145,14 +138,14 @@ namespace Helpmebot.Services
                             blockInformation.Target,
                             blockInformation.BlockReason,
                             ipInfo);
-                    
+
                         foreach (var c in alertChannel)
                         {
                             client.SendMessage(c, message);
                         }
                     }
                 }
-                
+
                 var userBlockInfo = mediaWikiSite.GetBlockInformation(user.Nickname);
                 foreach (var blockInformation in userBlockInfo)
                 {
@@ -162,17 +155,12 @@ namespace Helpmebot.Services
                         channel,
                         blockInformation.Target,
                         blockInformation.BlockReason);
-                    
+
                     foreach (var c in alertChannel)
                     {
                         client.SendMessage(c, message);
                     }
                 }
-                
-                
-
-                
-                
             }
             catch (Exception ex)
             {
@@ -200,10 +188,11 @@ namespace Helpmebot.Services
         {
             lock (this.monitors)
             {
-                this.blockMonitorRepository.Delete(Restrictions.And(
-                    Restrictions.Eq("MonitorChannel", monitorChannel),
-                    Restrictions.Eq("ReportChannel", reportChannel)
-                ));
+                this.blockMonitorRepository.Delete(
+                    Restrictions.And(
+                        Restrictions.Eq("MonitorChannel", monitorChannel),
+                        Restrictions.Eq("ReportChannel", reportChannel)
+                    ));
 
                 this.monitors[monitorChannel].Remove(reportChannel);
             }

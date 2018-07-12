@@ -21,6 +21,8 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Exceptions;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Services.Interfaces;
 
@@ -29,64 +31,11 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Age : GenericCommand
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Age"/> class.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        /// <param name="commandServiceHelper">
-        /// The message Service.
-        /// </param>
         public Age(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// Gets the wikipedian age.
-        /// </summary>
-        /// <param name="userName">
-        /// Name of the user.
-        /// </param>
-        /// <param name="channel">
-        /// The channel the command is requested in. (Retrieves the relevant base wiki)
-        /// </param>
-        /// <returns>
-        /// timespan of the age
-        /// </returns>
-        public static TimeSpan GetWikipedianAge(string userName, string channel)
-        {
-            DateTime regdate = Registration.GetRegistrationDate(userName, channel);
-            TimeSpan age = DateTime.Now.Subtract(regdate);
-            if (regdate.Equals(new DateTime(0001, 1, 1)))
-            {
-                age = new TimeSpan(0);
-            }
-
-            return age;
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        ///     Actual command logic
-        /// </summary>
-        /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
             string userName;
@@ -98,31 +47,42 @@ namespace helpmebot6.Commands
             {
                 userName = this.Source.Nickname;
             }
+            
+            var messageService = this.CommandServiceHelper.MessageService;
+            var mediawikiSiteRepository = this.CommandServiceHelper.MediaWikiSiteRepository;
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var site = mediawikiSiteRepository.GetById(channelRepository.GetByName(this.Channel).BaseWiki);
 
-            TimeSpan time = GetWikipedianAge(userName, this.Channel);
-            string message;
-            IMessageService messageService = this.CommandServiceHelper.MessageService;
-            if (time.Equals(new TimeSpan(0)))
+            try
             {
-                string[] messageParameters = { userName };
-                message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParameters);
-            }
-            else
-            {
+                var registrationDate = site.GetRegistrationDate(userName);
+
+                if (!registrationDate.HasValue)
+                {
+                    return new CommandResponseHandler(
+                        "Cannot calculate age - no registration date found for the specified user");
+                }
+
+                var time = DateTime.Now.Subtract(registrationDate.Value);
+                
                 string[] messageParameters =
-                    {
-                        userName, (time.Days / 365).ToString(CultureInfo.InvariantCulture),
-                        (time.Days % 365).ToString(CultureInfo.InvariantCulture),
-                        time.Hours.ToString(CultureInfo.InvariantCulture),
-                        time.Minutes.ToString(CultureInfo.InvariantCulture),
-                        time.Seconds.ToString(CultureInfo.InvariantCulture)
-                    };
-                message = messageService.RetrieveMessage("cmdAge", this.Channel, messageParameters);
+                {
+                    userName, (time.Days / 365).ToString(CultureInfo.InvariantCulture),
+                    (time.Days % 365).ToString(CultureInfo.InvariantCulture),
+                    time.Hours.ToString(CultureInfo.InvariantCulture),
+                    time.Minutes.ToString(CultureInfo.InvariantCulture),
+                    time.Seconds.ToString(CultureInfo.InvariantCulture)
+                };
+                
+                var message = messageService.RetrieveMessage("cmdAge", this.Channel, messageParameters);
+                
+                return new CommandResponseHandler(message);
             }
-
-            return new CommandResponseHandler(message);
+            catch (MediawikiApiException)
+            {
+                var message = messageService.RetrieveMessage("noSuchUser", this.Channel, new[] {userName});
+                return new CommandResponseHandler(message);
+            }
         }
-
-        #endregion
     }
 }

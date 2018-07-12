@@ -174,8 +174,10 @@ namespace helpmebot6.Commands
 
         private string GetApiCallUri(string pageTitle)
         {
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+
+            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
 
             UriBuilder builder = new UriBuilder(mediaWikiSite.Api);
             var query = HttpUtility.ParseQueryString(

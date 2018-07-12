@@ -21,9 +21,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Model;
 
     /// <summary>
     ///     Returns the maximum replication lag on the wiki
@@ -78,10 +76,11 @@ namespace helpmebot6.Commands
         private string GetMaxLag()
         {
             // look up site id
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", this.Channel];
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
 
             // get api
-            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(int.Parse(baseWiki));
+            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
 
             // TODO: use Linq-to-XML
             var uri = mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml";

@@ -30,11 +30,10 @@ namespace helpmebot6.Commands
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
 
@@ -95,49 +94,22 @@ namespace helpmebot6.Commands
         {
             var args = this.Arguments;
 
-            bool useLongInfo = false;
-
-            if (args.Length > 0)
-            {
-                if (args[0].ToLower() == "@long")
-                {
-                    useLongInfo = true;
-                    GlobalFunctions.PopFromFront(ref args);
-                }
-
-                if (args[0].ToLower() == "@short")
-                {
-                    useLongInfo = false;
-                    GlobalFunctions.PopFromFront(ref args);
-                }
-            }
-
             var messageService = this.CommandServiceHelper.MessageService;
             if (args.Length > 0)
             {
                 string userName = string.Join(" ", args);
 
-                var userInformation = new UserInformation
-                                            {
-                                                EditCount = Editcount.GetEditCount(userName, this.Channel)
-                                            };
+                try
+                {
+                    var userInformation = this.RetrieveUserInformation(userName);
 
-                if (userInformation.EditCount == -1)
+                    this.SendShortUserInfo(userInformation);
+                }
+                catch (MediawikiApiException)
                 {
                     string[] mparams = { userName };
                     this.response.Respond(messageService.RetrieveMessage("noSuchUser", this.Channel, mparams));
                     return this.response;
-                }
-
-                this.RetrieveUserInformation(userName, ref userInformation, this.Channel);
-
-                if (useLongInfo)
-                {
-                    this.SendLongUserInfo(userInformation);
-                }
-                else
-                {
-                    this.SendShortUserInfo(userInformation);
                 }
             }
             else
@@ -220,49 +192,39 @@ namespace helpmebot6.Commands
             return blockLogUrl.Uri.ToString();
         }
 
-        // TODO: tidy up! why return a value when it's passed by ref anyway?
-
-        /// <summary>
-        /// Retrieves the user information.
-        /// </summary>
-        /// <param name="userName">Name of the user.</param>
-        /// <param name="initial">The initial.</param>
-        /// <param name="channel">The channel.</param>
-        /// <returns>the user info</returns>
-// ReSharper disable UnusedMethodReturnValue.Local
-        private UserInformation RetrieveUserInformation(string userName, ref UserInformation initial, string channel)
-// ReSharper restore UnusedMethodReturnValue.Local
+        private UserInformation RetrieveUserInformation(string userName)
         {
+            var initial = new UserInformation();
+            
             try
             {
+                var channelRepository = this.CommandServiceHelper.ChannelRepository;
+                var channelObj = channelRepository.GetByName(this.Channel);
+                var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channelObj.BaseWiki);
+            
                 initial.UserName = userName;
 
-                if (initial.EditCount == 0)
-                {
-                    initial.EditCount = Editcount.GetEditCount(userName, channel);
-                }
+                initial.EditCount = mediaWikiSite.GetEditCount(userName);
+                initial.UserGroups = mediaWikiSite.GetRights(userName);
+                
+                var registrationDate = mediaWikiSite.GetRegistrationDate(userName);
+                initial.RegistrationDate = registrationDate;
+                initial.UserAge = registrationDate.HasValue
+                    ? DateTime.Now.Subtract(registrationDate.Value)
+                    : (TimeSpan?) null;
+                
+                initial.UserPage = this.GetUserPageUrl(userName, this.Channel);
+                initial.TalkPage = this.GetUserTalkPageUrl(userName, this.Channel);
+                initial.UserContributions = this.GetUserContributionsUrl(userName, this.Channel);
+                initial.UserBlockLog = this.GetBlockLogUrl(userName, this.Channel);
 
-                initial.UserGroups = Rights.GetRights(userName, channel);
+                initial.EditRate = initial.UserAge.HasValue
+                    ? initial.EditCount / initial.UserAge.Value.TotalDays
+                    : (double?) null;
 
-                initial.RegistrationDate = Registration.GetRegistrationDate(userName, channel);
+                var blockInfo = mediaWikiSite.GetBlockInformation(userName).FirstOrDefault();
 
-                initial.UserPage = this.GetUserPageUrl(userName, channel);
-                initial.TalkPage = this.GetUserTalkPageUrl(userName, channel);
-                initial.UserContributions = this.GetUserContributionsUrl(userName, channel);
-                initial.UserBlockLog = this.GetBlockLogUrl(userName, channel);
-
-                initial.UserAge = Age.GetWikipedianAge(userName, channel);
-
-                initial.EditRate = initial.EditCount / initial.UserAge.TotalDays;
-
-                var baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-                // FIXME: ServiceLocator - mw site repo
-                var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-                MediaWikiSite mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
-                BlockInformation bi = mediaWikiSite.GetBlockInformation(userName).FirstOrDefault();
-
-                initial.BlockInformation = bi.Id ?? string.Empty;
+                initial.BlockInformation = blockInfo.Id ?? string.Empty;
 
                 return initial;
             }
@@ -290,11 +252,28 @@ namespace helpmebot6.Commands
 
             var urlShorteningService = this.CommandServiceHelper.UrlShorteningService;
 
-            var age = string.Format("{0}y {1}d {2}h {3}m",
-                (userInformation.UserAge.Days / 365).ToString(CultureInfo.InvariantCulture),
-                (userInformation.UserAge.Days % 365).ToString(CultureInfo.InvariantCulture),
-                userInformation.UserAge.Hours.ToString(CultureInfo.InvariantCulture),
-                userInformation.UserAge.Minutes.ToString(CultureInfo.InvariantCulture));
+            var age = "(N/A)";
+            if (userInformation.UserAge.HasValue)
+            {
+                age = string.Format(
+                    "{0}y {1}d {2}h {3}m",
+                    (userInformation.UserAge.Value.Days / 365).ToString(CultureInfo.InvariantCulture),
+                    (userInformation.UserAge.Value.Days % 365).ToString(CultureInfo.InvariantCulture),
+                    userInformation.UserAge.Value.Hours.ToString(CultureInfo.InvariantCulture),
+                    userInformation.UserAge.Value.Minutes.ToString(CultureInfo.InvariantCulture));
+            }
+
+            var regDate = "(N/A)";
+            if (userInformation.RegistrationDate.HasValue)
+            {
+                regDate = userInformation.RegistrationDate.Value.ToString("u");
+            }
+
+            var editRate = "(N/A)";
+            if (userInformation.EditRate.HasValue)
+            {
+                editRate = Math.Round(userInformation.EditRate.Value, 3).ToString(CultureInfo.InvariantCulture);
+            }
 
             string[] messageParameters =
                 {
@@ -305,60 +284,14 @@ namespace helpmebot6.Commands
                     urlShorteningService.Shorten(userInformation.UserBlockLog),
                     userInformation.UserGroups,
                     age,
-                    userInformation.RegistrationDate.ToString("u"),
-                    Math.Round(userInformation.EditRate, 3).ToString(CultureInfo.InvariantCulture),
+                    regDate,
+                    editRate,
                     userInformation.EditCount.ToString(CultureInfo.InvariantCulture),
                     userInformation.BlockInformation == string.Empty ? string.Empty : "| BLOCKED"
                 };
 
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage("cmdUserInfoShort", this.Channel, messageParameters);
 
-            this.response.Respond(message);
-        }
-
-        /// <summary>
-        /// Sends the long user info.
-        /// </summary>
-        /// <param name="userInformation">The user information.</param>
-        private void SendLongUserInfo(UserInformation userInformation)
-        {
-            this.response.Respond(userInformation.UserPage);
-            this.response.Respond(userInformation.TalkPage);
-            this.response.Respond(userInformation.UserContributions);
-            this.response.Respond(userInformation.UserBlockLog);
-            this.response.Respond(userInformation.BlockInformation);
-            string message;
-            var messageService = this.CommandServiceHelper.MessageService;
-            if (userInformation.UserGroups != string.Empty)
-            {
-                string[] messageParameters = { userInformation.UserName, userInformation.UserGroups };
-                message = messageService.RetrieveMessage("cmdRightsList", this.Channel, messageParameters);
-            }
-            else
-            {
-                string[] messageParameters = { userInformation.UserName };
-                message = messageService.RetrieveMessage("cmdRightsNone", this.Channel, messageParameters);
-            }
-
-            this.response.Respond(message);
-
-            var xtoolsUrl = string.Format("https://tools.wmflabs.org/xtools-ec/index.php?user={0}&project=en.wikipedia.org", userInformation.UserName);
-            var xtoolsShortUrl = this.CommandServiceHelper.UrlShorteningService.Shorten(xtoolsUrl);
-
-            string[] messageParameters2 = { userInformation.EditCount.ToString(CultureInfo.InvariantCulture), userInformation.UserName, xtoolsShortUrl };
-            message = messageService.RetrieveMessage("editCount", this.Channel, messageParameters2);
-            this.response.Respond(message);
-
-            string[] messageParameters3 =
-                {
-                    userInformation.UserName,
-                    userInformation.RegistrationDate.ToString("hh:mm:ss t"),
-                    userInformation.RegistrationDate.ToString("d MMMM yyyy")
-                };
-            message = messageService.RetrieveMessage("registrationDate", this.Channel, messageParameters3);
-            this.response.Respond(message);
-            string[] messageParameters4 = { userInformation.UserName, userInformation.EditRate.ToString(CultureInfo.InvariantCulture) };
-            message = messageService.RetrieveMessage("editRate", this.Channel, messageParameters4);
             this.response.Respond(message);
         }
 
@@ -385,12 +318,12 @@ namespace helpmebot6.Commands
             /// <summary>
             /// The registration date.
             /// </summary>
-            public DateTime RegistrationDate;
+            public DateTime? RegistrationDate;
 
             /// <summary>
             /// The edit rate.
             /// </summary>
-            public double EditRate;
+            public double? EditRate;
 
             /// <summary>
             /// The user page.
@@ -415,7 +348,7 @@ namespace helpmebot6.Commands
             /// <summary>
             /// The user age.
             /// </summary>
-            public TimeSpan UserAge;
+            public TimeSpan? UserAge;
 
             /// <summary>
             /// The block information.

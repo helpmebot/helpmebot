@@ -18,10 +18,8 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Controls the bots silencer
@@ -60,40 +58,28 @@ namespace helpmebot6.Commands
         /// <returns>the response</returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            bool global = false;
             string[] args = this.Arguments;
 
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            var oldValue = channel.Silenced;
+
+            var messageService = this.CommandServiceHelper.MessageService;
+
             if (args.Length > 0)
             {
-                if (args[0].ToLower() == "@global")
-                {
-                    global = true;
-                    GlobalFunctions.PopFromFront(ref args);
-                }
-            }
-
-            bool oldValue =
-                bool.Parse(
-                    !global ? LegacyConfig.Singleton()["silence", this.Channel] : LegacyConfig.Singleton()["silence"]);
-
-            IMessageService messageService = this.CommandServiceHelper.MessageService;
-            if (args.Length > 0)
-            {
-                string newValue = "global";
+                bool? newValue = null;
                 switch (args[0].ToLower())
                 {
                     case "enable":
-                        newValue = "true";
+                        newValue = true;
                         break;
                     case "disable":
-                        newValue = "false";
-                        break;
-                    case "global":
-                        newValue = "global";
+                        newValue = false;
                         break;
                 }
 
-                if (newValue == oldValue.ToString().ToLower())
+                if (newValue == oldValue || !newValue.HasValue)
                 {
                     return
                         new CommandResponseHandler(
@@ -101,26 +87,8 @@ namespace helpmebot6.Commands
                             CommandResponseDestination.PrivateMessage);
                 }
 
-                if (newValue == "global")
-                {
-                    LegacyConfig.Singleton()["silence", this.Channel] = null;
-                    return
-                        new CommandResponseHandler(
-                            messageService.RetrieveMessage(Messages.DefaultConfig, this.Channel, null), 
-                            CommandResponseDestination.PrivateMessage);
-                }
-
-                if (!global)
-                {
-                    LegacyConfig.Singleton()["silence", this.Channel] = newValue;
-                }
-                else
-                {
-                    if (this.Source.AccessLevel >= LegacyUser.UserRights.Superuser)
-                    {
-                        LegacyConfig.Singleton()["silence"] = newValue;
-                    }
-                }
+                channel.Silenced = newValue.Value;
+                channelRepository.Save(channel);
 
                 return new CommandResponseHandler(
                     messageService.RetrieveMessage(Messages.Done, this.Channel, null), 

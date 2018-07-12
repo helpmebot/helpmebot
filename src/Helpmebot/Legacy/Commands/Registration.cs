@@ -14,21 +14,21 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace helpmebot6.Commands
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Xml;
-
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
-
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
@@ -36,110 +36,14 @@ namespace helpmebot6.Commands
     /// </summary>
     internal class Registration : GenericCommand
     {
-        #region Static Fields
-
-        /// <summary>
-        ///     The registration cache.
-        /// </summary>
-        private static readonly Dictionary<string, DateTime> RegistrationCache = new Dictionary<string, DateTime>();
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="Registration"/> class.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
-        /// <param name="commandServiceHelper">
-        /// The message Service.
-        /// </param>
-        public Registration(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Registration(
+            LegacyUser source,
+            string channel,
+            string[] args,
+            ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The get registration date.
-        /// </summary>
-        /// <param name="username">
-        /// The username.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="DateTime"/>.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// if username is empty;
-        /// </exception>
-        public static DateTime GetRegistrationDate(string username, string channel)
-        {
-            if (username == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-
-            string baseWiki = LegacyConfig.Singleton()["baseWiki", channel];
-
-            if (RegistrationCache.ContainsKey(baseWiki + "||" + username))
-            {
-                return RegistrationCache[baseWiki + "||" + username];
-            }
-
-            // FIXME: ServiceLocator - mwrepo
-            var mediaWikiSiteRepository = ServiceLocator.Current.GetInstance<IMediaWikiSiteRepository>();
-            var mediaWikiSite = mediaWikiSiteRepository.GetById(int.Parse(baseWiki));
-
-            var uri = string.Format(
-                "{0}?action=query&list=users&usprop=registration&format=xml&ususers={1}",
-                mediaWikiSite.Api,
-                username);
-
-            using (var xmlFragment = HttpRequest.Get(uri).ToStream())
-            {
-                var creader = new XmlTextReader(xmlFragment);
-                do
-                {
-                    creader.Read();
-                }
-                while (creader.Name != "user");
-
-                string apiRegDate = creader.GetAttribute("registration");
-                if (apiRegDate != null)
-                {
-                    if (apiRegDate == string.Empty)
-                    {
-                        var registrationDate = new DateTime(1970, 1, 1, 0, 0, 0);
-                        RegistrationCache.Add(baseWiki + "||" + username, registrationDate);
-                        return registrationDate;
-                    }
-
-                    DateTime regDate = DateTime.Parse(apiRegDate);
-                    RegistrationCache.Add(baseWiki + "||" + username, regDate);
-                    return regDate;
-                }
-            }
-
-            return new DateTime(0);
-        }
-
-        #endregion
-
-        #region Methods
 
         /// <summary>
         ///     The execute command.
@@ -151,45 +55,56 @@ namespace helpmebot6.Commands
         {
             var crh = new CommandResponseHandler();
             var messageService = this.CommandServiceHelper.MessageService;
-            if (this.Arguments.Length > 0)
-            {
-                string userName = string.Join(" ", this.Arguments);
-                DateTime registrationDate = GetRegistrationDate(userName, this.Channel);
-                if (registrationDate == new DateTime(0))
-                {
-                    string[] messageParams = { userName };
-                    string message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
-                    crh.Respond(message);
-                }
-                else
-                {
-                    string[] messageParameters =
-                        {
-                            userName, registrationDate.ToString("hh:mm:ss t"), 
-                            registrationDate.ToString("d MMMM yyyy")
-                        };
-                    string message = messageService.RetrieveMessage(
-                        "registrationDate", 
-                        this.Channel, 
-                        messageParameters);
-                    crh.Respond(message);
-                }
-            }
-            else
+            var mediawikiSiteRepository = this.CommandServiceHelper.MediaWikiSiteRepository;
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var site = mediawikiSiteRepository.GetById(channelRepository.GetByName(this.Channel).BaseWiki);
+
+            if (this.Arguments.Length == 0)
             {
                 string[] messageParameters =
-                    {
-                        "registration", "1", 
-                        this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
-                    };
+                {
+                    "registration", "1", this.Arguments.Length.ToString(CultureInfo.InvariantCulture)
+                };
 
-                string notEnoughParamsMessage = messageService.RetrieveMessage(Messages.NotEnoughParameters, this.Channel, messageParameters);
+                var notEnoughParamsMessage = messageService.RetrieveMessage(
+                    Messages.NotEnoughParameters,
+                    this.Channel,
+                    messageParameters);
+
                 this.CommandServiceHelper.Client.SendNotice(this.Source.Nickname, notEnoughParamsMessage);
+
+                return crh;
+            }
+
+            var userName = string.Join(" ", this.Arguments);
+            
+            
+            try
+            {
+                var registrationDate = site.GetRegistrationDate(userName);
+
+                if (!registrationDate.HasValue)
+                {
+                    return new CommandResponseHandler( "No registration date found for the specified user");
+                }
+
+                string[] messageParameters =
+                {
+                    userName, registrationDate.Value.ToString("hh:mm:ss t"),
+                    registrationDate.Value.ToString("d MMMM yyyy")
+                };
+
+                var message = messageService.RetrieveMessage("registrationDate", this.Channel, messageParameters);
+                crh.Respond(message);
+            }
+            catch (MediawikiApiException)
+            {
+                string[] messageParams = {userName};
+                string message = messageService.RetrieveMessage("noSuchUser", this.Channel, messageParams);
+                crh.Respond(message);
             }
 
             return crh;
         }
-
-        #endregion
     }
 }

@@ -22,7 +22,6 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
 
@@ -60,8 +59,13 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            LegacyConfig.Singleton()["hedgehog", this.Channel] = "false";
-            return new CommandResponseHandler(this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            channel.HedgehogMode = false;
+            channelRepository.Save(channel);
+
+            return new CommandResponseHandler(
+                this.CommandServiceHelper.MessageService.RetrieveMessage(Messages.Done, this.Channel, null));
         }
     }
 }

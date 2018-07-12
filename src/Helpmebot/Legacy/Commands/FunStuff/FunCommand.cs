@@ -18,7 +18,6 @@ namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
 
@@ -69,7 +68,11 @@ namespace helpmebot6.Commands.FunStuff
                 Messages.HedgehogAccessDenied, 
                 this.Channel, 
                 null);
-            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false"
+            
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            
+            return channel.HedgehogMode == false
                        ? base.OnAccessDenied()
                        : new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
         }
@@ -82,7 +85,10 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override bool TestAccess()
         {
-            return LegacyConfig.Singleton()["hedgehog", this.Channel] == "false" && base.TestAccess();
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            
+            return channel.HedgehogMode == false && base.TestAccess();
         }
 
         #endregion
