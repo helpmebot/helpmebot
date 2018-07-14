@@ -20,63 +20,12 @@
 
 namespace Helpmebot.Legacy.Database
 {
-    using System.Collections;
     using Castle.Core;
     using MySql.Data.MySqlClient;
 
-    /// <summary>
-    /// The LegacyDatabase interface.
-    /// </summary>
     public interface ILegacyDatabase : IInitializable
     {
-        /// <summary>
-        /// Connects this instance to the database.
-        /// </summary>
-        /// <returns>true if successful</returns>
-        bool Connect();
-
-        /// <summary>
-        /// Call the HMB_GET_LOCAL_OPTION stored procedure.
-        /// </summary>
-        /// <param name="option">
-        /// The option.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        string ProcHmbGetLocalOption(string option, string channel);
-
-        /// <summary>
-        /// The execute select.
-        /// </summary>
-        /// <param name="cmd">
-        /// The command.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ArrayList"/>.
-        /// </returns>
-        ArrayList ExecuteSelect(MySqlCommand cmd);
-
-        /// <summary>
-        /// The execute scalar select.
-        /// </summary>
-        /// <param name="cmd">
-        /// The command.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         string ExecuteScalarSelect(MySqlCommand cmd);
-
-        /// <summary>
-        /// The execute command.
-        /// </summary>
-        /// <param name="command">
-        /// The delete command.
-        /// </param>
         void ExecuteCommand(MySqlCommand command);
     }
 }
