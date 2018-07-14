@@ -25,9 +25,10 @@ namespace helpmebot6.Commands
     using System;
 
     using Helpmebot;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Monitoring;
+    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     /// Category watcher command.
@@ -67,21 +68,12 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh = new CommandResponseHandler();
             if (this.Arguments.Length == 1)
             {
-                // just do category check
-                crh.Respond(WatcherController.Instance().ForceUpdate(this.Arguments[0], this.Channel));
+                ServiceLocator.Current.GetInstance<ICategoryWatcherBackgroundService>()
+                    .ForceUpdate(
+                        this.Arguments[0],
+                        this.CommandServiceHelper.ChannelRepository.GetByName(this.Channel));
             }
-            else
-            {
-                // do something else too.
-                Type subCmdType =
-                    Type.GetType("helpmebot6.Commands.CategoryWatcherCommand." + this.Arguments[1].Substring(0, 1).ToUpper() +
-                                 this.Arguments[1].Substring(1).ToLower());
-                if (subCmdType != null)
-                {
-                    return ((GenericCommand)Activator.CreateInstance(subCmdType, this.Source, this.Channel, this.Arguments, this.CommandServiceHelper)).RunCommand();
-                }
-            }
-
+            
             return crh;
         }
     }

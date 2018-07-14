@@ -16,35 +16,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Model
 {
+    using System.Collections.Generic;
     using Helpmebot.Persistence;
 
-    /// <summary>
-    ///     The category watcher.
-    /// </summary>
     public class WatchedCategory : EntityBase
     {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the category.
-        /// </summary>
         public virtual string Category { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the keyword.
-        /// </summary>
-        public virtual string Keyword { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the priority.
-        /// </summary>
-        public virtual int Priority { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the sleep time.
-        /// </summary>
-        public virtual int SleepTime { get; set; }
-
-        #endregion
+        public virtual string Keyword { get; set; }        
+        public virtual MediaWikiSite BaseWiki { get; set; }
+        
+        public virtual IList<CategoryWatcherChannel> Channels { get; set; }
+        public virtual IList<CategoryItem> CategoryItems { get; set; }
     }
 }

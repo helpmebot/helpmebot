@@ -28,7 +28,6 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Monitoring;
 
     /// <summary>
     /// Retrieve information about all registered category codes
@@ -62,41 +61,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             var crh = new CommandResponseHandler();
-            Dictionary<string, Helpmebot.Monitoring.CategoryWatcher>.KeyCollection kc = WatcherController.Instance().GetKeywords();
-
-            List<string> args = this.Arguments.ToList();
-
-            if (args.Contains("@cats"))
-            {
-                args.Remove("@cats");
-
-                var messageService = this.CommandServiceHelper.MessageService;
-                string listSep = messageService.RetrieveMessage("listSeparator", this.Channel, null);
-                string list = messageService.RetrieveMessage("allCategoryCodes", this.Channel, null);
-
-                foreach (string item in kc)
-                {
-                    list += item;
-                    list += listSep;
-                }
-
-                crh.Respond(list.TrimEnd(listSep.ToCharArray()));
-            }
-            else
-            {
-                foreach (string key in kc)
-                {
-                    try
-                    {
-                        crh.Respond(WatcherController.Instance().ForceUpdate(key, this.Channel),
-                            CommandResponseDestination.PrivateMessage);
-                    }
-                    catch (WebException ex)
-                    {
-                        crh.Respond(string.Format("Unable to contact Wikipedia API while processing key {0}: {1}", key, ex.Message));
-                    }
-                }
-            }
+            // TODO: Fixme
+            crh.Respond("Not currently implemented!");            
             
             return crh;
         }

@@ -72,6 +72,8 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccessLog.cs" />
+    <Compile Include="Background\CategoryWatcherBackgroundService.cs" />
+    <Compile Include="Background\Interfaces\ICategoryWatcherBackgroundService.cs" />
     <Compile Include="Background\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\Interfaces\ICommandServiceHelper.cs" />
     <Compile Include="Commands\Interfaces\ICommand.cs" />
+    <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
     <Compile Include="Configuration\BotConfiguration.cs" />
     <Compile Include="Configuration\JoinMessageServiceConfiguration.cs" />
@@ -130,6 +133,8 @@
     <Compile Include="Legacy\ILegacyCommandHandler.cs" />
     <Compile Include="Legacy\LegacyCommandHandler.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
+    <Compile Include="Model\CategoryItem.cs" />
+    <Compile Include="Model\CategoryWatcherChannel.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
@@ -152,6 +157,8 @@
     <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
     <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
     <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
+    <Compile Include="Persistence\Mappings\CategoryItemMap.cs" />
+    <Compile Include="Persistence\Mappings\CategoryWatcherChannelMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
@@ -195,9 +202,11 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\BlockMonitoringService.cs" />
+    <Compile Include="Services\CategoryWatcherHelperService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeoloationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
+    <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
@@ -218,17 +227,11 @@
     <Compile Include="Services\UserFlagService.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
-    <Compile Include="Monitoring\CategoryHasItemsEventArgs.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Legacy\Commands\Blockuser.cs" />
     <Compile Include="Legacy\Commands\CategoryWatcher.cs" />
-    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Delay.cs" />
-    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Disable.cs" />
-    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Enable.cs" />
     <Compile Include="Legacy\Commands\Autolink.cs" />
-    <Compile Include="Legacy\Commands\CategoryWatcherCommand\Status.cs" />
-    <Compile Include="Legacy\Commands\Configcacheclear.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
     <Compile Include="Legacy\Commands\CategorySize.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Beer.cs" />
@@ -281,9 +284,7 @@
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Rights.cs" />
     <Compile Include="Legacy\Commands\FunStuff\SayHi.cs" />
-    <Compile Include="Legacy\Commands\Set.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
-    <Compile Include="Legacy\Commands\ThreadStatus.cs" />
     <Compile Include="Legacy\Commands\Time.cs" />
     <Compile Include="Legacy\Commands\Uptime.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
@@ -292,20 +293,15 @@
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
-    <Compile Include="Monitoring\CategoryWatcher.cs" />
     <Compile Include="Legacy\LegacyCommandParser.cs" />
-    <Compile Include="Legacy\Configuration\LegacyConfig.cs" />
-    <Compile Include="Legacy\Configuration\ConfigurationSetting.cs" />
     <Compile Include="Legacy\Database\LegacyDatabase.cs" />
     <Compile Include="GlobalFunctions.cs" />
-    <Compile Include="Monitoring\WatcherController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IMessageService.cs" />
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\Launch.cs" />
     <Compile Include="Startup\MainInstaller.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
-    <Compile Include="Threading\ThreadList.cs" />
     <Compile Include="Legacy\Model\LegacyUser.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
   </ItemGroup>

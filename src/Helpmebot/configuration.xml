@@ -63,6 +63,14 @@
                 <rateLimitMax>1</rateLimitMax>
             </parameters>
         </component>
+
+        <component type="CategoryWatcherConfiguration">
+            <parameters>
+                <enabled>false</enabled>
+                <updateFrequency>60</updateFrequency>
+                <crossoverTimeout>30</crossoverTimeout>
+            </parameters>
+        </component>
         
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />

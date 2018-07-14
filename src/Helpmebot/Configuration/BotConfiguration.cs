@@ -8,7 +8,8 @@
             string userAgent,
             int httpTimeout,
             string debugChannel,
-            bool enableNotificationService)
+            bool enableNotificationService
+            )
         {
             if (commandTrigger == null)
             {

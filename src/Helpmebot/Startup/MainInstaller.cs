@@ -10,7 +10,6 @@
     using Helpmebot.Commands;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Services;
     using Helpmebot.Startup.Facilities;
@@ -32,7 +31,6 @@
             container.Register(
                 // Legacy stuff
                 Component.For<ILegacyDatabase>().ImplementedBy<LegacyDatabase>(),
-                Component.For<LegacyConfig>().ImplementedBy<LegacyConfig>(),
                 Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>(),
                 Component.For<ILegacyCommandHandler>().ImplementedBy<LegacyCommandHandler>(),
 

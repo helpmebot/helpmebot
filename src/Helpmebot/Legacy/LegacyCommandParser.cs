@@ -15,10 +15,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Web.Configuration;
-using Castle.Core.Internal;
-using Stwalkerster.IrcClient.Interfaces;
-
 namespace Helpmebot.Legacy
 {
     using System;
@@ -27,67 +23,39 @@ namespace Helpmebot.Legacy
     using System.Linq;
     using System.Reflection;
     using System.Text.RegularExpressions;
-
     using Castle.Core.Logging;
-
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Monitoring;
     using Helpmebot.Services.Interfaces;
-
     using helpmebot6.Commands;
-    using Helpmebot.Configuration;
+    using Stwalkerster.IrcClient.Interfaces;
     using Microsoft.Practices.ServiceLocation;
-
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
-    /// <summary>
-    ///     A command parser
-    /// </summary>
     public class LegacyCommandParser
     {
-        #region Constants
-
-        /// <summary>
-        ///     The allowed command name chars.
-        /// </summary>
         private const string AllowedCommandNameChars = "0-9A-Za-z-_";
-
-        #endregion
-
-        #region Fields
-
-        /// <summary>
-        /// The command service helper.
-        /// </summary>
         private readonly ICommandServiceHelper commandServiceHelper;
-
         private readonly IRedirectionParserService redirectionParserService;
+        private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
         private readonly string commandTrigger;
         private readonly string debugChannel;
+        private readonly ILogger logger;
 
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="LegacyCommandParser"/> class.
-        /// </summary>
-        /// <param name="commandServiceHelper">
-        ///   The command Service Helper.
-        /// </param>
-        /// <param name="logger">
-        ///   The logger.
-        /// </param>
-        /// <param name="redirectionParserService"></param>
-        public LegacyCommandParser(ICommandServiceHelper commandServiceHelper, ILogger logger, IRedirectionParserService redirectionParserService, BotConfiguration configuration)
+        public LegacyCommandParser(
+            ICommandServiceHelper commandServiceHelper,
+            ILogger logger,
+            IRedirectionParserService redirectionParserService,
+            BotConfiguration configuration,
+            ICategoryWatcherHelperService categoryWatcherHelperService)
         {
             this.commandServiceHelper = commandServiceHelper;
             this.redirectionParserService = redirectionParserService;
-            this.Log = logger;
+            this.categoryWatcherHelperService = categoryWatcherHelperService;
+            this.logger = logger;
 
             this.commandTrigger = configuration.CommandTrigger;
             this.debugChannel = configuration.DebugChannel;
@@ -95,24 +63,7 @@ namespace Helpmebot.Legacy
             this.OverrideBotSilence = false;
         }
 
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the Castle.Windsor Logger
-        /// </summary>
-        public ILogger Log { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether [override bot silence].
-        /// </summary>
-        /// <value><c>true</c> if [override bot silence]; otherwise, <c>false</c>.</value>
         public bool OverrideBotSilence { get; set; }
-
-        #endregion
-
-        #region Public Methods and Operators
 
         /// <summary>
         /// Tests against recognised message formats
@@ -143,36 +94,21 @@ namespace Helpmebot.Legacy
             return ParseRawLineForMessage(ref message, client.Nickname, this.commandTrigger);
         }
 
-        /// <summary>
-        /// Handles the command.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="args">
-        /// The args.
-        /// </param>
         public void HandleCommand(LegacyUser source, string destination, string command, string[] args)
         {
-            this.Log.Debug("Handling received message...");
+            this.logger.Debug("Handling received message...");
 
             // user is null (!)
             if (source == null)
             {
-                this.Log.Debug("Ignoring message from null user.");
+                this.logger.Debug("Ignoring message from null user.");
                 return;
             }
 
             // if on ignore list, ignore!
             if (source.AccessLevel == LegacyUser.UserRights.Ignored)
             {
-                this.Log.Debug("Ignoring message from ignored user.");
+                this.logger.Debug("Ignoring message from ignored user.");
                 return;
             }
 
@@ -185,7 +121,7 @@ namespace Helpmebot.Legacy
             /*
              * check category codes
              */
-            if (WatcherController.Instance().IsValidKeyword(command))
+            if (this.categoryWatcherHelperService.GetValidWatcherKeys.Contains(command))
             {
                 int argsLength = args.SmartLength();
 
@@ -205,7 +141,10 @@ namespace Helpmebot.Legacy
 
                 var redirectionResult = this.redirectionParserService.Parse(newArgs);
                 CommandResponseHandler crh =
-                    new CategoryWatcher(source, destination, redirectionResult.Message.ToArray(),
+                    new CategoryWatcher(
+                        source,
+                        destination,
+                        redirectionResult.Message.ToArray(),
                         this.commandServiceHelper).RunCommand();
                 this.HandleCommandResponseHandler(source, destination, redirectionResult.Destination, crh);
                 return;
@@ -231,7 +170,11 @@ namespace Helpmebot.Legacy
                 // cast to genericcommand (which holds all the required methods to run the command)
                 // run the command.
                 var cmd = (GenericCommand)
-                    Activator.CreateInstance(commandHandler, source, destination, redirectionResult.Message.ToArray(),
+                    Activator.CreateInstance(
+                        commandHandler,
+                        source,
+                        destination,
+                        redirectionResult.Message.ToArray(),
                         this.commandServiceHelper);
                 cmd.Redirection = redirectionResult.Destination;
 
@@ -256,16 +199,16 @@ namespace Helpmebot.Legacy
                 {
                     if (source.AccessLevel < LegacyUser.UserRights.Normal)
                     {
-                        this.Log.InfoFormat("Access denied for keyword retrieval for {0}", source);
+                        this.logger.InfoFormat("Access denied for keyword retrieval for {0}", source);
 
                         var messageService1 = this.commandServiceHelper.MessageService;
                         crh.Respond(
-                            messageService1.RetrieveMessage(Messages.OnAccessDenied, destination, null), 
+                            messageService1.RetrieveMessage(Messages.OnAccessDenied, destination, null),
                             CommandResponseDestination.PrivateMessage);
 
-                        string[] accessDeniedArguments = { source.ToString(), MethodBase.GetCurrentMethod().Name };
+                        string[] accessDeniedArguments = {source.ToString(), MethodBase.GetCurrentMethod().Name};
                         crh.Respond(
-                            messageService1.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments), 
+                            messageService1.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
                             CommandResponseDestination.ChannelDebug);
                     }
                     else
@@ -308,25 +251,6 @@ namespace Helpmebot.Legacy
             }
         }
 
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// The parse raw line for message.
-        /// </summary>
-        /// <param name="message">
-        /// The message.
-        /// </param>
-        /// <param name="nickname">
-        /// The nickname.
-        /// </param>
-        /// <param name="trigger">
-        /// The trigger.
-        /// </param>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
         private static bool ParseRawLineForMessage(ref string message, string nickname, string trigger)
         {
             var validCommand =
@@ -347,25 +271,10 @@ namespace Helpmebot.Legacy
             return false;
         }
 
-        /// <summary>
-        /// Handles the command response handler.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <param name="destination">
-        /// The destination.
-        /// </param>
-        /// <param name="directedTo">
-        /// The directed to.
-        /// </param>
-        /// <param name="response">
-        /// The response.
-        /// </param>
         private void HandleCommandResponseHandler(
-            LegacyUser source, 
-            string destination, 
-            string directedTo, 
+            LegacyUser source,
+            string destination,
+            string directedTo,
             CommandResponseHandler response)
         {
             if (response != null)
@@ -374,7 +283,7 @@ namespace Helpmebot.Legacy
                 {
                     string message = item.Message;
 
-                    if (!directedTo.IsNullOrEmpty())
+                    if (!string.IsNullOrEmpty(directedTo))
                     {
                         message = directedTo + ": " + message;
                     }
@@ -402,7 +311,5 @@ namespace Helpmebot.Legacy
                 }
             }
         }
-
-        #endregion
     }
 }

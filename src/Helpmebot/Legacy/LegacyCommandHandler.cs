@@ -16,15 +16,18 @@
         
         private readonly IRedirectionParserService redirectionParserService;
         private readonly BotConfiguration botConfiguration;
+        private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
 
         public LegacyCommandHandler(ILogger logger,
             IRedirectionParserService redirectionParserService,
-            BotConfiguration botConfiguration)
+            BotConfiguration botConfiguration,
+            ICategoryWatcherHelperService categoryWatcherHelperService)
         {
             this.logger = logger;
 
             this.redirectionParserService = redirectionParserService;
             this.botConfiguration = botConfiguration;
+            this.categoryWatcherHelperService = categoryWatcherHelperService;
         }
 
         public void ReceivedMessage(object sender, MessageReceivedEventArgs e)
@@ -40,7 +43,8 @@
                 ServiceLocator.Current.GetInstance<ICommandServiceHelper>(),
                 this.logger.CreateChildLogger("LegacyCommandParser"),
                 this.redirectionParserService,
-                this.botConfiguration);
+                this.botConfiguration,
+                this.categoryWatcherHelperService);
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;

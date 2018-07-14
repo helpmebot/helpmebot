@@ -19,7 +19,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Web;
-using Helpmebot.Legacy.Configuration;
 using Helpmebot.Model;
 using NHibernate.Util;
 

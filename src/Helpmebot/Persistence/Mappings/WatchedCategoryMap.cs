@@ -35,10 +35,12 @@ namespace Helpmebot.Persistence.Mappings
             this.Table("watcher");
             this.Id(x => x.Id, "watcher_id");
 
-            this.Map(x => x.Category, "watcher_category");
-            this.Map(x => x.Keyword, "watcher_keyword");
-            this.Map(x => x.Priority, "watcher_priority");
-            this.Map(x => x.SleepTime, "watcher_sleeptime");
+            this.Map(x => x.Category, "category");
+            this.Map(x => x.Keyword, "keyword");
+            this.References(x => x.BaseWiki, "basewiki");
+
+            this.HasMany(x => x.Channels).Cascade.AllDeleteOrphan().Table("channelwatchers").Inverse();
+            this.HasMany(x => x.CategoryItems).Cascade.AllDeleteOrphan().Table("categoryitems").Inverse();
         }
 
         #endregion

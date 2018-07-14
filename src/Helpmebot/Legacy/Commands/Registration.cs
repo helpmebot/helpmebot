@@ -25,7 +25,6 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Legacy.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
