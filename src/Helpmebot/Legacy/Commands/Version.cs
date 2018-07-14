@@ -20,10 +20,6 @@
 
 namespace helpmebot6.Commands
 {
-#if !DEBUG
-    using System;
-#endif
-
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -33,9 +29,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
-    using NHibernate.Cfg;
     using Stwalkerster.IrcClient;
-    using Environment = System.Environment;
 
     /// <summary>
     ///   Returns the current version of the bot.
@@ -72,28 +66,15 @@ namespace helpmebot6.Commands
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
 
-#if !DEBUG
-            var date = new DateTime(2000, 1, 1, 0, 0, 0);
-            date = date.AddDays(version.Build);
-            date = date.AddSeconds(version.Revision * 2);
-#endif
             var messageArgs = new List<string>
                                   {
                                       version.Major.ToString(CultureInfo.InvariantCulture),
                                       version.Minor.ToString(CultureInfo.InvariantCulture),
-#if DEBUG
-                                      "*",
-                                      "*",
-                                      "DEBUG",
-#else
                                       version.Build.ToString(CultureInfo.InvariantCulture),
-                                      version.Revision.ToString(CultureInfo.InvariantCulture),
-                                      date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"),
-#endif
                                       ircVersion
                                   };
 
-            string messageFormat = "Version {0}.{1} (Build {2}.{3}, {4}), using Stwalkerster.IrcClient v{5}";
+            string messageFormat = "Version {0}.{1} (Build {2}), using Stwalkerster.IrcClient v{5}";
             string message = string.Format(messageFormat, messageArgs.ToArray());
 
             return new CommandResponseHandler(message);

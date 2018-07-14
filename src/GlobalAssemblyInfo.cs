@@ -21,12 +21,17 @@
 using System.Reflection;
 using System.Resources;
 
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
+
 [assembly: AssemblyCompany("Simon Walker")]
-[assembly: AssemblyProduct("Helpmebot")]
-[assembly: AssemblyCopyright("Copyright Simon Walker (c) 2009-2016 Some Rights Reserved")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyProduct("Helpmebot IRC Bot")]
+[assembly: AssemblyCopyright("Copyright Simon Walker and others (c) 2009-2018")]
+
 [assembly: NeutralResourcesLanguage("en-GB")]
 
-// OK. If you change this, please ALSO change this in Configuration/XmlSections/CoreConfiguration and in
-// Configuration/XmlSections/Interfaces/ICoreConfiguration - specifically the UserAgent values
-[assembly: AssemblyVersion("6.4.*")]
+[assembly: AssemblyVersion("0.0.0.0")]
+[assembly: AssemblyFileVersion("0.0.0.0")]
