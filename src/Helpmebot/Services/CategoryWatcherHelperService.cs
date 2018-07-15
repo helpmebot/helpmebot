@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
+    using FluentNHibernate.Utils;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -151,8 +152,18 @@
             List<CategoryItem> removed;
 
             // fetch category information    
-            var pagesInCategory = category.BaseWiki.GetPagesInCategory(category.Category);
-            pagesInCategory.RemoveAll(x => this.ignoredPages.Contains(x));
+            List<string> pagesInCategory;
+            
+            try
+            {
+                pagesInCategory = category.BaseWiki.GetPagesInCategory(category.Category);
+                pagesInCategory.RemoveAll(x => this.ignoredPages.Contains(x));
+            }
+            catch (Exception e)
+            {
+                this.logger.ErrorFormat(e, "Exception while retrieving category information for {0}", category.Keyword);
+                throw;
+            }
 
             // update categoryinto database
             lock (this.session)
@@ -194,7 +205,10 @@
                 }
                 catch (Exception ex)
                 {
-                    this.logger.Error("Error encountered during catwatcher database txn", ex);
+                    this.logger.ErrorFormat(
+                        ex,
+                        "Error encountered during catwatcher database txn for {0}",
+                        category.Keyword);
                     throw;
                 }
                 finally

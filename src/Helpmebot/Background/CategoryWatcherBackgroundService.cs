@@ -120,6 +120,9 @@
                     {
                         if (categoryChannel.Channel.Silenced)
                         {
+                            this.Logger.DebugFormat(
+                                "Not reporting to {0}, bot is silenced",
+                                categoryChannel.Channel.Name);
                             continue;
                         }
 
@@ -134,10 +137,21 @@
                         if (!this.alertTimeoutCache.ContainsKey(categoryChannel.Id))
                         {
                             this.alertTimeoutCache.Add(categoryChannel.Id, DateTime.MinValue);
+                            this.Logger.DebugFormat(
+                                "Adding timeout cache entry for {0}/{1}/{2}",
+                                categoryChannel.Id,
+                                categoryChannel.Channel.Name,
+                                category.Keyword);
                         }
 
                         if (this.alertTimeoutCache[categoryChannel.Id] <= DateTime.Now)
                         {
+                            this.Logger.DebugFormat(
+                                "Timeout reached for {0}/{1}/{2}",
+                                categoryChannel.Id,
+                                categoryChannel.Channel.Name,
+                                category.Keyword);
+                            
                             this.alertTimeoutCache[categoryChannel.Id] =
                                 DateTime.Now.AddSeconds(categoryChannel.SleepTime);
 
@@ -183,9 +197,5 @@
                 this.timerSemaphore.Release();
             }
         }
-
-        
-
-        
     }
 }
