@@ -57,46 +57,62 @@
 
         public void ForceUpdate(string key, Channel destination)
         {
+            this.Logger.DebugFormat("Force-update was triggered for {0} in {1}", key, destination.Name);
+            
             // Locks!
             this.timerSemaphore.WaitOne();
 
-            var watcher = this.helperService.WatchedCategories.FirstOrDefault(x => x.Keyword == key);
-            if (watcher == null)
+            try
             {
-                throw new ArgumentOutOfRangeException("key");
-            }
-
-            var channel = watcher.Channels.FirstOrDefault(x => x.Channel == destination);
-            if (channel == null)
-            {
-                channel = new CategoryWatcherChannel
+                var watcher = this.helperService.WatchedCategories.FirstOrDefault(x => x.Keyword == key);
+                if (watcher == null)
                 {
-                    AlertForAdditions = false,
-                    AlertForRemovals = false,
-                    Channel = destination,
-                    MinWaitTime = 3600,
-                    ShowWaitTime = true,
-                    ShowLink = true,
-                    SleepTime = 10000,
-                    Watcher = watcher
-                };
-            }
-            
-            this.helperService.UpdateCategoryItems(watcher);
-            
-            var message = this.helperService.ConstructDefaultMessage(
-                watcher,
-                channel,
-                watcher.CategoryItems.ToList(),
-                false,
-                true);
+                    throw new ArgumentOutOfRangeException("key");
+                }
 
-            if (message != null)
+                this.Logger.DebugFormat("Found watcher {0} for {1}", key, watcher.Category);
+
+                var channel = watcher.Channels.FirstOrDefault(x => x.Channel == destination);
+                if (channel == null)
+                {
+                    this.Logger.DebugFormat("Faking channelconfig for {0}", destination);
+
+                    channel = new CategoryWatcherChannel
+                    {
+                        AlertForAdditions = false,
+                        AlertForRemovals = false,
+                        Channel = destination,
+                        MinWaitTime = 3600,
+                        ShowWaitTime = true,
+                        ShowLink = true,
+                        SleepTime = 10000,
+                        Watcher = watcher
+                    };
+                }
+
+                this.helperService.UpdateCategoryItems(watcher);
+
+                var message = this.helperService.ConstructDefaultMessage(
+                    watcher,
+                    channel,
+                    watcher.CategoryItems.ToList(),
+                    false,
+                    true);
+
+                if (message != null)
+                {
+                    this.ircClient.SendMessage(destination.Name, message);
+                }
+            }
+            catch (Exception ex)
             {
-                this.ircClient.SendMessage(destination.Name, message);
+                this.Logger.ErrorFormat(ex, "Error encountered updating catwatcher for {0}", key);
+                throw;
             }
-
-            this.timerSemaphore.Release();
+            finally
+            {
+                this.timerSemaphore.Release();
+            }
         }
 
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)

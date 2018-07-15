@@ -74,7 +74,7 @@ namespace helpmebot6.Commands
                                       ircVersion
                                   };
 
-            string messageFormat = "Version {0}.{1} (Build {2}), using Stwalkerster.IrcClient v{5}";
+            string messageFormat = "Version {0}.{1} (Build {2}), using Stwalkerster.IrcClient v{3}";
             string message = string.Format(messageFormat, messageArgs.ToArray());
 
             return new CommandResponseHandler(message);

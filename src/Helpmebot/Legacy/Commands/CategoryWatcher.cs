@@ -22,8 +22,6 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
-
     using Helpmebot;
     using Helpmebot.Background.Interfaces;
     using Helpmebot.Commands.Interfaces;
@@ -68,6 +66,8 @@ namespace helpmebot6.Commands
             CommandResponseHandler crh = new CommandResponseHandler();
             if (this.Arguments.Length == 1)
             {
+                this.Log.DebugFormat("Triggering force-update of catwatcher for {0}", this.Arguments[0]);
+                
                 ServiceLocator.Current.GetInstance<ICategoryWatcherBackgroundService>()
                     .ForceUpdate(
                         this.Arguments[0],
