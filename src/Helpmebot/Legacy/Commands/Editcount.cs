@@ -45,11 +45,7 @@ namespace helpmebot6.Commands
                 userName = this.Source.Nickname;
             }
 
-            
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
-            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            var mediaWikiSite = this.GetLocalMediawikiSite();
             var messageService = this.CommandServiceHelper.MessageService;
             try
             {

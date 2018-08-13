@@ -14,6 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
@@ -44,9 +45,9 @@ namespace helpmebot6.Commands.FunStuff
         /// The message Service.
         /// </param>
         protected FunCommand(
-            LegacyUser source, 
-            string channel, 
-            string[] args, 
+            LegacyUser source,
+            string channel,
+            string[] args,
             ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
@@ -64,17 +65,23 @@ namespace helpmebot6.Commands.FunStuff
         /// </returns>
         protected override CommandResponseHandler OnAccessDenied()
         {
-            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
-                Messages.HedgehogAccessDenied, 
-                this.Channel, 
-                null);
-            
             var channelRepository = this.CommandServiceHelper.ChannelRepository;
             var channel = channelRepository.GetByName(this.Channel);
             
-            return channel.HedgehogMode == false
-                       ? base.OnAccessDenied()
-                       : new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
+            bool channelHedgehogMode = false;
+            if (channel != null)
+            {
+                channelHedgehogMode = channel.HedgehogMode;
+            }
+
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                Messages.HedgehogAccessDenied,
+                this.Channel,
+                null);
+
+            return channelHedgehogMode == false
+                ? base.OnAccessDenied()
+                : new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
         }
 
         /// <summary>
@@ -87,7 +94,12 @@ namespace helpmebot6.Commands.FunStuff
         {
             var channelRepository = this.CommandServiceHelper.ChannelRepository;
             var channel = channelRepository.GetByName(this.Channel);
-            
+
+            if (channel == null)
+            {
+                return base.TestAccess();
+            }
+
             return channel.HedgehogMode == false && base.TestAccess();
         }
 

@@ -56,10 +56,8 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            var mediaWikiSite = this.GetLocalMediawikiSite();
+            
             var size = mediaWikiSite.GetCategorySize("Pending AfC submissions");
 
             if (size == 0)

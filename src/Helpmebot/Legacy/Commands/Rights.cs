@@ -37,9 +37,7 @@ namespace helpmebot6.Commands
         {
             var crh = new CommandResponseHandler();
             var messageService = this.CommandServiceHelper.MessageService;
-            var mediawikiSiteRepository = this.CommandServiceHelper.MediaWikiSiteRepository;
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var site = mediawikiSiteRepository.GetById(channelRepository.GetByName(this.Channel).BaseWiki);
+            var site = this.GetLocalMediawikiSite();
 
             string userName;
             if (this.Arguments.Length > 0 && this.Arguments[0] != string.Empty)

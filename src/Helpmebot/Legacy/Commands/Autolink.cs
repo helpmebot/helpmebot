@@ -63,6 +63,12 @@ namespace helpmebot6.Commands
 
             var channelRepository = this.CommandServiceHelper.ChannelRepository;
             var channel = channelRepository.GetByName(this.Channel);
+
+            if (channel == null)
+            {
+                return new CommandResponseHandler("This command must be run in-channel");
+            }
+            
             var oldValue = channel.AutoLink;
 
             var messageService = this.CommandServiceHelper.MessageService;

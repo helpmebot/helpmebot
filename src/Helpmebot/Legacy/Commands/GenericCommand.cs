@@ -24,7 +24,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
-
+    using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
@@ -266,5 +266,24 @@ namespace helpmebot6.Commands
         }
 
         #endregion
+
+        protected MediaWikiSite GetLocalMediawikiSite()
+        {
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            
+            MediaWikiSite mediaWikiSite;
+            
+            if (channel != null)
+            {
+                mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            }
+            else
+            {
+                mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(1);
+            }
+
+            return mediaWikiSite;
+        }
     }
 }

@@ -24,7 +24,6 @@ namespace helpmebot6.Commands
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Returns the age of a wikipedian
@@ -49,9 +48,7 @@ namespace helpmebot6.Commands
             }
             
             var messageService = this.CommandServiceHelper.MessageService;
-            var mediawikiSiteRepository = this.CommandServiceHelper.MediaWikiSiteRepository;
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var site = mediawikiSiteRepository.GetById(channelRepository.GetByName(this.Channel).BaseWiki);
+            var site = this.GetLocalMediawikiSite();
 
             try
             {

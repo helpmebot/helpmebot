@@ -75,12 +75,8 @@ namespace helpmebot6.Commands
         /// <returns>The maximum replication lag</returns>
         private string GetMaxLag()
         {
-            // look up site id
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
             // get api
-            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            var mediaWikiSite = this.GetLocalMediawikiSite();
 
             // TODO: use Linq-to-XML
             var uri = mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml";

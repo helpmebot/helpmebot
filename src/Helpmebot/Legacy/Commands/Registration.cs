@@ -17,18 +17,13 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.Xml;
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
-    using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///     Returns the registration date of a wikipedian
@@ -54,9 +49,7 @@ namespace helpmebot6.Commands
         {
             var crh = new CommandResponseHandler();
             var messageService = this.CommandServiceHelper.MessageService;
-            var mediawikiSiteRepository = this.CommandServiceHelper.MediaWikiSiteRepository;
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var site = mediawikiSiteRepository.GetById(channelRepository.GetByName(this.Channel).BaseWiki);
+            var site = this.GetLocalMediawikiSite();
 
             if (this.Arguments.Length == 0)
             {

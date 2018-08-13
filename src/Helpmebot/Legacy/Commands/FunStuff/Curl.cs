@@ -63,6 +63,13 @@ namespace helpmebot6.Commands
         {
             var channelRepository = this.CommandServiceHelper.ChannelRepository;
             var channel = channelRepository.GetByName(this.Channel);
+
+            if (channel == null)
+            {
+                return new CommandResponseHandler(
+                    string.Format("Cannot find configuration for channel {0}", this.Channel));
+            }
+            
             channel.HedgehogMode = true;
             channelRepository.Save(channel);
 

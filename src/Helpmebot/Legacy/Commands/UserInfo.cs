@@ -198,9 +198,7 @@ namespace helpmebot6.Commands
             
             try
             {
-                var channelRepository = this.CommandServiceHelper.ChannelRepository;
-                var channelObj = channelRepository.GetByName(this.Channel);
-                var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channelObj.BaseWiki);
+                var mediaWikiSite = this.GetLocalMediawikiSite();
             
                 initial.UserName = userName;
 

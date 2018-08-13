@@ -62,10 +62,8 @@ namespace helpmebot6.Commands
         protected override CommandResponseHandler ExecuteCommand()
         {
             string userName = this.Arguments.Implode();
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
-            MediaWikiSite mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            
+            var mediaWikiSite = this.GetLocalMediawikiSite();
 
             return new CommandResponseHandler(mediaWikiSite.GetBlockInformation(userName).FirstOrDefault().ToString());
         }

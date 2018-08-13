@@ -86,10 +86,7 @@ namespace helpmebot6.Commands
         /// </remarks>
         protected CommandResponseHandler GetSizeOfCategory(string categoryName)
         {
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
-            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            var mediaWikiSite = this.GetLocalMediawikiSite();
 
             var messageService = this.CommandServiceHelper.MessageService;
             try

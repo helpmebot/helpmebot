@@ -173,10 +173,7 @@ namespace helpmebot6.Commands
 
         private string GetApiCallUri(string pageTitle)
         {
-            var channelRepository = this.CommandServiceHelper.ChannelRepository;
-            var channel = channelRepository.GetByName(this.Channel);
-
-            var mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+            var mediaWikiSite = this.GetLocalMediawikiSite();
 
             UriBuilder builder = new UriBuilder(mediaWikiSite.Api);
             var query = HttpUtility.ParseQueryString(
