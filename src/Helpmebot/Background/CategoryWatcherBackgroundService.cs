@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading;
     using System.Timers;
     using Castle.Core.Logging;
@@ -104,6 +105,11 @@
                     this.ircClient.SendMessage(destination.Name, message);
                 }
             }
+            catch (WebException ex)
+            {
+                this.ircClient.SendMessage(destination.Name, "Could not retrieve category items due to Wikimedia API error");
+                this.Logger.Warn("Error during API fetch", ex);
+            }
             catch (Exception ex)
             {
                 this.Logger.ErrorFormat(ex, "Error encountered updating catwatcher for {0}", key);
@@ -131,7 +137,7 @@
                     var result = this.helperService.UpdateCategoryItems(category);
                     var additions = result.Item1;
                     var removals = result.Item2;
-                    
+
                     foreach (var categoryChannel in category.Channels)
                     {
                         if (categoryChannel.Channel.Silenced)
@@ -144,12 +150,14 @@
 
                         if (categoryChannel.AlertForRemovals && removals.Any())
                         {
-                            var removalList = string.Join(", ", removals.Select(x => string.Format("[[{0}]]", x.Title)));
+                            var removalList = string.Join(
+                                ", ",
+                                removals.Select(x => string.Format("[[{0}]]", x.Title)));
                             this.ircClient.SendMessage(
                                 categoryChannel.Channel.Name,
                                 string.Format("Handled: {0}", removalList));
                         }
-                        
+
                         if (!this.alertTimeoutCache.ContainsKey(categoryChannel.Id))
                         {
                             this.alertTimeoutCache.Add(categoryChannel.Id, DateTime.MinValue);
@@ -167,7 +175,7 @@
                                 categoryChannel.Id,
                                 categoryChannel.Channel.Name,
                                 category.Keyword);
-                            
+
                             this.alertTimeoutCache[categoryChannel.Id] =
                                 DateTime.Now.AddSeconds(categoryChannel.SleepTime);
 
@@ -193,7 +201,7 @@
                                     additions,
                                     true,
                                     false);
-                                
+
                                 if (message != null)
                                 {
                                     this.ircClient.SendMessage(categoryChannel.Channel.Name, message);
@@ -202,6 +210,10 @@
                         }
                     }
                 }
+            }
+            catch (WebException ex)
+            {
+                this.Logger.Error("Error during fetch from API", ex);
             }
             catch (Exception ex)
             {

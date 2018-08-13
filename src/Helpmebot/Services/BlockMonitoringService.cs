@@ -162,6 +162,10 @@ namespace Helpmebot.Services
                     }
                 }
             }
+            catch (WebException ex)
+            {
+                this.logger.Warn("Error fetching from API", ex);
+            }
             catch (Exception ex)
             {
                 this.logger.Error("Unknown error occurred in BlockMonitoringService", ex);
