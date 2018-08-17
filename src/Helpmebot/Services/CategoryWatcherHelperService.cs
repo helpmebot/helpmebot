@@ -89,7 +89,7 @@
                         {
                             var waitTimeFormat = string.Format(
                                 " (waiting {{0:{0}hh\\:mm}})",
-                                waitingTime.TotalDays > 1 ? "dd\\d " : string.Empty);
+                                waitingTime.TotalDays > 1 ? "d\\d\\ " : string.Empty);
 
                             waitTimeData = string.Format(waitTimeFormat, waitingTime);
                         }
