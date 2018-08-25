@@ -24,8 +24,8 @@ namespace helpmebot6.Commands
     using System.Globalization;
 
     using Helpmebot;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Model.Interfaces;

@@ -24,7 +24,6 @@ namespace Helpmebot.Legacy
     using System.Reflection;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;

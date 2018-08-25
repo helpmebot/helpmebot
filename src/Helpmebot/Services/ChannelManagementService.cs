@@ -2,7 +2,7 @@
 {
     using System;
     using helpmebot6.Commands;
-    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;

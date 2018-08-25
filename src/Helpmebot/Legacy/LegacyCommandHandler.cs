@@ -2,7 +2,6 @@
 {
     using System;
     using Castle.Core.Logging;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;

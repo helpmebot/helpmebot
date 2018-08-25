@@ -1,6 +1,7 @@
 ﻿namespace Helpmebot.Configuration
 {
     using System;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class BotConfiguration
     {

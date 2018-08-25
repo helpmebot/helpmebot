@@ -21,8 +21,7 @@
 namespace Helpmebot.Commands.FunStuff
 {
     using System.Linq;
-
-    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 

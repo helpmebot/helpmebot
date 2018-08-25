@@ -3,17 +3,19 @@
     using Castle.Facilities.EventWiring;
     using Castle.Facilities.Logging;
     using Castle.Facilities.Startable;
+    using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Helpmebot.Commands;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services;
     using Helpmebot.Startup.Facilities;
+    using Stwalkerster.Bot.CommandLib.Services;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -25,9 +27,13 @@
             container.AddFacility<PersistenceFacility>();
             container.AddFacility<EventWiringFacility>();
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
+            container.AddFacility<TypedFactoryFacility>();
             
             // Chainload other installers.
-            container.Install(new Installer());
+            container.Install(
+                new Installer(), 
+                new Stwalkerster.Bot.CommandLib.Startup.Installer()
+            );
 
             container.Register(
                 // Legacy stuff
@@ -35,6 +41,7 @@
                 Component.For<ILegacyAccessService>().ImplementedBy<LegacyAccessService>(),
                 Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>(),
                 Component.For<ILegacyCommandHandler>().ImplementedBy<LegacyCommandHandler>(),
+                Component.For<IFlagService>().ImplementedBy<LegacyFlagService>(),
 
                 // Startup 
                 Component.For<IApplication>().ImplementedBy<Launch>(),
@@ -62,6 +69,7 @@
                         x => x
                             .To<LinkerService>(l => l.IrcPrivateMessageEvent(null, null))
                             .To<LegacyCommandHandler>(l => l.ReceivedMessage(null, null))
+                            //.To<CommandHandler>(l => l.OnMessageReceived(null, null))
                     )
                     .PublishEvent(
                         p => p.WasKickedEvent += null,

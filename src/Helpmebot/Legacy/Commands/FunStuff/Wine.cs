@@ -1,7 +1,7 @@
 ﻿namespace helpmebot6.Commands
 {
     using Helpmebot.Commands.FunStuff;
-    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Model.Interfaces;

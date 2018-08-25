@@ -14,13 +14,12 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Commands
+namespace Helpmebot.Legacy
 {
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Transitional;
-    using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
     ///     The command service helper.

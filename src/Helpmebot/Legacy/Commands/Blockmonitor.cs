@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Helpmebot;
-using Helpmebot.Commands.Interfaces;
 using Helpmebot.ExtensionMethods;
 using Helpmebot.Legacy.Model;
 using Helpmebot.Services.Interfaces;
@@ -28,6 +27,7 @@ using NHibernate;
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Model.Interfaces;
 

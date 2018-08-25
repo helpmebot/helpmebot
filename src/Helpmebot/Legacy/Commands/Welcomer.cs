@@ -30,8 +30,8 @@ namespace helpmebot6.Commands
     using Castle.Core.Internal;
 
     using Helpmebot;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;

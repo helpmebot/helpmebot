@@ -18,10 +18,10 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands.FunStuff;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Model.Interfaces;
 

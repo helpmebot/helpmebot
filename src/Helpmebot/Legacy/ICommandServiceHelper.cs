@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ICommand.cs" company="Helpmebot Development Team">
+// <copyright file="ICommandServiceHelper.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -13,56 +13,54 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
-// <summary>
-//   The Command interface.
-// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Model.Interfaces;
-
-namespace Helpmebot.Commands.Interfaces
+namespace Helpmebot.Legacy
 {
-    using System.Collections.Generic;
+    using Helpmebot.Legacy.Transitional;
+    using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Services.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
-    /// The Command interface.
+    /// The CommandServiceHelper interface.
     /// </summary>
-    public interface ICommand
+    public interface ICommandServiceHelper
     {
-        /// <summary>
-        /// Gets the flag.
-        /// </summary>
-        string Flag { get; }
+        #region Public Properties
 
         /// <summary>
-        /// Gets the command source.
+        ///     Gets the client.
         /// </summary>
-        string CommandSource { get; }
+        IIrcClient Client { get; }
 
         /// <summary>
-        /// Gets the user.
+        ///     Gets the media wiki site repository.
         /// </summary>
-        IUser User { get; }
+        IMediaWikiSiteRepository MediaWikiSiteRepository { get; }
 
         /// <summary>
-        /// Gets the arguments.
+        ///     Gets the message service.
         /// </summary>
-        IEnumerable<string> Arguments { get; }
+        IMessageService MessageService { get; }
 
         /// <summary>
-        /// The can execute.
+        ///     Gets the url shortening service.
         /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        bool CanExecute();
+        IUrlShorteningService UrlShorteningService { get; }
 
         /// <summary>
-        /// The run.
+        /// Gets the inter-wiki prefix repository.
         /// </summary>
-        /// <returns>
-        /// The <see cref="bool"/>.
-        /// </returns>
-        IEnumerable<CommandResponse> Run();
+        IInterwikiPrefixRepository InterwikiPrefixRepository { get; }
+
+        /// <summary>
+        /// Gets the channel repository.
+        /// </summary>
+        IChannelRepository ChannelRepository { get; }
+
+        ILegacyAccessService LegacyAccessService { get; }
+
+        #endregion
     }
 }

@@ -23,10 +23,10 @@ namespace Helpmebot.Commands.FunStuff
     using System.Linq;
 
     using Helpmebot;
-    using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands.FunStuff;
+    using Helpmebot.Legacy;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>

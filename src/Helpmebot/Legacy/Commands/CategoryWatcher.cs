@@ -24,7 +24,7 @@ namespace helpmebot6.Commands
 {
     using Helpmebot;
     using Helpmebot.Background.Interfaces;
-    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Model.Interfaces;

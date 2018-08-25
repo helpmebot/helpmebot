@@ -18,7 +18,7 @@
 namespace helpmebot6.Commands.FunStuff
 {
     using Helpmebot;
-    using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;

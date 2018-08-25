@@ -84,9 +84,6 @@
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
-    <Compile Include="Commands\CommandBase.cs" />
-    <Compile Include="Commands\Interfaces\ICommandServiceHelper.cs" />
-    <Compile Include="Commands\Interfaces\ICommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
     <Compile Include="Configuration\BotConfiguration.cs" />
@@ -97,7 +94,7 @@
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
-    <Compile Include="Commands\CommandServiceHelper.cs" />
+    <Compile Include="Legacy\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
@@ -130,12 +127,14 @@
     <Compile Include="Legacy\Commands\Whoami.cs" />
     <Compile Include="Legacy\Commands\Whois.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
+    <Compile Include="Legacy\ICommandServiceHelper.cs" />
     <Compile Include="Legacy\ILegacyCommandHandler.cs" />
     <Compile Include="Legacy\LegacyCommandHandler.cs" />
     <Compile Include="Legacy\Model\LegacyUserRights.cs" />
     <Compile Include="Legacy\Transitional\ILegacyAccessService.cs" />
     <Compile Include="Legacy\Transitional\LegacyAccessService.cs" />
     <Compile Include="Legacy\Transitional\LegacyCommandFlagAttribute.cs" />
+    <Compile Include="Legacy\Transitional\LegacyFlagService.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
@@ -208,6 +207,7 @@
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\CategoryWatcherHelperService.cs" />
+    <Compile Include="Services\ConfigurationProvider.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeoloationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
@@ -359,6 +359,10 @@
     <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=11.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.11.6.30-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Stwalkerster.IrcClient.8.1.31-beta\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
@@ -429,6 +433,9 @@
     <Content Include="configuration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands\Interfaces" />
   </ItemGroup>
   <Import Project="..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets" Condition="Exists('..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets')" />
 </Project>
