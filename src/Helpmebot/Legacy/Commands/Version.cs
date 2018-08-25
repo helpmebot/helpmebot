@@ -29,6 +29,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -67,16 +68,18 @@ namespace helpmebot6.Commands
             
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
+            var botLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(CommandHandler)));
 
             var messageArgs = new List<string>
                                   {
                                       version.Major.ToString(CultureInfo.InvariantCulture),
                                       version.Minor.ToString(CultureInfo.InvariantCulture),
                                       version.Build.ToString(CultureInfo.InvariantCulture),
-                                      ircVersion
+                                      ircVersion,
+                                      botLibVersion
                                   };
 
-            string messageFormat = "Version {0}.{1} (Build {2}), using Stwalkerster.IrcClient v{3}";
+            string messageFormat = "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}";
             string message = string.Format(messageFormat, messageArgs.ToArray());
 
             return new CommandResponseHandler(message);
