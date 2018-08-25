@@ -20,10 +20,12 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// The whistle.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Whistle : FunStuff.FunCommand
     {
         /// <summary>

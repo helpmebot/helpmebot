@@ -23,11 +23,13 @@ namespace helpmebot6.Commands
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     ///     Returns the registration date of a wikipedian
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Registration : GenericCommand
     {
         public Registration(

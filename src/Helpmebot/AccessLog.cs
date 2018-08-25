@@ -132,7 +132,7 @@ namespace Helpmebot
             /// <summary>
             /// The required access level.
             /// </summary>
-            private readonly LegacyUser.UserRights requiredAccessLevel;
+            private readonly LegacyUserRights requiredAccessLevel;
 
             /// <summary>
             /// The user.
@@ -180,7 +180,7 @@ namespace Helpmebot
                 bool success, 
                 string channel, 
                 string[] parameters, 
-                LegacyUser.UserRights requiredAccessLevel)
+                LegacyUserRights requiredAccessLevel)
             {
                 this.id = 0;
                 this.date = new DateTime(0);
@@ -270,7 +270,7 @@ namespace Helpmebot
             ///     Gets the access log required access level.
             /// </summary>
             /// <value>The required access level.</value>
-            public LegacyUser.UserRights RequiredAccessLevel
+            public LegacyUserRights RequiredAccessLevel
             {
                 get
                 {

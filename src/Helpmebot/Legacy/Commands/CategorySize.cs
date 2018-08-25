@@ -27,10 +27,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// Count how many articles are in a category.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Categorysize : GenericCommand
     {
         /// <summary>

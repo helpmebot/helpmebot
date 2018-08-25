@@ -26,10 +26,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
 
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Google : GenericCommand
     {
         /// <summary>

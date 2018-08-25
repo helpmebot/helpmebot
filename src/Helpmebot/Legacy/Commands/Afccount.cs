@@ -23,10 +23,12 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// Returns the number of articles currently waiting at Articles for Creation
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Semiignored)]
     internal class Afccount : Categorysize
     {
         /// <summary>

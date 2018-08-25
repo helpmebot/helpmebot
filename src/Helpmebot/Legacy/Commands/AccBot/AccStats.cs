@@ -29,12 +29,13 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
-
+    using Helpmebot.Legacy.Transitional;
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
     /// The stats of the account creation interface.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Accstats : GenericCommand
     {
         /// <summary>

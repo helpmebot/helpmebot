@@ -28,6 +28,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
@@ -36,6 +37,7 @@ namespace helpmebot6.Commands
     /// <summary>
     ///   Learns a keyword
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     internal class Learn : GenericCommand
     {
         /// <summary>

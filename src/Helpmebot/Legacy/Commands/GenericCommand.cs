@@ -100,7 +100,7 @@ namespace helpmebot6.Commands
         ///     Gets the access level of the command
         /// </summary>
         /// <value>The access level.</value>
-        public LegacyUser.UserRights AccessLevel
+        public LegacyUserRights AccessLevel
         {
             get
             {
@@ -112,12 +112,12 @@ namespace helpmebot6.Commands
                 string al = this.legacyDatabase.ExecuteScalarSelect(cmd);
                 try
                 {
-                    return (LegacyUser.UserRights)Enum.Parse(typeof(LegacyUser.UserRights), al, true);
+                    return (LegacyUserRights)Enum.Parse(typeof(LegacyUserRights), al, true);
                 }
                 catch (ArgumentException)
                 {
                     this.Log.Warn("Warning: " + command + " not found in access list.");
-                    return LegacyUser.UserRights.Developer;
+                    return LegacyUserRights.Developer;
                 }
             }
         }

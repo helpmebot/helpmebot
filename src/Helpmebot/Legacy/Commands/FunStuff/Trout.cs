@@ -23,10 +23,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.FunStuff;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// Hits a user with a trout.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Trout : ProtectedTargetedFunCommand
     {
         /// <summary>

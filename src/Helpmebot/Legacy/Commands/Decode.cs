@@ -28,11 +28,13 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     /// Decodes a hex-encoded IP address
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Decode : GenericCommand
     {
         /// <summary>

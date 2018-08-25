@@ -27,6 +27,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     using NHibernate.Param;
@@ -34,6 +35,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Discovers the location of an IP address
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Geolocate : GenericCommand
     {
         /// <summary>

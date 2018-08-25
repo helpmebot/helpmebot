@@ -4,9 +4,12 @@ using Helpmebot.Legacy.Model;
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot.Legacy.Transitional;
+
     /// <summary>
     /// The tea.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Champagne : TargetedFunCommand
     {
         /// <summary>

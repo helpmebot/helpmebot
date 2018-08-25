@@ -21,10 +21,12 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     Returns the current date/time
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Time : GenericCommand
     {
         #region Constructors and Destructors

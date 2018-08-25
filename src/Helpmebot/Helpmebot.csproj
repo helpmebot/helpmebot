@@ -132,9 +132,12 @@
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
     <Compile Include="Legacy\ILegacyCommandHandler.cs" />
     <Compile Include="Legacy\LegacyCommandHandler.cs" />
+    <Compile Include="Legacy\Model\LegacyUserRights.cs" />
+    <Compile Include="Legacy\Transitional\LegacyCommandFlagAttribute.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
+    <Compile Include="Model\Flags.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />

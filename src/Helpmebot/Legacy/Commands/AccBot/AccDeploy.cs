@@ -30,6 +30,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
     using HttpRequest = Helpmebot.HttpRequest;
@@ -37,6 +38,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// The deploy ACC command.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Accdeploy : GenericCommand
     {
         /// <summary>

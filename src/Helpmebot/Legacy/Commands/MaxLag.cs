@@ -22,10 +22,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     Returns the maximum replication lag on the wiki
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Maxlag : GenericCommand
     {
         #region Constructors and Destructors

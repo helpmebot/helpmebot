@@ -21,11 +21,13 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     /// Returns the number of articles currently waiting at Articles for Creation
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Afcbacklog : Categorysize
     {
         /// <summary>

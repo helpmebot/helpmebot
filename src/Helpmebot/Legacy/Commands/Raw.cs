@@ -23,10 +23,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     Send a raw line to IRC
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Developer)]
     internal class Raw : GenericCommand
     {
         #region Constructors and Destructors

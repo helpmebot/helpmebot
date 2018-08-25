@@ -26,11 +26,13 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     /// Returns the access level of the command specified
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Commandaccess : GenericCommand
     {
         /// <summary>

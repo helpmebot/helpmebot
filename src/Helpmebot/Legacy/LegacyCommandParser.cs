@@ -106,7 +106,7 @@ namespace Helpmebot.Legacy
             }
 
             // if on ignore list, ignore!
-            if (source.AccessLevel == LegacyUser.UserRights.Ignored)
+            if (source.AccessLevel == LegacyUserRights.Ignored)
             {
                 this.logger.Debug("Ignoring message from ignored user.");
                 return;
@@ -197,7 +197,7 @@ namespace Helpmebot.Legacy
                 string directedTo = string.Empty;
                 if (keyword != null)
                 {
-                    if (source.AccessLevel < LegacyUser.UserRights.Normal)
+                    if (source.AccessLevel < LegacyUserRights.Normal)
                     {
                         this.logger.InfoFormat("Access denied for keyword retrieval for {0}", source);
 

@@ -22,10 +22,12 @@ namespace helpmebot6.Commands
 {
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///   Returns the registration date of a wikipedian. Alias for Registration
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Reg : Registration
     {
         /// <summary>

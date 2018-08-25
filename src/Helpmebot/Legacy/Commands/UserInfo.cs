@@ -33,6 +33,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
@@ -55,6 +56,7 @@ namespace helpmebot6.Commands
     /// <summary>
     ///   Returns the user information about a specified user
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Userinfo : GenericCommand
     {
         /// <summary>

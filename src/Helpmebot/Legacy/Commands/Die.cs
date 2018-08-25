@@ -23,12 +23,14 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Startup;
     using Microsoft.Practices.ServiceLocation;
 
     /// <summary>
     ///   Kills the bot.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     internal class Die : ProtectedCommand
     {
         /// <summary>

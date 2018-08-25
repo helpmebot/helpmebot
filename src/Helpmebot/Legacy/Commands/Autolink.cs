@@ -19,12 +19,14 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Enables or disables automatic parsing of wiki links
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Autolink : GenericCommand
     {
         #region Constructors and Destructors

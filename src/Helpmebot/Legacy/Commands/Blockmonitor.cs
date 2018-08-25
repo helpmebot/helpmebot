@@ -28,6 +28,9 @@ using NHibernate;
 
 namespace helpmebot6.Commands
 {
+    using Helpmebot.Legacy.Transitional;
+
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     public class Blockmonitor : GenericCommand
     {
         private ISession databaseSession;

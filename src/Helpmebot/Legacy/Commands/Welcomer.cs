@@ -33,6 +33,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     using Microsoft.Practices.ServiceLocation;
@@ -41,7 +42,8 @@ namespace helpmebot6.Commands
 
     /// <summary>
     /// Controls the newbie welcomer
-    /// </summary>
+    /// </summary>#
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Welcomer : GenericCommand
     {
         /// <summary>

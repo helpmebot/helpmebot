@@ -27,6 +27,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
@@ -36,6 +37,7 @@ namespace helpmebot6.Commands
     /// <summary>
     ///     Modifies the bot's access list
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     internal class Access : GenericCommand
     {
         #region Fields
@@ -90,27 +92,27 @@ namespace helpmebot6.Commands
                     case "add":
                         if (this.Arguments.Length > 2)
                         {
-                            var aL = LegacyUser.UserRights.Normal;
+                            var aL = LegacyUserRights.Normal;
 
                             switch (this.Arguments[2].ToLower())
                             {
                                 case "superuser":
-                                    aL = LegacyUser.UserRights.Superuser;
+                                    aL = LegacyUserRights.Superuser;
                                     break;
                                 case "advanced":
-                                    aL = LegacyUser.UserRights.Advanced;
+                                    aL = LegacyUserRights.Advanced;
                                     break;
                                 case "semi-ignored":
-                                    aL = LegacyUser.UserRights.Semiignored;
+                                    aL = LegacyUserRights.Semiignored;
                                     break;
                                 case "semiignored":
-                                    aL = LegacyUser.UserRights.Semiignored;
+                                    aL = LegacyUserRights.Semiignored;
                                     break;
                                 case "ignored":
-                                    aL = LegacyUser.UserRights.Ignored;
+                                    aL = LegacyUserRights.Ignored;
                                     break;
                                 case "normal":
-                                    aL = LegacyUser.UserRights.Normal;
+                                    aL = LegacyUserRights.Normal;
                                     break;
                             }
 
@@ -216,7 +218,7 @@ namespace helpmebot6.Commands
         /// <returns>
         /// a response
         /// </returns>
-        private CommandResponseHandler AddAccessEntry(LegacyUser newEntry, LegacyUser.UserRights accessLevel)
+        private CommandResponseHandler AddAccessEntry(LegacyUser newEntry, LegacyUserRights accessLevel)
         {
             string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage(

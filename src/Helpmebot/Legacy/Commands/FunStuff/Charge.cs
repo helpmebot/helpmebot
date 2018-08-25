@@ -26,10 +26,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.FunStuff;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// The charge.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Charge : ProtectedTargetedFunCommand
     {
         /// <summary>

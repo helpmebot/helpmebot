@@ -22,10 +22,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     Returns the edit count of a Wikipedian
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Editcount : GenericCommand
     {
         public Editcount(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)

@@ -22,7 +22,9 @@ namespace helpmebot6.Commands
 {
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     internal class Teach : Learn
     {
         /// <summary>

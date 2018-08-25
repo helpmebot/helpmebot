@@ -22,10 +22,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     Returns the user rights of a wikipedian
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Rights : GenericCommand
     {
         public Rights(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)

@@ -40,7 +40,7 @@ namespace Helpmebot.Legacy.Model
         /// <summary>
         ///     The _access level.
         /// </summary>
-        private UserRights accessLevel;
+        private LegacyUserRights accessLevel;
 
         /// <summary>
         ///     The retrieved access level.
@@ -64,42 +64,6 @@ namespace Helpmebot.Legacy.Model
 
         #region Enums
 
-        /// <summary>
-        ///     The user rights.
-        /// </summary>
-        public enum UserRights
-        {
-            /// <summary>
-            ///     The developer.
-            /// </summary>
-            Developer = 3, 
-
-            /// <summary>
-            ///     The super user.
-            /// </summary>
-            Superuser = 2, 
-
-            /// <summary>
-            ///     The advanced.
-            /// </summary>
-            Advanced = 1, 
-
-            /// <summary>
-            ///     The normal.
-            /// </summary>
-            Normal = 0, 
-
-            /// <summary>
-            ///     The semi-ignored.
-            /// </summary>
-            Semiignored = -1, 
-
-            /// <summary>
-            ///     The ignored.
-            /// </summary>
-            Ignored = -2
-        }
-
         #endregion
 
         #region Public Properties
@@ -108,7 +72,7 @@ namespace Helpmebot.Legacy.Model
         ///     Gets or sets the access level.
         /// </summary>
         /// <value>The access level.</value>
-        public UserRights AccessLevel
+        public LegacyUserRights AccessLevel
         {
             get
             {
@@ -130,7 +94,7 @@ namespace Helpmebot.Legacy.Model
                             accesslevel = "Normal";
                         }
 
-                        var ret = (UserRights)Enum.Parse(typeof(UserRights), accesslevel);
+                        var ret = (LegacyUserRights)Enum.Parse(typeof(LegacyUserRights), accesslevel);
 
                         this.accessLevel = ret;
                         this.retrievedAccessLevel = true;
@@ -144,7 +108,7 @@ namespace Helpmebot.Legacy.Model
                     this.Log.Error(ex.Message, ex);
                 }
 
-                return UserRights.Normal;
+                return LegacyUserRights.Normal;
             }
 
             set
@@ -291,7 +255,7 @@ namespace Helpmebot.Legacy.Model
         /// <returns>
         /// The <see cref="LegacyUser"/>.
         /// </returns>
-        public static LegacyUser NewFromStringWithAccessLevel(string source, UserRights accessLevel)
+        public static LegacyUser NewFromStringWithAccessLevel(string source, LegacyUserRights accessLevel)
         {
             return NewFromStringWithAccessLevel(source, 0, accessLevel);
         }
@@ -311,7 +275,7 @@ namespace Helpmebot.Legacy.Model
         /// <returns>
         /// The <see cref="LegacyUser"/>.
         /// </returns>
-        public static LegacyUser NewFromStringWithAccessLevel(string source, uint network, UserRights accessLevel)
+        public static LegacyUser NewFromStringWithAccessLevel(string source, uint network, LegacyUserRights accessLevel)
         {
             LegacyUser u = NewFromString(source, network);
             if (u == null)

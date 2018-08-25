@@ -27,11 +27,13 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Resolve : GenericCommand
     {
         /// <summary>

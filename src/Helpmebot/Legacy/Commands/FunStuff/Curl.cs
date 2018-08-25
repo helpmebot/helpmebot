@@ -21,10 +21,12 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using helpmebot6.Commands.FunStuff;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     ///     The curl.
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     public class Curl : FunCommand
     {
         #region Constructors and Destructors

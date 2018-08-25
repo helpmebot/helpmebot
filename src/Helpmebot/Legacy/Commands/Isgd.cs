@@ -27,11 +27,13 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     /// Shortens a URL
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Isgd : GenericCommand
     {
         /// <summary>

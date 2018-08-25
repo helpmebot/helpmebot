@@ -22,7 +22,9 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands.FunStuff;
+    using Helpmebot.Legacy.Transitional;
 
+    [LegacyCommandFlag(LegacyUserRights.Advanced)]
     class Game : FunCommand
     {
         /// <summary>

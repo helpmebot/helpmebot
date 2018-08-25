@@ -34,6 +34,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
@@ -41,6 +42,7 @@ namespace helpmebot6.Commands
     /// <summary>
     /// Retrieves information on a specific page
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Page : GenericCommand
     {
         /// <summary>

@@ -19,10 +19,12 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
 
     /// <summary>
     /// Refreshes the bot's <see cref="Helpmebot.Repositories.ResponseRepository"/>, forcing a reload from the database
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Superuser)]
     internal class Refresh : GenericCommand
     {
         #region Constructors and Destructors

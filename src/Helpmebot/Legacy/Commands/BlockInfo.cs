@@ -22,11 +22,13 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
 
     /// <summary>
     ///     Returns the block information of a wikipedian
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Blockinfo : GenericCommand
     {
         #region Constructors and Destructors
