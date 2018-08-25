@@ -17,17 +17,15 @@
 namespace helpmebot6.Commands
 {
     using System;
-
+    using System.Linq;
     using Castle.Core.Logging;
 
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
-    using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
-
-    using MySql.Data.MySqlClient;
 
     /// <summary>
     ///     Generic bot command abstract class
@@ -41,11 +39,6 @@ namespace helpmebot6.Commands
         /// </summary>
         protected readonly ICommandServiceHelper CommandServiceHelper;
 
-        /// <summary>
-        /// The legacy database.
-        /// </summary>
-        private readonly ILegacyDatabase legacyDatabase;
-
         #endregion
 
         #region Constructors and Destructors
@@ -58,9 +51,8 @@ namespace helpmebot6.Commands
         /// </param>
         protected GenericCommand(ICommandServiceHelper commandServiceHelper)
         {
-            // FIXME: ServiceLocator - genericlogger & legacydatabase
+            // FIXME: ServiceLocator - genericlogger
             this.Log = ServiceLocator.Current.GetInstance<ILogger>();
-            this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
 
             this.CommandServiceHelper = commandServiceHelper;
         }
@@ -104,20 +96,19 @@ namespace helpmebot6.Commands
         {
             get
             {
-                string command = this.GetType().ToString();
+                var flagAttr = (LegacyCommandFlagAttribute) this.GetType()
+                    .GetCustomAttributes(typeof(LegacyCommandFlagAttribute), true)
+                    .FirstOrDefault();
 
-                var cmd = new MySqlCommand("SELECT accesslevel FROM `command` WHERE typename = @command LIMIT 1;");
-                cmd.Parameters.AddWithValue("@command", command);
-
-                string al = this.legacyDatabase.ExecuteScalarSelect(cmd);
-                try
+                if (flagAttr != null)
                 {
-                    return (LegacyUserRights)Enum.Parse(typeof(LegacyUserRights), al, true);
+                    return flagAttr.Level;
                 }
-                catch (ArgumentException)
+                else
                 {
-                    this.Log.Warn("Warning: " + command + " not found in access list.");
-                    return LegacyUserRights.Developer;
+                    this.Log.WarnFormat(
+                        string.Format("Warning: {0} does not have an access attribute.", this.GetType()));
+                    return LegacyUserRights.Developer;   
                 }
             }
         }

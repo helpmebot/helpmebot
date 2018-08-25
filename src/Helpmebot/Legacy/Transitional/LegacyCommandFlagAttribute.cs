@@ -9,6 +9,8 @@ namespace Helpmebot.Legacy.Transitional
     {
         public LegacyCommandFlagAttribute(LegacyUserRights flag)
         {
+            this.Level = flag;
+            
             switch (flag)
             {
                 case LegacyUserRights.Ignored:
@@ -31,6 +33,7 @@ namespace Helpmebot.Legacy.Transitional
             }
         }
 
+        public LegacyUserRights Level { get; private set; }
         public string Flag { get; private set; }
 
         public bool GlobalOnly
