@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
+    using Stwalkerster.IrcClient.Model;
 
     /// <summary>
     ///     Retrieves the bot access level of the user who called the command
@@ -67,9 +68,9 @@ namespace helpmebot6.Commands
             {
                 foreach (string s in this.Arguments)
                 {
-                    var legacyUser = LegacyUser.NewFromString(s);
+                    var constructedUser = IrcUser.FromPrefix(s, this.CommandServiceHelper.Client);
 
-                    if (legacyUser == null)
+                    if (constructedUser == null)
                     {
                         string[] errArgs = { s };
                         crh.Respond(messageService.RetrieveMessage("cmdAccessInvalidUser", this.Channel, errArgs));
@@ -78,22 +79,30 @@ namespace helpmebot6.Commands
 
                     if (!s.Contains("@") || !s.Contains("!"))
                     {
-                        if (this.CommandServiceHelper.Client.UserCache.ContainsKey(legacyUser.Nickname))
+                        if (this.CommandServiceHelper.Client.UserCache.ContainsKey(constructedUser.Nickname))
                         {
-                            var ircUser = this.CommandServiceHelper.Client.UserCache[legacyUser.Nickname];
+                            var ircUser = this.CommandServiceHelper.Client.UserCache[constructedUser.Nickname];
 
-                            legacyUser = LegacyUser.NewFromOtherUser(ircUser);
+                            constructedUser = ircUser;
                         }
                     }
 
 
-                    string[] cmdArgs = { legacyUser.ToString(), legacyUser.AccessLevel.ToString() };
+                    string[] cmdArgs =
+                    {
+                        constructedUser.ToString(),
+                        this.CommandServiceHelper.LegacyAccessService.GetLegacyUserRights(constructedUser).ToString()
+                    };
                     crh.Respond(messageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
                 }
             }
             else
             {
-                string[] cmdArgs = { this.Source.ToString(), this.Source.AccessLevel.ToString() };
+                string[] cmdArgs =
+                {
+                    this.Source.ToString(),
+                    this.CommandServiceHelper.LegacyAccessService.GetLegacyUserRights(this.Source).ToString()
+                };
                 crh.Respond(messageService.RetrieveMessage("cmdAccess", this.Channel, cmdArgs));
             }
 

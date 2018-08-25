@@ -5,6 +5,7 @@
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Events;
@@ -17,17 +18,20 @@
         private readonly IRedirectionParserService redirectionParserService;
         private readonly BotConfiguration botConfiguration;
         private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
+        private readonly ILegacyAccessService legacyAccessService;
 
         public LegacyCommandHandler(ILogger logger,
             IRedirectionParserService redirectionParserService,
             BotConfiguration botConfiguration,
-            ICategoryWatcherHelperService categoryWatcherHelperService)
+            ICategoryWatcherHelperService categoryWatcherHelperService,
+            ILegacyAccessService legacyAccessService)
         {
             this.logger = logger;
 
             this.redirectionParserService = redirectionParserService;
             this.botConfiguration = botConfiguration;
             this.categoryWatcherHelperService = categoryWatcherHelperService;
+            this.legacyAccessService = legacyAccessService;
         }
 
         public void ReceivedMessage(object sender, MessageReceivedEventArgs e)
@@ -44,7 +48,8 @@
                 this.logger.CreateChildLogger("LegacyCommandParser"),
                 this.redirectionParserService,
                 this.botConfiguration,
-                this.categoryWatcherHelperService);
+                this.categoryWatcherHelperService,
+                this.legacyAccessService);
             try
             {
                 bool overrideSilence = cmd.OverrideBotSilence;

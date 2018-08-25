@@ -133,6 +133,8 @@
     <Compile Include="Legacy\ILegacyCommandHandler.cs" />
     <Compile Include="Legacy\LegacyCommandHandler.cs" />
     <Compile Include="Legacy\Model\LegacyUserRights.cs" />
+    <Compile Include="Legacy\Transitional\ILegacyAccessService.cs" />
+    <Compile Include="Legacy\Transitional\LegacyAccessService.cs" />
     <Compile Include="Legacy\Transitional\LegacyCommandFlagAttribute.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />

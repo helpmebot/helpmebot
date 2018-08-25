@@ -252,8 +252,7 @@ namespace helpmebot6.Commands
         /// <returns>True if the command is allowed to Execute</returns>
         protected virtual bool TestAccess()
         {
-            // check the access level
-            return this.Source.AccessLevel >= this.AccessLevel;
+            return this.CommandServiceHelper.LegacyAccessService.IsAllowed(this.AccessLevel, this.Source);
         }
 
         #endregion

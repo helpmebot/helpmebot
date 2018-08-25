@@ -17,6 +17,7 @@
 
 namespace Helpmebot.Commands.Interfaces
 {
+    using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -57,6 +58,8 @@ namespace Helpmebot.Commands.Interfaces
         /// Gets the channel repository.
         /// </summary>
         IChannelRepository ChannelRepository { get; }
+
+        ILegacyAccessService LegacyAccessService { get; }
 
         #endregion
     }

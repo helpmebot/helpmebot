@@ -15,8 +15,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using NHibernate.Linq.Functions;
-
 namespace helpmebot6.Commands
 {
     using System.Globalization;
@@ -33,6 +31,7 @@ namespace helpmebot6.Commands
     using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
+    using Stwalkerster.IrcClient.Model;
 
     /// <summary>
     ///     Modifies the bot's access list
@@ -117,7 +116,7 @@ namespace helpmebot6.Commands
                             }
 
                             var s = this.Arguments[1];
-                            var legacyUser = LegacyUser.NewFromString(s);
+                            var legacyUser = IrcUser.FromPrefix(s, this.CommandServiceHelper.Client);
 
                             if (legacyUser == null)
                             {
@@ -135,7 +134,7 @@ namespace helpmebot6.Commands
                                 return crh;
                             }
 
-                            crh = this.AddAccessEntry(legacyUser, aL);
+                            crh = this.AddAccessEntry(LegacyUser.NewFromOtherUser(legacyUser), aL);
                         }
                         else
                         {

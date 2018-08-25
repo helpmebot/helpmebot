@@ -20,7 +20,7 @@ namespace Helpmebot
 
     using Helpmebot.Legacy.Database;
     using Helpmebot.Legacy.Model;
-
+    using Helpmebot.Legacy.Transitional;
     using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
@@ -42,6 +42,8 @@ namespace Helpmebot
         /// </summary>
         private ILegacyDatabase legacyDatabase;
 
+        private ILegacyAccessService legacyAccessService;
+
         #endregion
 
         #region Constructors and Destructors
@@ -51,8 +53,9 @@ namespace Helpmebot
         /// </summary>
         protected AccessLog()
         {
-            // FIXME: ServiceLocator - legacydatabase
+            // FIXME: ServiceLocator - legacydatabase, legacyaccessservice
             this.legacyDatabase = ServiceLocator.Current.GetInstance<ILegacyDatabase>();
+            this.legacyAccessService = ServiceLocator.Current.GetInstance<ILegacyAccessService>();
         }
 
         #endregion
@@ -88,7 +91,7 @@ namespace Helpmebot
                     + "@reqaccesslevel, @class, @allowed, @channel, @args);");
 
             insertCommand.Parameters.AddWithValue("@nuh", logEntry.User.ToString());
-            insertCommand.Parameters.AddWithValue("@accesslevel", logEntry.User.AccessLevel.ToString());
+            insertCommand.Parameters.AddWithValue("@accesslevel", this.legacyAccessService.GetLegacyUserRights(logEntry.User).ToString());
             insertCommand.Parameters.AddWithValue("@reqaccesslevel", logEntry.RequiredAccessLevel.ToString());
             insertCommand.Parameters.AddWithValue("@class", logEntry.Class.ToString());
             insertCommand.Parameters.AddWithValue("@allowed", logEntry.Allowed);

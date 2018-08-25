@@ -31,6 +31,7 @@ namespace Helpmebot.Legacy
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using helpmebot6.Commands;
+    using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Interfaces;
     using Microsoft.Practices.ServiceLocation;
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
@@ -41,6 +42,7 @@ namespace Helpmebot.Legacy
         private readonly ICommandServiceHelper commandServiceHelper;
         private readonly IRedirectionParserService redirectionParserService;
         private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
+        private readonly ILegacyAccessService legacyAccessService;
         private readonly string commandTrigger;
         private readonly string debugChannel;
         private readonly ILogger logger;
@@ -50,11 +52,13 @@ namespace Helpmebot.Legacy
             ILogger logger,
             IRedirectionParserService redirectionParserService,
             BotConfiguration configuration,
-            ICategoryWatcherHelperService categoryWatcherHelperService)
+            ICategoryWatcherHelperService categoryWatcherHelperService,
+            ILegacyAccessService legacyAccessService)
         {
             this.commandServiceHelper = commandServiceHelper;
             this.redirectionParserService = redirectionParserService;
             this.categoryWatcherHelperService = categoryWatcherHelperService;
+            this.legacyAccessService = legacyAccessService;
             this.logger = logger;
 
             this.commandTrigger = configuration.CommandTrigger;
@@ -106,7 +110,7 @@ namespace Helpmebot.Legacy
             }
 
             // if on ignore list, ignore!
-            if (source.AccessLevel == LegacyUserRights.Ignored)
+            if (this.legacyAccessService.GetLegacyUserRights(source) == LegacyUserRights.Ignored)
             {
                 this.logger.Debug("Ignoring message from ignored user.");
                 return;
@@ -197,7 +201,7 @@ namespace Helpmebot.Legacy
                 string directedTo = string.Empty;
                 if (keyword != null)
                 {
-                    if (source.AccessLevel < LegacyUserRights.Normal)
+                    if (this.legacyAccessService.GetLegacyUserRights(source) < LegacyUserRights.Normal)
                     {
                         this.logger.InfoFormat("Access denied for keyword retrieval for {0}", source);
 
@@ -220,7 +224,7 @@ namespace Helpmebot.Legacy
                         dict.Add("username", source.Username);
                         dict.Add("nickname", source.Nickname);
                         dict.Add("hostname", source.Hostname);
-                        dict.Add("AccessLevel", source.AccessLevel);
+                        dict.Add("AccessLevel", this.legacyAccessService.GetLegacyUserRights(source));
                         dict.Add("channel", destination);
 
                         for (int i = 0; i < args.Length; i++)

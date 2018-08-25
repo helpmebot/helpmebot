@@ -11,6 +11,7 @@
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Database;
+    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services;
     using Helpmebot.Startup.Facilities;
     using Stwalkerster.IrcClient;
@@ -27,10 +28,11 @@
             
             // Chainload other installers.
             container.Install(new Installer());
-            
+
             container.Register(
                 // Legacy stuff
                 Component.For<ILegacyDatabase>().ImplementedBy<LegacyDatabase>(),
+                Component.For<ILegacyAccessService>().ImplementedBy<LegacyAccessService>(),
                 Component.For<ICommandServiceHelper>().ImplementedBy<CommandServiceHelper>(),
                 Component.For<ILegacyCommandHandler>().ImplementedBy<LegacyCommandHandler>(),
 
@@ -60,7 +62,7 @@
                         x => x
                             .To<LinkerService>(l => l.IrcPrivateMessageEvent(null, null))
                             .To<LegacyCommandHandler>(l => l.ReceivedMessage(null, null))
-                       )
+                    )
                     .PublishEvent(
                         p => p.WasKickedEvent += null,
                         x => x.To<ChannelManagementService>(l => l.OnKicked(null, null)))

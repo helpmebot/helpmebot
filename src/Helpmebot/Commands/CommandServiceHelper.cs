@@ -17,6 +17,7 @@
 namespace Helpmebot.Commands
 {
     using Helpmebot.Commands.Interfaces;
+    using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
@@ -32,6 +33,8 @@ namespace Helpmebot.Commands
         /// The channel repository.
         /// </summary>
         private readonly IChannelRepository channelRepository;
+
+        private readonly ILegacyAccessService legacyAccessService;
 
         /// <summary>
         ///     The client.
@@ -83,13 +86,15 @@ namespace Helpmebot.Commands
         /// <param name="channelRepository">
         /// The channel Repository.
         /// </param>
+        /// <param name="legacyAccessService"></param>
         public CommandServiceHelper(
             IIrcClient client, 
             IMessageService messageService, 
             IUrlShorteningService urlShorteningService, 
             IMediaWikiSiteRepository mediaWikiSiteRepository, 
             IInterwikiPrefixRepository interwikiPrefixRepository, 
-            IChannelRepository channelRepository)
+            IChannelRepository channelRepository,
+            ILegacyAccessService legacyAccessService)
         {
             this.client = client;
             this.messageService = messageService;
@@ -97,6 +102,7 @@ namespace Helpmebot.Commands
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.channelRepository = channelRepository;
+            this.legacyAccessService = legacyAccessService;
         }
 
         #endregion
@@ -167,6 +173,11 @@ namespace Helpmebot.Commands
             {
                 return this.urlShorteningService;
             }
+        }
+
+        public ILegacyAccessService LegacyAccessService
+        {
+            get { return this.legacyAccessService; }
         }
 
         #endregion
