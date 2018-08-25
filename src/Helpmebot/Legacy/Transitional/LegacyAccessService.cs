@@ -23,11 +23,6 @@ namespace Helpmebot.Legacy.Transitional
 
         public bool IsAllowed(LegacyUserRights required, IUser user)
         {
-            return this.IsAllowed(required, LegacyUser.NewFromOtherUser(user));
-        }
-        
-        public bool IsAllowed(LegacyUserRights required, LegacyUser user)
-        {
             var actual = this.GetLegacyUserRights(user);
 
             if (actual == LegacyUserRights.Ignored)
@@ -37,13 +32,8 @@ namespace Helpmebot.Legacy.Transitional
 
             return actual >= required;
         }
-
-        public LegacyUserRights GetLegacyUserRights(IUser user)
-        {
-            return this.GetLegacyUserRights(LegacyUser.NewFromOtherUser(user));
-        }
         
-        public LegacyUserRights GetLegacyUserRights(LegacyUser user)
+        public LegacyUserRights GetLegacyUserRights(IUser user)
         {
             try
             {

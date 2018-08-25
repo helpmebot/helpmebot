@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The tea.
@@ -46,7 +47,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Tea(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Tea(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

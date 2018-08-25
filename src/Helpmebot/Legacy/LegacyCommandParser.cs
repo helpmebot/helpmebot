@@ -34,6 +34,7 @@ namespace Helpmebot.Legacy
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Interfaces;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
     using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
     public class LegacyCommandParser
@@ -98,7 +99,7 @@ namespace Helpmebot.Legacy
             return ParseRawLineForMessage(ref message, client.Nickname, this.commandTrigger);
         }
 
-        public void HandleCommand(LegacyUser source, string destination, string command, string[] args)
+        public void HandleCommand(IUser source, string destination, string command, string[] args)
         {
             this.logger.Debug("Handling received message...");
 
@@ -276,7 +277,7 @@ namespace Helpmebot.Legacy
         }
 
         private void HandleCommandResponseHandler(
-            LegacyUser source,
+            IUser source,
             string destination,
             string directedTo,
             CommandResponseHandler response)

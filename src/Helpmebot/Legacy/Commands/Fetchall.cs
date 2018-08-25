@@ -29,6 +29,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// Retrieve information about all registered category codes
@@ -51,7 +52,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Fetchall(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Fetchall(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

@@ -5,6 +5,7 @@ using Helpmebot.Legacy.Model;
 namespace helpmebot6.Commands
 {
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The tea.
@@ -27,7 +28,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Champagne(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Champagne(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

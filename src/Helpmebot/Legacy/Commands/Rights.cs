@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Returns the user rights of a wikipedian
@@ -30,7 +31,7 @@ namespace helpmebot6.Commands
     [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Rights : GenericCommand
     {
-        public Rights(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Rights(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

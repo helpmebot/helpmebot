@@ -29,6 +29,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// Perform a reverse DNS lookup on an IP address.
@@ -51,7 +52,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Resolve(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Resolve(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

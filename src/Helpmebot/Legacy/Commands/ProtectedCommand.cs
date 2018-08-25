@@ -22,6 +22,7 @@ namespace helpmebot6.Commands
     using Helpmebot;
     using Helpmebot.Commands.Interfaces;
     using Helpmebot.Legacy.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     The protected command.
@@ -46,7 +47,7 @@ namespace helpmebot6.Commands
         /// The message Service.
         /// </param>
         protected ProtectedCommand(
-            LegacyUser source, 
+            IUser source, 
             string channel, 
             string[] args, 
             ICommandServiceHelper commandServiceHelper)

@@ -32,6 +32,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Repositories.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///   Joins an IRC channel
@@ -54,7 +55,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Join(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Join(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

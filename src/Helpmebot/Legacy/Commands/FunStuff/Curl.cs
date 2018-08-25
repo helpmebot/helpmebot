@@ -22,6 +22,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using helpmebot6.Commands.FunStuff;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     The curl.
@@ -46,7 +47,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Curl(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Curl(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

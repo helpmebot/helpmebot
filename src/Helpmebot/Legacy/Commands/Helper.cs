@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Triggers an inter-channel alert
@@ -71,7 +72,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Helper(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Helper(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

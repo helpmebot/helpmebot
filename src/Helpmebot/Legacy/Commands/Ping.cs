@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     The ping command
@@ -45,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Ping(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Ping(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

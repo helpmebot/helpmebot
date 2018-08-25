@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Commands.FunStuff;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     The exorcise.
@@ -28,7 +29,7 @@ namespace helpmebot6.Commands
     [LegacyCommandFlag(LegacyUserRights.Advanced)]
     internal class Exorcise : TargetedFunCommand
     {
-        public Exorcise(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Exorcise(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

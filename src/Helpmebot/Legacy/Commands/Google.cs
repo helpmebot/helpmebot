@@ -30,6 +30,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Google : GenericCommand
@@ -60,7 +61,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The command Service Helper.
         /// </param>
-        public Google(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Google(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

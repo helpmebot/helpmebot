@@ -31,6 +31,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Services.Interfaces;
 
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///   Forgets a keyword
@@ -58,7 +59,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Forget(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Forget(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
             // FIXME: ServiceLocator - keywordservice

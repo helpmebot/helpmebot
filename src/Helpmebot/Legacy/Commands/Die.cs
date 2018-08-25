@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Startup;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///   Kills the bot.
@@ -48,7 +49,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Die(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Die(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Returns the age of a wikipedian
@@ -32,7 +33,7 @@ namespace helpmebot6.Commands
     [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Age : GenericCommand
     {
-        public Age(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Age(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

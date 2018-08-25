@@ -25,6 +25,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Returns the registration date of a wikipedian
@@ -33,7 +34,7 @@ namespace helpmebot6.Commands
     internal class Registration : GenericCommand
     {
         public Registration(
-            LegacyUser source,
+            IUser source,
             string channel,
             string[] args,
             ICommandServiceHelper commandServiceHelper)

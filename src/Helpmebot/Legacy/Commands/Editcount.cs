@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Returns the edit count of a Wikipedian
@@ -30,7 +31,7 @@ namespace helpmebot6.Commands
     [LegacyCommandFlag(LegacyUserRights.Normal)]
     internal class Editcount : GenericCommand
     {
-        public Editcount(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Editcount(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

@@ -307,7 +307,6 @@
     <Compile Include="Startup\Launch.cs" />
     <Compile Include="Startup\MainInstaller.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
-    <Compile Include="Legacy\Model\LegacyUser.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
   </ItemGroup>
   <ItemGroup>

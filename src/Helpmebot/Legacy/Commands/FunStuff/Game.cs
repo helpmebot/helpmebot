@@ -23,6 +23,7 @@ namespace helpmebot6.Commands
 
     using helpmebot6.Commands.FunStuff;
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     [LegacyCommandFlag(LegacyUserRights.Advanced)]
     class Game : FunCommand
@@ -42,7 +43,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Game(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Game(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

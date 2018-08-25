@@ -31,6 +31,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Model;
 
     using NHibernate.Param;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// Discovers the location of an IP address
@@ -53,7 +54,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Geolocate(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Geolocate(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

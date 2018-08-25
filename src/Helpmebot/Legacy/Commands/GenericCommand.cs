@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Generic bot command abstract class
@@ -73,7 +74,7 @@ namespace helpmebot6.Commands
         /// The command Service Helper.
         /// </param>
         protected GenericCommand(
-            LegacyUser source, 
+            IUser source, 
             string channel, 
             string[] args, 
             ICommandServiceHelper commandServiceHelper)
@@ -131,7 +132,7 @@ namespace helpmebot6.Commands
         /// <summary>
         ///     Gets or sets the source.
         /// </summary>
-        public LegacyUser Source { get; set; }
+        public IUser Source { get; set; }
 
         public string Redirection { get; set; }
 

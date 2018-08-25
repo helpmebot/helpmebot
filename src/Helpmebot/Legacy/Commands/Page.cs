@@ -38,6 +38,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// Retrieves information on a specific page
@@ -60,7 +61,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Page(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Page(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

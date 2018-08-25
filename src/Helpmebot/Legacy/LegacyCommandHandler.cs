@@ -61,7 +61,7 @@
                     string joinedargs = string.Join(" ", messageWords, 1, messageWords.Length - 1);
                     string[] commandArgs = joinedargs == string.Empty ? new string[0] : joinedargs.Split(' ');
 
-                    cmd.HandleCommand(LegacyUser.NewFromOtherUser(e.User), e.Target, command, commandArgs);
+                    cmd.HandleCommand(e.User, e.Target, command, commandArgs);
                 }
             }
             catch (Exception ex)

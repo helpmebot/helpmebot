@@ -27,6 +27,7 @@ namespace Helpmebot.Commands.FunStuff
     using Helpmebot.Legacy.Model;
 
     using helpmebot6.Commands.FunStuff;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The targeted command.
@@ -50,7 +51,7 @@ namespace Helpmebot.Commands.FunStuff
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        protected TargetedFunCommand(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        protected TargetedFunCommand(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

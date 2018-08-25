@@ -32,6 +32,7 @@ namespace helpmebot6.Commands
 
     using MySql.Data.MySqlClient;
     using Stwalkerster.IrcClient.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Modifies the bot's access list
@@ -65,7 +66,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Access(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Access(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
             // FIXME: ServiceLocator - legacydatabase
@@ -116,9 +117,9 @@ namespace helpmebot6.Commands
                             }
 
                             var s = this.Arguments[1];
-                            var legacyUser = IrcUser.FromPrefix(s, this.CommandServiceHelper.Client);
+                            var ircUser = IrcUser.FromPrefix(s, this.CommandServiceHelper.Client);
 
-                            if (legacyUser == null)
+                            if (ircUser == null)
                             {
                                 string[] errArgs = {s};
                                 crh.Respond(
@@ -134,7 +135,7 @@ namespace helpmebot6.Commands
                                 return crh;
                             }
 
-                            crh = this.AddAccessEntry(LegacyUser.NewFromOtherUser(legacyUser), aL);
+                            crh = this.AddAccessEntry(ircUser, aL);
                         }
                         else
                         {
@@ -217,7 +218,7 @@ namespace helpmebot6.Commands
         /// <returns>
         /// a response
         /// </returns>
-        private CommandResponseHandler AddAccessEntry(LegacyUser newEntry, LegacyUserRights accessLevel)
+        private CommandResponseHandler AddAccessEntry(IUser newEntry, LegacyUserRights accessLevel)
         {
             string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage(

@@ -21,6 +21,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Startup;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Gets the uptime of the bot
@@ -45,7 +46,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Uptime(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Uptime(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

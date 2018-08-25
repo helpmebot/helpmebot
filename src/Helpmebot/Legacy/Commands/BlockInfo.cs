@@ -24,6 +24,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Returns the block information of a wikipedian
@@ -48,7 +49,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Blockinfo(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Blockinfo(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

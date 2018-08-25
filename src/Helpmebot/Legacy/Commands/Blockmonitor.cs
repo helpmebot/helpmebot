@@ -29,6 +29,7 @@ using NHibernate;
 namespace helpmebot6.Commands
 {
     using Helpmebot.Legacy.Transitional;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     [LegacyCommandFlag(LegacyUserRights.Superuser)]
     public class Blockmonitor : GenericCommand
@@ -36,7 +37,7 @@ namespace helpmebot6.Commands
         private ISession databaseSession;
         private IBlockMonitoringService blockMonitorService;
 
-        public Blockmonitor(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Blockmonitor(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
             this.databaseSession = ServiceLocator.Current.GetInstance<ISession>();

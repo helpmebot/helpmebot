@@ -33,6 +33,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The whois.
@@ -55,7 +56,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The command Service Helper.
         /// </param>
-        public Whois(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Whois(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

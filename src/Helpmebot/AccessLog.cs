@@ -24,6 +24,7 @@ namespace Helpmebot
     using Microsoft.Practices.ServiceLocation;
 
     using MySql.Data.MySqlClient;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     ///     Represents the bot access log.
@@ -140,7 +141,7 @@ namespace Helpmebot
             /// <summary>
             /// The user.
             /// </summary>
-            private readonly LegacyUser user;
+            private readonly IUser user;
 
             /// <summary>
             /// The _channel.
@@ -178,7 +179,7 @@ namespace Helpmebot
             /// The required Access Level.
             /// </param>
             public AccessLogEntry(
-                LegacyUser source, 
+                IUser source, 
                 Type command, 
                 bool success, 
                 string channel, 
@@ -285,7 +286,7 @@ namespace Helpmebot
             ///     Gets the access log user.
             /// </summary>
             /// <value>The user.</value>
-            public LegacyUser User
+            public IUser User
             {
                 get
                 {

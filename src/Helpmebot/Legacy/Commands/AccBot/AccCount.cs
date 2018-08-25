@@ -28,7 +28,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
+    using Stwalkerster.IrcClient.Model.Interfaces;
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
@@ -54,7 +54,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Acccount(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Acccount(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
         }

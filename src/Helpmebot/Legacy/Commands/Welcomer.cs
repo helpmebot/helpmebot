@@ -39,6 +39,7 @@ namespace helpmebot6.Commands
     using Microsoft.Practices.ServiceLocation;
 
     using NHibernate;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// Controls the newbie welcomer
@@ -66,7 +67,7 @@ namespace helpmebot6.Commands
         /// <param name="commandServiceHelper">
         /// The message Service.
         /// </param>
-        public Welcomer(LegacyUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
+        public Welcomer(IUser source, string channel, string[] args, ICommandServiceHelper commandServiceHelper)
             : base(source, channel, args, commandServiceHelper)
         {
             this.databaseSession = ServiceLocator.Current.GetInstance<ISession>();
