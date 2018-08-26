@@ -57,6 +57,7 @@
             </parameters>
         </component>
         
+        <!-- Configuration for the Join Message service / Welcomer -->
         <component type="JoinMessageServiceConfiguration">
             <parameters>
                 <rateLimitDuration>10</rateLimitDuration>
@@ -64,6 +65,7 @@
             </parameters>
         </component>
 
+        <!-- Category monitoring -->
         <component type="CategoryWatcherConfiguration">
             <parameters>
                 <enabled>false</enabled>
