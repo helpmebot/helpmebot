@@ -80,6 +80,7 @@
                 <overrideMap>
                     <list>
                         <!-- <item keyword="help" channel="#channel" type="NullCommand" />-->
+                        <item keyword="myaccess" type="NullCommand" />
                     </list>
                 </overrideMap>
             </parameters>

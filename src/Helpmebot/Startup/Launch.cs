@@ -94,6 +94,7 @@
             // process command overrides
             foreach (var mapEntry in this.commandOverrideConfiguration.OverrideMap)
             {
+                this.commandParser.UnregisterCommand(mapEntry.Keyword, mapEntry.Channel);
                 this.commandParser.RegisterCommand(mapEntry.Keyword, mapEntry.Type, mapEntry.Channel);
             }
             
