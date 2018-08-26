@@ -72,11 +72,12 @@
             </parameters>
         </component>
 
+        <!-- Override commands in specific channels -->
         <component type="CommandOverrideConfiguration">
             <parameters>
                 <overrideMap>
                     <list>
-                        <!-- <item keyword="help" channel="##stwalkerster-development" type="MyFlagsCommand" />-->
+                        <!-- <item keyword="help" channel="#channel" type="NullCommand" />-->
                     </list>
                 </overrideMap>
             </parameters>
