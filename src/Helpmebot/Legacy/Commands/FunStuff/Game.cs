@@ -26,7 +26,7 @@ namespace helpmebot6.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [LegacyCommandFlag(LegacyUserRights.Advanced)]
-    class Game : FunCommand
+    public class Game : FunCommand
     {
         /// <summary>
         /// Initialises a new instance of the <see cref="FunCommand"/> class.

@@ -1,6 +1,7 @@
 ﻿namespace Helpmebot.Startup
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Net;
     using System.Threading;
@@ -9,15 +10,9 @@
     using Helpmebot.Configuration;
     using Helpmebot.Repositories.Interfaces;
     using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
 
-    // TODO: replace me with lib interface
-    public interface IApplication
-    {
-        void Stop();
-        void Run();
-    }
-    
     public class Launch : IApplication
     {
         [Obsolete("Move me elsewhere at the earliest opportunity")]
@@ -26,6 +21,8 @@
         private readonly ILogger logger;
         private readonly IIrcClient client;
         private readonly IChannelRepository channelRepository;
+        private readonly ICommandParser commandParser;
+        private readonly CommandOverrideConfiguration commandOverrideConfiguration;
         private readonly ManualResetEvent exitLock;
 
         /// <summary>
@@ -68,12 +65,19 @@
             container.Release(application);
             container.Dispose();
         }
-        
-        public Launch(ILogger logger, IIrcClient client, IChannelRepository channelRepository)
+
+        public Launch(
+            ILogger logger,
+            IIrcClient client,
+            IChannelRepository channelRepository,
+            ICommandParser commandParser,
+            CommandOverrideConfiguration commandOverrideConfiguration)
         {
             this.logger = logger;
             this.client = client;
             this.channelRepository = channelRepository;
+            this.commandParser = commandParser;
+            this.commandOverrideConfiguration = commandOverrideConfiguration;
 
             this.exitLock = new ManualResetEvent(false);
 
@@ -87,6 +91,13 @@
 
         public void Run()
         {
+            // process command overrides
+            foreach (var mapEntry in this.commandOverrideConfiguration.OverrideMap)
+            {
+                this.commandParser.RegisterCommand(mapEntry.Keyword, mapEntry.Type, mapEntry.Channel);
+            }
+            
+            // join the necessary channels
             foreach (var channel in this.channelRepository.GetEnabled())
             {
                 this.client.JoinChannel(channel.Name);

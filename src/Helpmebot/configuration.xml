@@ -71,6 +71,16 @@
                 <crossoverTimeout>30</crossoverTimeout>
             </parameters>
         </component>
+
+        <component type="CommandOverrideConfiguration">
+            <parameters>
+                <overrideMap>
+                    <list>
+                        <!-- <item keyword="help" channel="##stwalkerster-development" type="MyFlagsCommand" />-->
+                    </list>
+                </overrideMap>
+            </parameters>
+        </component>
         
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />

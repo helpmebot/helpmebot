@@ -11,63 +11,69 @@ namespace Helpmebot.Legacy.Transitional
     {
         private readonly ILegacyAccessService legacyAccessService;
 
+        private readonly Dictionary<LegacyUserRights, HashSet<string>> flagMapping =
+            new Dictionary<LegacyUserRights, HashSet<string>>
+            {
+                {
+                    LegacyUserRights.Developer,
+                    new HashSet<string> {Flag.Owner}
+                },
+                {
+                    LegacyUserRights.Superuser,
+                    new HashSet<string>
+                    {
+                        Flags.LegacySuperuser, Flags.AccessControl, Flags.BotManagement, Flags.Brain,
+                        Flags.Configuration, Flags.Uncurl
+                    }
+                },
+                {
+                    LegacyUserRights.Advanced,
+                    new HashSet<string>
+                        {Flags.LegacyAdvanced, Flags.Acc, Flags.Fun, Flags.LocalConfiguration, Flags.Protected}
+                },
+                {
+                    LegacyUserRights.Normal,
+                    new HashSet<string> {Flag.Standard, Flags.BotInfo, Flags.Info}
+                },
+                {
+                    LegacyUserRights.Semiignored,
+                    new HashSet<string> {Flags.LegacySemiignored}
+                },
+            };
+
         public LegacyFlagService(ILegacyAccessService legacyAccessService)
         {
             this.legacyAccessService = legacyAccessService;
+
+            foreach (var processing in this.flagMapping)
+            {
+                foreach (var search in this.flagMapping)
+                {
+                    if (search.Key >= processing.Key)
+                    {
+                        continue;
+                    }
+
+                    foreach (var s in search.Value)
+                    {
+                        processing.Value.Add(s);
+                    }
+                }
+            }
         }
         
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
             var legacyUserRights = this.legacyAccessService.GetLegacyUserRights(user);
 
-            switch (flag)
-            {
-                case Flag.Owner:
-                    return legacyUserRights == LegacyUserRights.Developer;
-                case Flags.LegacySuperuser:
-                    return legacyUserRights == LegacyUserRights.Superuser;
-                case Flags.LegacyAdvanced:
-                    return legacyUserRights == LegacyUserRights.Advanced;
-                case Flag.Standard:
-                    return legacyUserRights == LegacyUserRights.Normal;
-                case Flags.LegacySemiignored:
-                    return legacyUserRights == LegacyUserRights.Semiignored;
-            }
-
-            return false;
+            return this.flagMapping[legacyUserRights].Contains(flag);
         }
 
         public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
         {
-            var flags = new List<string>();
             var legacyUserRights = this.legacyAccessService.GetLegacyUserRights(user);
 
-            if (legacyUserRights >= LegacyUserRights.Semiignored)
-            {
-                flags.Add(Flags.LegacySemiignored);
-            }
-            
-            if (legacyUserRights >= LegacyUserRights.Normal)
-            {
-                flags.Add(Flag.Standard);
-            }
-            
-            if (legacyUserRights >= LegacyUserRights.Advanced)
-            {
-                flags.Add(Flags.LegacyAdvanced);
-            }
-            
-            if (legacyUserRights >= LegacyUserRights.Superuser)
-            {
-                flags.Add(Flags.LegacySuperuser);
-            }
-            
-            if (legacyUserRights >= LegacyUserRights.Developer)
-            {
-                flags.Add(Flag.Owner);
-            }
-
-            return flags;
+            return this.flagMapping[legacyUserRights];
         }
     }
 }
