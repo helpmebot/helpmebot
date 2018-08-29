@@ -140,6 +140,7 @@
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
+    <Compile Include="Model\FlagAccessLogEntry.cs" />
     <Compile Include="Model\Flags.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
     <Compile Include="Persistence\Mappings\CategoryItemMap.cs" />
     <Compile Include="Persistence\Mappings\CategoryWatcherChannelMap.cs" />
+    <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
@@ -364,8 +366,8 @@
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.CommandLib, Version=11.8.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.11.8.32-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=12.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.0.35-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">

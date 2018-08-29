@@ -18,44 +18,14 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Model.Interfaces;
-
 namespace Helpmebot.Services.Interfaces
 {
-    using System;
-    using System.Collections.Generic;
+    using Castle.Core;
 
     /// <summary>
     /// The AccessLogService interface.
     /// </summary>
-    public interface IAccessLogService
+    public interface IAccessLogService : IStartable
     {
-        /// <summary>
-        /// The success.
-        /// </summary>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        void Success(IUser user, Type command, IEnumerable<string> arguments);
-
-        /// <summary>
-        /// The failure.
-        /// </summary>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        void Failure(IUser user, Type command, IEnumerable<string> arguments);
     }
 }
