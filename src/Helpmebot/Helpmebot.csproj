@@ -85,6 +85,8 @@
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
+    <Compile Include="Commands\Brain\ForgetCommand.cs" />
+    <Compile Include="Commands\Brain\LearnCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
@@ -126,7 +128,6 @@
     <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Legacy\Commands\Teach.cs" />
     <Compile Include="Legacy\Commands\Whoami.cs" />
     <Compile Include="Legacy\Commands\Whois.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
@@ -271,7 +272,6 @@
     <Compile Include="Legacy\Commands\Editcount.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />
-    <Compile Include="Legacy\Commands\Forget.cs" />
     <Compile Include="Legacy\Commands\Die.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Trout.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
@@ -279,7 +279,6 @@
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Isgd.cs" />
     <Compile Include="Legacy\Commands\Join.cs" />
-    <Compile Include="Legacy\Commands\Learn.cs" />
     <Compile Include="Legacy\Commands\Link.cs" />
     <Compile Include="Legacy\Commands\MaxLag.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
@@ -366,7 +365,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.CommandLib, Version=12.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.0.35-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.0.36-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
