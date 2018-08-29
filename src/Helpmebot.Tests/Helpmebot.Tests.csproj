@@ -87,7 +87,6 @@
     <Compile Include="Extensions\ListExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\JoinMessageServiceTests.cs" />
-    <Compile Include="Services\KeywordServiceTests.cs" />
     <Compile Include="Services\MessageServiceTests.cs" />
     <Compile Include="Services\RedirectionParserServiceTests.cs" />
     <Compile Include="TestBase.cs" />

@@ -20,92 +20,211 @@
 
 namespace Helpmebot.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
-
     using Castle.Core.Logging;
-
+    using Helpmebot.Commands.Brain;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
-
+    using NHibernate;
     using NHibernate.Criterion;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
-    /// <summary>
-    /// The keyword service.
-    /// </summary>
     public class KeywordService : IKeywordService
     {
-        /// <summary>
-        /// The repository.
-        /// </summary>
-        private readonly IKeywordRepository repository;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
         private readonly ILogger logger;
+        private readonly ICommandParser commandParser;
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="KeywordService"/> class.
-        /// </summary>
-        /// <param name="repository">
-        /// The repository.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        public KeywordService(IKeywordRepository repository, ILogger logger)
+        private readonly ISession session;
+        private readonly object sessionLock = new object();
+
+        private readonly HashSet<string> registeredCommands = new HashSet<string>();
+
+        public KeywordService(ILogger logger, ICommandParser commandParser, ISession session)
         {
-            this.repository = repository;
             this.logger = logger;
+            this.commandParser = commandParser;
+            this.session = session;
         }
 
         /// <summary>
-        /// The delete.
+        /// Deletes a learned word
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to delete.
         /// </param>
         public void Delete(string name)
         {
-            this.repository.Delete(Restrictions.Eq("Name", name));
+            lock (this.sessionLock)
+            {
+                var deleteList = this.session.CreateCriteria<Keyword>()
+                    .Add(Restrictions.Eq("Name", name))
+                    .List<Keyword>();
+
+                foreach (var model in deleteList)
+                {
+                    this.logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
+                    this.session.Delete(model);
+                    this.UnregisterCommand(name);
+                }
+
+                this.session.Flush();
+            }
         }
 
         /// <summary>
-        /// The create.
+        /// Creates a new learned word
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to store and retrieve with
         /// </param>
         /// <param name="response">
-        /// The content.
+        /// The response to give
         /// </param>
         /// <param name="action">
-        /// The action.
+        /// Flag indicating if this response should be given as a CTCP ACTION
         /// </param>
         public void Create(string name, string response, bool action)
         {
-            this.repository.Create(name, response, action);
+            lock (this.sessionLock)
+            {
+                var transaction = this.session.BeginTransaction(IsolationLevel.Serializable);
+
+                if (!transaction.IsActive)
+                {
+                    throw new TransactionException("Could not start transaction!");
+                }
+
+                try
+                {
+                    var existing =
+                        this.session.CreateCriteria<Keyword>()
+                            .Add(Restrictions.Eq("Name", name))
+                            .List<Keyword>()
+                            .FirstOrDefault() ?? new Keyword();
+
+                    existing.Name = name;
+                    existing.Response = response;
+                    existing.Action = action;
+
+                    this.session.SaveOrUpdate(existing);
+
+                    this.logger.Debug("Transactional create function succeeded.");
+                    transaction.Commit();
+                    
+                    this.RegisterCommand(name);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.Error("Transactional create function failed", ex);
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         /// <summary>
-        /// The get.
+        /// Retrieves a stored keyword
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to retrieve.
         /// </param>
         /// <returns>
-        /// The <see cref="string"/>.
+        /// An object representing the keyword
         /// </returns>
         public Keyword Get(string name)
         {
-            var existing = this.repository.GetByName(name).ToList();
-            if (existing.Any())
+            IList<Keyword> existing;
+            lock (this.sessionLock)
             {
-                return existing.First();
+                existing = this.session.CreateCriteria<Keyword>().Add(Restrictions.Eq("Name", name)).List<Keyword>();
             }
 
-            return null;
+            return existing.FirstOrDefault();
         }
+
+        public void Start()
+        {
+            IList<Keyword> keywords;
+            lock (this.sessionLock)
+            {
+                keywords = this.session.CreateCriteria<Keyword>().List<Keyword>();
+            }
+
+            this.logger.InfoFormat("Populating command parser with {0} stored responses", keywords.Count);
+
+            foreach (var keyword in keywords)
+            {
+                this.RegisterCommand(keyword.Name);
+            }
+            
+            lock (this.registeredCommands)
+            {
+                this.logger.InfoFormat("Registered {0} stored responses in command parser", this.registeredCommands.Count);
+            }
+        }
+        
+        public void Stop()
+        {
+            HashSet<string> set;
+            lock (this.registeredCommands)
+            {
+                set = new HashSet<string>(this.registeredCommands);
+                this.logger.InfoFormat(
+                    "Shutting down keyword service with {0} registered commands",
+                    this.registeredCommands.Count);
+            }
+
+            foreach (var command in set)
+            {
+                this.UnregisterCommand(command);
+            }
+        }
+
+        private void RegisterCommand(string keywordName)
+        {
+            if (!this.UnregisterCommand(keywordName))
+            {
+                return;
+            }
+
+            this.commandParser.RegisterCommand(keywordName, typeof(BrainRetrievalCommand));
+            
+            lock (this.registeredCommands)
+            {
+                this.registeredCommands.Add(keywordName);
+            }
+
+            this.logger.DebugFormat("Registered keyword {0}.", keywordName);
+        }
+
+        private bool UnregisterCommand(string keywordName)
+        {
+            var existingCommand = this.commandParser.GetRegisteredCommand(keywordName);
+            if (existingCommand != null)
+            {
+                if (existingCommand != typeof(BrainRetrievalCommand))
+                {
+                    this.logger.WarnFormat(
+                        "Could not unregister keyword {0} with command parser as this command is not a keyword command.",
+                        keywordName);
+                    return false;
+                }
+
+                this.logger.DebugFormat("Unregistered keyword {0}.", keywordName);
+
+                lock (this.registeredCommands)
+                {
+                    this.registeredCommands.Remove(keywordName);
+                }
+
+                this.commandParser.UnregisterCommand(keywordName);
+            }
+
+            return true;
+        }
+
     }
 }

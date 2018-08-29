@@ -20,12 +20,13 @@
 
 namespace Helpmebot.Services.Interfaces
 {
+    using Castle.Core;
     using Helpmebot.Model;
 
     /// <summary>
     /// The KeywordService interface.
     /// </summary>
-    public interface IKeywordService
+    public interface IKeywordService : IStartable
     {
         /// <summary>
         /// The delete.

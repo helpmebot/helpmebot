@@ -187,72 +187,8 @@ namespace Helpmebot.Legacy
 
                 return;
             }
-
-            /*
-             * Check for a learned word
-             */
-            {
-                // FIXME: ServiceLocator - keywordservice
-                var keywordService = ServiceLocator.Current.GetInstance<IKeywordService>();
-
-                Keyword keyword = keywordService.Get(command);
-
-                var crh = new CommandResponseHandler();
-                string directedTo = string.Empty;
-                if (keyword != null)
-                {
-                    if (this.legacyAccessService.GetLegacyUserRights(source) < LegacyUserRights.Normal)
-                    {
-                        this.logger.InfoFormat("Access denied for keyword retrieval for {0}", source);
-
-                        var messageService1 = this.commandServiceHelper.MessageService;
-                        crh.Respond(
-                            messageService1.RetrieveMessage(Messages.OnAccessDenied, destination, null),
-                            CommandResponseDestination.PrivateMessage);
-
-                        string[] accessDeniedArguments = {source.ToString(), MethodBase.GetCurrentMethod().Name};
-                        crh.Respond(
-                            messageService1.RetrieveMessage("accessDeniedDebug", destination, accessDeniedArguments),
-                            CommandResponseDestination.ChannelDebug);
-                    }
-                    else
-                    {
-                        string wordResponse = keyword.Response;
-
-                        IDictionary<string, object> dict = new Dictionary<string, object>();
-
-                        dict.Add("username", source.Username);
-                        dict.Add("nickname", source.Nickname);
-                        dict.Add("hostname", source.Hostname);
-                        dict.Add("AccessLevel", this.legacyAccessService.GetLegacyUserRights(source));
-                        dict.Add("channel", destination);
-
-                        for (int i = 0; i < args.Length; i++)
-                        {
-                            dict.Add(i.ToString(CultureInfo.InvariantCulture), args[i]);
-                            dict.Add(i + "*", string.Join(" ", args, i, args.Length - i));
-                        }
-
-                        wordResponse = wordResponse.FormatWith(dict);
-
-                        if (keyword.Action)
-                        {
-                            crh.Respond(wordResponse.SetupForCtcp("ACTION"));
-                        }
-                        else
-                        {
-                            var redirectionResult = this.redirectionParserService.Parse(args);
-
-                            directedTo = redirectionResult.Destination;
-                            args = redirectionResult.Message.ToArray();
-
-                            crh.Respond(wordResponse);
-                        }
-
-                        this.HandleCommandResponseHandler(source, destination, directedTo, crh);
-                    }
-                }
-            }
+            
+            // Learned word stuff is now handed by the new command parser
         }
 
         private static bool ParseRawLineForMessage(ref string message, string nickname, string trigger)
