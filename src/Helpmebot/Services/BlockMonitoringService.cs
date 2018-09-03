@@ -54,6 +54,8 @@ namespace Helpmebot.Services
 
         private readonly IBlockMonitorRepository blockMonitorRepository;
         private readonly IChannelRepository channelRepository;
+        private readonly ILinkerService linkerService;
+        private readonly IUrlShorteningService urlShorteningService;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -61,12 +63,16 @@ namespace Helpmebot.Services
             ILogger logger,
             IMediaWikiSiteRepository mediaWikiSiteRepository,
             IBlockMonitorRepository blockMonitorRepository,
-            IChannelRepository channelRepository)
+            IChannelRepository channelRepository,
+            ILinkerService linkerService,
+            IUrlShorteningService urlShorteningService)
         {
             this.logger = logger;
             this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.blockMonitorRepository = blockMonitorRepository;
             this.channelRepository = channelRepository;
+            this.linkerService = linkerService;
+            this.urlShorteningService = urlShorteningService;
 
             // initialise the store
             foreach (var blockMonitor in this.blockMonitorRepository.Get())
@@ -131,16 +137,19 @@ namespace Helpmebot.Services
 
                     foreach (var blockInformation in blockInformationData)
                     {
-                        var message = string.Format(
-                            "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3}",
-                            user.Nickname,
-                            channel,
-                            blockInformation.Target,
-                            blockInformation.BlockReason,
-                            ipInfo);
-
                         foreach (var c in alertChannel)
                         {
+                            var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
+                            url = this.urlShorteningService.Shorten(url);
+                            
+                            var message = string.Format(
+                                "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3} ( {5} )",
+                                user.Nickname,
+                                channel,
+                                blockInformation.Target,
+                                blockInformation.BlockReason,
+                                ipInfo,
+                                url);
                             client.SendMessage(c, message);
                         }
                     }
@@ -149,15 +158,19 @@ namespace Helpmebot.Services
                 var userBlockInfo = mediaWikiSite.GetBlockInformation(user.Nickname);
                 foreach (var blockInformation in userBlockInfo)
                 {
-                    var message = string.Format(
-                        "Joined user {0} in channel {1} is blocked ({2}) because: {3}",
-                        user.Nickname,
-                        channel,
-                        blockInformation.Target,
-                        blockInformation.BlockReason);
-
                     foreach (var c in alertChannel)
                     {
+                        var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
+                        url = this.urlShorteningService.Shorten(url);
+                        
+                        var message = string.Format(
+                            "Joined user {0} in channel {1} is blocked ({2}) because: {3} ( {4} )",
+                            user.Nickname,
+                            channel,
+                            blockInformation.Target,
+                            blockInformation.BlockReason,
+                            url);
+                        
                         client.SendMessage(c, message);
                     }
                 }
