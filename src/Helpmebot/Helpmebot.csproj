@@ -84,6 +84,7 @@
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
+    <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
     <Compile Include="Commands\Brain\ForgetCommand.cs" />
     <Compile Include="Commands\Brain\LearnCommand.cs" />
@@ -93,6 +94,7 @@
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
     <Compile Include="Configuration\BotConfiguration.cs" />
     <Compile Include="Configuration\JoinMessageServiceConfiguration.cs" />
+    <Compile Include="Configuration\MediaWikiDocumentationConfiguration.cs" />
     <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
     <Compile Include="Exceptions\MediawikiApiException.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
@@ -214,26 +216,32 @@
     <Compile Include="Services\ConfigurationProvider.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeoloationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
+    <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
+    <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
     <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
     <Compile Include="Services\Interfaces\ILinkerService.cs" />
+    <Compile Include="Services\Interfaces\IMediaWikiBotService.cs" />
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\ChannelManagementService.cs" />
+    <Compile Include="Services\Interfaces\IWebServiceClient.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\LinkerService.cs" />
+    <Compile Include="Services\MediaWikiBotService.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\HmbUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
     <Compile Include="Services\UserFlagService.cs" />
+    <Compile Include="Services\WebServiceClient.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
@@ -364,8 +372,8 @@
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.CommandLib, Version=12.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.0.36-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=12.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.1.37-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">

@@ -85,6 +85,16 @@
                 </overrideMap>
             </parameters>
         </component>
+
+        <!-- Configuration for wiki to write help data to -->
+        <component type="MediaWikiDocumentationConfiguration">
+            <parameters>
+                <username></username>
+                <password></password>
+                <apiBase>https://helpmebot.org.uk/w/api.php</apiBase>
+                <documentationPrefix>CmdAutogen:Command/</documentationPrefix>
+            </parameters>
+        </component>
         
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
