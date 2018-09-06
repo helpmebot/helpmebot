@@ -85,9 +85,13 @@
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
+    <Compile Include="Commands\ACC\AccCountCommand.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
     <Compile Include="Commands\Brain\ForgetCommand.cs" />
     <Compile Include="Commands\Brain\LearnCommand.cs" />
+    <Compile Include="Commands\Diagnostics\RawCommand.cs" />
+    <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
+    <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
@@ -102,7 +106,6 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Legacy\CommandServiceHelper.cs" />
-    <Compile Include="Legacy\Commands\AccBot\AccCount.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
     <Compile Include="Legacy\Commands\AccBot\AccDeploy.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="Legacy\Commands\Refresh.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
-    <Compile Include="ExtensionMethods\CtcpExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Commands\Whoami.cs" />
@@ -294,8 +296,6 @@
     <Compile Include="Legacy\Commands\Part.cs" />
     <Compile Include="Legacy\Commands\Ping.cs" />
     <Compile Include="Legacy\Commands\ProtectedCommand.cs" />
-    <Compile Include="Legacy\Commands\Raw.cs" />
-    <Compile Include="Legacy\Commands\Rawctcp.cs" />
     <Compile Include="Legacy\Commands\Registration.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Rights.cs" />
@@ -304,7 +304,6 @@
     <Compile Include="Legacy\Commands\Time.cs" />
     <Compile Include="Legacy\Commands\Uptime.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
-    <Compile Include="Legacy\Commands\Version.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />

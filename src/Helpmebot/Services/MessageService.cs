@@ -14,6 +14,9 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
+using Stwalkerster.IrcClient.Extensions;
+
 namespace Helpmebot.Services
 {
     using System;
@@ -24,7 +27,7 @@ namespace Helpmebot.Services
 
     using Castle.Core.Logging;
 
-    using Helpmebot.ExtensionMethods;
+    
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
