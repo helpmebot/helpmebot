@@ -93,6 +93,7 @@
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
     <Compile Include="Commands\Brain\ForgetCommand.cs" />
     <Compile Include="Commands\Brain\LearnCommand.cs" />
+    <Compile Include="Commands\Diagnostics\QuitCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
@@ -282,7 +283,6 @@
     <Compile Include="Legacy\Commands\Editcount.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />
-    <Compile Include="Legacy\Commands\Die.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Trout.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
     <Compile Include="Legacy\Commands\Geolocate.cs" />
