@@ -93,6 +93,7 @@
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
+    <Compile Include="Commands\TimeCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
@@ -115,7 +116,6 @@
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
     <Compile Include="Legacy\Commands\Blockmonitor.cs" />
-    <Compile Include="Legacy\Commands\Date.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Champagne.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Chillpill.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Game.cs" />
@@ -301,7 +301,6 @@
     <Compile Include="Legacy\Commands\Rights.cs" />
     <Compile Include="Legacy\Commands\FunStuff\SayHi.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
-    <Compile Include="Legacy\Commands\Time.cs" />
     <Compile Include="Legacy\Commands\Uptime.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
