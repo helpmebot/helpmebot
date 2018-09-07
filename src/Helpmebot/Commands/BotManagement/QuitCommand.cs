@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.Diagnostics
+namespace Helpmebot.Commands.BotManagement
 {
     using System.Collections.Generic;
     using System.Linq;

@@ -88,12 +88,12 @@
     <Compile Include="Commands\ACC\AccStatsCommand.cs" />
     <Compile Include="Commands\ACC\AccStatusCommand.cs" />
     <Compile Include="Commands\BotInfo\TimeCommand.cs" />
+    <Compile Include="Commands\BotManagement\QuitCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
     <Compile Include="Commands\Brain\ForgetCommand.cs" />
     <Compile Include="Commands\Brain\LearnCommand.cs" />
-    <Compile Include="Commands\Diagnostics\QuitCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
