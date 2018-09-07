@@ -47,6 +47,7 @@ namespace Helpmebot.Commands.ACC
         }
 
         [RequiredArguments(1)]
+        [Help("<branch>", "Deploys the specified branch to the ACC sandbox environment")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var apiDeployPassword = this.botConfiguration.AccDeploymentPassword;
