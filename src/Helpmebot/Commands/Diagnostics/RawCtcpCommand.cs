@@ -2,9 +2,7 @@ namespace Helpmebot.Commands.Diagnostics
 {
     using System.Collections.Generic;
     using System.Linq;
-
     using Castle.Core.Logging;
-
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -13,7 +11,7 @@ namespace Helpmebot.Commands.Diagnostics
     using Stwalkerster.IrcClient.Extensions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    
+
     [CommandFlag(Flag.Owner)]
     [CommandInvocation("rawctcp")]
     public class RawCtcpCommand : CommandBase
@@ -25,7 +23,13 @@ namespace Helpmebot.Commands.Diagnostics
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(commandSource, user, arguments, logger, flagService, configurationProvider,
+            IIrcClient client) : base(
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
+            configurationProvider,
             client)
         {
         }
@@ -37,9 +41,9 @@ namespace Helpmebot.Commands.Diagnostics
             var command = this.Arguments.First();
             var destination = this.Arguments.Skip(1).First();
             var content = string.Join(" ", this.Arguments.Skip(2));
-            
+
             this.Client.SendMessage(destination, content.SetupForCtcp(command));
-            
+
             yield break;
         }
     }

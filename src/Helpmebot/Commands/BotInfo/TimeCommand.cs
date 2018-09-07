@@ -11,10 +11,10 @@
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    
+
     [CommandInvocation("time")]
     [CommandInvocation("date")]
-    [CommandFlag(Flags.Info)]
+    [CommandFlag(Flags.BotInfo)]
     public class TimeCommand : CommandBase
     {
         private readonly IMessageService messageService;
@@ -28,7 +28,13 @@
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IMessageService messageService) : base(
-            commandSource, user, arguments, logger, flagService, configurationProvider, client)
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
+            configurationProvider,
+            client)
         {
             this.messageService = messageService;
         }
@@ -38,15 +44,15 @@
         {
             string[] messageParams =
             {
-                this.User.Nickname, DateTime.Now.DayOfWeek.ToString(), 
-                DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"), 
-                DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"), 
+                this.User.Nickname, DateTime.Now.DayOfWeek.ToString(),
+                DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"),
+                DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
                 DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")
             };
-            
+
             string message = this.messageService.RetrieveMessage(
-                "cmdTime", 
-                this.CommandSource, 
+                "cmdTime",
+                this.CommandSource,
                 messageParams);
 
             yield return new CommandResponse {Message = message};

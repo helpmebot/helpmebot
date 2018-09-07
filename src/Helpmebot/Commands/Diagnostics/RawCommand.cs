@@ -1,9 +1,7 @@
 namespace Helpmebot.Commands.Diagnostics
 {
     using System.Collections.Generic;
-
     using Castle.Core.Logging;
-
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -12,8 +10,7 @@ namespace Helpmebot.Commands.Diagnostics
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    
-    
+
     [CommandFlag(Flag.Owner)]
     [CommandInvocation("raw")]
     public class RawCommand : CommandBase
@@ -25,7 +22,13 @@ namespace Helpmebot.Commands.Diagnostics
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(commandSource, user, arguments, logger, flagService, configurationProvider,
+            IIrcClient client) : base(
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
+            configurationProvider,
             client)
         {
         }

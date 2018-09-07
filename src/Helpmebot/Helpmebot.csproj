@@ -84,6 +84,7 @@
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
+    <Compile Include="Commands\BotInfo\TimeCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
-    <Compile Include="Commands\TimeCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />

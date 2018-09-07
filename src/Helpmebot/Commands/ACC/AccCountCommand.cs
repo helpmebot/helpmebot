@@ -5,20 +5,16 @@ namespace Helpmebot.Commands.ACC
     using System.Net;
     using System.Web;
     using System.Xml.XPath;
-
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
     using Castle.Core.Logging;
-
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    
     using HttpRequest = Helpmebot.HttpRequest;
 
     [CommandFlag(Flags.Acc)]
@@ -35,7 +31,12 @@ namespace Helpmebot.Commands.ACC
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService) : base(commandSource, user, arguments, logger, flagService,
+            IMessageService messageService) : base(
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
             configurationProvider,
             client)
         {
@@ -74,7 +75,6 @@ namespace Helpmebot.Commands.ACC
                 return new[] {new CommandResponse {Message = e.Message}};
             }
 
-
             var nav = new XPathDocument(httpResponseData.ToStream()).CreateNavigator();
 
             var isMissing = nav.SelectSingleNode("//user/@missing") != null;
@@ -97,7 +97,8 @@ namespace Helpmebot.Commands.ACC
 
             if (userLevelNode.Value == "Admin")
             {
-                messageParams[4] = this.messageService.RetrieveMessage("CmdAccCountAdmin",
+                messageParams[4] = this.messageService.RetrieveMessage(
+                    "CmdAccCountAdmin",
                     this.CommandSource,
                     new[]
                     {
