@@ -20,12 +20,23 @@
 
 namespace Helpmebot.Services.Interfaces
 {
+    using System;
     using Castle.Core;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The AccessLogService interface.
     /// </summary>
     public interface IAccessLogService : IStartable
     {
+        void SaveLogEntry(
+            Type commandType,
+            string invocation,
+            IUser commandUser,
+            string context,
+            string mainCommandFlags,
+            string subCommandFlags,
+            CommandAclStatus aclStatus);
     }
 }

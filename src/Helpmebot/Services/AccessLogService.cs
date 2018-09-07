@@ -29,6 +29,7 @@ namespace Helpmebot.Services
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The access log service.
@@ -58,21 +59,41 @@ namespace Helpmebot.Services
 
         private void OnCommandExecuted(object sender, CommandExecutedEventArgs e)
         {
+            this.SaveLogEntry(
+                e.Command.GetType(),
+                e.Command.InvokedAs + " " + e.Command.OriginalArguments,
+                e.Command.User,
+                e.Command.CommandSource,
+                e.Command.ExecutionStatus.MainFlags,
+                e.Command.ExecutionStatus.SubcommandFlags,
+                e.Command.ExecutionStatus.AclStatus);
+        }
+
+        public void SaveLogEntry(
+            Type commandType,
+            string invocation,
+            IUser commandUser,
+            string context,
+            string mainCommandFlags,
+            string subCommandFlags,
+            CommandAclStatus aclStatus)
+        {
             var entry = new FlagAccessLogEntry();
+
             entry.Timestamp = DateTime.Now;
-            entry.Class = e.Command.GetType().FullName;
-            entry.Invocation = e.Command.InvokedAs + " " + e.Command.OriginalArguments;
-            entry.Nickname = e.Command.User.Nickname;
-            entry.Username = e.Command.User.Username;
-            entry.Hostname = e.Command.User.Hostname;
-            entry.Account = e.Command.User.Account;
-            entry.Context = e.Command.CommandSource;
-            entry.AvailableFlags = this.flagService.GetFlagsForUser(e.Command.User, e.Command.CommandSource)
+            entry.Class = commandType.FullName;
+            entry.Invocation = invocation;
+            entry.Nickname = commandUser.Nickname;
+            entry.Username = commandUser.Username;
+            entry.Hostname = commandUser.Hostname;
+            entry.Account = commandUser.Account;
+            entry.Context = context;
+            entry.AvailableFlags = this.flagService.GetFlagsForUser(commandUser, context)
                 .Aggregate(string.Empty, (s, i) => s + i);
-            entry.RequiredMainCommand = e.Command.ExecutionStatus.MainFlags;
-            entry.RequiredSubCommand = e.Command.ExecutionStatus.SubcommandFlags;
-            entry.Result = e.Command.ExecutionStatus.AclStatus.ToString();
-            
+            entry.RequiredMainCommand = mainCommandFlags;
+            entry.RequiredSubCommand = subCommandFlags;
+            entry.Result = aclStatus.ToString();
+
             var txn = this.session.BeginTransaction(IsolationLevel.Serializable);
             this.session.Save(entry);
             txn.Commit();

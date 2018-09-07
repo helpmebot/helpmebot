@@ -90,6 +90,8 @@
     <Compile Include="Commands\BotInfo\PingCommand.cs" />
     <Compile Include="Commands\BotInfo\TimeCommand.cs" />
     <Compile Include="Commands\BotInfo\UptimeCommand.cs" />
+    <Compile Include="Commands\BotManagement\JoinChannelCommand.cs" />
+    <Compile Include="Commands\BotManagement\PartChannelCommand.cs" />
     <Compile Include="Commands\BotManagement\QuitCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
@@ -290,12 +292,10 @@
     <Compile Include="Legacy\Commands\Geolocate.cs" />
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Isgd.cs" />
-    <Compile Include="Legacy\Commands\Join.cs" />
     <Compile Include="Legacy\Commands\Link.cs" />
     <Compile Include="Legacy\Commands\MaxLag.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
-    <Compile Include="Legacy\Commands\Part.cs" />
     <Compile Include="Legacy\Commands\Registration.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Rights.cs" />
