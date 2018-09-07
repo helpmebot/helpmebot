@@ -1,6 +1,5 @@
-﻿namespace Helpmebot.Commands.BotInfo
+namespace Helpmebot.Commands.BotInfo
 {
-    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Model;
@@ -12,14 +11,13 @@
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("time")]
-    [CommandInvocation("date")]
+    [CommandInvocation("ping")]
     [CommandFlag(Flags.BotInfo)]
-    public class TimeCommand : CommandBase
+    public class PingCommand : CommandBase
     {
         private readonly IMessageService messageService;
 
-        public TimeCommand(
+        public PingCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -39,21 +37,22 @@
             this.messageService = messageService;
         }
 
-        [Help("", "Returns the current UTC date and time")]
+        [Help("[username]", "Replies to a ping with a pong")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            string[] messageParams =
-            {
-                this.User.Nickname, DateTime.Now.DayOfWeek.ToString(),
-                DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"),
-                DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
-                DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")
-            };
+            string name;
+            string message;
 
-            string message = this.messageService.RetrieveMessage(
-                "cmdTime",
-                this.CommandSource,
-                messageParams);
+            if (this.Arguments.Count == 0)
+            {
+                name = this.User.Nickname;
+                message = this.messageService.RetrieveMessage("cmdPing", this.CommandSource, new[] { name });
+            }
+            else
+            {
+                name = string.Join(" ", this.Arguments);
+                message = this.messageService.RetrieveMessage("cmdPingUser", this.CommandSource, new[] { name });
+            }
 
             yield return new CommandResponse {Message = message};
         }

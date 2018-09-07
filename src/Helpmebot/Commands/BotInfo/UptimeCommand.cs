@@ -1,10 +1,10 @@
-﻿namespace Helpmebot.Commands.BotInfo
+namespace Helpmebot.Commands.BotInfo
 {
-    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+    using Helpmebot.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -12,14 +12,14 @@
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("time")]
-    [CommandInvocation("date")]
+    [CommandInvocation("uptime")]
     [CommandFlag(Flags.BotInfo)]
-    public class TimeCommand : CommandBase
+    public class UptimeCommand : CommandBase
     {
         private readonly IMessageService messageService;
+        private readonly IApplication application;
 
-        public TimeCommand(
+        public UptimeCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -27,7 +27,8 @@
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IApplication application) : base(
             commandSource,
             user,
             arguments,
@@ -37,24 +38,22 @@
             client)
         {
             this.messageService = messageService;
+            this.application = application;
         }
 
-        [Help("", "Returns the current UTC date and time")]
+        [Help("", "Returns the current uptime of the bot")]
         protected override IEnumerable<CommandResponse> Execute()
         {
+            var startupTime = ((Launch)this.application).StartupTime;
+            
             string[] messageParams =
             {
-                this.User.Nickname, DateTime.Now.DayOfWeek.ToString(),
-                DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString("00"),
-                DateTime.Now.Day.ToString("00"), DateTime.Now.Hour.ToString("00"),
-                DateTime.Now.Minute.ToString("00"), DateTime.Now.Second.ToString("00")
+                startupTime.DayOfWeek.ToString(), 
+                startupTime.ToLongDateString(), 
+                startupTime.ToLongTimeString()
             };
 
-            string message = this.messageService.RetrieveMessage(
-                "cmdTime",
-                this.CommandSource,
-                messageParams);
-
+            var message = this.messageService.RetrieveMessage("cmdUptimeUpSince", this.CommandSource, messageParams);
             yield return new CommandResponse {Message = message};
         }
     }

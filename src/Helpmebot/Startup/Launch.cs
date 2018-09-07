@@ -15,15 +15,14 @@
 
     public class Launch : IApplication
     {
-        [Obsolete("Move me elsewhere at the earliest opportunity")]
-        public static readonly DateTime StartupTime = DateTime.Now;
-        
         private readonly ILogger logger;
         private readonly IIrcClient client;
         private readonly IChannelRepository channelRepository;
         private readonly ICommandParser commandParser;
         private readonly CommandOverrideConfiguration commandOverrideConfiguration;
         private readonly ManualResetEvent exitLock;
+        
+        public DateTime StartupTime { get; private set; }
 
         /// <summary>
         /// The main.
@@ -78,6 +77,8 @@
             this.channelRepository = channelRepository;
             this.commandParser = commandParser;
             this.commandOverrideConfiguration = commandOverrideConfiguration;
+            
+            this.StartupTime = DateTime.Now;
 
             this.exitLock = new ManualResetEvent(false);
 

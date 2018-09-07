@@ -87,7 +87,9 @@
     <Compile Include="Commands\ACC\AccDeployCommand.cs" />
     <Compile Include="Commands\ACC\AccStatsCommand.cs" />
     <Compile Include="Commands\ACC\AccStatusCommand.cs" />
+    <Compile Include="Commands\BotInfo\PingCommand.cs" />
     <Compile Include="Commands\BotInfo\TimeCommand.cs" />
+    <Compile Include="Commands\BotInfo\UptimeCommand.cs" />
     <Compile Include="Commands\BotManagement\QuitCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
@@ -294,14 +296,11 @@
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="Legacy\Commands\Part.cs" />
-    <Compile Include="Legacy\Commands\Ping.cs" />
-    <Compile Include="Legacy\Commands\ProtectedCommand.cs" />
     <Compile Include="Legacy\Commands\Registration.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Rights.cs" />
     <Compile Include="Legacy\Commands\FunStuff\SayHi.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
-    <Compile Include="Legacy\Commands\Uptime.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
