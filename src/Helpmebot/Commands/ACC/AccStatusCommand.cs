@@ -15,7 +15,7 @@ namespace Helpmebot.Commands.ACC
     using Stwalkerster.IrcClient.Model.Interfaces;
     using HttpRequest = Helpmebot.HttpRequest;
 
-    [CommandInvocation("accstats")]
+    [CommandInvocation("accstatus")]
     [CommandFlag(Flags.Acc)]
     public class AccStatusCommand : CommandBase
     {
