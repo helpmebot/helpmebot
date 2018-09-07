@@ -27,6 +27,9 @@
             this.client = client;
             this.flagService = flagService;
             this.accessLogService = accessLogService;
+
+            this.client.InviteReceivedEvent += this.OnInvite;
+            this.client.WasKickedEvent += this.OnKicked;
         }
 
         public void JoinChannel(string channelName, ISession localSession)
@@ -75,12 +78,12 @@
 
         public void OnInvite(object sender, InviteEventArgs e)
         {
-            const string flagRequired = Flags.BotManagement;
+            const string FlagRequired = Flags.BotManagement;
             
             this.flagService.GetFlagsForUser(e.User, e.Channel);
             CommandAclStatus aclStatus;
 
-            var userIsAllowed = this.flagService.UserHasFlag(e.User, flagRequired, e.Channel);
+            var userIsAllowed = this.flagService.UserHasFlag(e.User, FlagRequired, e.Channel);
             if (!userIsAllowed)
             {
                 aclStatus = CommandAclStatus.DeniedMain;
@@ -96,7 +99,7 @@
                 "INVITE " + e.Channel,
                 e.User,
                 "INVITE",
-                flagRequired,
+                FlagRequired,
                 null,
                 aclStatus);
         }

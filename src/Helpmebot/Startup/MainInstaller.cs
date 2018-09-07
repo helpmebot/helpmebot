@@ -66,9 +66,6 @@
                     .ImplementedBy<IrcClient>()
                     .Start()
                     .PublishEvent(
-                        p => p.InviteReceivedEvent += null,
-                        x => x.To<ChannelManagementService>(l => l.OnInvite(null, null)))
-                    .PublishEvent(
                         p => p.JoinReceivedEvent += null,
                         x => x
                             .To<JoinMessageService>(l => l.OnJoinEvent(null, null))
@@ -80,9 +77,6 @@
                             .To<LegacyCommandHandler>(l => l.ReceivedMessage(null, null))
                             .To<CommandHandler>(l => l.OnMessageReceived(null, null))
                     )
-                    .PublishEvent(
-                        p => p.WasKickedEvent += null,
-                        x => x.To<ChannelManagementService>(l => l.OnKicked(null, null)))
             );
         }
     }
