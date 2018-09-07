@@ -84,6 +84,9 @@
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="CommandResponse.cs" />
+    <Compile Include="Commands\ACC\AccDeployCommand.cs" />
+    <Compile Include="Commands\ACC\AccStatsCommand.cs" />
+    <Compile Include="Commands\ACC\AccStatusCommand.cs" />
     <Compile Include="Commands\BotInfo\TimeCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
@@ -107,9 +110,6 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Legacy\CommandServiceHelper.cs" />
-    <Compile Include="Legacy\Commands\AccBot\AccStats.cs" />
-    <Compile Include="Legacy\Commands\AccBot\AccStatus.cs" />
-    <Compile Include="Legacy\Commands\AccBot\AccDeploy.cs" />
     <Compile Include="Legacy\Commands\Access.cs" />
     <Compile Include="Legacy\Commands\Afcbacklog.cs" />
     <Compile Include="Legacy\Commands\Afccount.cs" />
