@@ -60,17 +60,17 @@ namespace Helpmebot.Commands.ACC
 
             string[] messageParams =
             {
-                nav.SelectSingleNode("open").Value,
-                nav.SelectSingleNode("admin").Value,
-                nav.SelectSingleNode("checkuser").Value,
-                nav.SelectSingleNode("hold").Value,
-                nav.SelectSingleNode("proxy").Value,
+                nav.SelectSingleNode("//status/@open").Value,
+                nav.SelectSingleNode("//status/@admin").Value,
+                nav.SelectSingleNode("//status/@checkuser").Value,
+                nav.SelectSingleNode("//status/@hold").Value,
+                nav.SelectSingleNode("//status/@proxy").Value,
 
-                nav.SelectSingleNode("bans").Value,
+                nav.SelectSingleNode("//status/@bans").Value,
 
-                nav.SelectSingleNode("useradmin").Value,
-                nav.SelectSingleNode("user").Value,
-                nav.SelectSingleNode("usernew").Value
+                nav.SelectSingleNode("//status/@useradmin").Value,
+                nav.SelectSingleNode("//status/@user").Value,
+                nav.SelectSingleNode("//status/@usernew").Value
             };
 
             var message = this.messageService.RetrieveMessage("CmdAccStatus", this.CommandSource, messageParams);

@@ -88,7 +88,7 @@ namespace Helpmebot.Commands.ACC
                 username, // username
                 nav.SelectSingleNode("//user/@status").Value, // accesslevel
                 nav.SelectSingleNode("//user/@lastactive").Value,
-                nav.SelectSingleNode("//user/@welcome_template").ValueAsInt == 0
+                nav.SelectSingleNode("//user/@welcome_template").Value == string.Empty
                     ? "disabled"
                     : "enabled",
                 nav.SelectSingleNode("//user/@onwikiname").Value
