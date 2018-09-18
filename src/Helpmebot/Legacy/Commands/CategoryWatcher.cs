@@ -26,6 +26,7 @@ namespace helpmebot6.Commands
     using Helpmebot.Background.Interfaces;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
+    using Helpmebot.Legacy.Transitional;
     using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -36,6 +37,7 @@ namespace helpmebot6.Commands
     /// so will behave slightly differently to other command classes.
     /// </para>
     /// </summary>
+    [LegacyCommandFlag(LegacyUserRights.Semiignored)]
     internal class CategoryWatcher : GenericCommand
     {
         /// <summary>
