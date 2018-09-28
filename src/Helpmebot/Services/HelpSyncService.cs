@@ -6,6 +6,7 @@ namespace Helpmebot.Services
     using System.Reflection;
     using System.Text;
     using Castle.Core.Internal;
+    using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -53,9 +54,16 @@ namespace Helpmebot.Services
             var commandList = new List<CommandListEntry>();
             foreach (var commandClass in types)
             {
-                string pageName, canonicalName;
+                string pageName, canonicalName, mainFlags, category;
                 List<string> aliases;
-                var pageContent = this.CreateHelpPage(commandClass, out pageName, out canonicalName, out aliases);
+                
+                var pageContent = this.CreateHelpPage(
+                    commandClass,
+                    out pageName,
+                    out canonicalName,
+                    out aliases,
+                    out mainFlags,
+                    out category);
 
                 if (pageContent == null)
                 {
@@ -72,15 +80,16 @@ namespace Helpmebot.Services
                 
                 pagesInPrefix.Remove(pageName);
                 
-                commandList.Add(new CommandListEntry(pageName, canonicalName, canonicalName));
+                commandList.Add(new CommandListEntry(pageName, canonicalName, canonicalName, mainFlags, category));
                 foreach (var alias in aliases)
                 {
-                    commandList.Add(new CommandListEntry(pageName, alias, canonicalName));
+                    commandList.Add(new CommandListEntry(pageName, alias, canonicalName, mainFlags, category));
                 }
             }
 
-            var clBuilder = new StringBuilder("{| class=\"wikitable\"\n!Invoke as\n!Help page\n");
+            var clBuilder = new StringBuilder("{| class=\"wikitable\"\n!Command\n!Help page\n");
             var allHelpBuilder = new StringBuilder();
+            var catMap = new Dictionary<string, StringBuilder>();
             foreach (var entry in commandList.OrderBy(x => x.Alias))
             {
                 clBuilder.Append("|-\n");
@@ -94,7 +103,13 @@ namespace Helpmebot.Services
 
                 if (entry.Alias == entry.Canonical)
                 {
-                    allHelpBuilder.AppendFormat("{{{{{0}}}}}", entry.PageName).AppendLine();    
+                    allHelpBuilder.AppendFormat("{{{{{0}}}}}", entry.PageName).AppendLine();
+                    
+                    if (!catMap.ContainsKey(entry.Category))
+                    {
+                        catMap.Add(entry.Category, new StringBuilder());
+                    }
+                    catMap[entry.Category].AppendFormat("{{{{{0}}}}}", entry.PageName).AppendLine();
                 }
             }
 
@@ -102,18 +117,31 @@ namespace Helpmebot.Services
 
             this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + "CommandList", clBuilder.ToString(), editSummary, null, true, false);
             this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + "All", allHelpBuilder.ToString(), editSummary, null, true, false);
-
+            
             pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + "CommandList");
             pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + "All");
             
+            foreach (var pair in catMap)
+            {
+                this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + pair.Key, pair.Value.ToString(), editSummary, null, true, false);
+                pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + pair.Key);
+            }
+
             // delete the excess pages
             foreach (var p in pagesInPrefix)
             {
-                this.botService.DeletePage(p, "Bye Felicia");
+                this.botService.DeletePage(p, editSummary);
             }
+            
         }
 
-        private string CreateHelpPage(Type commandClass, out string pageName, out string canonicalName, out List<string> aliases)
+        private string CreateHelpPage(
+            Type commandClass,
+            out string pageName,
+            out string canonicalName,
+            out List<string> aliases,
+            out string mainFlags,
+            out string category)
         {
             var cmdInvokAttr = commandClass.GetCustomAttributes(typeof(CommandInvocationAttribute), false);
             if (cmdInvokAttr.Length == 0)
@@ -121,6 +149,8 @@ namespace Helpmebot.Services
                 canonicalName = null;
                 pageName = null;
                 aliases = null;
+                mainFlags = null;
+                category = null;
                 return null;
             }
 
@@ -129,19 +159,24 @@ namespace Helpmebot.Services
                 .Where(x => x != canonName)
                 .ToList();
 
+            var helpCat = commandClass.GetCustomAttributes(typeof(HelpCategoryAttribute), true)
+                .Select(x => (HelpCategoryAttribute) x).FirstOrDefault();
+            category = helpCat == null ? "Default" : helpCat.Category;
+            
             var cmdFlagAttrs = commandClass.GetCustomAttributes(typeof(CommandFlagAttribute), false)
                 .Select(x => (CommandFlagAttribute) x);
             var globalOnlyAbbrSup = "<sup><abbr title=\"Global only\">†</abbr></sup>";
             var flagFormat = "[[Flags#{0}|{0}]]{1}";
-            var mainFlags = string.Join(
+            mainFlags = string.Join(
                 " or ",
-                cmdFlagAttrs.Select(i => string.Format(flagFormat, i.Flag, i.GlobalOnly ? globalOnlyAbbrSup : string.Empty)));
+                cmdFlagAttrs.Select(
+                    i => string.Format(flagFormat, i.Flag, i.GlobalOnly ? globalOnlyAbbrSup : string.Empty)));
 
             var methodInfos = commandClass.GetMethods(
                 BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
 
             var pageBuilder = new StringBuilder();
-            pageBuilder.AppendFormat("== {0} ==", canonicalName).AppendLine();
+            pageBuilder.AppendFormat("=== {0} ===", canonicalName).AppendLine();
             pageBuilder.AppendFormat("* Requires flag: {0}", mainFlags).AppendLine();
 
             if (aliases.Count > 0)
@@ -150,7 +185,7 @@ namespace Helpmebot.Services
             }
 
             pageBuilder.AppendLine().AppendLine(";Syntax").AppendLine();
-            
+
             foreach (var info in methodInfos)
             {
                 if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
@@ -209,16 +244,20 @@ namespace Helpmebot.Services
 
         private class CommandListEntry
         {
-            public CommandListEntry(string pageName, string @alias, string canonical)
+            public CommandListEntry(string pageName, string alias, string canonical, string mainFlags, string category)
             {
                 this.PageName = pageName;
                 this.Alias = alias;
                 this.Canonical = canonical;
+                this.MainFlags = mainFlags;
+                this.Category = category;
             }
 
             public string PageName { get; private set; }
             public string Alias { get; private set; }
             public string Canonical { get; private set; }
+            public string MainFlags { get; private set; }
+            public string Category { get; private set; }
         }
     }
 }
