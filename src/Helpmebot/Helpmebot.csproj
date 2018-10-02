@@ -106,7 +106,9 @@
     <Compile Include="Commands\FunCommands\Commands\SayHiCommand.cs" />
     <Compile Include="Commands\FunCommands\Commands\VorticoughCommand.cs" />
     <Compile Include="Commands\FunCommands\Commands\WhistleCommand.cs" />
+    <Compile Include="Commands\FunCommands\CurlCommand.cs" />
     <Compile Include="Commands\FunCommands\FunCommandBase.cs" />
+    <Compile Include="Commands\FunCommands\UncurlCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
@@ -277,14 +279,12 @@
     <Compile Include="Legacy\Commands\FunStuff\Lick.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Tea.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Whale.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\Curl.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Drink.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Electrocute.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Cluebat.cs" />
     <Compile Include="Legacy\Commands\FunStuff\FunCommand.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Soda.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Salmon.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\Uncurl.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Cookie.cs" />
     <Compile Include="Legacy\Commands\Gancount.cs" />
     <Compile Include="Legacy\Commands\Editcount.cs" />
@@ -371,8 +371,8 @@
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.CommandLib, Version=12.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.12.1.37-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=13.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.0.38-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">

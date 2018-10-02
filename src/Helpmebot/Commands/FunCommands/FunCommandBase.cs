@@ -7,9 +7,8 @@ namespace Helpmebot.Commands.FunCommands
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
-    using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
-    using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -42,24 +41,31 @@ namespace Helpmebot.Commands.FunCommands
             this.MessageService = messageService;
         }
 
-        protected override void OnPreRun()
+        protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
         {
-            base.OnPreRun();
-
             var channel = this.DatabaseSession.CreateCriteria<Channel>()
                 .Add(Restrictions.Eq("Name", this.CommandSource))
                 .UniqueResult<Channel>();
 
-            var hedgehog = false;
+            abort = false;
             if (channel != null)
             {
-                hedgehog = channel.HedgehogMode;
+                abort = channel.HedgehogMode;
+            }
+            
+            if (abort)
+            {
+                return new[]
+                {
+                    new CommandResponse
+                    {
+                        Message = "Sorry, fun commands are currently disabled in this channel.",
+                        Destination = CommandResponseDestination.PrivateMessage
+                    }
+                };
             }
 
-            if (hedgehog)
-            {
-                throw new CommandErrorException("Sorry, fun commands are currently disabled in this channel.");
-            }
+            return null;
         }
     }
 }
