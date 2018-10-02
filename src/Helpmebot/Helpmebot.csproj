@@ -102,6 +102,11 @@
     <Compile Include="Commands\Diagnostics\RawCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
+    <Compile Include="Commands\FunCommands\Commands\GameCommand.cs" />
+    <Compile Include="Commands\FunCommands\Commands\SayHiCommand.cs" />
+    <Compile Include="Commands\FunCommands\Commands\VorticoughCommand.cs" />
+    <Compile Include="Commands\FunCommands\Commands\WhistleCommand.cs" />
+    <Compile Include="Commands\FunCommands\FunCommandBase.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
@@ -124,13 +129,11 @@
     <Compile Include="Legacy\Commands\Blockmonitor.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Champagne.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Chillpill.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\Game.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Icecream.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Kill.cs" />
     <Compile Include="Legacy\Commands\FunStuff\ProtectedTargetedFunCommand.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Sir.cs" />
     <Compile Include="Legacy\Commands\FunStuff\TargetedFunCommand.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\Whistle.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Wine.cs" />
     <Compile Include="Legacy\Commands\Google.cs" />
     <Compile Include="Legacy\Commands\Refresh.cs" />
@@ -282,7 +285,6 @@
     <Compile Include="Legacy\Commands\FunStuff\Soda.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Salmon.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Uncurl.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\Vorticough.cs" />
     <Compile Include="Legacy\Commands\FunStuff\Cookie.cs" />
     <Compile Include="Legacy\Commands\Gancount.cs" />
     <Compile Include="Legacy\Commands\Editcount.cs" />
@@ -300,7 +302,6 @@
     <Compile Include="Legacy\Commands\Registration.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Rights.cs" />
-    <Compile Include="Legacy\Commands\FunStuff\SayHi.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
