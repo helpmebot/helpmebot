@@ -35,7 +35,7 @@ namespace Helpmebot.Legacy.Database
         public LegacyDatabase(ILogger logger, DatabaseConfiguration databaseConfiguration)
         {
             this.databaseConfiguration = databaseConfiguration;
-            this.logger = logger.CreateChildLogger("Helpmebot.Legacy.Database.LegacyDatabase");
+            this.logger = logger;
         }
 
         private bool Connect()
