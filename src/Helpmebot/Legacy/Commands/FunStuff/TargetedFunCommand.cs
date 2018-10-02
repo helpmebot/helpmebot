@@ -21,18 +21,17 @@
 namespace Helpmebot.Commands.FunStuff
 {
     using System.Linq;
-
+    using helpmebot6.Commands;
     using Helpmebot;
     using Helpmebot.Legacy.Model;
-
-    using helpmebot6.Commands.FunStuff;
     using Helpmebot.Legacy;
+    using Helpmebot.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The targeted command.
     /// </summary>
-    public abstract class TargetedFunCommand : FunCommand
+    public abstract class TargetedFunCommand : GenericCommand
     {
         private string commandTarget = null;
 
@@ -108,5 +107,53 @@ namespace Helpmebot.Commands.FunStuff
 
             return new CommandResponseHandler(message);
         }
+
+        #region ineherited stuff
+        /// <summary>
+        ///     The on access denied.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="CommandResponseHandler" />.
+        /// </returns>
+        protected override CommandResponseHandler OnAccessDenied()
+        {
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+            
+            bool channelHedgehogMode = false;
+            if (channel != null)
+            {
+                channelHedgehogMode = channel.HedgehogMode;
+            }
+
+            string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
+                Messages.HedgehogAccessDenied,
+                this.Channel,
+                null);
+
+            return channelHedgehogMode == false
+                ? base.OnAccessDenied()
+                : new CommandResponseHandler(message, CommandResponseDestination.PrivateMessage);
+        }
+
+        /// <summary>
+        ///     The test access.
+        /// </summary>
+        /// <returns>
+        ///     The <see cref="bool" />.
+        /// </returns>
+        protected override bool TestAccess()
+        {
+            var channelRepository = this.CommandServiceHelper.ChannelRepository;
+            var channel = channelRepository.GetByName(this.Channel);
+
+            if (channel == null)
+            {
+                return base.TestAccess();
+            }
+
+            return channel.HedgehogMode == false && base.TestAccess();
+        }
+        #endregion
     }
 }
