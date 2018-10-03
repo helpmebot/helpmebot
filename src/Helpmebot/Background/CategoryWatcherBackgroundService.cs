@@ -213,7 +213,7 @@
             }
             catch (WebException ex)
             {
-                this.Logger.Error("Error during fetch from API", ex);
+                this.Logger.Warn("Error during fetch from API", ex);
             }
             catch (Exception ex)
             {

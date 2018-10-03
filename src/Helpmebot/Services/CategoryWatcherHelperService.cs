@@ -169,7 +169,7 @@
             }
             catch (Exception e)
             {
-                this.logger.ErrorFormat(e, "Exception while retrieving category information for {0}", category.Keyword);
+                this.logger.WarnFormat(e, "Exception while retrieving category information for {0}", category.Keyword);
                 throw;
             }
 
