@@ -47,7 +47,6 @@
                 this.logger.CreateChildLogger("LegacyCommandParser"),
                 this.redirectionParserService,
                 this.botConfiguration,
-                this.categoryWatcherHelperService,
                 this.legacyAccessService);
             try
             {

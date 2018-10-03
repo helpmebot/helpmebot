@@ -5,11 +5,12 @@
     using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
-    using FluentNHibernate.Utils;
+    using Helpmebot.Commands.CategoryMonitoring;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class CategoryWatcherHelperService : ICategoryWatcherHelperService
     {
@@ -27,7 +28,8 @@
             IUrlShorteningService urlShorteningService,
             IMessageService messageService,
             ISession session,
-            ILogger logger)
+            ILogger logger,
+            ICommandParser commandParser)
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
@@ -43,6 +45,12 @@
                     .List<IgnoredPage>()
                     .Select(x => x.Title)
                     .ToList();
+            }
+
+            logger.DebugFormat("Registering CategoryWatcher keys in CommandParser");
+            foreach (var category in this.watchedCategories)
+            {
+                commandParser.RegisterCommand(category.Keyword, typeof(ForceUpdateCommand));
             }
         }
 

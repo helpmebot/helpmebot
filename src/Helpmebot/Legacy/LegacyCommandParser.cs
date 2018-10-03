@@ -18,30 +18,22 @@
 namespace Helpmebot.Legacy
 {
     using System;
-    using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
-    using System.Reflection;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy.Model;
-    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using helpmebot6.Commands;
     using Helpmebot.Legacy.Transitional;
     using Stwalkerster.IrcClient.Interfaces;
-    using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    using CategoryWatcher = helpmebot6.Commands.CategoryWatcher;
 
     public class LegacyCommandParser
     {
         private const string AllowedCommandNameChars = "0-9A-Za-z-_";
         private readonly ICommandServiceHelper commandServiceHelper;
         private readonly IRedirectionParserService redirectionParserService;
-        private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
         private readonly ILegacyAccessService legacyAccessService;
         private readonly string commandTrigger;
         private readonly string debugChannel;
@@ -52,12 +44,10 @@ namespace Helpmebot.Legacy
             ILogger logger,
             IRedirectionParserService redirectionParserService,
             BotConfiguration configuration,
-            ICategoryWatcherHelperService categoryWatcherHelperService,
             ILegacyAccessService legacyAccessService)
         {
             this.commandServiceHelper = commandServiceHelper;
             this.redirectionParserService = redirectionParserService;
-            this.categoryWatcherHelperService = categoryWatcherHelperService;
             this.legacyAccessService = legacyAccessService;
             this.logger = logger;
 
@@ -122,38 +112,8 @@ namespace Helpmebot.Legacy
                 destination = source.Nickname;
             }
 
-            /*
-             * check category codes
-             */
-            if (this.categoryWatcherHelperService.GetValidWatcherKeys.Contains(command))
-            {
-                int argsLength = args.SmartLength();
-
-                var newArgs = new string[argsLength + 1];
-                int newArrayPos = 1;
-                foreach (string t in args)
-                {
-                    if (!string.IsNullOrEmpty(t))
-                    {
-                        newArgs[newArrayPos] = t;
-                    }
-
-                    newArrayPos++;
-                }
-
-                newArgs[0] = command;
-
-                var redirectionResult = this.redirectionParserService.Parse(newArgs);
-                CommandResponseHandler crh =
-                    new CategoryWatcher(
-                        source,
-                        destination,
-                        redirectionResult.Message.ToArray(),
-                        this.commandServiceHelper).RunCommand();
-                this.HandleCommandResponseHandler(source, destination, redirectionResult.Destination, crh);
-                return;
-            }
-
+            // category codes now handled by the new command parser 
+            
             /* 
              * Check for a valid command
              * search for a class that can handle this command.
