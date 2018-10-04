@@ -1,27 +1,24 @@
-namespace Helpmebot.Commands.CategoryMonitoring
+namespace Helpmebot.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.Info)]
-    public class ForceUpdateCommand : CommandBase
+    [CommandInvocation("gancount")]
+    public class GanCountCommand : CommandBase
     {
-        private readonly ICategoryWatcherBackgroundService categoryWatcherService;
         private readonly ISession databaseSession;
 
-        public ForceUpdateCommand(
+        public GanCountCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -29,7 +26,6 @@ namespace Helpmebot.Commands.CategoryMonitoring
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ICategoryWatcherBackgroundService categoryWatcherService,
             ISession databaseSession) : base(
             commandSource,
             user,
@@ -39,22 +35,23 @@ namespace Helpmebot.Commands.CategoryMonitoring
             configurationProvider,
             client)
         {
-            this.categoryWatcherService = categoryWatcherService;
             this.databaseSession = databaseSession;
         }
 
+        [Help("", "Returns the number of GAN submissions awaiting review")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (channel == null)
+            var categoryName = "Good article nominees awaiting review";
+            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var categorySize = mediaWikiSite.GetCategorySize(categoryName);
+            
+            return new[]
             {
-                throw new CommandErrorException("Could not retrieve channel configuration.");
-            }
-            
-            this.categoryWatcherService.ForceUpdate(this.InvokedAs, channel);
-            
-            return null;
+                new CommandResponse
+                {
+                    Message = string.Format("[[Category:{0}]] has {1} items", categoryName, categorySize)
+                }
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.FunCommands
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -43,9 +44,7 @@ namespace Helpmebot.Commands.FunCommands
 
         protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
         {
-            var channel = this.DatabaseSession.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", this.CommandSource))
-                .UniqueResult<Channel>();
+            var channel = this.DatabaseSession.GetChannelObject(this.CommandSource);
 
             abort = false;
             if (channel != null)

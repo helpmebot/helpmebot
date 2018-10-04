@@ -94,6 +94,7 @@
     <Compile Include="Commands\BotManagement\JoinChannelCommand.cs" />
     <Compile Include="Commands\BotManagement\PartChannelCommand.cs" />
     <Compile Include="Commands\BotManagement\QuitCommand.cs" />
+    <Compile Include="Commands\BotManagement\RefreshResponseCommand.cs" />
     <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
     <Compile Include="Commands\ACC\AccCountCommand.cs" />
     <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
@@ -137,6 +138,9 @@
     <Compile Include="Commands\FunCommands\TargetedFunCommandBase.cs" />
     <Compile Include="Commands\FunCommands\UncurlCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
+    <Compile Include="Commands\WikiInformation\AfcCountCommand.cs" />
+    <Compile Include="Commands\WikiInformation\CategorySizeCommand.cs" />
+    <Compile Include="Commands\WikiInformation\GanCountCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
@@ -145,6 +149,7 @@
     <Compile Include="Configuration\MediaWikiDocumentationConfiguration.cs" />
     <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
     <Compile Include="Exceptions\MediawikiApiException.cs" />
+    <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
@@ -152,12 +157,10 @@
     <Compile Include="Legacy\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\Access.cs" />
     <Compile Include="Legacy\Commands\Afcbacklog.cs" />
-    <Compile Include="Legacy\Commands\Afccount.cs" />
     <Compile Include="Legacy\Commands\Age.cs" />
     <Compile Include="Legacy\Commands\BlockInfo.cs" />
     <Compile Include="Legacy\Commands\Blockmonitor.cs" />
     <Compile Include="Legacy\Commands\Google.cs" />
-    <Compile Include="Legacy\Commands\Refresh.cs" />
     <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
@@ -282,8 +285,6 @@
     <Compile Include="Legacy\Commands\Blockuser.cs" />
     <Compile Include="Legacy\Commands\Autolink.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
-    <Compile Include="Legacy\Commands\CategorySize.cs" />
-    <Compile Include="Legacy\Commands\Gancount.cs" />
     <Compile Include="Legacy\Commands\Editcount.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />

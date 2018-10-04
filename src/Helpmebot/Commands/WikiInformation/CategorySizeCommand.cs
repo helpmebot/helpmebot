@@ -1,27 +1,25 @@
-namespace Helpmebot.Commands.CategoryMonitoring
+namespace Helpmebot.Commands.WikiInformation
 {
+    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.Info)]
-    public class ForceUpdateCommand : CommandBase
+    [CommandInvocation("categorysize")]
+    public class CategorySizeCommand : CommandBase
     {
-        private readonly ICategoryWatcherBackgroundService categoryWatcherService;
         private readonly ISession databaseSession;
 
-        public ForceUpdateCommand(
+        public CategorySizeCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -29,7 +27,6 @@ namespace Helpmebot.Commands.CategoryMonitoring
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ICategoryWatcherBackgroundService categoryWatcherService,
             ISession databaseSession) : base(
             commandSource,
             user,
@@ -39,22 +36,38 @@ namespace Helpmebot.Commands.CategoryMonitoring
             configurationProvider,
             client)
         {
-            this.categoryWatcherService = categoryWatcherService;
             this.databaseSession = databaseSession;
         }
 
+        [RequiredArguments(1)]
+        [Help("<category>", "Returns the number of items in the provided category")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
+            var categoryName = string.Join(" ", this.Arguments).Trim();
+            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
 
-            if (channel == null)
+            try
             {
-                throw new CommandErrorException("Could not retrieve channel configuration.");
+                var categorySize = mediaWikiSite.GetCategorySize(categoryName);
+
+                return new[]
+                {
+                    new CommandResponse
+                    {
+                        Message = string.Format("[[Category:{0}]] has {1} items", categoryName, categorySize)
+                    }
+                };
             }
-            
-            this.categoryWatcherService.ForceUpdate(this.InvokedAs, channel);
-            
-            return null;
+            catch (ArgumentException)
+            {
+                return new[]
+                {
+                    new CommandResponse
+                    {
+                        Message = string.Format("[[Category:{0}]] does not exist", categoryName)
+                    }
+                };
+            }
         }
     }
 }

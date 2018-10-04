@@ -29,10 +29,10 @@ namespace helpmebot6.Commands
     /// Returns the number of articles currently waiting at Articles for Creation
     /// </summary>
     [LegacyCommandFlag(LegacyUserRights.Advanced)]
-    internal class Afcbacklog : Categorysize
+    internal class Afcbacklog : GenericCommand
     {
         /// <summary>
-        /// Initialises a new instance of the <see cref="Afccount"/> class.
+        /// Initialises a new instance of the <see cref="Afcbacklog"/> class.
         /// </summary>
         /// <param name="source">
         /// The source.

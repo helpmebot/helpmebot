@@ -41,6 +41,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Database, "site_database");
             this.Map(x => x.Shard, "site_dbserver");
             this.Map(x => x.Api, "site_api");
+            this.Map(x => x.IsDefault, "isdefault");
         }
 
         #endregion

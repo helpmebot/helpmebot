@@ -3,7 +3,6 @@
     using System;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
@@ -16,20 +15,17 @@
         
         private readonly IRedirectionParserService redirectionParserService;
         private readonly BotConfiguration botConfiguration;
-        private readonly ICategoryWatcherHelperService categoryWatcherHelperService;
         private readonly ILegacyAccessService legacyAccessService;
 
         public LegacyCommandHandler(ILogger logger,
             IRedirectionParserService redirectionParserService,
             BotConfiguration botConfiguration,
-            ICategoryWatcherHelperService categoryWatcherHelperService,
             ILegacyAccessService legacyAccessService)
         {
             this.logger = logger;
 
             this.redirectionParserService = redirectionParserService;
             this.botConfiguration = botConfiguration;
-            this.categoryWatcherHelperService = categoryWatcherHelperService;
             this.legacyAccessService = legacyAccessService;
         }
 

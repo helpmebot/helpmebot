@@ -55,6 +55,8 @@ namespace Helpmebot.Model
         /// Gets or sets the username.
         /// </summary>
         public virtual string Username { get; set; }
+        
+        public virtual bool IsDefault { get; set; }
 
         #endregion
     }
