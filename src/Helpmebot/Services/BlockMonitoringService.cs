@@ -47,11 +47,6 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly ILogger logger;
 
-        /// <summary>
-        /// The media wiki site repository.
-        /// </summary>
-        private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
-
         private readonly IBlockMonitorRepository blockMonitorRepository;
         private readonly IChannelRepository channelRepository;
         private readonly ILinkerService linkerService;
@@ -61,14 +56,12 @@ namespace Helpmebot.Services
 
         public BlockMonitoringService(
             ILogger logger,
-            IMediaWikiSiteRepository mediaWikiSiteRepository,
             IBlockMonitorRepository blockMonitorRepository,
             IChannelRepository channelRepository,
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService)
         {
             this.logger = logger;
-            this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.blockMonitorRepository = blockMonitorRepository;
             this.channelRepository = channelRepository;
             this.linkerService = linkerService;
@@ -113,8 +106,7 @@ namespace Helpmebot.Services
                     return;
                 }
 
-                var mediaWikiSite =
-                    this.mediaWikiSiteRepository.GetById(this.channelRepository.GetByName(channel).BaseWiki);
+                var mediaWikiSite = this.channelRepository.GetByName(channel).BaseWiki;
 
                 var ip = this.GetIpAddress(user);
                 if (ip == null)

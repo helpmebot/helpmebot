@@ -43,7 +43,7 @@ namespace Helpmebot.Model
         public virtual bool Silenced { get; set; }
         public virtual bool HedgehogMode { get; set; }
         
-        public virtual int BaseWiki { get; set; }
+        public virtual MediaWikiSite BaseWiki { get; set; }
 
         /// <summary>
         /// The to string.

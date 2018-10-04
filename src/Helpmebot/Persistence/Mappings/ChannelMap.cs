@@ -38,7 +38,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Enabled, "channel_enabled");
             this.Map(x => x.AutoLink, "autolink");
             this.Map(x => x.Silenced, "silence");
-            this.Map(x => x.BaseWiki, "basewiki");
+            this.References(x => x.BaseWiki, "basewiki");
             this.Map(x => x.HedgehogMode, "hedgehog");
         }
     }

@@ -267,7 +267,7 @@ namespace helpmebot6.Commands
             
             if (channel != null)
             {
-                mediaWikiSite = this.CommandServiceHelper.MediaWikiSiteRepository.GetById(channel.BaseWiki);
+                mediaWikiSite = channel.BaseWiki;
             }
             else
             {

@@ -31,7 +31,6 @@ namespace Helpmebot.Services
     public class LinkerService : ILinkerService
     {
         private readonly IChannelRepository channelRepository;
-        private readonly IMediaWikiSiteRepository mediaWikiSiteRepository;
         private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
         private readonly Dictionary<string, string> lastLink;
 
@@ -39,11 +38,9 @@ namespace Helpmebot.Services
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
         public LinkerService(IChannelRepository channelRepository,
-            IMediaWikiSiteRepository mediaWikiSiteRepository,
             IInterwikiPrefixRepository interwikiPrefixRepository)
         {
             this.channelRepository = channelRepository;
-            this.mediaWikiSiteRepository = mediaWikiSiteRepository;
             this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.lastLink = new Dictionary<string, string>();
         }
@@ -61,8 +58,7 @@ namespace Helpmebot.Services
             
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                var baseWiki = this.channelRepository.GetByName(destination).BaseWiki;
-                url = this.mediaWikiSiteRepository.GetById(baseWiki).GetArticlePath();
+                url = this.channelRepository.GetByName(destination).BaseWiki.GetArticlePath();
             }
             else
             {
