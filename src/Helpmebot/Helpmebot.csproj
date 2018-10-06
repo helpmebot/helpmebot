@@ -137,10 +137,15 @@
     <Compile Include="Commands\FunCommands\ProtectedTargetedFunCommandBase.cs" />
     <Compile Include="Commands\FunCommands\TargetedFunCommandBase.cs" />
     <Compile Include="Commands\FunCommands\UncurlCommand.cs" />
+    <Compile Include="Commands\Information\GoogleCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Commands\WikiInformation\AfcCountCommand.cs" />
+    <Compile Include="Commands\WikiInformation\BlockInformationCommand.cs" />
     <Compile Include="Commands\WikiInformation\CategorySizeCommand.cs" />
+    <Compile Include="Commands\WikiInformation\EditCountCommand.cs" />
     <Compile Include="Commands\WikiInformation\GanCountCommand.cs" />
+    <Compile Include="Commands\WikiInformation\RegistrationCommand.cs" />
+    <Compile Include="Commands\WikiInformation\UserRightsCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
     <Compile Include="Configuration\DatabaseConfiguration.cs" />
@@ -157,11 +162,7 @@
     <Compile Include="Legacy\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\Access.cs" />
     <Compile Include="Legacy\Commands\Afcbacklog.cs" />
-    <Compile Include="Legacy\Commands\Age.cs" />
-    <Compile Include="Legacy\Commands\BlockInfo.cs" />
     <Compile Include="Legacy\Commands\Blockmonitor.cs" />
-    <Compile Include="Legacy\Commands\Google.cs" />
-    <Compile Include="Legacy\Commands\Reg.cs" />
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
@@ -285,7 +286,6 @@
     <Compile Include="Legacy\Commands\Blockuser.cs" />
     <Compile Include="Legacy\Commands\Autolink.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
-    <Compile Include="Legacy\Commands\Editcount.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
@@ -296,9 +296,7 @@
     <Compile Include="Legacy\Commands\MaxLag.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
-    <Compile Include="Legacy\Commands\Registration.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
-    <Compile Include="Legacy\Commands\Rights.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
     <Compile Include="Legacy\Commands\UserInfo.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
