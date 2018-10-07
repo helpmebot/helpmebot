@@ -21,12 +21,12 @@ namespace Helpmebot.ExtensionMethods
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Web;
-    using System.Xml;
     using System.Xml.Linq;
-    using System.Xml.XPath;
-    using Helpmebot.Exceptions;
+    using Helpmebot.Configuration;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
+    using Microsoft.Practices.ServiceLocation;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using HttpRequest = Helpmebot.HttpRequest;
 
     /// <summary>
@@ -48,6 +48,11 @@ namespace Helpmebot.ExtensionMethods
         /// </returns>
         public static IEnumerable<BlockInformation> GetBlockInformation(this MediaWikiSite site, string userName)
         {
+            var wsClient = ServiceLocator.Current.GetInstance<IWebServiceClient>();
+            var endpoint = site.Api;
+            var userAgent = ServiceLocator.Current.GetInstance<BotConfiguration>().UserAgent;
+            var cookieJar = new CookieContainer();
+            
             IPAddress ip;
             string apiParams = string.Format(
                 "{2}?action=query&list=blocks&bk{0}={1}&format=xml", 
@@ -81,204 +86,65 @@ namespace Helpmebot.ExtensionMethods
                 return blocks;
             }
         }
-
-        /// <summary>
-        /// The get category size.
-        /// </summary>
-        /// <param name="site">
-        /// The site.
-        /// </param>
-        /// <param name="category">
-        /// The category.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/>.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// Thrown when the specified page is not a category.
-        /// </exception>
+        
+        [Obsolete]
         public static int GetCategorySize(this MediaWikiSite site, string category)
         {
-            string apiCall = string.Format(
-                "{1}?action=query&format=xml&prop=categoryinfo&titles=Category:{0}", 
-                category, 
-                site.Api);
-
-            using (Stream xmlFragment = HttpRequest.Get(apiCall).ToStream())
-            {
-                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-                var countEnumerable = from item in xdoc.Descendants("categoryinfo")
-                                      let xAttribute = item.Attribute("pages")
-                                      where xAttribute != null
-                                      select int.Parse(xAttribute.Value);
-
-                var countList = countEnumerable.ToList();
-
-                if (!countList.Any())
-                {
-                    throw new ArgumentException("Category does not exist!");
-                }
-
-                return countList.FirstOrDefault();
-            }
-        }
-
-        /// <summary>
-        /// The get pages in category.
-        /// </summary>
-        /// <param name="site">
-        /// The site.
-        /// </param>
-        /// <param name="category">
-        /// The category.
-        /// </param>
-        /// <returns>
-        /// The <see cref="List{String}"/>.
-        /// </returns>
-        public static List<string> GetPagesInCategory(this MediaWikiSite site, string category)
-        {
-            string uri = site.Api + "?action=query&list=categorymembers&format=xml&cmlimit=50&cmprop=title&cmtitle="
-                         + category;
-
-            using (Stream xmlFragment = HttpRequest.Get(uri).ToStream())
-            {
-                XDocument xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-                IEnumerable<string> pages = from item in xdoc.Descendants("cm")
-                                            let xAttribute = item.Attribute("title")
-                                            where xAttribute != null
-                                            select xAttribute.Value;
-
-                return pages.ToList();
-            }
-        }
-
-        public static string GetArticlePath(this MediaWikiSite site)
-        {
-            string apiCall = string.Format("{0}?action=query&format=xml&meta=siteinfo&siprop=general", site.Api);
-            
-            using (Stream xmlFragment = HttpRequest.Get(apiCall).ToStream())
-            {
-                var xdoc = XDocument.Load(new StreamReader(xmlFragment));
-
-                var xElement = xdoc.Element("general");
-
-                if (xElement == null)
-                {
-                    return "https://en.wikipedia.org/wiki/$1";
-                }
-                
-                var articlePathAttribute = xElement.Attribute("articlepath");
-                if (articlePathAttribute == null)
-                {
-                    return "https://en.wikipedia.org/wiki/$1";
-                }
-                
-                var serverAttribute = xElement.Attribute("server");
-                if (serverAttribute == null)
-                {
-                    return "https://en.wikipedia.org/wiki/$1";
-                }
-                
-                var server = serverAttribute.Value;
-                var articlePath = articlePathAttribute.Value;
-
-                return server + articlePath;
-            }
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetCategorySize(category);
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result;
         }
         
+        [Obsolete]
+        public static List<string> GetPagesInCategory(this MediaWikiSite site, string category)
+        {
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetPagesInCategory(category);
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result.ToList();
+        }
+
+        [Obsolete]
+        public static string GetArticlePath(this MediaWikiSite site)
+        {
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetArticlePath();
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result;
+        }
+        
+        [Obsolete]
         public static int GetEditCount(this MediaWikiSite site, string username)
         {
-            if (username == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            username = HttpUtility.UrlEncode(username);
-            
-            var uri = string.Format(
-                "{0}?format=xml&action=query&list=users&usprop=editcount&format=xml&ususers={1}",
-                site.Api,
-                username);
-            
-            using (var data = HttpRequest.Get(uri).ToStream())
-            {
-                var xpd = new XPathDocument(data);
-                var xpni = xpd.CreateNavigator().Select("//user");
-
-                if (xpni.MoveNext())
-                {
-                    var editcount = xpni.Current.GetAttribute("editcount", string.Empty);
-                    if (editcount != string.Empty)
-                    {
-                        return int.Parse(editcount);
-                    }
-
-                    if (xpni.Current.GetAttribute("missing", string.Empty) == string.Empty)
-                    {
-                        throw new MediawikiApiException("No such user");
-                    }
-                }
-                
-                throw new MediawikiApiException("Unknown response to API query");
-            }
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetEditCount(username);
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result;
         }
 
+        [Obsolete]
         public static DateTime? GetRegistrationDate(this MediaWikiSite site, string username)
         {
-            if (username == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-            
-            username = HttpUtility.UrlEncode(username);
-            
-            var uri = string.Format(
-                "{0}?action=query&list=users&usprop=registration&format=xml&ususers={1}",
-                site.Api,
-                username);
-
-            using (var data = HttpRequest.Get(uri).ToStream())
-            {
-                var xpd = new XPathDocument(data);
-                var xpni = xpd.CreateNavigator().Select("//user");
-
-                if (xpni.MoveNext())
-                {
-                    var apiRegDate = xpni.Current.GetAttribute("registration", string.Empty);
-                    if (apiRegDate == string.Empty)
-                    {
-                        return null;
-                    }
-
-                    return DateTime.Parse(apiRegDate);
-                }
-            }
-
-            throw new MediawikiApiException("Unknown response to API query");
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetRegistrationDate(username);
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result;
         }
 
-        /// <summary>
-        /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
-        /// channel.
-        /// </summary>
-        /// <returns>The maximum replication lag</returns>
-        public static string GetMaxLag(this MediaWikiSite mediaWikiSite)
+        [Obsolete]
+        public static string GetMaxLag(this MediaWikiSite site)
         {
-            var uri = mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml";
-            using (var data = HttpRequest.Get(uri).ToStream())
-            {
-                var mlreader = new XmlTextReader(data);
-
-                do
-                {
-                    mlreader.Read();
-                }
-                while (mlreader.Name != "db");
-
-                return mlreader.GetAttribute("lag");
-            }
+            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
+            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
+            var result = mediaWikiApi.GetMaxLag();
+            mediaWikiApiHelper.Release(mediaWikiApi);
+            return result;
         }
         
         
