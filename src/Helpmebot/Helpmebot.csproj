@@ -265,22 +265,20 @@
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IJoinMessageService.cs" />
     <Compile Include="Services\Interfaces\ILinkerService.cs" />
-    <Compile Include="Services\Interfaces\IMediaWikiBotService.cs" />
+    <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\ChannelManagementService.cs" />
-    <Compile Include="Services\Interfaces\IWebServiceClient.cs" />
     <Compile Include="Services\JoinMessageService.cs" />
     <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\LinkerService.cs" />
-    <Compile Include="Services\MediaWikiBotService.cs" />
+    <Compile Include="Services\MediaWikiApiHelper.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\HmbUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
     <Compile Include="Services\UserFlagService.cs" />
-    <Compile Include="Services\WebServiceClient.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
@@ -313,6 +311,7 @@
     <Compile Include="Startup\MainInstaller.cs" />
     <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="Startup\WindsorServiceLocator.cs" />
+    <Compile Include="TypedFactories\IMediaWikiApiTypedFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc">
@@ -367,11 +366,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.CommandLib, Version=13.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.0.38-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.0.42-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.3.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.3.12-beta\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.1.31-beta\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.1.32-beta\lib\net45\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">

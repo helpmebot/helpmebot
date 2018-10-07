@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.BotManagement
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Services.Interfaces;
+    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -17,6 +18,7 @@ namespace Helpmebot.Commands.BotManagement
     public class SyncHelpCommand : CommandBase
     {
         private readonly IHelpSyncService helpSyncService;
+        private readonly ISession databaseSession;
 
         public SyncHelpCommand(
             string commandSource,
@@ -26,7 +28,8 @@ namespace Helpmebot.Commands.BotManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IHelpSyncService helpSyncService) : base(
+            IHelpSyncService helpSyncService,
+            ISession databaseSession) : base(
             commandSource,
             user,
             arguments,
@@ -36,12 +39,13 @@ namespace Helpmebot.Commands.BotManagement
             client)
         {
             this.helpSyncService = helpSyncService;
+            this.databaseSession = databaseSession;
         }
 
         [Help("", "Synchronises the help pages on the documentation wiki")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            this.helpSyncService.DoSync(this.User);
+            this.helpSyncService.DoSync(this.User, this.databaseSession);
             yield return new CommandResponse
             {
                 Message = "Sync complete."

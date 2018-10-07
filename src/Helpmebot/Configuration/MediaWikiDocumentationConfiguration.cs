@@ -2,41 +2,25 @@ namespace Helpmebot.Configuration
 {
     public class MediaWikiDocumentationConfiguration
     {
-        private readonly string apiBase;
-        private readonly string username;
-        private readonly string password;
+        private readonly int siteId;
         private readonly string documentationPrefix;
 
         public MediaWikiDocumentationConfiguration(
-            string apiBase,
-            string username,
-            string password,
+            int siteId,
             string documentationPrefix)
         {
-            this.apiBase = apiBase;
-            this.username = username;
-            this.password = password;
+            this.siteId = siteId;
             this.documentationPrefix = documentationPrefix;
-        }
-
-        public string ApiBase
-        {
-            get { return this.apiBase; }
-        }
-
-        public string Username
-        {
-            get { return this.username; }
-        }
-
-        internal string Password
-        {
-            get { return this.password; }
         }
 
         public string DocumentationPrefix
         {
             get { return this.documentationPrefix; }
+        }
+
+        public int SiteId
+        {
+            get { return this.siteId; }
         }
     }
 }

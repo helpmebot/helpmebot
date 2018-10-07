@@ -16,9 +16,12 @@
     using Helpmebot.Services;
     using Helpmebot.Startup.Converters;
     using Helpmebot.Startup.Facilities;
+    using Helpmebot.TypedFactories;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -59,6 +62,11 @@
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Repositories").WithService.AllInterfaces(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Background").WithService.AllInterfaces(),
+                
+                // MediaWiki API stuff
+                Component.For<IMediaWikiApiTypedFactory>().AsFactory(),
+                Component.For<IMediaWikiApi>().ImplementedBy<MediaWikiApi>().LifestyleTransient(),
+                Component.For<IWebServiceClient>().ImplementedBy<WebServiceClient>(),
 
                 // IRC client
                 Component

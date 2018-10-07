@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.WikiInformation
     public class UserRightsCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public UserRightsCommand(
             string commandSource,
@@ -27,7 +29,8 @@ namespace Helpmebot.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -37,6 +40,7 @@ namespace Helpmebot.Commands.WikiInformation
             client)
         {
             this.databaseSession = databaseSession;
+            this.apiHelper = apiHelper;
         }
 
         [Help("[username]", "Returns the list of groups you or the specified user currently hold")]
@@ -49,33 +53,41 @@ namespace Helpmebot.Commands.WikiInformation
             }
 
             var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-
-            string rights;
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            
             try
             {
-                rights = mediaWikiSite.GetRights(username);
-            }
-            catch (MediawikiApiException e)
-            {
-                this.Logger.WarnFormat(e, "Encountered error retrieving rights from API for {0}", username);
-                return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
-            }
+                string rights;
+                try
+                {
+                    rights = string.Join(", ", mediaWikiApi.GetUserGroups(username));
+                }
+                catch (MediawikiApiException e)
+                {
+                    this.Logger.WarnFormat(e, "Encountered error retrieving rights from API for {0}", username);
+                    return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+                }
 
-            if (string.IsNullOrWhiteSpace(rights))
-            {
+                if (string.IsNullOrWhiteSpace(rights))
+                {
+                    return new[]
+                    {
+                        new CommandResponse {Message = string.Format("[[User:{0}]] has no rights assigned.", username)}
+                    };
+                }
+
                 return new[]
                 {
-                    new CommandResponse {Message = string.Format("[[User:{0}]] has no rights assigned.", username)}
+                    new CommandResponse
+                    {
+                        Message = string.Format("[[User:{0}]] has the following rights: {1}", username, rights)
+                    }
                 };
             }
-
-            return new[]
+            finally
             {
-                new CommandResponse
-                {
-                    Message = string.Format("[[User:{0}]] has the following rights: {1}", username, rights)
-                }
-            };
+                this.apiHelper.Release(mediaWikiApi);
+            }
         }
     }
 }

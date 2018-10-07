@@ -11,6 +11,7 @@ namespace Helpmebot.Commands.Diagnostics
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services;
+    using Stwalkerster.Bot.MediaWikiLib.Services;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -43,16 +44,18 @@ namespace Helpmebot.Commands.Diagnostics
             var version = Assembly.GetExecutingAssembly().GetName().Version;
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
             var botLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(CommandHandler)));
+            var mediaWikiLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(MediaWikiApi)));
 
             var messageFormat =
-                "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}";
+                "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}, Stwalkerster.Bot.MediaWikiLib v{5}";
             var message = string.Format(
                 messageFormat,
                 version.Major.ToString(CultureInfo.InvariantCulture),
                 version.Minor.ToString(CultureInfo.InvariantCulture),
                 version.Build.ToString(CultureInfo.InvariantCulture),
                 ircVersion,
-                botLibVersion
+                botLibVersion,
+                mediaWikiLibVersion
             );
 
             yield return new CommandResponse

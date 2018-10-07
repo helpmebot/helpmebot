@@ -34,8 +34,6 @@ namespace Helpmebot.ExtensionMethods
     /// </summary>
     public static class MediaWikiSiteExtensions
     {
-        #region Public Methods and Operators
-
         /// <summary>
         /// The get block information.
         /// </summary>
@@ -260,49 +258,6 @@ namespace Helpmebot.ExtensionMethods
 
             throw new MediawikiApiException("Unknown response to API query");
         }
-        
-        public static string GetRights(this MediaWikiSite site, string username)
-        {
-            if (username == string.Empty)
-            {
-                throw new ArgumentNullException();
-            }
-
-            var rights = new List<string>();
-            
-            var uri = string.Format(
-                "{0}?action=query&list=users&usprop=groups&format=xml&ususers={1}",
-                site.Api,
-                username);
-
-            using (var stream = HttpRequest.Get(uri).ToStream())
-            {
-                var creader = new XmlTextReader(stream);
-                do
-                {
-                    creader.Read();
-                }
-                while (creader.Name != "user");
-
-                creader.Read();
-                if (creader.Name == "groups")
-                {
-                    // the start of the group list
-                    do
-                    {
-                        creader.Read();
-                        string right = creader.ReadString();
-                        if (!(right == string.Empty || right == "*"))
-                        {
-                            rights.Add(right);
-                        }
-                    }
-                    while (creader.Name == "g"); // each group should be added
-                }
-                
-                return string.Join(", ", rights);
-            }
-        }
 
         /// <summary>
         /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
@@ -326,6 +281,7 @@ namespace Helpmebot.ExtensionMethods
             }
         }
         
-        #endregion
+        
+        
     }
 }

@@ -8,38 +8,47 @@ namespace Helpmebot.Services
     using Castle.Core.Internal;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
+    using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+    using NHibernate;
+    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     public class HelpSyncService : IHelpSyncService
     {
-        private readonly IMediaWikiBotService botService;
+        private readonly IMediaWikiApiHelper apiHelper;
         private readonly ICommandParser commandParser;
         private readonly BotConfiguration botConfiguration;
-        private readonly MediaWikiDocumentationConfiguration mediaWikiConfig;
+        private readonly MediaWikiDocumentationConfiguration docConfig;
 
         public HelpSyncService(
-            IMediaWikiBotService botService,
+            IMediaWikiApiHelper apiHelper,
             ICommandParser commandParser,
             BotConfiguration botConfiguration,
-            MediaWikiDocumentationConfiguration mediaWikiConfig)
+            MediaWikiDocumentationConfiguration docConfig)
         {
-            this.botService = botService;
+            this.apiHelper = apiHelper;
             this.commandParser = commandParser;
             this.botConfiguration = botConfiguration;
-            this.mediaWikiConfig = mediaWikiConfig;
+            this.docConfig = docConfig;
         }
 
-        public void DoSync(IUser forUser)
+        public void DoSync(IUser forUser, ISession databaseSession)
         {
-            this.botService.Login();
+            var mediaWikiSite = databaseSession.CreateCriteria<MediaWikiSite>()
+                .Add(Restrictions.Eq("Id", this.docConfig.SiteId))
+                .UniqueResult<MediaWikiSite>();
+
+            var botService = this.apiHelper.GetApi(mediaWikiSite);
+
+            botService.Login();
 
             var registrationInfo = this.commandParser.GetCommandRegistrations();
-            var pagesInPrefix = this.botService.PrefixSearch(this.mediaWikiConfig.DocumentationPrefix).ToList();
+            var pagesInPrefix = botService.PrefixSearch(this.docConfig.DocumentationPrefix).ToList();
             var editSummary = string.Format("Updating documentation for {0}", forUser);
-            
+
             // collect all the types from the command registrations
             var types = new HashSet<Type>();
             foreach (var registrationInfoValue in registrationInfo.Values)
@@ -56,7 +65,7 @@ namespace Helpmebot.Services
             {
                 string pageName, canonicalName, mainFlags, category;
                 List<string> aliases;
-                
+
                 var pageContent = this.CreateHelpPage(
                     commandClass,
                     out pageName,
@@ -70,16 +79,16 @@ namespace Helpmebot.Services
                     continue;
                 }
 
-                this.botService.WritePage(
+                botService.WritePage(
                     pageName,
                     pageContent,
                     editSummary,
                     null,
                     true,
                     false);
-                
+
                 pagesInPrefix.Remove(pageName);
-                
+
                 commandList.Add(new CommandListEntry(pageName, canonicalName, canonicalName, mainFlags, category));
                 foreach (var alias in aliases)
                 {
@@ -104,35 +113,55 @@ namespace Helpmebot.Services
                 if (entry.Alias == entry.Canonical)
                 {
                     allHelpBuilder.AppendFormat("{{{{{0}}}}}", entry.PageName).AppendLine();
-                    
+
                     if (!catMap.ContainsKey(entry.Category))
                     {
                         catMap.Add(entry.Category, new StringBuilder());
                     }
+
                     catMap[entry.Category].AppendFormat("{{{{{0}}}}}", entry.PageName).AppendLine();
                 }
             }
 
             clBuilder.Append("|}");
 
-            this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + "CommandList", clBuilder.ToString(), editSummary, null, true, false);
-            this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + "All", allHelpBuilder.ToString(), editSummary, null, true, false);
-            
-            pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + "CommandList");
-            pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + "All");
-            
+            botService.WritePage(
+                this.docConfig.DocumentationPrefix + "CommandList",
+                clBuilder.ToString(),
+                editSummary,
+                null,
+                true,
+                false);
+            botService.WritePage(
+                this.docConfig.DocumentationPrefix + "All",
+                allHelpBuilder.ToString(),
+                editSummary,
+                null,
+                true,
+                false);
+
+            pagesInPrefix.Remove(this.docConfig.DocumentationPrefix + "CommandList");
+            pagesInPrefix.Remove(this.docConfig.DocumentationPrefix + "All");
+
             foreach (var pair in catMap)
             {
-                this.botService.WritePage(this.mediaWikiConfig.DocumentationPrefix + pair.Key, pair.Value.ToString(), editSummary, null, true, false);
-                pagesInPrefix.Remove(this.mediaWikiConfig.DocumentationPrefix + pair.Key);
+                botService.WritePage(
+                    this.docConfig.DocumentationPrefix + pair.Key,
+                    pair.Value.ToString(),
+                    editSummary,
+                    null,
+                    true,
+                    false);
+                pagesInPrefix.Remove(this.docConfig.DocumentationPrefix + pair.Key);
             }
 
             // delete the excess pages
             foreach (var p in pagesInPrefix)
             {
-                this.botService.DeletePage(p, editSummary);
+                botService.DeletePage(p, editSummary);
             }
-            
+
+            this.apiHelper.Release(botService);
         }
 
         private string CreateHelpPage(
@@ -143,8 +172,9 @@ namespace Helpmebot.Services
             out string mainFlags,
             out string category)
         {
-            var cmdInvokAttr = commandClass.GetCustomAttributes(typeof(CommandInvocationAttribute), false);
-            if (cmdInvokAttr.Length == 0)
+            var commandInvocationAttribute =
+                commandClass.GetCustomAttributes(typeof(CommandInvocationAttribute), false);
+            if (commandInvocationAttribute.Length == 0)
             {
                 canonicalName = null;
                 pageName = null;
@@ -154,15 +184,17 @@ namespace Helpmebot.Services
                 return null;
             }
 
-            var canonName = canonicalName = ((CommandInvocationAttribute) cmdInvokAttr.First()).CommandName;
-            aliases = cmdInvokAttr.Select(x => ((CommandInvocationAttribute) x).CommandName)
+            var canonName = canonicalName =
+                ((CommandInvocationAttribute) commandInvocationAttribute.First()).CommandName;
+            aliases = commandInvocationAttribute.Select(x => ((CommandInvocationAttribute) x).CommandName)
                 .Where(x => x != canonName)
                 .ToList();
 
             var helpCat = commandClass.GetCustomAttributes(typeof(HelpCategoryAttribute), true)
-                .Select(x => (HelpCategoryAttribute) x).FirstOrDefault();
+                .Select(x => (HelpCategoryAttribute) x)
+                .FirstOrDefault();
             category = helpCat == null ? "Default" : helpCat.Category;
-            
+
             var cmdFlagAttrs = commandClass.GetCustomAttributes(typeof(CommandFlagAttribute), false)
                 .Select(x => (CommandFlagAttribute) x);
             var globalOnlyAbbrSup = "<sup><abbr title=\"Global only\">†</abbr></sup>";
@@ -238,7 +270,7 @@ namespace Helpmebot.Services
                 }
             }
 
-            pageName = this.mediaWikiConfig.DocumentationPrefix + "Command/" + canonicalName;
+            pageName = this.docConfig.DocumentationPrefix + "Command/" + canonicalName;
             return pageBuilder.ToString();
         }
 

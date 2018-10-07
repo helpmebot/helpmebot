@@ -24,6 +24,7 @@ namespace Helpmebot.Commands.WikiInformation
         private readonly ISession databaseSession;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShortener;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public UserInfoCommand(
             string commandSource,
@@ -35,7 +36,8 @@ namespace Helpmebot.Commands.WikiInformation
             IIrcClient client,
             ISession databaseSession,
             ILinkerService linkerService,
-            IUrlShorteningService urlShortener) : base(
+            IUrlShorteningService urlShortener,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -47,12 +49,14 @@ namespace Helpmebot.Commands.WikiInformation
             this.databaseSession = databaseSession;
             this.linkerService = linkerService;
             this.urlShortener = urlShortener;
+            this.apiHelper = apiHelper;
         }
 
         [Help("[username]", "Gives a batch of information on the specified user.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSiteObject = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
 
             var username = string.Join(" ", this.Arguments);
             if (this.Arguments.Count == 0)
@@ -64,7 +68,7 @@ namespace Helpmebot.Commands.WikiInformation
             try
             {
                 var editCount = mediaWikiSiteObject.GetEditCount(username);
-                var userGroups = mediaWikiSiteObject.GetRights(username);
+                var userGroups = string.Join(", ", mediaWikiApi.GetUserGroups(username));
                 var registrationDate = mediaWikiSiteObject.GetRegistrationDate(username);
 
                 int ageYears;
@@ -110,6 +114,10 @@ namespace Helpmebot.Commands.WikiInformation
             {
                 this.Logger.WarnFormat(ex, "Error retrieving user info from API for user {0}", username);
                 return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
             }
 
             return new[] {new CommandResponse {Message = message}};
