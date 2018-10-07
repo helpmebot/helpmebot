@@ -70,20 +70,10 @@ namespace Helpmebot.Commands.WikiInformation
                 return new[] {new CommandResponse {Message = "No registration date found for the specified user."}};
             }
 
-            var now = DateTime.Now;
+            int years;
+            TimeSpan age;
+            registrationDate.Value.CalculateDuration(out years, out age);
 
-            var backupVar = registrationDate.Value;
-            var calcVar = registrationDate.Value;
-            var years = -1;
-            while (calcVar < now)
-            {
-                years++;
-                backupVar = calcVar;
-                calcVar = calcVar.AddYears(1);
-            }
-
-            var age = now - backupVar;
-            
             var message = "[[User:{0}]] registered on {1:u} ({2}y {3:d\\d\\ hh\\:mm\\:ss} ago)";
             return new[]
             {
@@ -93,5 +83,7 @@ namespace Helpmebot.Commands.WikiInformation
                 }
             };
         }
+
+        
     }
 }

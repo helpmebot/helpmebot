@@ -146,6 +146,7 @@
     <Compile Include="Commands\WikiInformation\GanCountCommand.cs" />
     <Compile Include="Commands\WikiInformation\MaxLagCommand.cs" />
     <Compile Include="Commands\WikiInformation\RegistrationCommand.cs" />
+    <Compile Include="Commands\WikiInformation\UserInfoCommand.cs" />
     <Compile Include="Commands\WikiInformation\UserRightsCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
     <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
     <Compile Include="Exceptions\MediawikiApiException.cs" />
     <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
+    <Compile Include="ExtensionMethods\DateTimeExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
     <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
@@ -297,7 +299,6 @@
     <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
-    <Compile Include="Legacy\Commands\UserInfo.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
