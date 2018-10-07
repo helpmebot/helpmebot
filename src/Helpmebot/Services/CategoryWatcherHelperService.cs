@@ -6,7 +6,6 @@
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Commands.CategoryMonitoring;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -19,6 +18,7 @@
         private readonly IMessageService messageService;
         private readonly ISession session;
         private readonly ILogger logger;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         private readonly IList<WatchedCategory> watchedCategories;
         private readonly IList<string> ignoredPages;
@@ -29,13 +29,15 @@
             IMessageService messageService,
             ISession session,
             ILogger logger,
-            ICommandParser commandParser)
+            ICommandParser commandParser,
+            IMediaWikiApiHelper apiHelper)
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
             this.messageService = messageService;
             this.session = session;
             this.logger = logger;
+            this.apiHelper = apiHelper;
 
             lock (this.session)
             {
@@ -161,10 +163,12 @@
 
             // fetch category information    
             List<string> pagesInCategory;
+
             
+            var mediaWikiApi = this.apiHelper.GetApi(category.BaseWiki);
             try
             {
-                pagesInCategory = category.BaseWiki.GetPagesInCategory(category.Category);
+                pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();
                 pagesInCategory.RemoveAll(x => this.ignoredPages.Contains(x));
             }
             catch (Exception e)
@@ -172,7 +176,11 @@
                 this.logger.WarnFormat(e, "Exception while retrieving category information for {0}", category.Keyword);
                 throw;
             }
-
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
+            
             // update categoryinto database
             lock (this.session)
             {

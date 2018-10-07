@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -17,6 +18,7 @@ namespace Helpmebot.Commands.WikiInformation
     public class AfcCountCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public AfcCountCommand(
             string commandSource,
@@ -26,7 +28,8 @@ namespace Helpmebot.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -36,6 +39,7 @@ namespace Helpmebot.Commands.WikiInformation
             client)
         {
             this.databaseSession = databaseSession;
+            this.apiHelper = apiHelper;
         }
 
         [Help("", "Returns the number of AfC submissions awaiting review")]
@@ -43,7 +47,9 @@ namespace Helpmebot.Commands.WikiInformation
         {
             var categoryName = "Pending AfC submissions";
             var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            var categorySize = mediaWikiSite.GetCategorySize(categoryName);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var categorySize = mediaWikiApi.GetCategorySize(categoryName);
+            this.apiHelper.Release(mediaWikiApi);
             
             return new[]
             {

@@ -20,7 +20,6 @@ namespace Helpmebot.Services
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
@@ -32,16 +31,20 @@ namespace Helpmebot.Services
     {
         private readonly IChannelRepository channelRepository;
         private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
+        private readonly IMediaWikiApiHelper apiHelper;
         private readonly Dictionary<string, string> lastLink;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
-        public LinkerService(IChannelRepository channelRepository,
-            IInterwikiPrefixRepository interwikiPrefixRepository)
+        public LinkerService(
+            IChannelRepository channelRepository,
+            IInterwikiPrefixRepository interwikiPrefixRepository,
+            IMediaWikiApiHelper apiHelper)
         {
             this.channelRepository = channelRepository;
             this.interwikiPrefixRepository = interwikiPrefixRepository;
+            this.apiHelper = apiHelper;
             this.lastLink = new Dictionary<string, string>();
         }
 
@@ -58,7 +61,7 @@ namespace Helpmebot.Services
             
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                url = this.channelRepository.GetByName(destination).BaseWiki.GetArticlePath();
+                url = this.GetWikiArticleBaseUrl(destination);
             }
             else
             {
@@ -67,6 +70,17 @@ namespace Helpmebot.Services
 
             var result = url.Replace("$1", this.Antispace(source));
             return result;
+        }
+
+        private string GetWikiArticleBaseUrl(string destination)
+        {
+            var mediaWikiSite = this.channelRepository.GetByName(destination).BaseWiki;
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+
+            var url = mediaWikiApi.GetArticlePath();
+
+            this.apiHelper.Release(mediaWikiApi);
+            return url;
         }
 
         public string GetLastLinkForChannel(string destination)

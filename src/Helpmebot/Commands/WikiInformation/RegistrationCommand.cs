@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -21,6 +22,7 @@ namespace Helpmebot.Commands.WikiInformation
     public class RegistrationCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public RegistrationCommand(
             string commandSource,
@@ -30,7 +32,8 @@ namespace Helpmebot.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -40,6 +43,7 @@ namespace Helpmebot.Commands.WikiInformation
             client)
         {
             this.databaseSession = databaseSession;
+            this.apiHelper = apiHelper;
         }
 
         [Help("<username>", "Returns the registration date and account age of the specified user")]
@@ -47,6 +51,7 @@ namespace Helpmebot.Commands.WikiInformation
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSiteObject = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
 
             var username = string.Join(" ", this.Arguments);
             if (this.Arguments.Count == 0)
@@ -57,12 +62,16 @@ namespace Helpmebot.Commands.WikiInformation
             DateTime? registrationDate;
             try
             {
-                registrationDate = mediaWikiSiteObject.GetRegistrationDate(username);
+                registrationDate = mediaWikiApi.GetRegistrationDate(username);
             }
             catch (MediawikiApiException e)
             {
                 this.Logger.WarnFormat(e, "Encountered error retrieving registration date from API for {0}", username);
                 return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
             }
 
             if (!registrationDate.HasValue)

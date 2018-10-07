@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.WikiInformation
     public class CategorySizeCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public CategorySizeCommand(
             string commandSource,
@@ -27,7 +29,8 @@ namespace Helpmebot.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -37,6 +40,7 @@ namespace Helpmebot.Commands.WikiInformation
             client)
         {
             this.databaseSession = databaseSession;
+            this.apiHelper = apiHelper;
         }
 
         [RequiredArguments(1)]
@@ -45,10 +49,11 @@ namespace Helpmebot.Commands.WikiInformation
         {
             var categoryName = string.Join(" ", this.Arguments).Trim();
             var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
 
             try
             {
-                var categorySize = mediaWikiSite.GetCategorySize(categoryName);
+                var categorySize = mediaWikiApi.GetCategorySize(categoryName);
 
                 return new[]
                 {
@@ -67,6 +72,10 @@ namespace Helpmebot.Commands.WikiInformation
                         Message = string.Format("[[Category:{0}]] does not exist", categoryName)
                     }
                 };
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
             }
         }
     }

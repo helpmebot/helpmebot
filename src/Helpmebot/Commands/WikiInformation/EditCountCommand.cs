@@ -22,6 +22,7 @@ namespace Helpmebot.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IUrlShorteningService urlShorteningService;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public EditCountCommand(
             string commandSource,
@@ -32,7 +33,8 @@ namespace Helpmebot.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IUrlShorteningService urlShorteningService) : base(
+            IUrlShorteningService urlShorteningService,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -43,6 +45,7 @@ namespace Helpmebot.Commands.WikiInformation
         {
             this.databaseSession = databaseSession;
             this.urlShorteningService = urlShorteningService;
+            this.apiHelper = apiHelper;
         }
 
         [Help("[username]", "Returns your edit count or the edit count for the specified user")]
@@ -55,16 +58,21 @@ namespace Helpmebot.Commands.WikiInformation
             }
 
             var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
 
             int editCount;
             try
             {
-                editCount = mediaWikiSite.GetEditCount(username);
+                editCount = mediaWikiApi.GetEditCount(username);
             }
             catch (MediawikiApiException e)
             {
                 this.Logger.WarnFormat(e, "Encountered error retrieving edit count from API for {0}", username);
                 return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
             }
             
             var xToolsUrl = string.Format(

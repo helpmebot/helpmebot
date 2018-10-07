@@ -96,58 +96,5 @@ namespace Helpmebot.ExtensionMethods
             mediaWikiApiHelper.Release(mediaWikiApi);
             return result;
         }
-        
-        [Obsolete]
-        public static List<string> GetPagesInCategory(this MediaWikiSite site, string category)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetPagesInCategory(category);
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result.ToList();
-        }
-
-        [Obsolete]
-        public static string GetArticlePath(this MediaWikiSite site)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetArticlePath();
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result;
-        }
-        
-        [Obsolete]
-        public static int GetEditCount(this MediaWikiSite site, string username)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetEditCount(username);
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result;
-        }
-
-        [Obsolete]
-        public static DateTime? GetRegistrationDate(this MediaWikiSite site, string username)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetRegistrationDate(username);
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result;
-        }
-
-        [Obsolete]
-        public static string GetMaxLag(this MediaWikiSite site)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetMaxLag();
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result;
-        }
-        
-        
-        
     }
 }

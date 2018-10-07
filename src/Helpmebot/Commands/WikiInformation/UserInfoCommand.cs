@@ -67,9 +67,9 @@ namespace Helpmebot.Commands.WikiInformation
             string message;
             try
             {
-                var editCount = mediaWikiSiteObject.GetEditCount(username);
+                var editCount = mediaWikiApi.GetEditCount(username);
                 var userGroups = string.Join(", ", mediaWikiApi.GetUserGroups(username));
-                var registrationDate = mediaWikiSiteObject.GetRegistrationDate(username);
+                var registrationDate = mediaWikiApi.GetRegistrationDate(username);
 
                 int ageYears;
                 TimeSpan ageSpan;
