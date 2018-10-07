@@ -144,6 +144,7 @@
     <Compile Include="Commands\WikiInformation\CategorySizeCommand.cs" />
     <Compile Include="Commands\WikiInformation\EditCountCommand.cs" />
     <Compile Include="Commands\WikiInformation\GanCountCommand.cs" />
+    <Compile Include="Commands\WikiInformation\MaxLagCommand.cs" />
     <Compile Include="Commands\WikiInformation\RegistrationCommand.cs" />
     <Compile Include="Commands\WikiInformation\UserRightsCommand.cs" />
     <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
@@ -283,7 +284,6 @@
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
-    <Compile Include="Legacy\Commands\Blockuser.cs" />
     <Compile Include="Legacy\Commands\Autolink.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
@@ -293,7 +293,6 @@
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Isgd.cs" />
     <Compile Include="Legacy\Commands\Link.cs" />
-    <Compile Include="Legacy\Commands\MaxLag.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="Legacy\Commands\Resolve.cs" />

@@ -303,6 +303,28 @@ namespace Helpmebot.ExtensionMethods
                 return string.Join(", ", rights);
             }
         }
+
+        /// <summary>
+        /// Gets the maximum replication lag between the Wikimedia Foundation MySQL database cluster for the base wiki of the
+        /// channel.
+        /// </summary>
+        /// <returns>The maximum replication lag</returns>
+        public static string GetMaxLag(this MediaWikiSite mediaWikiSite)
+        {
+            var uri = mediaWikiSite.Api + "?action=query&meta=siteinfo&siprop=dbrepllag&format=xml";
+            using (var data = HttpRequest.Get(uri).ToStream())
+            {
+                var mlreader = new XmlTextReader(data);
+
+                do
+                {
+                    mlreader.Read();
+                }
+                while (mlreader.Name != "db");
+
+                return mlreader.GetAttribute("lag");
+            }
+        }
         
         #endregion
     }
