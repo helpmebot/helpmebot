@@ -169,7 +169,6 @@
     <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Legacy\Commands\Whoami.cs" />
     <Compile Include="Legacy\Commands\Whois.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
     <Compile Include="Legacy\ICommandServiceHelper.cs" />
