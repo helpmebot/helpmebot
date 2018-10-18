@@ -84,6 +84,9 @@ namespace Helpmebot.Commands.WikiInformation
                 var userContributions = this.linkerService.ConvertWikilinkToUrl(
                     this.CommandSource,
                     string.Format("Special:Contributions/{0}", username));
+                var centralAuth = this.linkerService.ConvertWikilinkToUrl(
+                    this.CommandSource,
+                    string.Format("meta:Special:CentralAuth/{0}", username));
 
                 var userBlockLogBuilder = new UriBuilder(
                     this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Log"));
@@ -97,7 +100,7 @@ namespace Helpmebot.Commands.WikiInformation
                 var isBlocked = mediaWikiSiteObject.GetBlockInformation(username).Any();
 
                 message = string.Format(
-                    "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}",
+                    "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}",
                     this.urlShortener.Shorten(userPage),
                     this.urlShortener.Shorten(userTalk),
                     this.urlShortener.Shorten(userContributions),
@@ -108,7 +111,8 @@ namespace Helpmebot.Commands.WikiInformation
                     editRate,
                     editCount,
                     isBlocked ? "| BLOCKED" : string.Empty,
-                    ageSpan);
+                    ageSpan,
+                    this.urlShortener.Shorten(centralAuth));
             }
             catch (MediawikiApiException ex)
             {
