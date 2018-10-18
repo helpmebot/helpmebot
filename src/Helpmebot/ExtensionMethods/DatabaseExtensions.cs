@@ -23,7 +23,7 @@ namespace Helpmebot.ExtensionMethods
             }
 
             return session.CreateCriteria<MediaWikiSite>()
-                .Add(Restrictions.Eq("IsDefault", 1))
+                .Add(Restrictions.Eq("IsDefault", true))
                 .UniqueResult<MediaWikiSite>();
         }
     }

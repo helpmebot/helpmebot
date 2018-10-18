@@ -16,13 +16,16 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using Helpmebot.ExtensionMethods;
+    using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+    using NHibernate;
+    using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Events;
 
     /// <summary>
@@ -30,22 +33,22 @@ namespace Helpmebot.Services
     /// </summary>
     public class LinkerService : ILinkerService
     {
-        private readonly IChannelRepository channelRepository;
         private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly ISession databaseSession;
         private readonly Dictionary<string, string> lastLink;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
         public LinkerService(
-            IChannelRepository channelRepository,
             IInterwikiPrefixRepository interwikiPrefixRepository,
-            IMediaWikiApiHelper apiHelper)
+            IMediaWikiApiHelper apiHelper,
+            ISession databaseSession)
         {
-            this.channelRepository = channelRepository;
             this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.apiHelper = apiHelper;
+            this.databaseSession = databaseSession;
             this.lastLink = new Dictionary<string, string>();
         }
 
@@ -81,9 +84,9 @@ namespace Helpmebot.Services
 
         private string GetWikiArticleBasePath(string destination)
         {
-            var mediaWikiSite = this.channelRepository.GetByName(destination).BaseWiki;
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(destination);
 
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             var url = mediaWikiApi.GetArticlePath();
 
             this.apiHelper.Release(mediaWikiApi);
@@ -103,7 +106,7 @@ namespace Helpmebot.Services
 
             return links.Aggregate(
                 string.Empty,
-                (current, link) => current + " " + this.ConvertWikilinkToUrl(destination, link));
+                (current, link) => current + " " + this.ConvertWikilinkToUrl(destination, link)).TrimStart(' ');
         }
 
         public IList<string> ParseMessageForLinks(string message)
@@ -186,17 +189,26 @@ namespace Helpmebot.Services
                 return;
             }
 
-            if (this.lastLink.ContainsKey(e.Target))
+            var messageTarget = e.Target;
+            if (messageTarget == e.Client.Nickname)
             {
-                this.lastLink.Remove(e.Target);
+                messageTarget = e.User.Nickname;
+            }
+                
+            if (this.lastLink.ContainsKey(messageTarget))
+            {
+                this.lastLink.Remove(messageTarget);
             }
 
-            this.lastLink.Add(e.Target, e.Message);
+            this.lastLink.Add(messageTarget, e.Message);
 
-
-            if (this.channelRepository.GetByName(e.Target).AutoLink)
+            var channel = this.databaseSession.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq("Name", messageTarget))
+                .UniqueResult<Channel>();
+            
+            if (channel != null && channel.AutoLink)
             {
-                e.Client.SendMessage(e.Target, this.GetLastLinkForChannel(e.Message));
+                e.Client.SendMessage(messageTarget, this.GetLastLinkForChannel(e.Message));
             }
         }
 
