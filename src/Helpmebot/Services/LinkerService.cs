@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -61,18 +62,24 @@ namespace Helpmebot.Services
             
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                url = this.GetWikiArticleBaseUrl(destination);
+                url = this.GetWikiArticleBasePath(destination);
             }
             else
             {
                 source = string.Join(":", link.Split(':'), 1, link.Split(':').Length - 1);
             }
 
-            var result = url.Replace("$1", this.Antispace(source));
-            return result;
+            var resultString = url.Replace("$1", this.Antispace(source));
+
+            if (resultString.StartsWith("//"))
+            {
+                resultString = "https:" + resultString;
+            }
+            
+            return resultString;
         }
 
-        private string GetWikiArticleBaseUrl(string destination)
+        private string GetWikiArticleBasePath(string destination)
         {
             var mediaWikiSite = this.channelRepository.GetByName(destination).BaseWiki;
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
