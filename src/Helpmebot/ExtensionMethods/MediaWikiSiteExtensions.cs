@@ -16,7 +16,6 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.ExtensionMethods
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -24,7 +23,6 @@ namespace Helpmebot.ExtensionMethods
     using System.Xml.Linq;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using HttpRequest = Helpmebot.HttpRequest;
@@ -85,16 +83,6 @@ namespace Helpmebot.ExtensionMethods
                 //// ReSharper restore PossibleNullReferenceException
                 return blocks;
             }
-        }
-        
-        [Obsolete]
-        public static int GetCategorySize(this MediaWikiSite site, string category)
-        {
-            var mediaWikiApiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
-            var mediaWikiApi = mediaWikiApiHelper.GetApi(site);
-            var result = mediaWikiApi.GetCategorySize(category);
-            mediaWikiApiHelper.Release(mediaWikiApi);
-            return result;
         }
     }
 }

@@ -18,11 +18,11 @@
 namespace helpmebot6.Commands
 {
     using Helpmebot;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
-    using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
+    using Microsoft.Practices.ServiceLocation;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
@@ -59,9 +59,13 @@ namespace helpmebot6.Commands
         /// </returns>
         protected override CommandResponseHandler ExecuteCommand()
         {
-            var mediaWikiSite = this.GetLocalMediawikiSite();
+            // FIXME: servicelocator
+            var apiHelper = ServiceLocator.Current.GetInstance<IMediaWikiApiHelper>();
             
-            var size = mediaWikiSite.GetCategorySize("Pending AfC submissions");
+            var mediaWikiSite = this.GetLocalMediawikiSite();
+            var mediaWikiApi = apiHelper.GetApi(mediaWikiSite);
+
+            var size = mediaWikiApi.GetCategorySize("Pending AfC submissions");
 
             if (size == 0)
             {
