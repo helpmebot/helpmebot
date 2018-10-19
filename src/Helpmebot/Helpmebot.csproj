@@ -84,6 +84,7 @@
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
+    <Compile Include="Commands\Configuration\SilenceCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
     <Compile Include="LegacyCommandResponse.cs" />
     <Compile Include="Commands\ACC\AccDeployCommand.cs" />
@@ -294,7 +295,6 @@
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
-    <Compile Include="Legacy\Commands\Silence.cs" />
     <Compile Include="Legacy\Commands\Welcomer.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
