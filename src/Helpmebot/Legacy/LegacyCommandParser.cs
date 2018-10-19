@@ -179,7 +179,7 @@ namespace Helpmebot.Legacy
         {
             if (response != null)
             {
-                foreach (CommandResponse item in response.GetResponses())
+                foreach (LegacyCommandResponse item in response.GetResponses())
                 {
                     string message = item.Message;
 

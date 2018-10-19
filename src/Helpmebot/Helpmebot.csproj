@@ -84,7 +84,7 @@
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
-    <Compile Include="CommandResponse.cs" />
+    <Compile Include="LegacyCommandResponse.cs" />
     <Compile Include="Commands\ACC\AccDeployCommand.cs" />
     <Compile Include="Commands\ACC\AccStatsCommand.cs" />
     <Compile Include="Commands\ACC\AccStatusCommand.cs" />
@@ -101,6 +101,7 @@
     <Compile Include="Commands\Brain\ForgetCommand.cs" />
     <Compile Include="Commands\Brain\LearnCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\ForceUpdateCommand.cs" />
+    <Compile Include="Commands\Configuration\AutoLinkCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCommand.cs" />
     <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
     <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
@@ -284,7 +285,6 @@
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
-    <Compile Include="Legacy\Commands\Autolink.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
     <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />

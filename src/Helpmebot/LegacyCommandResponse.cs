@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CommandResponse.cs" company="Helpmebot Development Team">
+// <copyright file="LegacyCommandResponse.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -42,7 +42,7 @@ namespace Helpmebot
     /// <summary>
     ///     The individual response
     /// </summary>
-    public struct CommandResponse
+    public struct LegacyCommandResponse
     {
         #region Fields
 
@@ -147,7 +147,7 @@ namespace Helpmebot
         /// </param>
         public void Respond(string message)
         {
-            CommandResponse cr;
+            LegacyCommandResponse cr;
             cr.Destination = CommandResponseDestination.Default;
             cr.Message = message;
 
@@ -165,7 +165,7 @@ namespace Helpmebot
         /// </param>
         public void Respond(string message, CommandResponseDestination destination)
         {
-            CommandResponse cr;
+            LegacyCommandResponse cr;
             cr.Destination = destination;
             cr.Message = message;
 

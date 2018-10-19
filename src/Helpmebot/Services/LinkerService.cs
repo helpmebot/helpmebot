@@ -26,6 +26,7 @@ namespace Helpmebot.Services
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using NHibernate.Linq.Functions;
     using Stwalkerster.IrcClient.Events;
 
     /// <summary>
@@ -202,13 +203,15 @@ namespace Helpmebot.Services
 
             this.lastLink.Add(messageTarget, e.Message);
 
-            var channel = this.databaseSession.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", messageTarget))
-                .UniqueResult<Channel>();
+            var channel = this.databaseSession.GetChannelObject(messageTarget);
+            this.databaseSession.Refresh(channel);
             
             if (channel != null && channel.AutoLink)
             {
-                e.Client.SendMessage(messageTarget, this.GetLastLinkForChannel(e.Message));
+                var links = this.ParseMessageForLinks(string.Join(" ", e.Message))
+                    .Select(x => this.ConvertWikilinkToUrl(messageTarget, x));
+                
+                e.Client.SendMessage(messageTarget, string.Join(", ", links));
             }
         }
 
