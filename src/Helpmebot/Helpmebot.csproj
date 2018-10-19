@@ -140,6 +140,7 @@
     <Compile Include="Commands\Information\DnsResolveCommand.cs" />
     <Compile Include="Commands\Information\GoogleCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
+    <Compile Include="Commands\Standard\LinkCommand.cs" />
     <Compile Include="Commands\WikiInformation\AfcCountCommand.cs" />
     <Compile Include="Commands\WikiInformation\BlockInformationCommand.cs" />
     <Compile Include="Commands\WikiInformation\CategorySizeCommand.cs" />
@@ -167,7 +168,6 @@
     <Compile Include="Legacy\Commands\Access.cs" />
     <Compile Include="Legacy\Commands\Afcbacklog.cs" />
     <Compile Include="Legacy\Commands\Blockmonitor.cs" />
-    <Compile Include="ExtensionMethods\ArrayExtensions.cs" />
     <Compile Include="ExtensionMethods\IPAddressExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Commands\Whois.cs" />
@@ -292,7 +292,6 @@
     <Compile Include="Legacy\Commands\Geolocate.cs" />
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Isgd.cs" />
-    <Compile Include="Legacy\Commands\Link.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
     <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="Legacy\Commands\Silence.cs" />
