@@ -45,7 +45,7 @@ namespace Helpmebot.Commands.Configuration
 
         [SubcommandInvocation("add")]
         [Help("<channel>", "Adds monitoring of blocked users joining the specified channel, reporting in the current channel")]
-        public IEnumerable<CommandResponse> AddMode()
+        protected IEnumerable<CommandResponse> AddMode()
         {
             this.blockMonitoringService.AddMap(this.Arguments.First(), this.CommandSource, this.databaseSession);
 
@@ -56,7 +56,7 @@ namespace Helpmebot.Commands.Configuration
         [SubcommandInvocation("delete")]
         [SubcommandInvocation("remove")]
         [Help("<channel>", "Removes monitoring of blocked users joining the specified channel, reporting in the current channel")]
-        public IEnumerable<CommandResponse> DeleteMode()
+        protected IEnumerable<CommandResponse> DeleteMode()
         {
             this.blockMonitoringService.DeleteMap(this.Arguments.First(), this.CommandSource, this.databaseSession);
 

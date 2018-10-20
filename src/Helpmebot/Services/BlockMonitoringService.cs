@@ -196,10 +196,21 @@ namespace Helpmebot.Services
 
                 foreach (var monitor in deleteList)
                 {
+                    this.logger.DebugFormat(
+                        "Deleting monitor {2} for {0} to {1}",
+                        monitor.MonitorChannel,
+                        monitor.ReportChannel,
+                        monitor.Id);
                     databaseSession.Delete(monitor);
                 }
+
+                databaseSession.Flush();
                 
-                this.monitors[monitorChannel].Remove(reportChannel);
+                var success = this.monitors[monitorChannel].Remove(reportChannel);
+                if (!success)
+                {
+                    this.logger.WarnFormat("Could not remove tracking for {0} in {1}", monitorChannel, reportChannel);
+                }
             }
         }
 
