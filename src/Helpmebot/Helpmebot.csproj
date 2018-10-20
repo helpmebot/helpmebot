@@ -84,6 +84,7 @@
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
+    <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
     <Compile Include="Commands\Configuration\WelcomerConfigurationCommand.cs" />
@@ -291,7 +292,6 @@
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
-    <Compile Include="Legacy\Commands\Fetchall.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
     <Compile Include="Legacy\Commands\Helper.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
