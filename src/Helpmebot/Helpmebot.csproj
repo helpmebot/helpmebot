@@ -86,6 +86,7 @@
     <Compile Include="Background\ZmqMonitor.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
+    <Compile Include="Commands\Information\DecodeCommand.cs" />
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
@@ -289,7 +290,6 @@
     <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
-    <Compile Include="Legacy\Commands\Decode.cs" />
     <Compile Include="Legacy\Commands\Fetchall.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
     <Compile Include="Legacy\Commands\Helper.cs" />
