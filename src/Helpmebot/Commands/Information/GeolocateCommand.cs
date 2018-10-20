@@ -8,18 +8,17 @@ namespace Helpmebot.Commands.Information
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("whois")]
+    [CommandInvocation("geolocate")]
     [CommandFlag(Flags.Protected)]
-    public class WhoisCommand : CommandBase
+    public class GeolocateCommand : CommandBase
     {
-        private readonly IWhoisService whoisService;
+        private readonly IGeolocationService geolocationService;
 
-        public WhoisCommand(
+        public GeolocateCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -27,7 +26,7 @@ namespace Helpmebot.Commands.Information
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IWhoisService whoisService) : base(
+            IGeolocationService geolocationService) : base(
             commandSource,
             user,
             arguments,
@@ -36,30 +35,23 @@ namespace Helpmebot.Commands.Information
             configurationProvider,
             client)
         {
-            this.whoisService = whoisService;
+            this.geolocationService = geolocationService;
         }
 
         [RequiredArguments(1)]
         [Help(
             new[] {"<ip>", "<hexstring>", "<nickname>"},
-            "Returns the controlling organisation for the provided IP address")]
+            "Returns the real-world location for the provided IP address")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var ip = this.GetIPAddress();
-            if (ip == null)
+            var ipAddress = this.GetIPAddress();
+
+            var location = this.geolocationService.GetLocation(ipAddress);
+
+            yield return new CommandResponse
             {
-                throw new CommandInvocationException("Unable to find IP address to query");
-            }
-
-            var orgName = this.whoisService.GetOrganisationName(ip);
-
-            if (orgName == null)
-            {
-                throw new CommandErrorException(string.Format("Whois for {0} failed.", ip));
-            }
-
-            var msg = string.Format("Whois for {0} gives organisation {1}", ip, orgName);
-            yield return new CommandResponse {Message = msg};
+                Message = string.Format("Location: {0}", location)
+            };
         }
     }
 }

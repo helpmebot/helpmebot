@@ -27,7 +27,6 @@ namespace Helpmebot.Services
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using helpmebot6.Commands;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
@@ -226,7 +225,7 @@ namespace Helpmebot.Services
 
                 if (validHexIp.IsMatch(user.Username))
                 {
-                    return Decode.GetIpAddressFromHex(user.Username);
+                    return user.Username.GetIpAddressFromHex();
                 }
 
                 // not a gateway cloak. Can't do anything.

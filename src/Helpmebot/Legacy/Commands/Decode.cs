@@ -20,12 +20,12 @@
 
 namespace helpmebot6.Commands
 {
-    using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
 
     using Helpmebot;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Legacy;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Legacy.Transitional;
@@ -80,7 +80,7 @@ namespace helpmebot6.Commands
                 return new CommandResponseHandler(messageService.RetrieveMessage("DecodeBadInput", this.Channel, new string[0]));
             }
 
-            var ipAddr = GetIpAddressFromHex(input);
+            var ipAddr = input.GetIpAddressFromHex();
 
             string hostname = string.Empty;
 
@@ -102,27 +102,6 @@ namespace helpmebot6.Commands
                 string[] messageargs = { input, ipAddr.ToString() };
                 return new CommandResponseHandler(messageService.RetrieveMessage("hexDecodeResultNoResolve", this.Channel, messageargs));
             }
-        }
-
-        /// <summary>
-        /// The get ip address from hex.
-        /// </summary>
-        /// <param name="input">
-        /// The input.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IPAddress"/>.
-        /// </returns>
-        public static IPAddress GetIpAddressFromHex(string input)
-        {
-            var ip = new byte[4];
-            ip[0] = Convert.ToByte(input.Substring(0, 2), 16);
-            ip[1] = Convert.ToByte(input.Substring(2, 2), 16);
-            ip[2] = Convert.ToByte(input.Substring(4, 2), 16);
-            ip[3] = Convert.ToByte(input.Substring(6, 2), 16);
-
-            var ipAddr = new IPAddress(ip);
-            return ipAddr;
         }
     }
 }

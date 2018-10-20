@@ -22,27 +22,13 @@ namespace Helpmebot.ExtensionMethods
 {
     using System;
     using System.IO;
-    using System.Text;
+    using System.Net;
 
     /// <summary>
     /// The string extensions.
     /// </summary>
     public static class StringExtensions
     {
-        /// <summary>
-        /// The to base 64.
-        /// </summary>
-        /// <param name="data">
-        /// The data.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string ToBase64(this string data)
-        {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes(data));
-        }
-
         /// <summary>
         /// The to stream.
         /// </summary>
@@ -60,6 +46,18 @@ namespace Helpmebot.ExtensionMethods
             writer.Flush();
             stream.Position = 0;
             return stream;
+        }
+        
+        public static IPAddress GetIpAddressFromHex(this string input)
+        {
+            var ip = new byte[4];
+            ip[0] = Convert.ToByte(input.Substring(0, 2), 16);
+            ip[1] = Convert.ToByte(input.Substring(2, 2), 16);
+            ip[2] = Convert.ToByte(input.Substring(4, 2), 16);
+            ip[3] = Convert.ToByte(input.Substring(6, 2), 16);
+
+            var ipAddr = new IPAddress(ip);
+            return ipAddr;
         }
     }
 }

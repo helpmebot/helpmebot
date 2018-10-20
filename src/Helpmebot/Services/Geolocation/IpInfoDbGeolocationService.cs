@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IpInfoDbGeoloationService.cs" company="Helpmebot Development Team">
+// <copyright file="IpInfoDbGeolocationService.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +29,7 @@ namespace Helpmebot.Services.Geolocation
     /// <summary>
     /// The IpInfoDB geolocation service.
     /// </summary>
-    public class IpInfoDbGeoloationService : IGeolocationService
+    public class IpInfoDbGeolocationService : IGeolocationService
     {
         /// <summary>
         /// The API key.
@@ -42,7 +42,7 @@ namespace Helpmebot.Services.Geolocation
         private readonly ILogger logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IpInfoDbGeoloationService"/> class.
+        /// Initializes a new instance of the <see cref="IpInfoDbGeolocationService"/> class.
         /// </summary>
         /// <param name="logger">
         /// The logger.
@@ -50,7 +50,7 @@ namespace Helpmebot.Services.Geolocation
         /// <param name="configuration">
         /// The configuration.
         /// </param>
-        public IpInfoDbGeoloationService(ILogger logger, BotConfiguration configuration)
+        public IpInfoDbGeolocationService(ILogger logger, BotConfiguration configuration)
         {
             this.logger = logger;
             this.apiKey = configuration.IpInfoDbApiKey;
