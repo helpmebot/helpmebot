@@ -20,34 +20,24 @@
 
 namespace Helpmebot.Services.Interfaces
 {
-    using System;
+    using NHibernate;
     using Stwalkerster.IrcClient.Events;
-    using Stwalkerster.IrcClient.Interfaces;
-    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The BlockMonitoringService interface.
     /// </summary>
     public interface IBlockMonitoringService
     {
-        /// <summary>
-        /// The do event processing.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <param name="user">
-        /// The user.
-        /// </param>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        [Obsolete]
-        void DoEventProcessing(string channel, IUser user, IIrcClient sender);
-
         void OnJoinEvent(object sender, JoinEventArgs e);
 
-        void AddMap(string monitorChannel, string reportChannel);
-        void DeleteMap(string monitorChannel, string reportChannel);
+        /// <param name="monitorChannel">the channel to monitor</param>
+        /// <param name="reportChannel">the channel in which to report</param>
+        /// <param name="databaseSession">The hibernate session</param>
+        void AddMap(string monitorChannel, string reportChannel, ISession databaseSession);
+        
+        /// <param name="monitorChannel">the channel to monitor</param>
+        /// <param name="reportChannel">the channel in which to report</param>
+        /// <param name="databaseSession">The hibernate session</param>
+        void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession);
     }
 }

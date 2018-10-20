@@ -84,6 +84,7 @@
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
     <Compile Include="Background\ZmqMonitor.cs" />
+    <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
@@ -173,7 +174,6 @@
     <Compile Include="Legacy\CommandServiceHelper.cs" />
     <Compile Include="Legacy\Commands\Access.cs" />
     <Compile Include="Legacy\Commands\Afcbacklog.cs" />
-    <Compile Include="Legacy\Commands\Blockmonitor.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
     <Compile Include="Legacy\Database\ILegacyDatabase.cs" />
     <Compile Include="Legacy\ICommandServiceHelper.cs" />
@@ -229,10 +229,8 @@
     <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
-    <Compile Include="Repositories\BlockMonitorRepository.cs" />
     <Compile Include="Repositories\ChannelRepository.cs" />
     <Compile Include="Repositories\FlagGroupRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IBlockMonitorRepository.cs" />
     <Compile Include="Repositories\Interfaces\IInterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\Interfaces\IMediaWikiSiteRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />

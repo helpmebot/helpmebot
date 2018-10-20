@@ -31,6 +31,7 @@ namespace Helpmebot.Services
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+    using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -46,7 +47,6 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly ILogger logger;
 
-        private readonly IBlockMonitorRepository blockMonitorRepository;
         private readonly IChannelRepository channelRepository;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
@@ -55,19 +55,18 @@ namespace Helpmebot.Services
 
         public BlockMonitoringService(
             ILogger logger,
-            IBlockMonitorRepository blockMonitorRepository,
             IChannelRepository channelRepository,
             ILinkerService linkerService,
-            IUrlShorteningService urlShorteningService)
+            IUrlShorteningService urlShorteningService,
+            ISession globalSession)
         {
             this.logger = logger;
-            this.blockMonitorRepository = blockMonitorRepository;
             this.channelRepository = channelRepository;
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
 
             // initialise the store
-            foreach (var blockMonitor in this.blockMonitorRepository.Get())
+            foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
             {
                 if (!this.monitors.ContainsKey(blockMonitor.MonitorChannel))
                 {
@@ -80,17 +79,10 @@ namespace Helpmebot.Services
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
         {
-            this.DoEventProcessing(e.Channel, e.User, (IIrcClient) sender);
-        }
-
-        /// <inheritdoc />
-        [Obsolete]
-        public void DoEventProcessing(string channel, IUser user, IIrcClient client)
-        {
             try
             {
                 // channel checks
-                var alertChannelEnumerable = this.GetAlertChannel(channel);
+                var alertChannelEnumerable = this.GetAlertChannel(e.Channel);
                 if (alertChannelEnumerable == null)
                 {
                     this.logger.Debug("No block monitoring alert channels found");
@@ -105,12 +97,12 @@ namespace Helpmebot.Services
                     return;
                 }
 
-                var mediaWikiSite = this.channelRepository.GetByName(channel).BaseWiki;
+                var mediaWikiSite = this.channelRepository.GetByName(e.Channel).BaseWiki;
 
-                var ip = this.GetIpAddress(user);
+                var ip = this.GetIpAddress(e.User);
                 if (ip == null)
                 {
-                    this.logger.DebugFormat("Could not detect IP address for user {0}", user);
+                    this.logger.DebugFormat("Could not detect IP address for user {0}", e.User);
                 }
                 else
                 {
@@ -135,18 +127,18 @@ namespace Helpmebot.Services
                             
                             var message = string.Format(
                                 "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3} ( {5} )",
-                                user.Nickname,
-                                channel,
+                                e.User.Nickname,
+                                e.Channel,
                                 blockInformation.Target,
                                 blockInformation.BlockReason,
                                 ipInfo,
                                 url);
-                            client.SendMessage(c, message);
+                            ((IIrcClient) sender).SendMessage(c, message);
                         }
                     }
                 }
 
-                var userBlockInfo = mediaWikiSite.GetBlockInformation(user.Nickname);
+                var userBlockInfo = mediaWikiSite.GetBlockInformation(e.User.Nickname);
                 foreach (var blockInformation in userBlockInfo)
                 {
                     foreach (var c in alertChannel)
@@ -156,13 +148,13 @@ namespace Helpmebot.Services
                         
                         var message = string.Format(
                             "Joined user {0} in channel {1} is blocked ({2}) because: {3} ( {4} )",
-                            user.Nickname,
-                            channel,
+                            e.User.Nickname,
+                            e.Channel,
                             blockInformation.Target,
                             blockInformation.BlockReason,
                             url);
                         
-                        client.SendMessage(c, message);
+                        ((IIrcClient) sender).SendMessage(c, message);
                     }
                 }
             }
@@ -176,12 +168,13 @@ namespace Helpmebot.Services
             }
         }
 
-        public void AddMap(string monitorChannel, string reportChannel)
+        public void AddMap(string monitorChannel, string reportChannel, ISession databaseSession)
         {
             lock (this.monitors)
             {
                 var monitor = new BlockMonitor {MonitorChannel = monitorChannel, ReportChannel = reportChannel};
-                this.blockMonitorRepository.Save(monitor);
+                databaseSession.SaveOrUpdate(monitor);
+                databaseSession.Flush();
 
                 if (!this.monitors.ContainsKey(monitorChannel))
                 {
@@ -191,17 +184,21 @@ namespace Helpmebot.Services
                 this.monitors[monitorChannel].Add(reportChannel);
             }
         }
-
-        public void DeleteMap(string monitorChannel, string reportChannel)
+        
+        public void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession)
         {
             lock (this.monitors)
             {
-                this.blockMonitorRepository.Delete(
-                    Restrictions.And(
-                        Restrictions.Eq("MonitorChannel", monitorChannel),
-                        Restrictions.Eq("ReportChannel", reportChannel)
-                    ));
+                var deleteList = databaseSession.CreateCriteria<BlockMonitor>().Add(Restrictions.And(
+                    Restrictions.Eq("MonitorChannel", monitorChannel),
+                    Restrictions.Eq("ReportChannel", reportChannel)
+                )).List<BlockMonitor>();
 
+                foreach (var monitor in deleteList)
+                {
+                    databaseSession.Delete(monitor);
+                }
+                
                 this.monitors[monitorChannel].Remove(reportChannel);
             }
         }
