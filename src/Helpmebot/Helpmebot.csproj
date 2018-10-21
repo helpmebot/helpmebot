@@ -88,6 +88,8 @@
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
     <Compile Include="Commands\Configuration\WelcomerConfigurationCommand.cs" />
+    <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
+    <Compile Include="Commands\CrossChannel\CrossChannelNotifyCommand.cs" />
     <Compile Include="Commands\Information\DecodeCommand.cs" />
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
@@ -190,8 +192,10 @@
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
+    <Compile Include="Model\CrossChannel.cs" />
     <Compile Include="Model\FlagAccessLogEntry.cs" />
     <Compile Include="Model\Flags.cs" />
+    <Compile Include="Model\Interfaces\ICommandParserEntity.cs" />
     <Compile Include="Model\InterwikiPrefix.cs" />
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
@@ -216,6 +220,7 @@
     <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
     <Compile Include="Persistence\Mappings\CategoryItemMap.cs" />
     <Compile Include="Persistence\Mappings\CategoryWatcherChannelMap.cs" />
+    <Compile Include="Persistence\Mappings\CrossChannelMap.cs" />
     <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
@@ -258,11 +263,14 @@
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\CategoryWatcherHelperService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
+    <Compile Include="Services\CrossChannelService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeolocationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\HelpSyncService.cs" />
+    <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
+    <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IHelpSyncService.cs" />

@@ -28,36 +28,37 @@ namespace Helpmebot.Services.Interfaces
     /// </summary>
     public interface IKeywordService : IStartable
     {
+
         /// <summary>
-        /// The delete.
+        /// Deletes a learned word
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to delete.
         /// </param>
         void Delete(string name);
 
         /// <summary>
-        /// The create.
+        /// Creates a new learned word
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to store and retrieve with
         /// </param>
         /// <param name="response">
-        /// The content.
+        /// The response to give
         /// </param>
         /// <param name="action">
-        /// The action.
+        /// Flag indicating if this response should be given as a CTCP ACTION
         /// </param>
         void Create(string name, string response, bool action);
 
         /// <summary>
-        /// The get.
+        /// Retrieves a stored keyword
         /// </summary>
         /// <param name="name">
-        /// The name.
+        /// The keyword to retrieve.
         /// </param>
         /// <returns>
-        /// The <see cref="string"/>.
+        /// An object representing the keyword
         /// </returns>
         Keyword Get(string name);
     }

@@ -32,29 +32,18 @@ namespace Helpmebot.Services
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
-    public class KeywordService : IKeywordService
+    public class KeywordService : CommandParserProviderServiceBase<Keyword>, IKeywordService
     {
-        private readonly ILogger logger;
-        private readonly ICommandParser commandParser;
-
         private readonly ISession session;
         private readonly object sessionLock = new object();
 
-        private readonly HashSet<string> registeredCommands = new HashSet<string>();
-
         public KeywordService(ILogger logger, ICommandParser commandParser, ISession session)
+            : base(commandParser, logger)
         {
-            this.logger = logger;
-            this.commandParser = commandParser;
             this.session = session;
         }
 
-        /// <summary>
-        /// Deletes a learned word
-        /// </summary>
-        /// <param name="name">
-        /// The keyword to delete.
-        /// </param>
+        /// <inheritdoc />
         public void Delete(string name)
         {
             lock (this.sessionLock)
@@ -65,27 +54,16 @@ namespace Helpmebot.Services
 
                 foreach (var model in deleteList)
                 {
-                    this.logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
+                    this.Logger.DebugFormat("Deleting model {0} ({1})...", model, model.GetType().Name);
                     this.session.Delete(model);
-                    this.UnregisterCommand(name);
+                    this.UnregisterCommand(model);
                 }
 
                 this.session.Flush();
             }
         }
 
-        /// <summary>
-        /// Creates a new learned word
-        /// </summary>
-        /// <param name="name">
-        /// The keyword to store and retrieve with
-        /// </param>
-        /// <param name="response">
-        /// The response to give
-        /// </param>
-        /// <param name="action">
-        /// Flag indicating if this response should be given as a CTCP ACTION
-        /// </param>
+        /// <inheritdoc />
         public void Create(string name, string response, bool action)
         {
             lock (this.sessionLock)
@@ -111,29 +89,21 @@ namespace Helpmebot.Services
 
                     this.session.SaveOrUpdate(existing);
 
-                    this.logger.Debug("Transactional create function succeeded.");
+                    this.Logger.Debug("Transactional create function succeeded.");
                     transaction.Commit();
-                    
-                    this.RegisterCommand(name);
+
+                    this.RegisterCommand(existing);
                 }
                 catch (Exception ex)
                 {
-                    this.logger.Error("Transactional create function failed", ex);
+                    this.Logger.Error("Transactional create function failed", ex);
                     transaction.Rollback();
                     throw;
                 }
             }
         }
 
-        /// <summary>
-        /// Retrieves a stored keyword
-        /// </summary>
-        /// <param name="name">
-        /// The keyword to retrieve.
-        /// </param>
-        /// <returns>
-        /// An object representing the keyword
-        /// </returns>
+        /// <inheritdoc />
         public Keyword Get(string name)
         {
             IList<Keyword> existing;
@@ -145,7 +115,7 @@ namespace Helpmebot.Services
             return existing.FirstOrDefault();
         }
 
-        public void Start()
+        protected override IList<Keyword> ItemsToRegister()
         {
             IList<Keyword> keywords;
             lock (this.sessionLock)
@@ -153,78 +123,12 @@ namespace Helpmebot.Services
                 keywords = this.session.CreateCriteria<Keyword>().List<Keyword>();
             }
 
-            this.logger.InfoFormat("Populating command parser with {0} stored responses", keywords.Count);
-
-            foreach (var keyword in keywords)
-            {
-                this.RegisterCommand(keyword.Name);
-            }
-            
-            lock (this.registeredCommands)
-            {
-                this.logger.InfoFormat("Registered {0} stored responses in command parser", this.registeredCommands.Count);
-            }
+            return keywords;
         }
-        
-        public void Stop()
+
+        protected override Type CommandImplementation()
         {
-            HashSet<string> set;
-            lock (this.registeredCommands)
-            {
-                set = new HashSet<string>(this.registeredCommands);
-                this.logger.InfoFormat(
-                    "Shutting down keyword service with {0} registered commands",
-                    this.registeredCommands.Count);
-            }
-
-            foreach (var command in set)
-            {
-                this.UnregisterCommand(command);
-            }
+            return typeof(BrainRetrievalCommand);
         }
-
-        private void RegisterCommand(string keywordName)
-        {
-            if (!this.UnregisterCommand(keywordName))
-            {
-                return;
-            }
-
-            this.commandParser.RegisterCommand(keywordName, typeof(BrainRetrievalCommand));
-            
-            lock (this.registeredCommands)
-            {
-                this.registeredCommands.Add(keywordName);
-            }
-
-            this.logger.DebugFormat("Registered keyword {0}.", keywordName);
-        }
-
-        private bool UnregisterCommand(string keywordName)
-        {
-            var existingCommand = this.commandParser.GetRegisteredCommand(keywordName);
-            if (existingCommand != null)
-            {
-                if (existingCommand != typeof(BrainRetrievalCommand))
-                {
-                    this.logger.WarnFormat(
-                        "Could not unregister keyword {0} with command parser as this command is not a keyword command.",
-                        keywordName);
-                    return false;
-                }
-
-                this.logger.DebugFormat("Unregistered keyword {0}.", keywordName);
-
-                lock (this.registeredCommands)
-                {
-                    this.registeredCommands.Remove(keywordName);
-                }
-
-                this.commandParser.UnregisterCommand(keywordName);
-            }
-
-            return true;
-        }
-
     }
 }

@@ -20,12 +20,13 @@
 
 namespace Helpmebot.Model
 {
+    using Helpmebot.Model.Interfaces;
     using Helpmebot.Persistence;
 
     /// <summary>
     /// The keyword.
     /// </summary>
-    public class Keyword : EntityBase
+    public class Keyword : EntityBase, ICommandParserEntity
     {
         /// <summary>
         /// Gets or sets the name.
@@ -101,6 +102,16 @@ namespace Helpmebot.Model
         {
             return string.Equals(this.Name, other.Name) && string.Equals(this.Response, other.Response)
                    && this.Action.Equals(other.Action);
+        }
+
+        public virtual string CommandKeyword
+        {
+            get { return this.Name; }
+        }
+
+        public virtual string CommandChannel
+        {
+            get { return null; }
         }
     }
 }
