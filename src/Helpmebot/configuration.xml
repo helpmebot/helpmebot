@@ -96,6 +96,14 @@
             </parameters>
         </component>
         
+        <!-- Cross-channel notification configuration -->
+        <component type="CrossChannelServiceConfiguration">
+            <parameters>
+                <rateLimitMax>2</rateLimitMax>
+                <rateLimitDuration>5</rateLimitDuration>
+            </parameters>
+        </component>
+        
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
