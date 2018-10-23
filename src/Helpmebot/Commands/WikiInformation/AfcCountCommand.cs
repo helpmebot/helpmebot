@@ -1,10 +1,12 @@
 namespace Helpmebot.Commands.WikiInformation
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+    using Newtonsoft.Json;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -15,6 +17,7 @@ namespace Helpmebot.Commands.WikiInformation
 
     [CommandFlag(Flags.Info)]
     [CommandInvocation("afccount")]
+    [CommandInvocation("afcbacklog")]
     public class AfcCountCommand : CommandBase
     {
         private readonly ISession databaseSession;
@@ -46,16 +49,30 @@ namespace Helpmebot.Commands.WikiInformation
         protected override IEnumerable<CommandResponse> Execute()
         {
             var categoryName = "Pending AfC submissions";
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            
+            // force this into the default
+            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(string.Empty);
+            
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             var categorySize = mediaWikiApi.GetCategorySize(categoryName);
+
+            string ts;
+            var pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out ts);
+            
             this.apiHelper.Release(mediaWikiApi);
             
+            var mapping = JsonConvert.DeserializeObject<Dictionary<int, string>>(pageContent);
+            var item = mapping.Where(x => categorySize >= x.Key).Max(x => x.Key);
+
             return new[]
             {
                 new CommandResponse
                 {
-                    Message = string.Format("[[Category:{0}]] has {1} items", categoryName, categorySize)
+                    Message = string.Format(
+                        "[[Category:{0}]] has {1} items - {2}",
+                        categoryName,
+                        categorySize,
+                        mapping[item])
                 }
             };
         }
