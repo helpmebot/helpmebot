@@ -1,6 +1,7 @@
 namespace Helpmebot.Commands.WikiInformation
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
@@ -60,7 +61,7 @@ namespace Helpmebot.Commands.WikiInformation
                 string rights;
                 try
                 {
-                    rights = string.Join(", ", mediaWikiApi.GetUserGroups(username));
+                    rights = string.Join(", ", mediaWikiApi.GetUserGroups(username).Where(x => x != "*"));
                 }
                 catch (MediawikiApiException e)
                 {
