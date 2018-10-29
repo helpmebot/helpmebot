@@ -46,6 +46,7 @@ namespace Helpmebot.Commands.WikiInformation
             this.apiHelper = apiHelper;
         }
 
+        [Help("<page title", "Provides basic information on the provided page")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var pageTitle = GetPageTitle();
