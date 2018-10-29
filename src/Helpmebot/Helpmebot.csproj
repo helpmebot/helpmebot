@@ -94,6 +94,7 @@
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
+    <Compile Include="Commands\WikiInformation\PageInfoCommand.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
     <Compile Include="LegacyCommandResponse.cs" />
@@ -297,12 +298,10 @@
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
-    <Compile Include="PageProtection.cs" />
     <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="Legacy\Commands\Commandaccess.cs" />
     <Compile Include="Legacy\Commands\GenericCommand.cs" />
     <Compile Include="Legacy\Commands\Myaccess.cs" />
-    <Compile Include="Legacy\Commands\Page.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
@@ -382,8 +381,8 @@
       <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.0.45-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.5.16-beta\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.6.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.6.17-beta\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
