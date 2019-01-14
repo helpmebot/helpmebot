@@ -413,9 +413,6 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
-    <Reference Include="ZeroMQ, Version=4.1.0.25, Culture=neutral, PublicKeyToken=4a9630883fd6c563">
-      <HintPath>..\packages\ZeroMQ.4.1.0.26\lib\net40\ZeroMQ.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -459,5 +456,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets" Condition="Exists('..\packages\ZeroMQ.4.1.0.26\build\net40\ZeroMQ.targets')" />
 </Project>
