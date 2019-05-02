@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ede7a01c-7457-4c7b-8e72-cc291485750a" xsi:noNamespaceSchemaLocation="http://www.jetbrains.com/teamcity/schemas/2018.1/project-config.xsd">
+  <name>Helpmebot</name>
+  <description />
+  <settings ref="DotNetProject">
+    <parameters>
+      <param name="nunitRunner" value="3.10.0" />
+      <param name="pathPrefix" value="src/" />
+      <param name="solutionName" value="Helpmebot" />
+      <param name="version" value="6.5" />
+    </parameters>
+    <build-runners />
+    <vcs-settings>
+      <vcs-entry-ref root-id="Helpmebot_HMBGithub" />
+    </vcs-settings>
+    <requirements />
+    <build-triggers />
+    <cleanup />
+  </settings>
+</build-type>
+
