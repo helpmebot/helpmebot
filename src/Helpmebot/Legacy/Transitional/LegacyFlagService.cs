@@ -8,7 +8,7 @@ namespace Helpmebot.Legacy.Transitional
     using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
     using NHibernate;
-    using Stwalkerster.Bot.CommandLib.Model;
+    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model;
@@ -19,56 +19,10 @@ namespace Helpmebot.Legacy.Transitional
         private readonly ISession session;
         private readonly ILogger logger;
 
-        private readonly Dictionary<LegacyUserRights, HashSet<string>> flagMapping =
-            new Dictionary<LegacyUserRights, HashSet<string>>
-            {
-                {
-                    LegacyUserRights.Developer,
-                    new HashSet<string> {Flag.Owner}
-                },
-                {
-                    LegacyUserRights.Superuser,
-                    new HashSet<string>
-                    {
-                        Flags.AccessControl, Flags.BotManagement, Flags.Brain,
-                        Flags.Configuration, Flags.Uncurl
-                    }
-                },
-                {
-                    LegacyUserRights.Advanced,
-                    new HashSet<string>
-                        {Flags.Acc, Flags.Fun, Flags.LocalConfiguration, Flags.Protected}
-                },
-                {
-                    LegacyUserRights.Normal,
-                    new HashSet<string> {Flag.Standard, Flags.BotInfo, Flags.Info}
-                },
-                {
-                    LegacyUserRights.Semiignored,
-                    new HashSet<string> {}
-                },
-            };
-
         public LegacyFlagService(ISession session, ILogger logger)
         {
             this.session = session;
             this.logger = logger;
-
-            foreach (var processing in this.flagMapping)
-            {
-                foreach (var search in this.flagMapping)
-                {
-                    if (search.Key >= processing.Key)
-                    {
-                        continue;
-                    }
-
-                    foreach (var s in search.Value)
-                    {
-                        processing.Value.Add(s);
-                    }
-                }
-            }
         }
 
         private LegacyUserRights GetLegacyUserRights(IUser user, IIrcClient client)
@@ -99,16 +53,27 @@ namespace Helpmebot.Legacy.Transitional
 
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
-            var legacyUserRights = this.GetLegacyUserRights(user, ServiceLocator.Current.GetInstance<IIrcClient>());
-
-            return this.flagMapping[legacyUserRights].Contains(flag);
+            return this.GetFlagsForUser(user, locality).Contains(flag);
         }
 
         public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
         {
             var legacyUserRights = this.GetLegacyUserRights(user, ServiceLocator.Current.GetInstance<IIrcClient>());
 
-            return this.flagMapping[legacyUserRights];
+            var group = this.session.CreateCriteria<FlagGroup>()
+                .Add(Restrictions.Eq("Name", legacyUserRights.ToString()))
+                .UniqueResult<FlagGroup>();
+
+            if (group == null)
+            {
+                return new string[0];
+            }
+
+            var flagsForUser = group.Flags.ToCharArray()
+                .Where(x => x != '+' && x != '-' && x != '*')
+                .Select(x => new string(new[] {x}));
+
+            return flagsForUser;
         }
     }
 }
