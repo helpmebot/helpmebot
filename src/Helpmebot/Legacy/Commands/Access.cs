@@ -4,12 +4,12 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
-//   
+//
 //   Helpmebot is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
-//   
+//
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
@@ -173,7 +173,7 @@ namespace helpmebot6.Commands
             {
                 string[] messageParameters =
                     {
-                        "access", "2", 
+                        "access", "2",
                         this.Arguments.Length.ToString(CultureInfo.InstalledUICulture)
                     };
                 return
@@ -222,15 +222,15 @@ namespace helpmebot6.Commands
         {
             string[] messageParams = { newEntry.ToString(), accessLevel.ToString() };
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
-                "addAccessEntry", 
-                this.Channel, 
+                "addAccessEntry",
+                this.Channel,
                 messageParams);
 
             // "Adding access entry for " + newEntry.ToString( ) + " at level " + AccessLevel.ToString( )"
             ServiceLocator.Current.GetInstance<ILogger>()
                 .Info(string.Format("Adding access entry for {0} at level {1}", newEntry, accessLevel));
 
-            var command = new MySqlCommand("INSERT INTO user VALUES ( null, @nick, @user, @host, @accesslevel, null );");
+            var command = new MySqlCommand("INSERT INTO user (user_nickname, user_username, user_hostname, user_accesslevel) VALUES ( @nick, @user, @host, @accesslevel );");
 
             command.Parameters.AddWithValue("@nick", newEntry.Nickname);
             command.Parameters.AddWithValue("@user", newEntry.Username);
@@ -255,8 +255,8 @@ namespace helpmebot6.Commands
         {
             string[] messageParams = { id.ToString(CultureInfo.InvariantCulture) };
             string message = this.CommandServiceHelper.MessageService.RetrieveMessage(
-                "removeAccessEntry", 
-                this.Channel, 
+                "removeAccessEntry",
+                this.Channel,
                 messageParams);
 
             ServiceLocator.Current.GetInstance<ILogger>().Info(string.Format("Removing access entry #{0}", id));

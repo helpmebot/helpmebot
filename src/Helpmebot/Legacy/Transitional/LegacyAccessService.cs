@@ -32,14 +32,14 @@ namespace Helpmebot.Legacy.Transitional
 
             return actual >= required;
         }
-        
+
         public LegacyUserRights GetLegacyUserRights(IUser user)
         {
             try
             {
                 var command =
                     new MySqlCommand(
-                        "SELECT user_accesslevel FROM `user` WHERE @nick LIKE user_nickname AND @user LIKE user_username AND @host LIKE user_hostname ORDER BY `user_accesslevel` ASC;");
+                        "SELECT user_accesslevel FROM user WHERE @nick LIKE user_nickname AND @user LIKE user_username AND @host LIKE user_hostname ORDER BY user_accesslevel ASC;");
                 command.Parameters.AddWithValue("@nick", user.Nickname);
                 command.Parameters.AddWithValue("@user", user.Username);
                 command.Parameters.AddWithValue("@host", user.Hostname);
