@@ -54,7 +54,9 @@
                     Server = this.Hostname,
                     UserID = this.Username,
                     Port = (uint) this.Port,
-                    CharacterSet = this.CharSet
+                    CharacterSet = this.CharSet,
+                    ConvertZeroDateTime = true,
+                    AllowZeroDateTime = true
                 };
 
                 return connectionString.ConnectionString;

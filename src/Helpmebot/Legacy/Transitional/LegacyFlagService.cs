@@ -1,15 +1,23 @@
 namespace Helpmebot.Legacy.Transitional
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Castle.Core.Logging;
     using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
+    using Microsoft.Practices.ServiceLocation;
+    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     public class LegacyFlagService : IFlagService
     {
-        private readonly ILegacyAccessService legacyAccessService;
+        private readonly ISession session;
+        private readonly ILogger logger;
 
         private readonly Dictionary<LegacyUserRights, HashSet<string>> flagMapping =
             new Dictionary<LegacyUserRights, HashSet<string>>
@@ -41,9 +49,10 @@ namespace Helpmebot.Legacy.Transitional
                 },
             };
 
-        public LegacyFlagService(ILegacyAccessService legacyAccessService)
+        public LegacyFlagService(ISession session, ILogger logger)
         {
-            this.legacyAccessService = legacyAccessService;
+            this.session = session;
+            this.logger = logger;
 
             foreach (var processing in this.flagMapping)
             {
@@ -61,17 +70,43 @@ namespace Helpmebot.Legacy.Transitional
                 }
             }
         }
-        
+
+        private LegacyUserRights GetLegacyUserRights(IUser user, IIrcClient client)
+        {
+            try
+            {
+                var users = this.session.CreateCriteria<User>().List<User>();
+
+                users = users.Where(x => new IrcUserMask(x.Mask, client).Matches(user).GetValueOrDefault()).ToList();
+
+                foreach (var level in new[] {"Developer", "Superuser", "Ignored", "Semiignored", "Advanced", "Normal"})
+                {
+                    if (users.Any(x => x.AccessLevel == level))
+                    {
+                        return (LegacyUserRights) Enum.Parse(typeof(LegacyUserRights), level);
+                    }
+                }
+
+                return LegacyUserRights.Normal;
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error(ex.Message, ex);
+            }
+
+            return LegacyUserRights.Normal;
+        }
+
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
-            var legacyUserRights = this.legacyAccessService.GetLegacyUserRights(user);
+            var legacyUserRights = this.GetLegacyUserRights(user, ServiceLocator.Current.GetInstance<IIrcClient>());
 
             return this.flagMapping[legacyUserRights].Contains(flag);
         }
 
         public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
         {
-            var legacyUserRights = this.legacyAccessService.GetLegacyUserRights(user);
+            var legacyUserRights = this.GetLegacyUserRights(user, ServiceLocator.Current.GetInstance<IIrcClient>());
 
             return this.flagMapping[legacyUserRights];
         }

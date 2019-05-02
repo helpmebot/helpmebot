@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <components>
-        
+
         <!-- IRC configuration -->
         <component service="Stwalkerster.IrcClient.Interfaces.IIrcConfiguration"
                    type="Stwalkerster.IrcClient.IrcConfiguration">
@@ -17,7 +17,7 @@
                 <clientName>Freenode</clientName>
             </parameters>
         </component>
-        
+
         <!-- Other configuration -->
         <component type="BotConfiguration">
             <parameters>
@@ -34,7 +34,7 @@
                 <!--<accDeploymentPassword></accDeploymentPassword>-->
             </parameters>
         </component>
-        
+
         <component type="DatabaseConfiguration">
             <parameters>
                 <hostname></hostname>
@@ -45,7 +45,7 @@
                 <!--<charset></charset>-->
             </parameters>
         </component>
-        
+
         <!-- configuration for mode monitoring service -->
         <component type="ModeMonitorConfiguration">
             <parameters>
@@ -56,7 +56,7 @@
                 </channelMap>
             </parameters>
         </component>
-        
+
         <!-- Configuration for the Join Message service / Welcomer -->
         <component type="JoinMessageServiceConfiguration">
             <parameters>
@@ -80,7 +80,6 @@
                 <overrideMap>
                     <list>
                         <!-- <item keyword="help" channel="#channel" type="NullCommand" />-->
-                        <item keyword="myaccess" type="NullCommand" />
                     </list>
                 </overrideMap>
             </parameters>
@@ -95,7 +94,7 @@
                 <documentationPrefix>CmdAutogen:Command/</documentationPrefix>
             </parameters>
         </component>
-        
+
         <!-- Cross-channel notification configuration -->
         <component type="CrossChannelServiceConfiguration">
             <parameters>
@@ -103,7 +102,7 @@
                 <rateLimitDuration>5</rateLimitDuration>
             </parameters>
         </component>
-        
+
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />

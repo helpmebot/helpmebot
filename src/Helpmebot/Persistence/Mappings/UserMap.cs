@@ -13,6 +13,8 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Username, "user_username");
             this.Map(x => x.Hostname, "user_hostname");
             this.Map(x => x.AccessLevel, "user_accesslevel");
+            this.Map(x => x.Mask, "mask");
+            this.Map(x => x.Account, "account");
             this.Map(x => x.LastModified, "user_lastmodified");
         }
     }
