@@ -30,14 +30,14 @@ namespace Helpmebot.Legacy.Transitional
                     LegacyUserRights.Superuser,
                     new HashSet<string>
                     {
-                        Flags.LegacySuperuser, Flags.AccessControl, Flags.BotManagement, Flags.Brain,
+                        Flags.AccessControl, Flags.BotManagement, Flags.Brain,
                         Flags.Configuration, Flags.Uncurl
                     }
                 },
                 {
                     LegacyUserRights.Advanced,
                     new HashSet<string>
-                        {Flags.LegacyAdvanced, Flags.Acc, Flags.Fun, Flags.LocalConfiguration, Flags.Protected}
+                        {Flags.Acc, Flags.Fun, Flags.LocalConfiguration, Flags.Protected}
                 },
                 {
                     LegacyUserRights.Normal,
@@ -45,7 +45,7 @@ namespace Helpmebot.Legacy.Transitional
                 },
                 {
                     LegacyUserRights.Semiignored,
-                    new HashSet<string> {Flags.LegacySemiignored}
+                    new HashSet<string> {}
                 },
             };
 

@@ -4,10 +4,6 @@ namespace Helpmebot.Model
 
     public class Flags : Flag
     {
-        public const string LegacySuperuser = "z";
-        public const string LegacyAdvanced = "y";
-        public const string LegacySemiignored = "x";
-
         public const string BotInfo = "B";
         public const string Info = "I";
         public const string Acc = "a";
