@@ -9,9 +9,6 @@ namespace Helpmebot.Persistence.Mappings
         {
             this.Table("user");
             this.Id(x => x.Id, "user_id");
-            this.Map(x => x.Nickname, "user_nickname");
-            this.Map(x => x.Username, "user_username");
-            this.Map(x => x.Hostname, "user_hostname");
             this.Map(x => x.AccessLevel, "user_accesslevel");
             this.Map(x => x.Mask, "mask");
             this.Map(x => x.Account, "account");
