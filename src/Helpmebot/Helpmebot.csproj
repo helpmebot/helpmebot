@@ -82,6 +82,7 @@
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
+    <Compile Include="Commands\ACL\FlagGroupCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Services\AccessControlService.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\CategoryWatcherHelperService.cs" />
@@ -254,6 +256,7 @@
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
+    <Compile Include="Services\Interfaces\IAccessControlService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
@@ -436,5 +439,8 @@
     <Content Include="configuration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\ACL" />
   </ItemGroup>
 </Project>
