@@ -4,7 +4,6 @@ namespace Helpmebot.Legacy.Transitional
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.Legacy.Model;
     using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
     using NHibernate;
@@ -25,7 +24,7 @@ namespace Helpmebot.Legacy.Transitional
             this.logger = logger;
         }
 
-        private LegacyUserRights GetLegacyUserRights(IUser user, IIrcClient client)
+        private string GetLegacyUserRights(IUser user, IIrcClient client)
         {
             try
             {
@@ -37,18 +36,18 @@ namespace Helpmebot.Legacy.Transitional
                 {
                     if (users.Any(x => x.AccessLevel == level))
                     {
-                        return (LegacyUserRights) Enum.Parse(typeof(LegacyUserRights), level);
+                        return level;
                     }
                 }
 
-                return LegacyUserRights.Normal;
+                return "Normal";
             }
             catch (Exception ex)
             {
                 this.logger.Error(ex.Message, ex);
             }
 
-            return LegacyUserRights.Normal;
+            return "Normal";
         }
 
         public bool UserHasFlag(IUser user, string flag, string locality)
@@ -61,7 +60,7 @@ namespace Helpmebot.Legacy.Transitional
             var legacyUserRights = this.GetLegacyUserRights(user, ServiceLocator.Current.GetInstance<IIrcClient>());
 
             var group = this.session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", legacyUserRights.ToString()))
+                .Add(Restrictions.Eq("Name", legacyUserRights))
                 .UniqueResult<FlagGroup>();
 
             if (group == null)
