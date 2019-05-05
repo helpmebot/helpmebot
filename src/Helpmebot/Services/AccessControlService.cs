@@ -9,6 +9,7 @@ namespace Helpmebot.Services
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     public class AccessControlService : IAccessControlService
@@ -188,7 +189,7 @@ namespace Helpmebot.Services
             var result = new HashSet<string>(original);
             var addMode = true;
 
-            var validFlags = Flags.GetValidFlags();
+            var validFlags = Flag.GetValidFlags();
 
             var newChanges = "";
 
