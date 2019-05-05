@@ -1,4 +1,4 @@
-namespace Helpmebot.Services
+namespace Helpmebot.Services.AccessControl
 {
     using System;
     using System.Collections.Generic;
@@ -12,31 +12,14 @@ namespace Helpmebot.Services
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    public class AccessControlService : IAccessControlService
+    public class AccessControlManagementService : IAccessControlManagementService
     {
-        /// <summary>
-        /// Global database session - don't use this unless absolutely necessary. Prefer passing in a session object.
-        /// </summary>
-        private readonly ISession globalSession;
         private readonly ILogger logger;
 
-        public AccessControlService(ISession globalSession, ILogger logger)
+        public AccessControlManagementService(ILogger logger)
         {
-            this.globalSession = globalSession;
             this.logger = logger;
         }
-
-        #region ACL checks
-        public bool UserHasFlag(IUser user, string flag, string locality)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
 
         #region Flag groups
         public void CreateFlagGroup(string name, string flags, ISession session)

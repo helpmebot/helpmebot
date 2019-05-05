@@ -1,6 +1,7 @@
 namespace Helpmebot.Model
 {
     using System;
+    using System.Collections.Generic;
     using Helpmebot.Persistence;
 
     public class User : EntityBase
@@ -9,9 +10,8 @@ namespace Helpmebot.Model
 
         public virtual string Account { get; set; }
 
-        [Obsolete]
-        public virtual string AccessLevel { get; set; }
-
         public virtual DateTime? LastModified { get; set; }
+
+        public virtual IList<FlagGroup> AppliedFlagGroups { get; set; }
     }
 }

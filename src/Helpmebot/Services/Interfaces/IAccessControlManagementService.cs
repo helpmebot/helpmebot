@@ -5,7 +5,7 @@ namespace Helpmebot.Services.Interfaces
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    public interface IAccessControlService : IFlagService
+    public interface IAccessControlManagementService
     {
         void CreateFlagGroup(string name, string flags, ISession session);
         void ModifyFlagGroup(string name, string flags, ISession session);

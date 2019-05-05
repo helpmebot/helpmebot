@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.ACL
     // ReSharper disable once UnusedMember.Global
     public class FlagGroupCommand : CommandBase
     {
-        private readonly IAccessControlService aclService;
+        private readonly IAccessControlManagementService aclManagementService;
         private readonly ISession session;
 
         public FlagGroupCommand(
@@ -30,7 +30,7 @@ namespace Helpmebot.Commands.ACL
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IAccessControlService aclService,
+            IAccessControlManagementService aclManagementService,
             ISession session) : base(
             commandSource,
             user,
@@ -40,7 +40,7 @@ namespace Helpmebot.Commands.ACL
             configurationProvider,
             client)
         {
-            this.aclService = aclService;
+            this.aclManagementService = aclManagementService;
             this.session = session;
         }
 
@@ -76,7 +76,7 @@ namespace Helpmebot.Commands.ACL
         {
             try
             {
-                this.aclService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                this.aclManagementService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 return new[] {new CommandResponse {Message = "Flag group created."}};
             }
             catch (AclException ex)
@@ -95,7 +95,7 @@ namespace Helpmebot.Commands.ACL
         {
             try
             {
-                this.aclService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                this.aclManagementService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 return new[] {new CommandResponse {Message = "Flag group modified."}};
             }
             catch (AclException ex)
@@ -114,7 +114,7 @@ namespace Helpmebot.Commands.ACL
         {
             try
             {
-                this.aclService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                this.aclManagementService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 return new[] {new CommandResponse {Message = "Flag group updated."}};
             }
             catch (AclException ex)
@@ -134,7 +134,7 @@ namespace Helpmebot.Commands.ACL
         {
             try
             {
-                this.aclService.DeleteFlagGroup(this.Arguments[0], this.session);
+                this.aclManagementService.DeleteFlagGroup(this.Arguments[0], this.session);
                 return new[] {new CommandResponse {Message = "Flag group deleted."}};
             }
             catch (AclException ex)

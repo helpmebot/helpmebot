@@ -178,7 +178,6 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Legacy\Transitional\LegacyFlagService.cs" />
     <Compile Include="Model\BlockMonitor.cs" />
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
@@ -247,8 +246,9 @@
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
-    <Compile Include="Services\AccessControlService.cs" />
+    <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />
     <Compile Include="Services\AccessLogService.cs" />
+    <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
     <Compile Include="Services\BlockMonitoringService.cs" />
     <Compile Include="Services\CategoryWatcherHelperService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
@@ -257,7 +257,7 @@
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
-    <Compile Include="Services\Interfaces\IAccessControlService.cs" />
+    <Compile Include="Services\Interfaces\IAccessControlManagementService.cs" />
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
@@ -444,8 +444,5 @@
     <Content Include="configuration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\ACL" />
   </ItemGroup>
 </Project>

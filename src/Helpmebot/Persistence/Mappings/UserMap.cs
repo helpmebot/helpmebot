@@ -9,10 +9,15 @@ namespace Helpmebot.Persistence.Mappings
         {
             this.Table("user");
             this.Id(x => x.Id, "user_id");
-            this.Map(x => x.AccessLevel, "user_accesslevel");
             this.Map(x => x.Mask, "mask");
             this.Map(x => x.Account, "account");
             this.Map(x => x.LastModified, "user_lastmodified");
+
+            this.HasManyToMany(x => x.AppliedFlagGroups)
+                .Cascade.All()
+                .Table("flaggroup_user")
+                .ParentKeyColumn("user")
+                .ChildKeyColumn("flaggroup");
         }
     }
 }

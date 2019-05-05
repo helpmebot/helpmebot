@@ -10,8 +10,8 @@
     using Castle.MicroKernel.SubSystems.Conversion;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
-    using Helpmebot.Legacy.Transitional;
     using Helpmebot.Services;
+    using Helpmebot.Services.AccessControl;
     using Helpmebot.Startup.Converters;
     using Helpmebot.Startup.Facilities;
     using Helpmebot.TypedFactories;
@@ -46,7 +46,7 @@
 
             container.Register(
                 // Legacy stuff
-                Component.For<IFlagService>().ImplementedBy<LegacyFlagService>(),
+                Component.For<IFlagService>().ImplementedBy<AccessControlAuthorisationService>(),
 
                 // Startup
                 Component.For<IApplication>().ImplementedBy<Launch>(),
@@ -55,6 +55,7 @@
                 Classes.FromThisAssembly().BasedOn<ICommand>().LifestyleTransient(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Repositories").WithService.AllInterfaces(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Services").WithService.AllInterfaces(),
+                Classes.FromThisAssembly().InNamespace("Helpmebot.Services.AccessControl").WithService.AllInterfaces(),
                 Classes.FromThisAssembly().InNamespace("Helpmebot.Background").WithService.AllInterfaces(),
 
                 // MediaWiki API stuff
