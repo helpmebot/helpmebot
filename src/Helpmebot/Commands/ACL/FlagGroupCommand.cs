@@ -1,7 +1,9 @@
 namespace Helpmebot.Commands.ACL
 {
     using System.Collections.Generic;
+    using System.Data;
     using Castle.Core.Logging;
+    using DnsClient.Protocol;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -74,15 +76,24 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> AddMode()
         {
+            var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
                 this.aclManagementService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                tx.Commit();
                 return new[] {new CommandResponse {Message = "Flag group created."}};
             }
             catch (AclException ex)
             {
                 return new[]
                     {new CommandResponse {Message = string.Format("Error creating flag group: {0}", ex.Message)}};
+            }
+            finally
+            {
+                if (!tx.WasCommitted)
+                {
+                    tx.Rollback();
+                }
             }
         }
 
@@ -93,15 +104,24 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> ModifyMode()
         {
+            var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
                 this.aclManagementService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                tx.Commit();
                 return new[] {new CommandResponse {Message = "Flag group modified."}};
             }
             catch (AclException ex)
             {
                 return new[]
                     {new CommandResponse {Message = string.Format("Error modifying flag group: {0}", ex.Message)}};
+            }
+            finally
+            {
+                if (!tx.WasCommitted)
+                {
+                    tx.Rollback();
+                }
             }
         }
 
@@ -112,15 +132,24 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> SetMode()
         {
+            var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
                 this.aclManagementService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                tx.Commit();
                 return new[] {new CommandResponse {Message = "Flag group updated."}};
             }
             catch (AclException ex)
             {
                 return new[]
                     {new CommandResponse {Message = string.Format("Error updating flag group: {0}", ex.Message)}};
+            }
+            finally
+            {
+                if (!tx.WasCommitted)
+                {
+                    tx.Rollback();
+                }
             }
         }
 
@@ -132,15 +161,24 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> DeleteMode()
         {
+            var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
                 this.aclManagementService.DeleteFlagGroup(this.Arguments[0], this.session);
+                tx.Commit();
                 return new[] {new CommandResponse {Message = "Flag group deleted."}};
             }
             catch (AclException ex)
             {
                 return new[]
                     {new CommandResponse {Message = string.Format("Error deleting flag group: {0}", ex.Message)}};
+            }
+            finally
+            {
+                if (!tx.WasCommitted)
+                {
+                    tx.Rollback();
+                }
             }
         }
     }

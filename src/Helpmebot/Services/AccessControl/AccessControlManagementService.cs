@@ -47,7 +47,6 @@ namespace Helpmebot.Services.AccessControl
             try
             {
                 session.Save(newGroup);
-                session.Flush();
             }
             catch (Exception ex)
             {
@@ -85,7 +84,6 @@ namespace Helpmebot.Services.AccessControl
             try
             {
                 session.Update(item);
-                session.Flush();
             }
             catch (Exception ex)
             {
@@ -113,7 +111,6 @@ namespace Helpmebot.Services.AccessControl
             try
             {
                 session.Update(item);
-                session.Flush();
             }
             catch (Exception ex)
             {
@@ -138,7 +135,6 @@ namespace Helpmebot.Services.AccessControl
             try
             {
                 session.Delete(item);
-                session.Flush();
             }
             catch (Exception ex)
             {
