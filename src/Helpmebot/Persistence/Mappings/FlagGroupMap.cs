@@ -38,6 +38,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Id(x => x.Id, "id");
             this.Map(x => x.Name, "name");
             this.Map(x => x.Flags, "flags");
+            this.Map(x => x.Mode, "mode");
             this.Map(x => x.LastModified, "modified");
         }
     }

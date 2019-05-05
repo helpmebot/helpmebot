@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.ACL
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -13,7 +14,9 @@ namespace Helpmebot.Commands.ACL
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.BotInfo)]
+    // ReSharper disable once StringLiteralTypo
     [CommandInvocation("flaggroup")]
+    // ReSharper disable once UnusedMember.Global
     public class FlagGroupCommand : CommandBase
     {
         private readonly IAccessControlService aclService;
@@ -71,34 +74,34 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> AddMode()
         {
-            var result = this.aclService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
-
-            if (result)
+            try
             {
-                yield return new CommandResponse {Message = "Done"};
+                this.aclService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                return new[] {new CommandResponse {Message = "Flag group created."}};
             }
-            else
+            catch (AclException ex)
             {
-                yield return new CommandResponse {Message = "Failed to create a new flag group - does it already exist?"};
+                return new[]
+                    {new CommandResponse {Message = string.Format("Error creating flag group: {0}", ex.Message)}};
             }
         }
 
         [SubcommandInvocation("modify")]
         [CommandFlag(Flags.AccessControl)]
         [RequiredArguments(2)]
-        [Help("<name> <flags>", "Modifies the flags on an existing flag group")]
+        [Help("<name> <flag changes>", "Modifies the flags on an existing flag group")]
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> ModifyMode()
         {
-            var result = this.aclService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
-
-            if (result)
+            try
             {
-                yield return new CommandResponse {Message = "Done"};
+                this.aclService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                return new[] {new CommandResponse {Message = "Flag group modified."}};
             }
-            else
+            catch (AclException ex)
             {
-                yield return new CommandResponse {Message = "Failed to modify the flag group - does this group exist?"};
+                return new[]
+                    {new CommandResponse {Message = string.Format("Error modifying flag group: {0}", ex.Message)}};
             }
         }
 
@@ -109,15 +112,15 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> SetMode()
         {
-            var result = this.aclService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
-
-            if (result)
+            try
             {
-                yield return new CommandResponse {Message = "Done"};
+                this.aclService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                return new[] {new CommandResponse {Message = "Flag group updated."}};
             }
-            else
+            catch (AclException ex)
             {
-                yield return new CommandResponse {Message = "Failed to modify the flag group - does this group exist?"};
+                return new[]
+                    {new CommandResponse {Message = string.Format("Error updating flag group: {0}", ex.Message)}};
             }
         }
 
@@ -129,17 +132,16 @@ namespace Helpmebot.Commands.ACL
         // ReSharper disable once UnusedMember.Global
         protected IEnumerable<CommandResponse> DeleteMode()
         {
-            var result = this.aclService.DeleteFlagGroup(this.Arguments[0], this.session);
-
-            if (result)
+            try
             {
-                yield return new CommandResponse {Message = "Done"};
+                this.aclService.DeleteFlagGroup(this.Arguments[0], this.session);
+                return new[] {new CommandResponse {Message = "Flag group deleted."}};
             }
-            else
+            catch (AclException ex)
             {
-                yield return new CommandResponse {Message = "Failed to delete the flag group - does this group exist?"};
+                return new[]
+                    {new CommandResponse {Message = string.Format("Error deleting flag group: {0}", ex.Message)}};
             }
-
         }
     }
 }

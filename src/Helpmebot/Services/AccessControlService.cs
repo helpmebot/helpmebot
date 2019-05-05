@@ -2,7 +2,9 @@ namespace Helpmebot.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -11,6 +13,9 @@ namespace Helpmebot.Services
 
     public class AccessControlService : IAccessControlService
     {
+        /// <summary>
+        /// Global database session - don't use this unless absolutely necessary. Prefer passing in a session object.
+        /// </summary>
         private readonly ISession globalSession;
         private readonly ILogger logger;
 
@@ -23,17 +28,17 @@ namespace Helpmebot.Services
         #region ACL checks
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public IEnumerable<string> GetFlagsForUser(IUser user, string locality)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
         #endregion
 
         #region Flag groups
-        public bool CreateFlagGroup(string name, string flags, ISession session)
+        public void CreateFlagGroup(string name, string flags, ISession session)
         {
             this.logger.DebugFormat("Creating flag group {0} with flags {1}", name, flags);
 
@@ -44,13 +49,14 @@ namespace Helpmebot.Services
 
             if (rowcount != 0)
             {
-                return false;
+                throw new AclException("This flag group already exists.");
             }
 
             var newGroup = new FlagGroup
             {
                 Name = name,
                 Flags = flags,
+                Mode = "+",
                 LastModified = DateTime.Now
             };
 
@@ -58,16 +64,15 @@ namespace Helpmebot.Services
             {
                 session.Save(newGroup);
                 session.Flush();
-                return true;
             }
             catch (Exception ex)
             {
-                this.logger.ErrorFormat(ex, "Error creating new flaggroup {0}", name);
-                return false;
+                this.logger.ErrorFormat(ex, "Error creating new flag group {0}", name);
+                throw new AclException("Encountered unknown error while creating flag group.");
             }
         }
 
-        public bool ModifyFlagGroup(string name, string flagchanges, ISession session)
+        public void ModifyFlagGroup(string name, string flagChanges, ISession session)
         {
             var item = session.CreateCriteria<FlagGroup>()
                 .Add(Restrictions.Eq("Name", name))
@@ -75,27 +80,37 @@ namespace Helpmebot.Services
 
             if (item == null)
             {
-                return false;
+                throw new AclException("This flag group does not exist.");
             }
 
-            item.Flags = flagchanges;
+            // TODO: prevent flag changes where user does not hold that flag. This applies for this entire class.
+            item.Flags = string.Join(
+                "",
+                ApplyFlagChangesToFlags(
+                    ref flagChanges,
+                    item.Flags.ToCharArray().Select(x => new string(new[] {x})),
+                    new List<string>()));
 
-            this.logger.DebugFormat("Updating flag group {0} with flag changes {1} to {2}", name, flagchanges, item.Flags);
+            if (flagChanges == string.Empty)
+            {
+                throw new AclException("No valid flag changes were found to be processed");
+            }
+
+            this.logger.DebugFormat("Updating flag group {0} with flag changes {1} to {2}", name, flagChanges, item.Flags);
 
             try
             {
                 session.Update(item);
                 session.Flush();
-                return true;
             }
             catch (Exception ex)
             {
-                this.logger.ErrorFormat(ex, "Error updating flaggroup {0}", name);
-                return false;
+                this.logger.ErrorFormat(ex, "Error updating flag group {0}", name);
+                throw new AclException("Encountered unknown error while updating flag group.");
             }
         }
 
-        public bool SetFlagGroup(string name, string flags, ISession session)
+        public void SetFlagGroup(string name, string flags, ISession session)
         {
 
             var item = session.CreateCriteria<FlagGroup>()
@@ -104,7 +119,7 @@ namespace Helpmebot.Services
 
             if (item == null)
             {
-                return false;
+                throw new AclException("This flag group does not exist.");
             }
 
             item.Flags = flags;
@@ -115,16 +130,15 @@ namespace Helpmebot.Services
             {
                 session.Update(item);
                 session.Flush();
-                return true;
             }
             catch (Exception ex)
             {
-                this.logger.ErrorFormat(ex, "Error updating flaggroup {0}", name);
-                return false;
+                this.logger.ErrorFormat(ex, "Error updating flag group {0}", name);
+                throw new AclException("Encountered unknown error while updating flag group.");
             }
         }
 
-        public bool DeleteFlagGroup(string name, ISession session)
+        public void DeleteFlagGroup(string name, ISession session)
         {
             this.logger.DebugFormat("Deleting flag group {0}", name);
 
@@ -134,33 +148,128 @@ namespace Helpmebot.Services
 
             if (item == null)
             {
-                return false;
+                throw new AclException("This flag group does not exist.");
             }
 
             try
             {
                 session.Delete(item);
                 session.Flush();
-                return true;
             }
             catch (Exception ex)
             {
-                this.logger.ErrorFormat(ex, "Error deleting flaggroup {0}", name);
-                return false;
+                this.logger.ErrorFormat(ex, "Error deleting flag group {0}", name);
+                throw new AclException("Encountered unknown error while deleting flag group.");
             }
         }
         #endregion
 
         #region Global grants
-        public bool GrantFlagGroupGlobally(IUser user, FlagGroup @group)
+        public void GrantFlagGroupGlobally(IUser user, FlagGroup group)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        public bool RevokeFlagGroupGlobally(IUser user, FlagGroup @group)
+        public void RevokeFlagGroupGlobally(IUser user, FlagGroup group)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
         #endregion
+
+        /// <summary>
+        /// Applies a set of flag changes to the provided set of flags
+        /// </summary>
+        /// <param name="changes">The changes to make</param>
+        /// <param name="original">The original set of flags</param>
+        /// <param name="preventedChanges">A list of flags for which changes are disallowed</param>
+        /// <returns></returns>
+        public static IEnumerable<string> ApplyFlagChangesToFlags(ref string changes, IEnumerable<string> original, IList<string> preventedChanges)
+        {
+            var result = new HashSet<string>(original);
+            var addMode = true;
+
+            var validFlags = Flags.GetValidFlags();
+
+            var newChanges = "";
+
+            foreach (var changeChar in changes)
+            {
+                var c = changeChar.ToString();
+
+                if (c == "-")
+                {
+                    addMode = false;
+                    newChanges += c;
+                    continue;
+                }
+
+                if (c == "+")
+                {
+                    addMode = true;
+                    newChanges += c;
+                    continue;
+                }
+
+                if (c == "*" && !addMode)
+                {
+                    foreach (var i in new List<string>(result))
+                    {
+                        if (preventedChanges.Contains(c))
+                        {
+                            continue;
+                        }
+
+                        result.Remove(i);
+                        newChanges += i;
+                    }
+
+                    continue;
+                }
+
+                if (addMode)
+                {
+                    if (!validFlags.Contains(c))
+                    {
+                        continue;
+                    }
+
+                    if (preventedChanges.Contains(c))
+                    {
+                        continue;
+                    }
+
+                    if (result.Contains(c))
+                    {
+                        // no-op
+                        continue;
+                    }
+
+                    newChanges += c;
+                    result.Add(c);
+                }
+                else
+                {
+                    if (preventedChanges.Contains(c))
+                    {
+                        continue;
+                    }
+
+                    if (!result.Contains(c))
+                    {
+                        // no-op
+                        continue;
+                    }
+
+                    newChanges += c;
+                    result.Remove(c);
+                }
+            }
+
+            newChanges = newChanges.TrimEnd('+', '-');
+
+            changes = newChanges;
+            return result;
+
+        }
     }
 }

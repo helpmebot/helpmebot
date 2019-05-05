@@ -28,11 +28,12 @@ namespace Helpmebot.Model
     {
         public virtual string Name { get; set; }
         public virtual string Flags { get; set; }
+        public virtual string Mode { get; set; }
         public virtual DateTime LastModified { get; set; }
 
         public override string ToString()
         {
-            return string.Format(@"{0} {{{1}}}", this.Name, this.Flags);
+            return string.Format(@"{0} {{{2}{1}}}", this.Name, this.Flags, this.Mode);
         }
     }
 }
