@@ -189,6 +189,7 @@
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
     <Compile Include="Model\ModeMonitoring\ModeChanges.cs" />
+    <Compile Include="Model\NotificationType.cs" />
     <Compile Include="Model\RateLimitCacheEntry.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\User.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
+    <Compile Include="Persistence\Mappings\NotificationTypeMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
     <Compile Include="Persistence\Mappings\UserMap.cs" />
     <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
@@ -238,11 +240,9 @@
     <Compile Include="Repositories\Interfaces\IIgnoredPagesRepository.cs" />
     <Compile Include="Repositories\Interfaces\IWatchedCategoryRepository.cs" />
     <Compile Include="Repositories\Interfaces\IChannelRepository.cs" />
-    <Compile Include="Repositories\Interfaces\INotificationRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Repositories\Interfaces\IShortUrlCacheRepository.cs" />
-    <Compile Include="Repositories\NotificationRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />

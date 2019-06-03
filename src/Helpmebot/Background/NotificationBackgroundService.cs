@@ -4,12 +4,12 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
-//   
+//
 //   Helpmebot is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
-//   
+//
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
@@ -21,65 +21,41 @@
 
 namespace Helpmebot.Background
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using System.Timers;
     using Castle.Core.Logging;
     using Stwalkerster.IrcClient.Interfaces;
     using Helpmebot.Background.Interfaces;
     using Helpmebot.Configuration;
-    using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Model;
+    using NHibernate;
+    using NHibernate.Util;
 
     /// <summary>
     /// The notification service.
     /// </summary>
     public class NotificationBackgroundService : TimerBackgroundServiceBase, INotificationBackgroundService
     {
-        /// <summary>
-        /// The IRC client.
-        /// </summary>
         private readonly IIrcClient ircClient;
-
-        /// <summary>
-        /// The notification repository.
-        /// </summary>
-        private readonly INotificationRepository notificationRepository;
+        private readonly ISession session;
+        private readonly BotConfiguration configuration;
 
         /// <summary>
         /// The sync point.
         /// </summary>
         private readonly object syncLock = new object();
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="NotificationBackgroundService"/> class.
-        /// </summary>
-        /// <param name="ircClient">
-        /// The IRC client.
-        /// </param>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="notificationRepository">
-        /// The notification Repository.
-        /// </param>
-        /// <param name="enableNotificationService">
-        /// The enable Notification Service.
-        /// </param>
-        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, INotificationRepository notificationRepository, BotConfiguration configuration)
+        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, ISession session, BotConfiguration configuration)
             : base(logger, 5 * 1000, configuration.EnableNotificationService)
         {
             this.ircClient = ircClient;
-            this.notificationRepository = notificationRepository;
+            this.session = session;
+            this.configuration = configuration;
         }
 
-        /// <summary>
-        /// The timer on elapsed.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="elapsedEventArgs">
-        /// The elapsed event args.
-        /// </param>
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             this.Logger.Debug("TimerOnElapsed()");
@@ -89,29 +65,52 @@ namespace Helpmebot.Background
             {
                 this.Logger.Debug("Retrieving items from notification queue...");
 
-                // Get items from the notification queue
-                var list = this.notificationRepository.RetrieveLatest().ToList();
+                var transaction = this.session.BeginTransaction(IsolationLevel.RepeatableRead);
+                if (!transaction.IsActive)
+                {
+                    this.Logger.Error("Could not start transaction in notification service");
+                    return;
+                }
 
-                this.Logger.DebugFormat("Found {0} items.", list.Count());
+                IList<Notification> list;
+                IList<NotificationType> types;
+
+                // Get items from the notification queue
+                try
+                {
+
+                    list = this.session.CreateCriteria<Notification>().List<Notification>();
+                    list.ForEach(this.session.Delete);
+
+                    types = this.session.CreateCriteria<NotificationType>().List<NotificationType>();
+
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.Error("Exception during retrive of notifications");
+                    transaction.Rollback();
+                    throw;
+                }
+
+                this.Logger.DebugFormat("Found {0} items.", list.Count);
 
                 // Iterate to send them.
                 foreach (var notification in list)
                 {
-                    var destination = "##helpmebot";
+                    var destinations = types.Where(x => x.Type == notification.Type).Select(x => x.Channel.Name).ToList();
 
-                    // TODO: move me to a separate table or something
-                    switch (notification.Type)
+                    if (destinations.Any())
                     {
-                        case 1:
-                            destination = "#wikipedia-en-accounts";
-                            break;
-
-                        case 2:
-                            destination = "#wikipedia-en-accounts-devs";
-                            break;
+                        destinations.ForEach(
+                            x => this.ircClient.SendMessage(x, this.SanitiseMessage(notification.Text)));
                     }
-                    
-                    this.ircClient.SendMessage(destination, this.SanitiseMessage(notification.Text));
+                    else
+                    {
+                        this.ircClient.SendMessage(
+                            this.configuration.DebugChannel,
+                            this.SanitiseMessage(notification.Text));
+                    }
                 }
             }
         }
