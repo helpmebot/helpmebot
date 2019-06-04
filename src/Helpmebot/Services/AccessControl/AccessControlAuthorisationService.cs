@@ -37,7 +37,15 @@ namespace Helpmebot.Services.AccessControl
                 .List<User>()
                 .Where(
                     x => new IrcUserMask(x.Mask, ircUser.Client).Matches(user).GetValueOrDefault()
-                         || (x.Account == user.Account && x.Account != null && user.Account != null));
+                         || (x.Account == user.Account && x.Account != null && user.Account != null))
+                .ToList();
+
+            this.logger.DebugFormat("Found {0} affected users", matchingUsers.Count);
+
+            foreach (var matchingUser in matchingUsers)
+            {
+                this.logger.DebugFormat("   -> {0}, {1}: {2} groups", matchingUser, matchingUser.Id, matchingUser.AppliedFlagGroups.Count);
+            }
 
             var flagGroups = matchingUsers.SelectMany(x => x.AppliedFlagGroups).ToList();
 
@@ -47,7 +55,7 @@ namespace Helpmebot.Services.AccessControl
                 "Found flag groups {0} apply to {1}",
                 flagGroups.Distinct().Aggregate("", (s, g) =>
                 {
-                    this.logger.DebugFormat("data: s:{0}  g:{1}", s, g);
+                    this.logger.DebugFormat("data: s:{0}  g:{1}  gisnull:{2}", s, g, g == null);
                     this.logger.DebugFormat("data: g.name:{0}", g.Name);
                     return s + "," + g.Name;
 
