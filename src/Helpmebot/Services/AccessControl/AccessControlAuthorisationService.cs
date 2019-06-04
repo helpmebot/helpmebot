@@ -41,11 +41,17 @@ namespace Helpmebot.Services.AccessControl
 
             var flagGroups = matchingUsers.SelectMany(x => x.AppliedFlagGroups).ToList();
 
-            this.logger.DebugFormat("Fetched flag groups for {0}", user);
+            this.logger.DebugFormat("Fetched {1} flag groups for {0}", user, flagGroups.Count);
 
             this.logger.DebugFormat(
                 "Found flag groups {0} apply to {1}",
-                flagGroups.Distinct().Aggregate("", (s, g) => s + "," + g.Name).TrimStart(','),
+                flagGroups.Distinct().Aggregate("", (s, g) =>
+                {
+                    this.logger.DebugFormat("data: s:{0}  g:{1}", s, g);
+                    this.logger.DebugFormat("data: g.name:{0}", g.Name);
+                    return s + "," + g.Name;
+
+                }).TrimStart(','),
                 user);
 
             this.logger.DebugFormat("Aggregating additions for {0}", user);
