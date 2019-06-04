@@ -56,6 +56,12 @@ namespace Helpmebot.Services.AccessControl
                 flagGroups.Distinct().Aggregate("", (s, g) =>
                 {
                     this.logger.DebugFormat("data: s:{0}  g:{1}  gisnull:{2}", s, g, g == null);
+                    if (g == null)
+                    {
+                        this.logger.Warn("Encountered null flag group?!");
+                        return s;
+                    }
+
                     this.logger.DebugFormat("data: g.name:{0}", g.Name);
                     return s + "," + g.Name;
 
