@@ -51,21 +51,17 @@ namespace Helpmebot.Services.AccessControl
 
             this.logger.DebugFormat("Fetched {1} flag groups for {0}", user, flagGroups.Count);
 
+            flagGroups = flagGroups.Distinct().ToList();
+
+            this.logger.DebugFormat("Fetched {1} DISTINCT flag groups for {0}", user, flagGroups.Count);
+
+            flagGroups = flagGroups.Where(x => x != null).ToList();
+
+            this.logger.DebugFormat("Fetched {1} not null flag groups for {0}", user, flagGroups.Count);
+
             this.logger.DebugFormat(
                 "Found flag groups {0} apply to {1}",
-                flagGroups.Distinct().Aggregate("", (s, g) =>
-                {
-                    this.logger.DebugFormat("data: s:{0}  g:{1}  gisnull:{2}", s, g, g == null);
-                    if (g == null)
-                    {
-                        this.logger.Warn("Encountered null flag group?!");
-                        return s;
-                    }
-
-                    this.logger.DebugFormat("data: g.name:{0}", g.Name);
-                    return s + "," + g.Name;
-
-                }).TrimStart(','),
+                flagGroups.Aggregate("", (s, g) => s + "," + g.Name).TrimStart(','),
                 user);
 
             this.logger.DebugFormat("Aggregating additions for {0}", user);
