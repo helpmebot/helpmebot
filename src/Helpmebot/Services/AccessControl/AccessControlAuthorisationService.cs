@@ -40,26 +40,14 @@ namespace Helpmebot.Services.AccessControl
                          || (x.Account == user.Account && x.Account != null && user.Account != null))
                 .ToList();
 
-            this.logger.DebugFormat("Found {0} affected users", matchingUsers.Count);
-
+            var flagGroups = new List<FlagGroup>();
             foreach (var matchingUser in matchingUsers)
             {
-                this.logger.DebugFormat("   -> {0}, {1}: {2} groups", matchingUser, matchingUser.Id, matchingUser.AppliedFlagGroups.Count);
-
                 foreach (var group in matchingUser.AppliedFlagGroups)
                 {
-                    if (group == null)
-                    {
-                        this.logger.DebugFormat("       -> null group");
-                    }
-                    else
-                    {
-                        this.logger.DebugFormat("       -> {0}", group.Name);
-                    }
+                    flagGroups.Add(group);
                 }
             }
-
-            var flagGroups = matchingUsers.SelectMany(x => x.AppliedFlagGroups).ToList();
 
             this.logger.DebugFormat("Fetched {1} flag groups for {0}", user, flagGroups.Count);
                 foreach (var group in flagGroups)
@@ -74,36 +62,17 @@ namespace Helpmebot.Services.AccessControl
                     }
                 }
 
-            flagGroups = flagGroups.Distinct().ToList();
+            flagGroups = flagGroups.Distinct().Where(x => x != null).ToList();
 
-            this.logger.DebugFormat("Fetched {1} DISTINCT flag groups for {0}", user, flagGroups.Count);
-                foreach (var group in flagGroups)
-                {
-                    if (group == null)
-                    {
-                        this.logger.DebugFormat("       -> null group");
-                    }
-                    else
-                    {
-                        this.logger.DebugFormat("       -> {0}", group.Name);
-                    }
-                }
-
-            flagGroups = flagGroups.Where(x => x != null).ToList();
-
-            this.logger.DebugFormat("Fetched {1} not null flag groups for {0}", user, flagGroups.Count);
-
-            this.logger.DebugFormat(
-                "Found flag groups {0} apply to {1}",
-                flagGroups.Aggregate("", (s, g) => s + "," + g.Name).TrimStart(','),
-                user);
-
-            this.logger.DebugFormat("Aggregating additions for {0}", user);
             var changes = flagGroups.Where(x => x.Mode == "+").Aggregate("+", (s, group) => s + group.Flags);
-            this.logger.DebugFormat("Aggregating subtractions for {0} to {1}", user, changes);
             changes = flagGroups.Where(x => x.Mode == "-").Aggregate(changes + "-", (s, group) => s + group.Flags);
 
-            this.logger.DebugFormat("Applying changes for resultant set [{1}] for {0}", user, changes);
+            this.logger.DebugFormat(
+                "Found flag groups {0} (consisting of {2}) apply to {1}",
+                flagGroups.Aggregate("", (s, g) => s + "," + g.Name).TrimStart(','),
+                user,
+                changes);
+
             var resultantSet =
                 AccessControlManagementService.ApplyFlagChangesToFlags(
                     ref changes,
