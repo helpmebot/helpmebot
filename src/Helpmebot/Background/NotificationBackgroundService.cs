@@ -88,7 +88,7 @@ namespace Helpmebot.Background
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.Error("Exception during retrive of notifications");
+                    this.Logger.Error("Exception during retrieve of notifications", ex);
                     transaction.Rollback();
                     throw;
                 }
