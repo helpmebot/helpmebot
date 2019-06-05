@@ -4,12 +4,12 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
-//   
+//
 //   Helpmebot is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
-//   
+//
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
@@ -22,6 +22,7 @@ namespace Helpmebot.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
@@ -124,7 +125,7 @@ namespace Helpmebot.Services
                         {
                             var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
                             url = this.urlShorteningService.Shorten(url);
-                            
+
                             var message = string.Format(
                                 "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3} ( {5} )",
                                 e.User.Nickname,
@@ -145,7 +146,7 @@ namespace Helpmebot.Services
                     {
                         var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
                         url = this.urlShorteningService.Shorten(url);
-                        
+
                         var message = string.Format(
                             "Joined user {0} in channel {1} is blocked ({2}) because: {3} ( {4} )",
                             e.User.Nickname,
@@ -153,7 +154,7 @@ namespace Helpmebot.Services
                             blockInformation.Target,
                             blockInformation.BlockReason,
                             url);
-                        
+
                         ((IIrcClient) sender).SendMessage(c, message);
                     }
                 }
@@ -173,8 +174,12 @@ namespace Helpmebot.Services
             lock (this.monitors)
             {
                 var monitor = new BlockMonitor {MonitorChannel = monitorChannel, ReportChannel = reportChannel};
-                databaseSession.SaveOrUpdate(monitor);
-                databaseSession.Flush();
+
+                using(var txn = databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    databaseSession.SaveOrUpdate(monitor);
+                    txn.Commit();
+                }
 
                 if (!this.monitors.ContainsKey(monitorChannel))
                 {
@@ -184,28 +189,34 @@ namespace Helpmebot.Services
                 this.monitors[monitorChannel].Add(reportChannel);
             }
         }
-        
+
         public void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession)
         {
             lock (this.monitors)
             {
-                var deleteList = databaseSession.CreateCriteria<BlockMonitor>().Add(Restrictions.And(
-                    Restrictions.Eq("MonitorChannel", monitorChannel),
-                    Restrictions.Eq("ReportChannel", reportChannel)
-                )).List<BlockMonitor>();
-
-                foreach (var monitor in deleteList)
+                using (var txn = databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    this.logger.DebugFormat(
-                        "Deleting monitor {2} for {0} to {1}",
-                        monitor.MonitorChannel,
-                        monitor.ReportChannel,
-                        monitor.Id);
-                    databaseSession.Delete(monitor);
+                    var deleteList = databaseSession.CreateCriteria<BlockMonitor>()
+                        .Add(
+                            Restrictions.And(
+                                Restrictions.Eq("MonitorChannel", monitorChannel),
+                                Restrictions.Eq("ReportChannel", reportChannel)
+                            ))
+                        .List<BlockMonitor>();
+
+                    foreach (var monitor in deleteList)
+                    {
+                        this.logger.DebugFormat(
+                            "Deleting monitor {2} for {0} to {1}",
+                            monitor.MonitorChannel,
+                            monitor.ReportChannel,
+                            monitor.Id);
+                        databaseSession.Delete(monitor);
+                    }
+
+                    txn.Commit();
                 }
 
-                databaseSession.Flush();
-                
                 var success = this.monitors[monitorChannel].Remove(reportChannel);
                 if (!success)
                 {

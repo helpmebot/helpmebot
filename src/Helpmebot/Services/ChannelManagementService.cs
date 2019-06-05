@@ -1,5 +1,6 @@
 ﻿namespace Helpmebot.Services
 {
+    using System.Data;
     using System.Linq;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -34,52 +35,58 @@
 
         public void JoinChannel(string channelName, ISession localSession)
         {
-            var channel = localSession.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            using (var txn = localSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                channel = new Channel
+                var channel = localSession.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq("Name", channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
+
+                if (channel == null)
                 {
-                    Name = channelName,
-                    Enabled = true
-                };
+                    channel = new Channel
+                    {
+                        Name = channelName,
+                        Enabled = true
+                    };
+                }
+
+                channel.Enabled = true;
+
+                localSession.SaveOrUpdate(channel);
+                txn.Commit();
             }
-
-            channel.Enabled = true;
-
-            localSession.SaveOrUpdate(channel);
-            localSession.Flush();
 
             this.client.JoinChannel(channelName);
         }
-        
+
         public void PartChannel(string channelName, ISession localSession, string message)
         {
-            var channel = localSession.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            this.client.PartChannel(channelName, message);
-            
-            if (channel == null)
+            using (var txn = localSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                return;
+                var channel = localSession.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq("Name", channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
+
+                this.client.PartChannel(channelName, message);
+
+                if (channel == null)
+                {
+                    return;
+                }
+
+                channel.Enabled = false;
+
+                localSession.SaveOrUpdate(channel);
+                txn.Commit();
             }
-
-            channel.Enabled = false;
-
-            localSession.SaveOrUpdate(channel);
-            localSession.Flush();
         }
 
         public void OnInvite(object sender, InviteEventArgs e)
         {
             const string FlagRequired = Flags.BotManagement;
-            
+
             this.flagService.GetFlagsForUser(e.User, e.Channel);
             CommandAclStatus aclStatus;
 
@@ -106,20 +113,23 @@
 
         public void OnKicked(object sender, KickedEventArgs e)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", e.Channel))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                return;
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq("Name", e.Channel))
+                    .List<Channel>()
+                    .FirstOrDefault();
+
+                if (channel == null)
+                {
+                    return;
+                }
+
+                channel.Enabled = false;
+
+                this.session.Save(channel);
+                txn.Commit();
             }
-
-            channel.Enabled = false;
-
-            this.session.Save(channel);
-            this.session.Flush();
         }
     }
 }

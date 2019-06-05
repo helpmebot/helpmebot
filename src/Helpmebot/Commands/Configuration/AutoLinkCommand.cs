@@ -1,6 +1,7 @@
 namespace Helpmebot.Commands.Configuration
 {
     using System.Collections.Generic;
+    using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
@@ -44,38 +45,44 @@ namespace Helpmebot.Commands.Configuration
         [Help("<channel>", "Enables autolinking for the current channel")]
         protected IEnumerable<CommandResponse> EnableCommand()
         {
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (channel == null)
+            using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                throw new CommandErrorException(
-                    "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
+
+                if (channel == null)
+                {
+                    throw new CommandErrorException(
+                        "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                }
+
+                channel.AutoLink = true;
+                this.databaseSession.Save(channel);
+                txn.Commit();
+
+                yield return new CommandResponse {Message = "Autolinking enabled in this channel."};
             }
-
-            channel.AutoLink = true;
-            this.databaseSession.Save(channel);
-            this.databaseSession.Flush();
-
-            yield return new CommandResponse {Message = "Autolinking enabled in this channel."};
         }
 
         [SubcommandInvocation("disable")]
         [Help("<channel>", "Disables autolinking for the current channel")]
         protected IEnumerable<CommandResponse> DisableCommand()
         {
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (channel == null)
+            using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                throw new CommandErrorException(
-                    "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
+
+                if (channel == null)
+                {
+                    throw new CommandErrorException(
+                        "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                }
+
+                channel.AutoLink = false;
+                this.databaseSession.Save(channel);
+                txn.Commit();
+
+                yield return new CommandResponse {Message = "Autolinking disabled in this channel."};
             }
-
-            channel.AutoLink = false;
-            this.databaseSession.Save(channel);
-            this.databaseSession.Flush();
-
-            yield return new CommandResponse {Message = "Autolinking disabled in this channel."};
         }
     }
 }

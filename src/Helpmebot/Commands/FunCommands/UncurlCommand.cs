@@ -1,7 +1,9 @@
 namespace Helpmebot.Commands.FunCommands
 {
     using System.Collections.Generic;
+    using System.Data;
     using Castle.Core.Logging;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
@@ -38,38 +40,50 @@ namespace Helpmebot.Commands.FunCommands
             this.session = session;
         }
 
-        [Help("", "Enables all fun commands in the current channel.")]        
+        [Help("", "Enables all fun commands in the current channel.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", this.CommandSource))
-                .UniqueResult<Channel>();
-            
-            if (channel == null)
+            var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
             {
-                yield return new CommandResponse
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq("Name", this.CommandSource))
+                    .UniqueResult<Channel>();
+
+                if (channel == null)
                 {
-                    Message = string.Format("Cannot find configuration for channel {0}", this.CommandSource),
-                    IgnoreRedirection = true
+                    return new CommandResponse
+                    {
+                        Message = string.Format("Cannot find configuration for channel {0}", this.CommandSource),
+                        IgnoreRedirection = true
+                    }.ToEnumerable();
+                }
+
+                channel.HedgehogMode = false;
+                this.session.SaveOrUpdate(channel);
+
+                return new[]
+                {
+                    new CommandResponse
+                    {
+                        Message = "Done"
+                    },
+
+                    new CommandResponse
+                    {
+                        Message = string.Format("All fun commands are now enabled in {0}", this.CommandSource),
+                        Destination = CommandResponseDestination.PrivateMessage,
+                        IgnoreRedirection = true
+                    }
                 };
-                yield break;
             }
-            
-            channel.HedgehogMode = false;
-            this.session.SaveOrUpdate(channel);
-            this.session.Flush();
-            
-            yield return new CommandResponse
+            finally
             {
-                Message = "Done"
-            };
-            
-            yield return new CommandResponse
-            {
-                Message = string.Format("All fun commands are now enabled in {0}", this.CommandSource),
-                Destination = CommandResponseDestination.PrivateMessage,
-                IgnoreRedirection = true
-            };
+                if (!txn.WasCommitted)
+                {
+                    txn.Rollback();
+                }
+            }
         }
     }
 }
