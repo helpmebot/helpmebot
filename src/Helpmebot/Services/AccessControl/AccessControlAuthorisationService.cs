@@ -45,6 +45,18 @@ namespace Helpmebot.Services.AccessControl
             foreach (var matchingUser in matchingUsers)
             {
                 this.logger.DebugFormat("   -> {0}, {1}: {2} groups", matchingUser, matchingUser.Id, matchingUser.AppliedFlagGroups.Count);
+
+                foreach (var group in matchingUser.AppliedFlagGroups)
+                {
+                    if (group == null)
+                    {
+                        this.logger.DebugFormat("       -> null group");
+                    }
+                    else
+                    {
+                        this.logger.DebugFormat("       -> {0}", group.Name);
+                    }
+                }
             }
 
             var flagGroups = matchingUsers.SelectMany(x => x.AppliedFlagGroups).ToList();
