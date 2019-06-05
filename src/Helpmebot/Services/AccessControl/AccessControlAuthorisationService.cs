@@ -62,10 +62,32 @@ namespace Helpmebot.Services.AccessControl
             var flagGroups = matchingUsers.SelectMany(x => x.AppliedFlagGroups).ToList();
 
             this.logger.DebugFormat("Fetched {1} flag groups for {0}", user, flagGroups.Count);
+                foreach (var group in flagGroups)
+                {
+                    if (group == null)
+                    {
+                        this.logger.DebugFormat("       -> null group");
+                    }
+                    else
+                    {
+                        this.logger.DebugFormat("       -> {0}", group.Name);
+                    }
+                }
 
             flagGroups = flagGroups.Distinct().ToList();
 
             this.logger.DebugFormat("Fetched {1} DISTINCT flag groups for {0}", user, flagGroups.Count);
+                foreach (var group in flagGroups)
+                {
+                    if (group == null)
+                    {
+                        this.logger.DebugFormat("       -> null group");
+                    }
+                    else
+                    {
+                        this.logger.DebugFormat("       -> {0}", group.Name);
+                    }
+                }
 
             flagGroups = flagGroups.Where(x => x != null).ToList();
 
