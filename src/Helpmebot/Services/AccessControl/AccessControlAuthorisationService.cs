@@ -49,19 +49,6 @@ namespace Helpmebot.Services.AccessControl
                 }
             }
 
-            this.logger.DebugFormat("Fetched {1} flag groups for {0}", user, flagGroups.Count);
-                foreach (var group in flagGroups)
-                {
-                    if (group == null)
-                    {
-                        this.logger.DebugFormat("       -> null group");
-                    }
-                    else
-                    {
-                        this.logger.DebugFormat("       -> {0}", group.Name);
-                    }
-                }
-
             flagGroups = flagGroups.Distinct().Where(x => x != null).ToList();
 
             var changes = flagGroups.Where(x => x.Mode == "+").Aggregate("+", (s, group) => s + group.Flags);
