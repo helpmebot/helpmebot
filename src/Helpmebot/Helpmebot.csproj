@@ -174,7 +174,6 @@
     <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
     <Compile Include="ExtensionMethods\DateTimeExtensions.cs" />
     <Compile Include="ExtensionMethods\EnumerableExtensions.cs" />
-    <Compile Include="ExtensionMethods\MediaWikiSiteExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
@@ -278,7 +277,6 @@
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
-    <Compile Include="Model\BlockInformation.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="HttpRequest.cs" />
     <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
@@ -359,8 +357,8 @@
       <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.1.47-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.7.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.7.20\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.8.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.8.22\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">

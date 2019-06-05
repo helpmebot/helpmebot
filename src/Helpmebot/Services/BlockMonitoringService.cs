@@ -51,6 +51,7 @@ namespace Helpmebot.Services
         private readonly IChannelRepository channelRepository;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -59,12 +60,14 @@ namespace Helpmebot.Services
             IChannelRepository channelRepository,
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService,
-            ISession globalSession)
+            ISession globalSession,
+            IMediaWikiApiHelper apiHelper)
         {
             this.logger = logger;
             this.channelRepository = channelRepository;
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
+            this.apiHelper = apiHelper;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
@@ -99,6 +102,7 @@ namespace Helpmebot.Services
                 }
 
                 var mediaWikiSite = this.channelRepository.GetByName(e.Channel).BaseWiki;
+                var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
 
                 var ip = this.GetIpAddress(e.User);
                 if (ip == null)
@@ -117,7 +121,7 @@ namespace Helpmebot.Services
                         ipInfo = string.Format(" ({1}, org: {0})", resultData[1], ip);
                     }
 
-                    var blockInformationData = mediaWikiSite.GetBlockInformation(ip.ToString());
+                    var blockInformationData = mediaWikiApi.GetBlockInformation(ip.ToString());
 
                     foreach (var blockInformation in blockInformationData)
                     {
@@ -139,7 +143,7 @@ namespace Helpmebot.Services
                     }
                 }
 
-                var userBlockInfo = mediaWikiSite.GetBlockInformation(e.User.Nickname);
+                var userBlockInfo = mediaWikiApi.GetBlockInformation(e.User.Nickname);
                 foreach (var blockInformation in userBlockInfo)
                 {
                     foreach (var c in alertChannel)

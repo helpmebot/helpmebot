@@ -97,7 +97,7 @@ namespace Helpmebot.Commands.WikiInformation
                 var userBlockLog = userBlockLogBuilder.Uri.ToString();
 
                 var editRate = editCount / (DateTime.Now - registrationDate.Value).TotalDays;
-                var isBlocked = mediaWikiSiteObject.GetBlockInformation(username).Any();
+                var isBlocked = mediaWikiApi.GetBlockInformation(username).Any();
 
                 message = string.Format(
                     "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}",

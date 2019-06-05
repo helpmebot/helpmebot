@@ -5,11 +5,13 @@ namespace Helpmebot.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -18,6 +20,7 @@ namespace Helpmebot.Commands.WikiInformation
     public class BlockInformationCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public BlockInformationCommand(
             string commandSource,
@@ -27,7 +30,8 @@ namespace Helpmebot.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -37,14 +41,16 @@ namespace Helpmebot.Commands.WikiInformation
             client)
         {
             this.databaseSession = databaseSession;
+            this.apiHelper = apiHelper;
         }
 
         [Help("<target>", "Returns information about active blocks on the provided target")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSiteObject = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
 
-            var blockInfoResult = mediaWikiSiteObject.GetBlockInformation(string.Join(" ", this.Arguments));
+            var blockInfoResult = mediaWikiApi.GetBlockInformation(string.Join(" ", this.Arguments));
 
             return blockInfoResult.Select(x => new CommandResponse {Message = x.ToString()});
         }
