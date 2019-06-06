@@ -278,7 +278,6 @@
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="Model\GeolocateResult.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
-    <Compile Include="HttpRequest.cs" />
     <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Interfaces\IMessageService.cs" />

@@ -22,18 +22,22 @@ namespace Helpmebot.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.Data;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -52,6 +56,8 @@ namespace Helpmebot.Services
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly BotConfiguration botConfiguration;
+        private readonly IWebServiceClient webServiceClient;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -61,13 +67,17 @@ namespace Helpmebot.Services
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService,
             ISession globalSession,
-            IMediaWikiApiHelper apiHelper)
+            IMediaWikiApiHelper apiHelper,
+            BotConfiguration botConfiguration,
+            IWebServiceClient webServiceClient)
         {
             this.logger = logger;
             this.channelRepository = channelRepository;
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
             this.apiHelper = apiHelper;
+            this.botConfiguration = botConfiguration;
+            this.webServiceClient = webServiceClient;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
@@ -113,8 +123,19 @@ namespace Helpmebot.Services
                 {
                     var ipInfo = string.Format(" ({0})", ip);
 
-                    var lookupUrl = string.Format("http://ip-api.com/line/{0}?fields=org,as,status", ip);
-                    var textResult = HttpRequest.Get(lookupUrl);
+                    var queryParameters = new NameValueCollection
+                    {
+                        {"fields", "org,as,status"}
+                    };
+
+                    var lookupUrl = string.Format("http://ip-api.com/line/{0}", ip);
+
+                    var httpResponseData = this.webServiceClient.DoApiCall(
+                        queryParameters,
+                        lookupUrl,
+                        this.botConfiguration.UserAgent);
+
+                    var textResult = new StreamReader(httpResponseData).ReadToEnd();
                     var resultData = textResult.Split('\r', '\n');
                     if (resultData.FirstOrDefault() == "success")
                     {

@@ -4,80 +4,62 @@
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
 //   (at your option) any later version.
-//   
+//
 //   Helpmebot is distributed in the hope that it will be useful,
 //   but WITHOUT ANY WARRANTY; without even the implied warranty of
 //   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //   GNU General Public License for more details.
-//   
+//
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Services.Geolocation
 {
-    using System.IO;
+    using System.Collections.Specialized;
     using System.Net;
     using System.Xml;
 
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
     /// <summary>
     /// The IpInfoDB geolocation service.
     /// </summary>
     public class IpInfoDbGeolocationService : IGeolocationService
     {
-        /// <summary>
-        /// The API key.
-        /// </summary>
-        private readonly string apiKey;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
         private readonly ILogger logger;
+        private readonly BotConfiguration configuration;
+        private readonly IWebServiceClient webServiceClient;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IpInfoDbGeolocationService"/> class.
-        /// </summary>
-        /// <param name="logger">
-        /// The logger.
-        /// </param>
-        /// <param name="configuration">
-        /// The configuration.
-        /// </param>
-        public IpInfoDbGeolocationService(ILogger logger, BotConfiguration configuration)
+        public IpInfoDbGeolocationService(ILogger logger, BotConfiguration configuration, IWebServiceClient webServiceClient)
         {
             this.logger = logger;
-            this.apiKey = configuration.IpInfoDbApiKey;
+            this.configuration = configuration;
+            this.webServiceClient = webServiceClient;
         }
 
-        /// <summary>
-        /// The get location.
-        /// </summary>
-        /// <param name="address">
-        /// The address.
-        /// </param>
-        /// <returns>
-        /// The <see cref="GeolocateResult"/>.
-        /// </returns>
         public GeolocateResult GetLocation(IPAddress address)
         {
-            if (this.apiKey == string.Empty)
+            if (this.configuration.IpInfoDbApiKey == string.Empty)
             {
                 this.logger.Error("API key is empty, please fix this in configuration.");
                 return new GeolocateResult();
             }
 
-            var requestData =
-                HttpRequest.Get(
-                    "https://api.ipinfodb.com/v3/ip-city/?key=" + this.apiKey + "&ip=" + address + "&format=xml");
+            var queryParameters = new NameValueCollection
+            {
+                {"key", this.configuration.IpInfoDbApiKey},
+                {"ip", address.ToString()}
+            };
 
-            using (Stream s = requestData.ToStream())
+            using (var s = this.webServiceClient.DoApiCall(
+                queryParameters,
+                "https://accounts.wmflabs.org/api.php",
+                this.configuration.UserAgent))
             {
                 var xtr = new XmlTextReader(s);
 

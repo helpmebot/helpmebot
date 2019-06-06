@@ -2,27 +2,27 @@ namespace Helpmebot.Commands.ACC
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.IO;
-    using System.Web;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    using HttpRequest = Helpmebot.HttpRequest;
 
     [CommandInvocation("accdeploy")]
     [CommandFlag(Flags.Acc)]
-    public class AccDeployCommand :CommandBase
+    public class AccDeployCommand : CommandBase
     {
         private readonly IMessageService messageService;
         private readonly BotConfiguration botConfiguration;
+        private readonly IWebServiceClient webServiceClient;
 
         public AccDeployCommand(
             string commandSource,
@@ -33,7 +33,8 @@ namespace Helpmebot.Commands.ACC
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IMessageService messageService,
-            BotConfiguration botConfiguration) : base(
+            BotConfiguration botConfiguration,
+            IWebServiceClient webServiceClient) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +45,7 @@ namespace Helpmebot.Commands.ACC
         {
             this.messageService = messageService;
             this.botConfiguration = botConfiguration;
+            this.webServiceClient = webServiceClient;
         }
 
         [RequiredArguments(1)]
@@ -59,24 +61,31 @@ namespace Helpmebot.Commands.ACC
                     Destination = CommandResponseDestination.PrivateMessage,
                     Type = CommandResponseType.Notice
                 };
-                
+
                 yield break;
             }
-            
+
             var args = this.Arguments;
 
             // note: using client.sendmessage for immediacy
-            var deployInProgressMessage = this.messageService.RetrieveMessage("DeployInProgress", this.CommandSource, null);
+            var deployInProgressMessage =
+                this.messageService.RetrieveMessage("DeployInProgress", this.CommandSource, null);
             this.Client.SendMessage(this.CommandSource, deployInProgressMessage);
 
             var revision = string.Join(" ", args);
             var key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
-            
-            revision = HttpUtility.UrlEncode(revision);
-            
-            var requestUri = "https://accounts-dev.wmflabs.org/deploy/deploy.php?r=" + revision + "&k=" + key;
 
-            using (var data = HttpRequest.Get(requestUri, 1000 * 30 /* 30 sec timeout */).ToStream())
+            var queryParameters = new NameValueCollection
+            {
+                {"r", revision},
+                {"k", key}
+            };
+
+            using (var data = this.webServiceClient.DoApiCall(
+                queryParameters,
+                "https://accounts-dev.wmflabs.org/deploy/deploy.php",
+                this.botConfiguration
+                    .UserAgent))
             {
                 var r = new StreamReader(data);
 
@@ -86,7 +95,7 @@ namespace Helpmebot.Commands.ACC
                 }
             }
         }
-        
+
         private string EncodeMD5(string s)
         {
             var md5 = System.Security.Cryptography.MD5.Create();

@@ -1,27 +1,30 @@
 namespace Helpmebot.Commands.ACC
 {
     using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Web;
     using System.Xml.XPath;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Castle.Core.Logging;
+    using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    using HttpRequest = Helpmebot.HttpRequest;
 
     [CommandFlag(Flags.Acc)]
     [CommandInvocation("acccount")]
     public class AccCountCommand : CommandBase
     {
         private readonly IMessageService messageService;
+        private readonly IWebServiceClient webServiceClient;
+        private readonly BotConfiguration botConfiguration;
 
         public AccCountCommand(
             string commandSource,
@@ -31,7 +34,9 @@ namespace Helpmebot.Commands.ACC
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IWebServiceClient webServiceClient,
+            BotConfiguration botConfiguration) : base(
             commandSource,
             user,
             arguments,
@@ -41,6 +46,8 @@ namespace Helpmebot.Commands.ACC
             client)
         {
             this.messageService = messageService;
+            this.webServiceClient = webServiceClient;
+            this.botConfiguration = botConfiguration;
         }
 
         [Help("[username]", "Provides statistics on the number of ACC requests closed by the provided user")]
@@ -59,14 +66,20 @@ namespace Helpmebot.Commands.ACC
                 username = this.User.Nickname;
             }
 
-            username = HttpUtility.UrlEncode(username);
+            var queryParameters = new NameValueCollection
+            {
+                {"action", "count"},
+                {"user", username}
+            };
 
-            var uri = "https://accounts.wmflabs.org/api.php?action=count&user=" + username;
-
-            string httpResponseData;
+            Stream httpResponseData;
             try
             {
-                httpResponseData = HttpRequest.Get(uri);
+                httpResponseData = this.webServiceClient.DoApiCall(
+                    queryParameters,
+                    "https://accounts.wmflabs.org/api.php",
+                    this.botConfiguration
+                        .UserAgent);
             }
             catch (WebException e)
             {
@@ -75,7 +88,7 @@ namespace Helpmebot.Commands.ACC
                 return new[] {new CommandResponse {Message = e.Message}};
             }
 
-            var nav = new XPathDocument(httpResponseData.ToStream()).CreateNavigator();
+            var nav = new XPathDocument(httpResponseData).CreateNavigator();
 
             var isMissing = nav.SelectSingleNode("//user/@missing") != null;
             if (isMissing)
