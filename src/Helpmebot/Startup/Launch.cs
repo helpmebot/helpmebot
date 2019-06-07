@@ -1,15 +1,17 @@
 ﻿namespace Helpmebot.Startup
 {
     using System;
-    using System.Diagnostics;
+    using System.Data;
     using System.IO;
     using System.Net;
     using System.Threading;
     using Castle.Core.Logging;
     using Castle.Windsor;
     using Helpmebot.Configuration;
-    using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Model;
     using Microsoft.Practices.ServiceLocation;
+    using NHibernate;
+    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -17,9 +19,9 @@
     {
         private readonly ILogger logger;
         private readonly IIrcClient client;
-        private readonly IChannelRepository channelRepository;
         private readonly ICommandParser commandParser;
         private readonly CommandOverrideConfiguration commandOverrideConfiguration;
+        private readonly ISession globalSession;
         private readonly ManualResetEvent exitLock;
         
         public DateTime StartupTime { get; private set; }
@@ -68,16 +70,16 @@
         public Launch(
             ILogger logger,
             IIrcClient client,
-            IChannelRepository channelRepository,
             ICommandParser commandParser,
-            CommandOverrideConfiguration commandOverrideConfiguration)
+            CommandOverrideConfiguration commandOverrideConfiguration,
+            ISession globalSession)
         {
             this.logger = logger;
             this.client = client;
-            this.channelRepository = channelRepository;
             this.commandParser = commandParser;
             this.commandOverrideConfiguration = commandOverrideConfiguration;
-            
+            this.globalSession = globalSession;
+
             this.StartupTime = DateTime.Now;
 
             this.exitLock = new ManualResetEvent(false);
@@ -98,11 +100,17 @@
                 this.commandParser.UnregisterCommand(mapEntry.Keyword, mapEntry.Channel);
                 this.commandParser.RegisterCommand(mapEntry.Keyword, mapEntry.Type, mapEntry.Channel);
             }
-            
-            // join the necessary channels
-            foreach (var channel in this.channelRepository.GetEnabled())
+
+            using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                this.client.JoinChannel(channel.Name);
+                var channels = this.globalSession.CreateCriteria<Channel>().Add(Restrictions.Eq("Enabled", true)).List<Channel>();
+                tx.Rollback();
+                
+                // join the necessary channels
+                foreach (var channel in channels)
+                {
+                    this.client.JoinChannel(channel.Name);
+                }
             }
             
             this.logger.Info("Awaiting exit signal.");

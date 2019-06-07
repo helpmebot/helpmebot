@@ -227,12 +227,8 @@
     <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
-    <Compile Include="Repositories\ChannelRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IInterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />
-    <Compile Include="Repositories\InterwikiPrefixRepository.cs" />
     <Compile Include="Repositories\ResponseRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IChannelRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepository.cs" />
     <Compile Include="Repositories\Interfaces\IShortUrlCacheRepository.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />

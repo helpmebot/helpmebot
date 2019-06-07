@@ -22,7 +22,6 @@ namespace Helpmebot.Services
     using System.Text.RegularExpressions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
@@ -34,7 +33,6 @@ namespace Helpmebot.Services
     /// </summary>
     public class LinkerService : ILinkerService
     {
-        private readonly IInterwikiPrefixRepository interwikiPrefixRepository;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly ISession databaseSession;
         private readonly Dictionary<string, string> lastLink;
@@ -43,11 +41,9 @@ namespace Helpmebot.Services
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
         /// </summary>
         public LinkerService(
-            IInterwikiPrefixRepository interwikiPrefixRepository,
             IMediaWikiApiHelper apiHelper,
             ISession databaseSession)
         {
-            this.interwikiPrefixRepository = interwikiPrefixRepository;
             this.apiHelper = apiHelper;
             this.databaseSession = databaseSession;
             this.lastLink = new Dictionary<string, string>();
@@ -58,7 +54,11 @@ namespace Helpmebot.Services
         public string ConvertWikilinkToUrl(string destination, string link)
         {
             var iwprefix = link.Split(':')[0];
-            var prefix = this.interwikiPrefixRepository.GetByPrefix(iwprefix);
+
+            var prefix = this.databaseSession
+                .CreateCriteria<InterwikiPrefix>()
+                .Add(Restrictions.Eq("Prefix", iwprefix))
+                .UniqueResult<InterwikiPrefix>();
             
             var url = prefix == null ? string.Empty : Encoding.UTF8.GetString(prefix.Url);
 

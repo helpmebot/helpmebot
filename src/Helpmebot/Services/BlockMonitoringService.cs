@@ -33,7 +33,6 @@ namespace Helpmebot.Services
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
@@ -52,9 +51,9 @@ namespace Helpmebot.Services
         /// </summary>
         private readonly ILogger logger;
 
-        private readonly IChannelRepository channelRepository;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
+        private readonly ISession globalSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
@@ -63,7 +62,6 @@ namespace Helpmebot.Services
 
         public BlockMonitoringService(
             ILogger logger,
-            IChannelRepository channelRepository,
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService,
             ISession globalSession,
@@ -72,9 +70,9 @@ namespace Helpmebot.Services
             IWebServiceClient webServiceClient)
         {
             this.logger = logger;
-            this.channelRepository = channelRepository;
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
+            this.globalSession = globalSession;
             this.apiHelper = apiHelper;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
@@ -111,7 +109,16 @@ namespace Helpmebot.Services
                     return;
                 }
 
-                var mediaWikiSite = this.channelRepository.GetByName(e.Channel).BaseWiki;
+                MediaWikiSite mediaWikiSite;
+                using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    mediaWikiSite = this.globalSession.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq("Name", e.Channel))
+                        .UniqueResult<Channel>().BaseWiki;
+                    
+                    tx.Rollback();
+                }
+
                 var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
 
                 var ip = this.GetIpAddress(e.User);
