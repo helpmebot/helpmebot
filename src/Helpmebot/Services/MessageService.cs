@@ -27,25 +27,25 @@ namespace Helpmebot.Services
     using Stwalkerster.IrcClient.Extensions;
     
     using Helpmebot.Model;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
+    using NHibernate;
+    using NHibernate.Criterion;
 
     public class MessageService : IMessageService
     {
         private readonly Random random;
         private readonly object randomLock = new object();
 
-        private readonly IResponseRepository responseRepository;
+        private readonly ISession localSession;
+        private readonly ILogger log;
 
-        public MessageService(IResponseRepository responseRepository)
+        public MessageService(ISession localSession, ILogger log)
         {
-            this.responseRepository = responseRepository;
+            this.localSession = localSession;
+            this.log = log;
             this.random = new Random();
         }
 
-        public ILogger Log { get; set; }
-
-        
         public string Done(object context)
         {
             return this.RetrieveMessage(Messages.Done, context, null);
@@ -90,13 +90,16 @@ namespace Helpmebot.Services
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
         
-        /// <summary>
-        /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the
-        /// database.
-        /// </summary>
         public void RefreshResponseRepository()
         {
-            this.responseRepository.RefreshAllResponses();
+            lock (this.localSession)
+            {
+                var all = this.localSession.CreateCriteria<Response>().List<Response>();
+                foreach (var model in all)
+                {
+                    this.localSession.Refresh(model);
+                }
+            }
         }
 
         /// <summary>
@@ -108,12 +111,12 @@ namespace Helpmebot.Services
         private IEnumerable<string> GetMessageFromDatabase(string messageKey, string contextPath)
         {
             // attempt to get some context-sensitive message.
-            List<string> results = this.GetRawMessageFromDatabase(string.Concat(messageKey, contextPath)).ToList();
+            var results = this.GetRawMessageFromDatabase(string.Concat(messageKey, contextPath)).ToList();
 
             if (!results.Any())
             {
                 // nothing found, fall back on the value with no context.
-                this.Log.InfoFormat(
+                this.log.InfoFormat(
                     "Message {0} with context path {1} not found: Falling back to non-context-sensitive message.",
                     messageKey,
                     contextPath);
@@ -126,7 +129,7 @@ namespace Helpmebot.Services
                 return results;
             }
 
-            this.Log.ErrorFormat("Message {0} not found.", messageKey);
+            this.log.ErrorFormat("Message {0} not found.", messageKey);
             return null;
         }
 
@@ -138,7 +141,14 @@ namespace Helpmebot.Services
         /// </returns>
         private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
         {
-            Response response = this.responseRepository.GetByName(messageKey);
+            Response response;
+            lock (this.localSession)
+            {
+                response = this.localSession.CreateCriteria<Response>()
+                    .Add(Restrictions.Eq("Name", Encoding.UTF8.GetBytes(messageKey)))
+                    .UniqueResult<Response>();
+            }
+            
             if (response != null)
             {
                 // extract the byte array from the dataset

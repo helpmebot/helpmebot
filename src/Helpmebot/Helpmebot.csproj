@@ -227,12 +227,6 @@
     <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
-    <Compile Include="Repositories\Interfaces\IResponseRepository.cs" />
-    <Compile Include="Repositories\ResponseRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IShortUrlCacheRepository.cs" />
-    <Compile Include="Repositories\RepositoryBase.cs" />
-    <Compile Include="Repositories\ShortUrlCacheRepository.cs" />
     <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
@@ -257,6 +251,7 @@
     <Compile Include="Services\Interfaces\ILinkerService.cs" />
     <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
+    <Compile Include="Services\Interfaces\IShortUrlCacheService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\ChannelManagementService.cs" />

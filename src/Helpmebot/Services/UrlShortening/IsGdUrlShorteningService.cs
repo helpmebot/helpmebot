@@ -26,7 +26,7 @@ namespace Helpmebot.Services.UrlShortening
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Repositories.Interfaces;
+    using Helpmebot.Services.Interfaces;
 
     /// <summary>
     ///     Shortens URLs
@@ -43,14 +43,14 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="shortUrlCacheRepository">
+        /// <param name="shortUrlCacheService">
         /// The short url cache repository.
         /// </param>
         /// <param name="config"></param>
         public IsGdUrlShorteningService(ILogger logger,
-            IShortUrlCacheRepository shortUrlCacheRepository,
+            IShortUrlCacheService shortUrlCacheService,
             BotConfiguration config)
-            : base(logger, shortUrlCacheRepository)
+            : base(logger, shortUrlCacheService)
         {
             this.userAgent = config.UserAgent;
         }

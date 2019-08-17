@@ -17,7 +17,6 @@
 namespace Helpmebot.Services.UrlShortening
 {
     using Castle.Core.Logging;
-    using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
     /// <summary>
@@ -33,7 +32,7 @@ namespace Helpmebot.Services.UrlShortening
         /// <summary>
         ///     The short url cache repository.
         /// </summary>
-        private readonly IShortUrlCacheRepository shortUrlCacheRepository;
+        private readonly IShortUrlCacheService shortUrlCacheService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UrlShorteningServiceBase"/> class.
@@ -41,15 +40,15 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="shortUrlCacheRepository">
+        /// <param name="shortUrlCacheService">
         /// The short url cache repository.
         /// </param>
         protected UrlShorteningServiceBase(
             ILogger logger, 
-            IShortUrlCacheRepository shortUrlCacheRepository)
+            IShortUrlCacheService shortUrlCacheService)
         {
             this.logger = logger;
-            this.shortUrlCacheRepository = shortUrlCacheRepository;
+            this.shortUrlCacheService = shortUrlCacheService;
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace Helpmebot.Services.UrlShortening
         {
             this.logger.InfoFormat("Getting short url for {0}...", longUrl);
 
-            return this.shortUrlCacheRepository.GetShortUrl(longUrl, this.GetShortUrl);
+            return this.shortUrlCacheService.GetShortUrl(longUrl, this.GetShortUrl);
         }
 
         /// <summary>

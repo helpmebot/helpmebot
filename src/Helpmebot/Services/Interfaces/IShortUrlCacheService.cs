@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IShortUrlCacheRepository.cs" company="Helpmebot Development Team">
+// <copyright file="IShortUrlCacheService.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -15,33 +15,12 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Repositories.Interfaces
+namespace Helpmebot.Services.Interfaces
 {
     using System;
 
-    using Helpmebot.Model;
-
-    /// <summary>
-    /// The ShortUrlCacheRepository interface.
-    /// </summary>
-    public interface IShortUrlCacheRepository : IRepository<ShortUrlCacheEntry>
+    public interface IShortUrlCacheService
     {
-        #region Public Methods and Operators
-
-        #endregion
-
-        /// <summary>
-        /// The get short url.
-        /// </summary>
-        /// <param name="longUrl">
-        /// The long url.
-        /// </param>
-        /// <param name="cacheMissCallback">
-        /// The cache miss callback.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         string GetShortUrl(string longUrl, Func<string, string> cacheMissCallback);
     }
 }

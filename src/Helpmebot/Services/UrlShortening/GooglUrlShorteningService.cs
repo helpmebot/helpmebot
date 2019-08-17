@@ -23,8 +23,7 @@ namespace Helpmebot.Services.UrlShortening
     using Castle.Core.Logging;
 
     using Helpmebot.Configuration;
-    using Helpmebot.Repositories.Interfaces;
-
+    using Helpmebot.Services.Interfaces;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -40,15 +39,15 @@ namespace Helpmebot.Services.UrlShortening
         /// <param name="logger">
         /// The logger.
         /// </param>
-        /// <param name="shortUrlCacheRepository">
+        /// <param name="shortUrlCacheService">
         /// The short url cache repository.
         /// </param>
         /// <param name="botConfiguration"></param>
         public GooglUrlShorteningService(
             ILogger logger, 
-            IShortUrlCacheRepository shortUrlCacheRepository,
+            IShortUrlCacheService shortUrlCacheService,
             BotConfiguration botConfiguration)
-            : base(logger, shortUrlCacheRepository)
+            : base(logger, shortUrlCacheService)
         {
             this.apiKey = botConfiguration.GoogleApiKey;
         }
