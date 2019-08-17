@@ -15,8 +15,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Extensions;
-
 namespace Helpmebot.Services
 {
     using System;
@@ -26,95 +24,33 @@ namespace Helpmebot.Services
     using System.Text;
 
     using Castle.Core.Logging;
-
+    using Stwalkerster.IrcClient.Extensions;
     
     using Helpmebot.Model;
     using Helpmebot.Repositories.Interfaces;
     using Helpmebot.Services.Interfaces;
 
-    /// <summary>
-    ///     The message service.
-    /// </summary>
     public class MessageService : IMessageService
     {
-        #region Fields
-
-        /// <summary>
-        ///     The random generator.
-        /// </summary>
         private readonly Random random;
-
-        /// <summary>
-        ///     The random lock.
-        /// </summary>
         private readonly object randomLock = new object();
 
-        /// <summary>
-        /// The response repository.
-        /// </summary>
         private readonly IResponseRepository responseRepository;
 
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="MessageService"/> class.
-        /// </summary>
-        /// <param name="responseRepository">
-        /// The response Repository.
-        /// </param>
         public MessageService(IResponseRepository responseRepository)
         {
             this.responseRepository = responseRepository;
             this.random = new Random();
         }
 
-        #endregion
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the logger.
-        /// </summary>
         public ILogger Log { get; set; }
 
-        #endregion
-
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The done.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
+        
         public string Done(object context)
         {
             return this.RetrieveMessage(Messages.Done, context, null);
         }
 
-        /// <summary>
-        /// The retrieve not enough parameters.
-        /// </summary>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="expected">
-        /// The expected.
-        /// </param>
-        /// <param name="actual">
-        /// The actual.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public string NotEnoughParameters(object context, string command, int expected, int actual)
         {
             var arguments = new[]
@@ -126,21 +62,6 @@ namespace Helpmebot.Services
             return this.RetrieveMessage(Messages.NotEnoughParameters, context, arguments);
         }
 
-        /// <summary>
-        /// The retrieve message.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="context">
-        /// The context.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments)
         {
             if (string.IsNullOrEmpty(messageKey))
@@ -168,8 +89,7 @@ namespace Helpmebot.Services
 
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
-
-
+        
         /// <summary>
         /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the
         /// database.
@@ -179,21 +99,11 @@ namespace Helpmebot.Services
             this.responseRepository.RefreshAllResponses();
         }
 
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Gets a context-sensitive message from the database.
         /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="contextPath">
-        /// The context path.
-        /// </param>
         /// <returns>
-        /// The list of messages.
+        /// A list of messages.
         /// </returns>
         private IEnumerable<string> GetMessageFromDatabase(string messageKey, string contextPath)
         {
@@ -223,11 +133,8 @@ namespace Helpmebot.Services
         /// <summary>
         /// Gets a raw message key (including any context path) from the database
         /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
         /// <returns>
-        /// The list of messages.
+        /// A list of messages.
         /// </returns>
         private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
         {
@@ -242,21 +149,6 @@ namespace Helpmebot.Services
             return new List<string>();
         }
 
-        /// <summary>
-        /// The retrieve message.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="contextPath">
-        /// The context path.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         private string RetrieveMessage(string messageKey, string contextPath, IEnumerable<string> arguments)
         {
             // normalise message name to account for old messages
@@ -297,7 +189,5 @@ namespace Helpmebot.Services
 
             return builtString;
         }
-
-        #endregion
     }
 }
