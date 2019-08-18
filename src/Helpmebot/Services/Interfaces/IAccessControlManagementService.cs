@@ -2,8 +2,6 @@ namespace Helpmebot.Services.Interfaces
 {
     using Helpmebot.Model;
     using NHibernate;
-    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
-    using Stwalkerster.IrcClient.Model.Interfaces;
 
     public interface IAccessControlManagementService
     {
@@ -12,7 +10,12 @@ namespace Helpmebot.Services.Interfaces
         void SetFlagGroup(string name, string flags, ISession session);
         void DeleteFlagGroup(string name, ISession session);
 
-        void GrantFlagGroupGlobally(IUser user, FlagGroup group);
-        void RevokeFlagGroupGlobally(IUser user, FlagGroup group);
+        void GrantFlagGroupGlobally(User user, FlagGroup group, ISession session);
+        void RevokeFlagGroupGlobally(User user, FlagGroup group, ISession session);
+
+        /// <summary>
+        /// Either creates or retrieves an existing entry for a specified user mask
+        /// </summary>
+        User GetUserObject(string ircMask, ISession session);
     }
 }

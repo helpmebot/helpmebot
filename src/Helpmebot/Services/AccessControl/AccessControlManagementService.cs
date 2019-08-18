@@ -10,15 +10,17 @@ namespace Helpmebot.Services.AccessControl
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Model;
-    using Stwalkerster.IrcClient.Model.Interfaces;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class AccessControlManagementService : IAccessControlManagementService
     {
         private readonly ILogger logger;
+        private readonly IFlagService authService;
 
-        public AccessControlManagementService(ILogger logger)
+        public AccessControlManagementService(ILogger logger, IFlagService authService)
         {
             this.logger = logger;
+            this.authService = authService;
         }
 
         #region Flag groups
@@ -141,20 +143,93 @@ namespace Helpmebot.Services.AccessControl
                 this.logger.ErrorFormat(ex, "Error deleting flag group {0}", name);
                 throw new AclException("Encountered unknown error while deleting flag group.");
             }
+            
+            this.CleanUpUserEntries(session);
         }
         #endregion
 
         #region Global grants
-        public void GrantFlagGroupGlobally(IUser user, FlagGroup group)
+        public void GrantFlagGroupGlobally(User user, FlagGroup group, ISession session)
         {
-            throw new NotImplementedException();
+            this.logger.DebugFormat("Granting group {0} to {1} globally", group, user.Mask);
+
+            var existing = session.CreateCriteria<FlagGroupUser>()
+                .Add(Restrictions.Eq("User", user))
+                .Add(Restrictions.Eq("FlagGroup", group))
+                .UniqueResult<FlagGroupUser>();
+
+            if (existing == null)
+            {
+                var fgu = new FlagGroupUser {User = user, FlagGroup = group, LastModified = DateTime.UtcNow};
+                session.Save(fgu);
+                ((AccessControlAuthorisationService) this.authService).Refresh(user);
+            }
         }
 
-        public void RevokeFlagGroupGlobally(IUser user, FlagGroup group)
+        public void RevokeFlagGroupGlobally(User user, FlagGroup group, ISession session)
         {
-            throw new NotImplementedException();
+            this.logger.DebugFormat("Revoking group {0} from {1} globally", group, user.Mask);
+
+            var existing = session.CreateCriteria<FlagGroupUser>()
+                .Add(Restrictions.Eq("User", user))
+                .Add(Restrictions.Eq("FlagGroup", group))
+                .UniqueResult<FlagGroupUser>();
+
+            if (existing != null)
+            {
+                session.Delete(existing);
+                ((AccessControlAuthorisationService) this.authService).Refresh(user);
+            }
+
+            this.CleanUpUserEntries(session);
         }
+        
         #endregion
+
+        /// <summary>
+        /// Either creates or retrieves an existing entry for a specified user mask
+        /// </summary>
+        public User GetUserObject(string ircMask, ISession session)
+        {
+            string mask = null;
+            string account = null;
+            
+            if (ircMask.Contains("!") || ircMask.Contains("@")|| ircMask.Contains("*"))
+            {
+                mask = ircMask;
+            }
+            else
+            {
+                account = ircMask;
+            }
+
+            var user = session.CreateCriteria<User>()
+                .Add(Restrictions.Eq("Account", account))
+                .Add(Restrictions.Eq("Mask", mask))
+                .UniqueResult<User>();
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            user = new User
+            {
+                Mask = mask,
+                Account = account,
+                LastModified = DateTime.UtcNow
+            };
+
+            session.Save(user);
+            return user;
+        }
+        
+        // ReSharper disable once UnusedParameter.Local
+        private void CleanUpUserEntries(ISession session)
+        {
+            this.logger.Debug("Cleaned up no user unused user entries. This function is not yet implemented.");
+            // placeholder to clean up any user entries with no grants
+        }
 
         /// <summary>
         /// Applies a set of flag changes to the provided set of flags

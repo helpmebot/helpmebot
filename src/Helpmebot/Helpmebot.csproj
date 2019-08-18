@@ -82,6 +82,7 @@
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\SystemMonitoringClientService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
+    <Compile Include="Commands\ACL\AccessCommand.cs" />
     <Compile Include="Commands\ACL\FlagGroupCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />

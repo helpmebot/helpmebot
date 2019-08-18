@@ -5,6 +5,8 @@ namespace Helpmebot.Services.AccessControl
     using Castle.Core.Logging;
     using Helpmebot.Model;
     using NHibernate;
+    using NHibernate.Criterion;
+    using NHibernate.Util;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -67,6 +69,14 @@ namespace Helpmebot.Services.AccessControl
                     new List<string>());
 
             return resultantSet;
+        }
+
+        public void Refresh(User u)
+        {
+            // ensure this is from the correct session
+            u = this.session.CreateCriteria<User>().Add(Restrictions.Eq("Id", u.Id)).UniqueResult<User>();
+            
+            this.session.Refresh(u);
         }
     }
 }
