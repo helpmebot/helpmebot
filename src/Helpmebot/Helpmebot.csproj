@@ -261,6 +261,7 @@
     <Compile Include="Services\LinkerService.cs" />
     <Compile Include="Services\MediaWikiApiHelper.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
+    <Compile Include="Services\ShortUrlCacheService.cs" />
     <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\HmbUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
