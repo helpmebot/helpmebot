@@ -21,33 +21,10 @@
 namespace Helpmebot.ExtensionMethods
 {
     using System;
-    using System.IO;
     using System.Net;
 
-    /// <summary>
-    /// The string extensions.
-    /// </summary>
     public static class StringExtensions
     {
-        /// <summary>
-        /// The to stream.
-        /// </summary>
-        /// <param name="data">
-        /// The string.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Stream"/>.
-        /// </returns>
-        public static Stream ToStream(this string data)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(data);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
-        }
-        
         public static IPAddress GetIpAddressFromHex(this string input)
         {
             var ip = new byte[4];

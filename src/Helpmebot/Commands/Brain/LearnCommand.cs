@@ -1,6 +1,7 @@
 namespace Helpmebot.Commands.Brain
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
@@ -58,7 +59,7 @@ namespace Helpmebot.Commands.Brain
             }
 
             var keywordName = args.PopFromFront();
-            this.keywordService.Create(keywordName, args.Implode(), action);
+            this.keywordService.Create(keywordName, string.Join(" ", Enumerable.ToArray(args)), action);
   
             yield return new CommandResponse
             {
