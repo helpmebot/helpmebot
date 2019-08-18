@@ -9,7 +9,6 @@
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
-    using Microsoft.Practices.ServiceLocation;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -52,10 +51,6 @@
 
             // post-configuration, pre-initialisation actions
             ConfigureCertificateValidation(container);
-            
-            // set up the service locator
-            // TODO: remove me
-            ServiceLocator.SetLocatorProvider(() => new WindsorServiceLocator(container));
             
             // install into the container
             container.Install(new MainInstaller());
