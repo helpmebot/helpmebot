@@ -94,6 +94,7 @@
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
+    <Compile Include="Commands\WikiInformation\ContribsCommand.cs" />
     <Compile Include="Commands\WikiInformation\PageInfoCommand.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="Exceptions\AclException.cs" />
@@ -345,7 +346,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.8.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.8.23\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.8.25\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
