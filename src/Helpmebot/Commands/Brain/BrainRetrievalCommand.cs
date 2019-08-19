@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Brain
 {
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Services.Interfaces;
@@ -52,7 +53,7 @@ namespace Helpmebot.Commands.Brain
             for (var i = 0; i < this.Arguments.Count; i++)
             {
                 dict.Add(i.ToString(CultureInfo.InvariantCulture), this.Arguments[i]);
-                dict.Add(i + "*", string.Join(" ", this.Arguments, i, this.Arguments.Count - i));
+                dict.Add(i + "*", string.Join(" ", this.Arguments.Skip(i).Take(this.Arguments.Count - i)));
             }
 
             var wordResponse = keyword.Response.FormatWith(dict);
