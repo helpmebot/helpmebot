@@ -94,8 +94,10 @@
     <Compile Include="Commands\Information\GeolocateCommand.cs" />
     <Compile Include="Commands\Information\WhoisCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
+    <Compile Include="Commands\WikiInformation\DraftStatusCommand.cs" />
     <Compile Include="Commands\WikiInformation\ContribsCommand.cs" />
     <Compile Include="Commands\WikiInformation\PageInfoCommand.cs" />
+    <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="Exceptions\AclException.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
@@ -182,6 +184,8 @@
     <Compile Include="Model\CategoryItem.cs" />
     <Compile Include="Model\CategoryWatcherChannel.cs" />
     <Compile Include="Model\CrossChannel.cs" />
+    <Compile Include="Model\DraftStatus.cs" />
+    <Compile Include="Model\DraftStatusCode.cs" />
     <Compile Include="Model\FlagAccessLogEntry.cs" />
     <Compile Include="Model\Flags.cs" />
     <Compile Include="Model\Interfaces\ICommandParserEntity.cs" />
@@ -235,6 +239,7 @@
     <Compile Include="Services\CategoryWatcherHelperService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
     <Compile Include="Services\CrossChannelService.cs" />
+    <Compile Include="Services\DraftStatusService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeolocationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\HelpSyncService.cs" />
@@ -243,6 +248,7 @@
     <Compile Include="Services\Interfaces\IBlockMonitoringService.cs" />
     <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
+    <Compile Include="Services\Interfaces\IDraftStatusService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
@@ -345,8 +351,8 @@
       <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.1.47-beta\lib\net45\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=2.8.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.2.8.25\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.3.0.29\lib\net45\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.1.0.0, Culture=neutral, PublicKeyToken=null">
@@ -418,6 +424,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="afc-data.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="configuration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

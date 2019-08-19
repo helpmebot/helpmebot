@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
+    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Newtonsoft.Json;
     using NHibernate;
@@ -22,6 +23,7 @@ namespace Helpmebot.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly DraftStatusService draftStatusService;
 
         public AfcCountCommand(
             string commandSource,
@@ -32,7 +34,8 @@ namespace Helpmebot.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            DraftStatusService draftStatusService) : base(
             commandSource,
             user,
             arguments,
@@ -43,18 +46,16 @@ namespace Helpmebot.Commands.WikiInformation
         {
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.draftStatusService = draftStatusService;
         }
 
         [Help("", "Returns the number of AfC submissions awaiting review")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var categoryName = "Pending AfC submissions";
-            
-            // force this into the default
             var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(string.Empty);
-            
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-            var categorySize = mediaWikiApi.GetCategorySize(categoryName);
+            
+            var categorySize = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
 
             string ts;
             var pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out ts);
@@ -69,8 +70,7 @@ namespace Helpmebot.Commands.WikiInformation
                 new CommandResponse
                 {
                     Message = string.Format(
-                        "[[Category:{0}]] has {1} items - {2}",
-                        categoryName,
+                        "There are {1} drafts pending review - {2}",
                         categorySize,
                         mapping[item])
                 }
