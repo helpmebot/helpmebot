@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "For when a simple trout just isn't enough...")]
+        [Help(new[] {"", "<user>"}, "For when a simple trout just isn't enough...")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdWhale");

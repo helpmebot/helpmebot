@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Probably overkill.")]
+        [Help(new[] {"", "<user>"}, "Probably overkill.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdNuke");

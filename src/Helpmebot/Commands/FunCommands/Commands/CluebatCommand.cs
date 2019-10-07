@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Prepares for re-education")]
+        [Help(new[] {"", "<user>"}, "Prepares for re-education")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("cmdCluebat");

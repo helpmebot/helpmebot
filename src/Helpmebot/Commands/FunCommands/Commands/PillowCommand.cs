@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "That thing you rest your head on? Yeah, that.")]
+        [Help(new[] {"", "<user>"}, "That thing you rest your head on? Yeah, that.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdPillow");

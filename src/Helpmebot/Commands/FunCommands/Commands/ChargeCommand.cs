@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Charges up some weaponry")]
+        [Help(new[] {"", "<user>"}, "Charges up some weaponry")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("cmdChargeParam");

@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Caution: burying bodies is left to the end user.")]
+        [Help(new[] {"", "<user>"}, "Caution: burying bodies is left to the end user.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdKill");

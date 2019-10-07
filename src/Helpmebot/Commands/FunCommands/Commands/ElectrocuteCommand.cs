@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "High voltages tend to be dangerous...")]
+        [Help(new[] {"", "<user>"}, "High voltages tend to be dangerous...")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdElectrocute");
