@@ -86,7 +86,7 @@ namespace Helpmebot.Commands.WikiInformation
                 var userGroups = string.Empty;
                 DateTime? registrationDate = DateTime.MinValue;
                 var ageYears = 0;
-                TimeSpan ageSpan;
+                TimeSpan ageSpan = TimeSpan.Zero;
                 var editRate = 0d;
 
                 var isIp = true;
