@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.WikiInformation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Web;
     using Castle.Core.Logging;
     using Helpmebot.Exceptions;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Exceptions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -63,18 +65,10 @@ namespace Helpmebot.Commands.WikiInformation
             {
                 username = this.User.Nickname;
             }
-
+            
             string message;
             try
             {
-                var editCount = mediaWikiApi.GetEditCount(username);
-                var userGroups = string.Join(", ", mediaWikiApi.GetUserGroups(username).Where(x => x != "*"));
-                var registrationDate = mediaWikiApi.GetRegistrationDate(username);
-
-                int ageYears;
-                TimeSpan ageSpan;
-                registrationDate.Value.CalculateDuration(out ageYears, out ageSpan);
-
                 var userPage = this.linkerService.ConvertWikilinkToUrl(
                     this.CommandSource,
                     string.Format("User:{0}", username));
@@ -88,6 +82,27 @@ namespace Helpmebot.Commands.WikiInformation
                     this.CommandSource,
                     string.Format("meta:Special:CentralAuth/{0}", username));
 
+                var editCount = 0;
+                var userGroups = string.Empty;
+                DateTime? registrationDate = DateTime.MinValue;
+                var ageYears = 0;
+                TimeSpan ageSpan;
+                var editRate = 0d;
+
+                var isIp = true;
+
+                // IP addresses aren't valid for username lookups
+                IPAddress ip;
+                if (!IPAddress.TryParse(username, out ip))
+                {
+                    isIp = false;
+                    editCount = mediaWikiApi.GetEditCount(username);
+                    userGroups = string.Join(", ", mediaWikiApi.GetUserGroups(username).Where(x => x != "*"));
+                    registrationDate = mediaWikiApi.GetRegistrationDate(username);
+                    registrationDate.Value.CalculateDuration(out ageYears, out ageSpan);
+                    editRate = editCount / (DateTime.Now - registrationDate.Value).TotalDays;
+                }
+
                 var userBlockLogBuilder = new UriBuilder(
                     this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Log"));
                 var queryParts = HttpUtility.ParseQueryString(userBlockLogBuilder.Query);
@@ -96,11 +111,17 @@ namespace Helpmebot.Commands.WikiInformation
                 userBlockLogBuilder.Query = queryParts.ToString();
                 var userBlockLog = userBlockLogBuilder.Uri.ToString();
 
-                var editRate = editCount / (DateTime.Now - registrationDate.Value).TotalDays;
                 var isBlocked = mediaWikiApi.GetBlockInformation(username).Any();
 
+                var format =
+                    "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}";
+                if (isIp)
+                {
+                    format = "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} {9}";
+                }
+
                 message = string.Format(
-                    "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}",
+                    format,
                     this.urlShortener.Shorten(userPage),
                     this.urlShortener.Shorten(userTalk),
                     this.urlShortener.Shorten(userContributions),
@@ -113,6 +134,15 @@ namespace Helpmebot.Commands.WikiInformation
                     isBlocked ? "| BLOCKED" : string.Empty,
                     ageSpan,
                     this.urlShortener.Shorten(centralAuth));
+            }
+            catch (GeneralMediaWikiApiException ex) 
+            {
+                if (ex.Message == "Missing user")
+                {
+                    return new[] {new CommandResponse {Message = "The specified user does not exist."}};
+                }
+
+                throw;
             }
             catch (MediawikiApiException ex)
             {
