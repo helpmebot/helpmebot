@@ -45,7 +45,13 @@ namespace Helpmebot.Commands.Information
         protected override IEnumerable<CommandResponse> Execute()
         {
             var ipAddress = this.GetIPAddress();
-
+            if (ipAddress == null)
+            {
+                yield return new CommandResponse { Message = "Unable to find IP address from argument." };
+                yield break;
+            }
+            
+            
             var location = this.geolocationService.GetLocation(ipAddress);
 
             yield return new CommandResponse

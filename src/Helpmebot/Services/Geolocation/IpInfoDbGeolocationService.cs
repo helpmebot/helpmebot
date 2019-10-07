@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Services.Geolocation
 {
+    using System;
     using System.Collections.Specialized;
     using System.Net;
     using System.Xml;
@@ -50,6 +51,11 @@ namespace Helpmebot.Services.Geolocation
                 return new GeolocateResult();
             }
 
+            if (address == null)
+            {
+                throw new ArgumentNullException("address");
+            }
+            
             var queryParameters = new NameValueCollection
             {
                 {"key", this.configuration.IpInfoDbApiKey},

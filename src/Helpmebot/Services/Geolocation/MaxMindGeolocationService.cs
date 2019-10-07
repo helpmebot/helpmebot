@@ -91,6 +91,11 @@ namespace Helpmebot.Services.Geolocation
                 return new GeolocateResult();
             }
 
+            if (address == null)
+            {
+                throw new ArgumentNullException("address");
+            }
+
             lock (this.reader)
             {
                 CityResponse response;
