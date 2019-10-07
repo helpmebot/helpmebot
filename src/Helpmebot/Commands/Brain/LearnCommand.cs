@@ -42,7 +42,7 @@ namespace Helpmebot.Commands.Brain
 
         [RequiredArguments(2)]
         [Help(new[]{"<keyword> <message>", "@action <keyword> <message>"}, 
-            new[]{"Creates a new learnt command invoked by keyword to respond with the provided message",
+            new[]{"Creates a new learnt command invoked by <keyword> to respond with the provided message",
                 "Optionally sends message as a CTCP ACTION (aka a /me command) if @action is provided before the first parameter."})]
         protected override IEnumerable<CommandResponse> Execute()
         {

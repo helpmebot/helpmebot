@@ -270,6 +270,11 @@ namespace Helpmebot.Services
                 }
             }
 
+            pageBuilder.AppendLine();
+            pageBuilder.AppendLine(
+                "{{#ifexist:" + this.docConfig.HumanDocumentationPrefix + canonicalName + "|{{"
+                + this.docConfig.HumanDocumentationPrefix + canonicalName + "}}|}}");
+
             pageName = this.docConfig.DocumentationPrefix + "Command/" + canonicalName;
             return pageBuilder.ToString();
         }
