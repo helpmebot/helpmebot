@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Gives a user a cookie.")]
+        [Help(new[] {"", "<user>"}, "Gives a user a cookie.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("cmdCookie");

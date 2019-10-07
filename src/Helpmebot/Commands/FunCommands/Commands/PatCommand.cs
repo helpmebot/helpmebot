@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Pats a user")]
+        [Help(new[] {"", "<user>"}, "Pats a user")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("cmdPat");

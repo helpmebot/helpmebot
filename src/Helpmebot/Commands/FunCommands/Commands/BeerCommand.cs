@@ -15,11 +15,29 @@ namespace Helpmebot.Commands.FunCommands.Commands
     [CommandFlag(Flags.Fun)]
     public class BeerCommand : TargetedFunCommandBase
     {
-        public BeerCommand(string commandSource, IUser user, IList<string> arguments, ILogger logger, IFlagService flagService, IConfigurationProvider configurationProvider, IIrcClient client, ISession databaseSession, IMessageService messageService) : base(commandSource, user, arguments, logger, flagService, configurationProvider, client, databaseSession, messageService)
+        public BeerCommand(
+            string commandSource,
+            IUser user,
+            IList<string> arguments,
+            ILogger logger,
+            IFlagService flagService,
+            IConfigurationProvider configurationProvider,
+            IIrcClient client,
+            ISession databaseSession,
+            IMessageService messageService) : base(
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
+            configurationProvider,
+            client,
+            databaseSession,
+            messageService)
         {
         }
 
-        [Help("", "Gives a user a beer.")]
+        [Help(new[] {"", "<user>"}, "Gives a user a beer.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("cmdBeer");

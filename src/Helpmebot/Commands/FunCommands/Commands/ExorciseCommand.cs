@@ -19,7 +19,7 @@ namespace Helpmebot.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Purges demons and other system background services")]
+        [Help(new[] {"", "<user>"}, "Purges demons and other system background services")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("CmdExorcise");
