@@ -9,6 +9,7 @@ namespace Helpmebot.Commands.ACC
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -20,6 +21,7 @@ namespace Helpmebot.Commands.ACC
 
     [CommandFlag(Flags.Acc)]
     [CommandInvocation("acccount")]
+    [HelpCategory("ACC")]
     public class AccCountCommand : CommandBase
     {
         private readonly IMessageService messageService;

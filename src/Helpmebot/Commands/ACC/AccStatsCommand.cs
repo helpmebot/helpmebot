@@ -7,6 +7,7 @@ namespace Helpmebot.Commands.ACC
     using System.Net;
     using System.Xml.XPath;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -20,6 +21,7 @@ namespace Helpmebot.Commands.ACC
 
     [CommandInvocation("accstats")]
     [CommandFlag(Flags.Acc)]
+    [HelpCategory("ACC")]
     public class AccStatsCommand : CommandBase
     {
         private readonly IMessageService messageService;

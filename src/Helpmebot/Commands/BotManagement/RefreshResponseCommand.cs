@@ -37,6 +37,7 @@ namespace Helpmebot.Commands.BotManagement
             this.messageService = messageService;
         }
 
+        [Help("", "Refreshes the NHibernate message cache")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             this.messageService.RefreshResponseRepository();

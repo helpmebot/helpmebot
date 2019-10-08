@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Diagnostics
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -13,6 +14,7 @@ namespace Helpmebot.Commands.Diagnostics
 
     [CommandFlag(Flag.Owner)]
     [CommandInvocation("raw")]
+    [HelpCategory("Diagnostics")]
     public class RawCommand : CommandBase
     {
         public RawCommand(

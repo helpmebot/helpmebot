@@ -47,6 +47,7 @@ namespace Helpmebot.Commands.BotManagement
             this.messageService = messageService;
         }
 
+        [Help(new[]{"","<channel>"}, new[]{"Leaves the current channel", "Leaves the specified channel"})]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var channel = this.CommandSource;

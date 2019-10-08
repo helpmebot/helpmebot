@@ -208,7 +208,7 @@ namespace Helpmebot.Services
                 BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
 
             var pageBuilder = new StringBuilder();
-            pageBuilder.AppendFormat("=== {0} ===", canonicalName).AppendLine();
+            pageBuilder.AppendFormat("== {0} ==", canonicalName).AppendLine();
             pageBuilder.AppendFormat("* Requires flag: {0}", mainFlags).AppendLine();
 
             if (aliases.Count > 0)

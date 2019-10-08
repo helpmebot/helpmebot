@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.ACC
     using System.Collections.Specialized;
     using System.IO;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.ACC
 
     [CommandInvocation("accdeploy")]
     [CommandFlag(Flags.Acc)]
+    [HelpCategory("ACC")]
     public class AccDeployCommand : CommandBase
     {
         private readonly IMessageService messageService;

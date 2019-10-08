@@ -44,6 +44,7 @@ namespace Helpmebot.Commands.BotManagement
         }
 
         [RequiredArguments(1)]
+        [Help("<channel>", "Joins the specified channel")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var channelName = this.Arguments.First();
