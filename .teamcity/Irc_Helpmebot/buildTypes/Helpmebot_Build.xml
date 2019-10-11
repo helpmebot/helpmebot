@@ -15,6 +15,15 @@
     </vcs-settings>
     <requirements />
     <build-triggers />
+    <build-extensions>
+      <extension id="phabricator" type="phabricator">
+        <parameters>
+          <param name="tcphab.conduitToken" value="api-ikmsmdgvnk5dqv47p47lvd4qhc2f" />
+          <param name="tcphab.pathToArc" value="/opt/phabricator/arcanist/bin/arc" />
+          <param name="tcphab.phabricatorUrl" value="https://phabricator.stwalkerster.co.uk/" />
+        </parameters>
+      </extension>
+    </build-extensions>
     <cleanup />
   </settings>
 </build-type>
