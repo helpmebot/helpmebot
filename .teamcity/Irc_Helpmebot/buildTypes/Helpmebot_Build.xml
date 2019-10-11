@@ -4,6 +4,7 @@
   <description />
   <settings ref="DotNetProject">
     <disabled-settings>
+      <setting-ref ref="BUILD_EXT_4" />
       <setting-ref ref="phabricator" />
     </disabled-settings>
     <parameters>
