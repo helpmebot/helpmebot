@@ -7,8 +7,7 @@
   <param name="branch" value="refs/heads/master" />
   <param name="ignoreKnownHosts" value="true" />
   <param name="submoduleCheckout" value="CHECKOUT" />
-  <param name="teamcity:branchSpec"><![CDATA[refs/heads/*
-D]]></param>
+  <param name="teamcity:branchSpec" value="refs/heads/*" />
   <param name="teamcitySshKey" value="TeamCity key" />
   <param name="url" value="ssh://git@phabricator.stwalkerster.co.uk/diffusion/HMB/helpmebot.git" />
   <param name="useAlternates" value="true" />
