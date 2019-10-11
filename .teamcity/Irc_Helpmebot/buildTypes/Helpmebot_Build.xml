@@ -3,6 +3,9 @@
   <name>Helpmebot</name>
   <description />
   <settings ref="DotNetProject">
+    <disabled-settings>
+      <setting-ref ref="phabricator" />
+    </disabled-settings>
     <parameters>
       <param name="nunitRunner" value="3.10.0" />
       <param name="pathPrefix" value="src/" />
