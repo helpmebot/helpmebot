@@ -143,7 +143,11 @@ namespace Helpmebot.Model.ModeMonitoring
                     case 'j':
                     case 'l':
                     case 'k':
-                        modeParameters.RemoveAt(0);
+                        if (adding)
+                        {
+                            modeParameters.RemoveAt(0);
+                        }
+
                         break;
                 }
             }
