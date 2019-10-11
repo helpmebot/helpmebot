@@ -23,7 +23,7 @@ namespace Helpmebot.Model.ModeMonitoring
 
     using FluentNHibernate.Conventions;
 
-    internal class ModeChanges
+    public class ModeChanges
     {
         public ModeChanges()
         {
