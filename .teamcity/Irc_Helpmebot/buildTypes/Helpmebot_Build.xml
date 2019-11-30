@@ -13,20 +13,7 @@
       <param name="solutionName" value="Helpmebot" />
       <param name="version" value="7.0" />
     </parameters>
-    <build-runners>
-      <runner id="RUNNER_38" name="" type="sonar-plugin">
-        <parameters>
-          <param name="additionalParameters" value="-e" />
-          <param name="sonarProjectKey" value="%teamcity.project.id%" />
-          <param name="sonarProjectName" value="%system.teamcity.projectName%" />
-          <param name="sonarProjectSources" value="src" />
-          <param name="sonarProjectVersion" value="%build.number%" />
-          <param name="sonarServer" value="78047522-f9bf-4154-944d-0f69f71361d8" />
-          <param name="teamcity.step.mode" value="default" />
-          <param name="teamcity.tool.sonarquberunner" value="%teamcity.tool.sonar-qube-scanner.3.0.3.778-scanner%" />
-        </parameters>
-      </runner>
-    </build-runners>
+    <build-runners />
     <vcs-settings>
       <vcs-entry-ref root-id="Helpmebot_HMBGithub" />
     </vcs-settings>
