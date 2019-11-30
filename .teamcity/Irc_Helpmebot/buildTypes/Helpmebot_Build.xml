@@ -23,7 +23,7 @@
           <param name="sonarProjectVersion" value="%build.number%" />
           <param name="sonarServer" value="78047522-f9bf-4154-944d-0f69f71361d8" />
           <param name="teamcity.step.mode" value="default" />
-          <param name="teamcity.tool.sonarquberunner" value="%teamcity.tool.sonar-qube-scanner.DEFAULT%" />
+          <param name="teamcity.tool.sonarquberunner" value="%teamcity.tool.sonar-qube-scanner.3.0.3.778-scanner%" />
         </parameters>
       </runner>
     </build-runners>
