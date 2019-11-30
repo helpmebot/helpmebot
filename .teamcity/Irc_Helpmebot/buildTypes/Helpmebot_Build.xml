@@ -16,6 +16,7 @@
     <build-runners>
       <runner id="RUNNER_38" name="" type="sonar-plugin">
         <parameters>
+          <param name="additionalParameters" value="-e" />
           <param name="sonarProjectKey" value="%teamcity.project.id%" />
           <param name="sonarProjectName" value="%system.teamcity.projectName%" />
           <param name="sonarProjectSources" value="src" />
