@@ -11,6 +11,7 @@ namespace Helpmebot.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Exceptions;
     using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -59,9 +60,19 @@ namespace Helpmebot.Commands.WikiInformation
 
             var user = this.OriginalArguments;
             var contribsLink = this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Contribs/" + user);
+
+            var exists = true;
+            try
+            {
+                mediaWikiApi.GetRegistrationDate(user);
+            }
+            catch (MissingUserException)
+            {
+                exists = false;
+            }
             
             List<Contribution> contribs = mediaWikiApi.GetContributions(user, 1).ToList();
-
+            
             var lastContrib = "";
             if (contribs.Any())
             {
@@ -73,6 +84,11 @@ namespace Helpmebot.Commands.WikiInformation
                     last.Comment,
                     this.urlShorteningService.Shorten(
                         this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Diff/" + last.RevId)));
+            }
+
+            if (!exists)
+            {
+                lastContrib = " However, this user does not appear to exist on the local wiki.";
             }
             
             var messageBase = "The full list of contributions for [[User:{0}]] can be found at {1}.{2}";
