@@ -76,6 +76,6 @@ namespace Helpmebot.Services.UrlShortening
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        protected abstract string GetShortUrl(string longUrl);
+        protected internal abstract string GetShortUrl(string longUrl);
     }
 }

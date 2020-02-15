@@ -269,9 +269,9 @@
     <Compile Include="Services\MediaWikiApiHelper.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\ShortUrlCacheService.cs" />
-    <Compile Include="Services\UrlShortening\GooglUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\HmbUrlShorteningService.cs" />
     <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
+    <Compile Include="Services\UrlShortening\WikimediaUrlShorteningService.cs" />
     <Compile Include="Services\WhoisService.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
@@ -352,7 +352,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.3.2.32\lib\net461\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.3.2.33\lib\net461\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.2.0.0, Culture=neutral, PublicKeyToken=null">

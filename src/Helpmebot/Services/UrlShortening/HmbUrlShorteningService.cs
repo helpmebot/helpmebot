@@ -66,7 +66,7 @@ namespace Helpmebot.Services.UrlShortening
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        protected override string GetShortUrl(string longUrl)
+        protected internal override string GetShortUrl(string longUrl)
         {
             var wrq = (HttpWebRequest) WebRequest.Create(
                 "https://hmb.im/shorten.php?url=" + HttpUtility.UrlEncode(longUrl));
