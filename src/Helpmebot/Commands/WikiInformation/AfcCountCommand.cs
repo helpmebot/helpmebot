@@ -5,7 +5,6 @@ namespace Helpmebot.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Services;
     using Helpmebot.Services.Interfaces;
     using Newtonsoft.Json;
     using NHibernate;
@@ -23,7 +22,7 @@ namespace Helpmebot.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
-        private readonly DraftStatusService draftStatusService;
+        private readonly IDraftStatusService draftStatusService;
 
         public AfcCountCommand(
             string commandSource,
@@ -35,7 +34,7 @@ namespace Helpmebot.Commands.WikiInformation
             IIrcClient client,
             ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
-            DraftStatusService draftStatusService) : base(
+            IDraftStatusService draftStatusService) : base(
             commandSource,
             user,
             arguments,
@@ -70,7 +69,7 @@ namespace Helpmebot.Commands.WikiInformation
                 new CommandResponse
                 {
                     Message = string.Format(
-                        "There are {1} drafts pending review - {2}",
+                        "There are {0} drafts pending review - {1}",
                         categorySize,
                         mapping[item])
                 }
