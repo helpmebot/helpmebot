@@ -53,6 +53,9 @@
 
         protected override void OnStart()
         {
+            this.ircClient.WaitOnRegistration();
+            Thread.Sleep(1000);
+
             this.TimerOnElapsed(null, null);
         }
 
