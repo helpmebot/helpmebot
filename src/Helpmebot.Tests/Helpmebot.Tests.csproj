@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.2.47\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.2.48\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

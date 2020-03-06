@@ -348,7 +348,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.CommandLib, Version=13.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.4.57\lib\net461\Stwalkerster.Bot.CommandLib.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.4.59\lib\net461\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null">
@@ -356,7 +356,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.2.47\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.2.48\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
