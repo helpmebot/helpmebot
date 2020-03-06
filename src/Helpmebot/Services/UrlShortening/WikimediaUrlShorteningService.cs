@@ -73,6 +73,7 @@ namespace Helpmebot.Services.UrlShortening
             }
             catch (GeneralMediaWikiApiException ex)
             {
+                this.logger.Debug(ex.ApiResponse);
                 this.logger.ErrorFormat(ex, "Error shortening url {0} with WMF shortener", longUrl);
                 return this.secondaryShortener.GetShortUrl(longUrl);
             }
