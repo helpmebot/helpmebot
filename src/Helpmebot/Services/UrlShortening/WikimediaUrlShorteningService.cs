@@ -68,6 +68,7 @@ namespace Helpmebot.Services.UrlShortening
             try
             {
                 mediaWikiApi = this.apiTypedFactory.Create<IMediaWikiApi>(this.mediaWikiConfig);
+                mediaWikiApi.Login();
 
                 return mediaWikiApi.ShortenUrl(longUrl);
             }
