@@ -83,6 +83,7 @@ namespace Helpmebot.Commands.ACC
                 nav.SelectSingleNode("//status/@checkuser").Value,
                 nav.SelectSingleNode("//status/@hold").Value,
                 nav.SelectSingleNode("//status/@proxy").Value,
+                nav.SelectSingleNode("//status/@steward").Value,
 
                 nav.SelectSingleNode("//status/@bans").Value,
 
