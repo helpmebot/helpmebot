@@ -91,7 +91,7 @@ namespace Helpmebot.Commands.WikiInformation
                 lastContrib = " However, this user does not appear to exist on the local wiki.";
             }
             
-            var messageBase = "The full list of contributions for [[User:{0}]] can be found at {1}.{2}";
+            var messageBase = "The full list of contributions for [[User:{0}]] can be found at {1} .{2}";
             
             return new[]
             {
