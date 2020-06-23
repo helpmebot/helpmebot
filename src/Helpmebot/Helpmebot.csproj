@@ -73,7 +73,9 @@
     </Compile>
     <Compile Include="Attributes\HelpCategoryAttribute.cs" />
     <Compile Include="Background\CategoryWatcherBackgroundService.cs" />
+    <Compile Include="Background\EirVoiceMonitorService.cs" />
     <Compile Include="Background\Interfaces\ICategoryWatcherBackgroundService.cs" />
+    <Compile Include="Background\Interfaces\IEirVoiceMonitorService.cs" />
     <Compile Include="Background\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
