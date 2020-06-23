@@ -21,14 +21,14 @@ namespace Helpmebot.Model.ModeMonitoring
     using System.Collections.Generic;
     using System.Linq;
 
-    using FluentNHibernate.Conventions;
-
     public class ModeChanges
     {
         public ModeChanges()
         {
             this.Ops = new List<string>();
             this.Deops = new List<string>();
+            this.Devoices = new List<string>();
+            this.Voices = new List<string>();
             this.Bans = new List<string>();
             this.Unbans = new List<string>();
             this.Quiets = new List<string>();
@@ -40,6 +40,8 @@ namespace Helpmebot.Model.ModeMonitoring
         public List<string> Bans { get; private set; }
 
         public List<string> Deops { get; private set; }
+        
+        public List<string> Devoices { get; private set; }
 
         public List<string> Exempts { get; private set; }
 
@@ -58,6 +60,7 @@ namespace Helpmebot.Model.ModeMonitoring
         public List<string> Unexempts { get; private set; }
 
         public List<string> Unquiets { get; private set; }
+        public List<string> Voices { get; private set; }
 
         public static ModeChanges FromChangeList(IEnumerable<string> rawChangeList)
         {
@@ -90,6 +93,18 @@ namespace Helpmebot.Model.ModeMonitoring
                             changes.Deops.Add(op);
                         }
 
+                        break;
+                    case 'v':
+                        var voice = modeParameters.First();
+                        modeParameters.RemoveAt(0);
+                        if (adding)
+                        {
+                            changes.Voices.Add(voice);
+                        }
+                        else
+                        {
+                            changes.Devoices.Add(voice);
+                        }
                         break;
                     case 'b':
                         var ban = modeParameters.First();
@@ -165,6 +180,8 @@ namespace Helpmebot.Model.ModeMonitoring
             if (this.Unbans.Any()) return false;
             if (this.Unexempts.Any()) return false;
             if (this.Unquiets.Any()) return false;
+            if (this.Voices.Any()) return false;
+            if (this.Devoices.Any()) return false;
 
             if (this.Moderated.HasValue) return false;
             if (this.ReducedModeration.HasValue) return false;
