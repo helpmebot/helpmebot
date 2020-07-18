@@ -2,8 +2,12 @@
 {
     using System;
     using System.Data;
+    using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Net;
+    using System.Reflection;
+    using System.Runtime.Versioning;
     using System.Threading;
     using Castle.Core.Logging;
     using Castle.Windsor;
@@ -11,11 +15,23 @@
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
+    using Prometheus;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Services;
+    using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
     public class Launch : IApplication
     {
+        private static readonly Gauge VersionInfo = Metrics.CreateGauge(
+            "helpmebot_build_info",
+            "Build info",
+            new GaugeConfiguration
+            {
+                LabelNames = new[] {"assembly", "irclib", "commandlib", "mediawikilib", "runtime", "os", "targetFramework"}
+            });
+        
         private readonly ILogger logger;
         private readonly IIrcClient client;
         private readonly ICommandParser commandParser;
@@ -54,6 +70,28 @@
             
             // install into the container
             container.Install(new MainInstaller());
+
+            MetricServer metricsServer;
+            var botConfiguration = container.Resolve<BotConfiguration>();
+            if (botConfiguration.PrometheusMetricsPort.HasValue)
+            {
+                metricsServer = new MetricServer(botConfiguration.PrometheusMetricsPort.Value);
+                metricsServer.Start();
+                
+                VersionInfo.WithLabels(
+                        FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion,
+                        FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(IrcClient)).Location)
+                            .FileVersion,
+                        FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(CommandBase)).Location)
+                            .FileVersion,
+                        FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(MediaWikiApi)).Location)
+                            .FileVersion,
+                        Environment.Version.ToString(),
+                        Environment.OSVersion.ToString(),
+                        ((TargetFrameworkAttribute)Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute),false).FirstOrDefault())?.FrameworkDisplayName ?? "Unknown"        
+                    )
+                    .Set(1);
+            }
 
             var application = container.Resolve<IApplication>();
             application.Run();

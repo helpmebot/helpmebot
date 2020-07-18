@@ -31,6 +31,7 @@ namespace Helpmebot.Services
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
+    using Prometheus;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
@@ -40,6 +41,14 @@ namespace Helpmebot.Services
     /// </summary>
     public class JoinMessageService : IJoinMessageService
     {
+        private static readonly Counter WelcomerActivations = Metrics.CreateCounter(
+            "helpmebot_welcomer_triggers_total",
+            "Number of welcomer activations",
+            new CounterConfiguration
+            {
+                LabelNames = new[] {"channel"}
+            });
+        
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
         private readonly IMessageService messageService;
@@ -150,6 +159,7 @@ namespace Helpmebot.Services
                 channel,
                 new[] {networkUser.Nickname, channel});
 
+            WelcomerActivations.WithLabels(channel).Inc();
             client.SendMessage(channel, welcomeMessage);
 
             this.session.SaveOrUpdate(

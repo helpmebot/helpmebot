@@ -9,10 +9,19 @@
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
+    using Prometheus;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class CategoryWatcherHelperService : ICategoryWatcherHelperService
     {
+        private static readonly Gauge CategoryWatcherCount = Metrics.CreateGauge(
+            "helpmebot_catwatcher_pages",
+            "The number of pages in the catwatcher category",
+            new GaugeConfiguration
+            {
+                LabelNames = new[] {"flag"}
+            });
+        
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
         private readonly IMessageService messageService;
@@ -170,6 +179,8 @@
             {
                 pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();
                 pagesInCategory.RemoveAll(x => this.ignoredPages.Contains(x));
+
+                CategoryWatcherCount.WithLabels(category.Keyword).Set(pagesInCategory.Count);
             }
             catch (Exception e)
             {

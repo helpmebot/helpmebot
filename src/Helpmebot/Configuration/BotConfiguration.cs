@@ -45,5 +45,6 @@
         public string MaxMindDatabasePath { get; set; }
         public string AccDeploymentPassword { get; set; }
         public int? SystemMonitoringPort { get; set; }
+        public int? PrometheusMetricsPort { get; set; }
     }
 }

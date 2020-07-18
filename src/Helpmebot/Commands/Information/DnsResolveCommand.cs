@@ -37,7 +37,8 @@ namespace Helpmebot.Commands.Information
             configurationProvider,
             client)
         {
-            this.dnsClient = new LookupClient {UseCache = false, EnableAuditTrail = true};
+            var options = new LookupClientOptions {UseCache = false, EnableAuditTrail = true};
+            this.dnsClient = new LookupClient(options);
         }
 
         [RequiredArguments(1)]
