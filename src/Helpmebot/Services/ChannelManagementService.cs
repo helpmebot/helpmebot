@@ -44,10 +44,17 @@
 
                 if (channel == null)
                 {
+                    
+                    var mediaWikiSite = localSession.CreateCriteria<MediaWikiSite>()
+                        .Add(Restrictions.Eq("IsDefault", true))
+                        .List<MediaWikiSite>()
+                        .FirstOrDefault();
+                    
                     channel = new Channel
                     {
                         Name = channelName,
-                        Enabled = true
+                        Enabled = true,
+                        BaseWiki = mediaWikiSite
                     };
                 }
 
