@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask" />
   <PropertyGroup>
@@ -75,8 +75,10 @@
     <Compile Include="Attributes\HelpCategoryAttribute.cs" />
     <Compile Include="Background\CategoryWatcherBackgroundService.cs" />
     <Compile Include="Background\EirVoiceMonitorService.cs" />
+    <Compile Include="Background\HelpeeManagementService.cs" />
     <Compile Include="Background\Interfaces\ICategoryWatcherBackgroundService.cs" />
     <Compile Include="Background\Interfaces\IEirVoiceMonitorService.cs" />
+    <Compile Include="Background\Interfaces\IHelpeeManagementService.cs" />
     <Compile Include="Background\Interfaces\IModeMonitoringService.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Commands\ACL\AccessCommand.cs" />
     <Compile Include="Commands\ACL\FlagGroupCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
+    <Compile Include="Commands\ChannelManagement\IdleHelpeesCommand.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
     <Compile Include="Commands\Configuration\WelcomerConfigurationCommand.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Commands\WikiInformation\PageInfoCommand.cs" />
     <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
+    <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
     <Compile Include="Exceptions\AclException.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
     <Compile Include="Commands\ACC\AccDeployCommand.cs" />
@@ -376,7 +380,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=8.3.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.3.59\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.3.62\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">

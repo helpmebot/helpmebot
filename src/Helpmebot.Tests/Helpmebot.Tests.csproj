@@ -58,16 +58,16 @@
       <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Prometheus.NetStandard, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
-      <HintPath>..\packages\prometheus-net.3.6.0\lib\net461\Prometheus.NetStandard.dll</HintPath>
+    <Reference Include="Prometheus.NetStandard, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
+      <HintPath>..\packages\prometheus-net.4.0.0\lib\net461\Prometheus.NetStandard.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.3.2.37\lib\net461\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.IrcClient, Version=8.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.8.2.57\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
+    <Reference Include="Stwalkerster.IrcClient, Version=8.3.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.IrcClient.8.3.62\lib\net461\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

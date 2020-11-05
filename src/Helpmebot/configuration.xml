@@ -101,6 +101,18 @@
             </parameters>
         </component>
 
+        <component type="HelpeeManagementConfiguration">
+            <parameters>
+                <targetChannel/>
+                <monitorChannel/>
+                <ignoredNicknames>
+                    <list>
+                        <item>ChanServ</item>
+                    </list>
+                </ignoredNicknames>
+            </parameters>
+        </component>
+
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
