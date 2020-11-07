@@ -46,5 +46,6 @@
         public string AccDeploymentPassword { get; set; }
         public int? SystemMonitoringPort { get; set; }
         public int? PrometheusMetricsPort { get; set; }
+        public string Log4NetConfiguration { get; set; }
     }
 }

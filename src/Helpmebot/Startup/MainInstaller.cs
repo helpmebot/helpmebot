@@ -11,6 +11,7 @@
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Castle.Windsor.Installer;
+    using Helpmebot.Configuration;
     using Helpmebot.Services;
     using Helpmebot.Services.AccessControl;
     using Helpmebot.Startup.Converters;
@@ -28,7 +29,11 @@
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.AddFacility<LoggingFacility>(f => f.LogUsing<Log4netFactory>().WithConfig("logger.config"));
+            var botConfiguration = container.Resolve<BotConfiguration>();
+            botConfiguration.Log4NetConfiguration = botConfiguration.Log4NetConfiguration ?? "logger.config";
+            
+            container.AddFacility<LoggingFacility>(
+                f => f.LogUsing<Log4netFactory>().WithConfig(botConfiguration.Log4NetConfiguration));
             container.AddFacility<PersistenceFacility>();
             container.AddFacility<EventWiringFacility>();
             container.AddFacility<StartableFacility>(f => f.DeferredStart());

@@ -32,6 +32,7 @@
                 <!--<systemMonitoringPort></systemMonitoringPort>-->
                 <!--<disableCertificateValidation>false</disableCertificateValidation>-->
                 <!--<accDeploymentPassword></accDeploymentPassword>-->
+                <!--<log4netConfiguration>logger.config</log4netConfiguration>-->
             </parameters>
         </component>
 
