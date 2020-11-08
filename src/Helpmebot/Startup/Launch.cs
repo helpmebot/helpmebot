@@ -31,6 +31,10 @@
             {
                 LabelNames = new[] {"assembly", "irclib", "commandlib", "mediawikilib", "runtime", "os", "targetFramework"}
             });
+
+        private static readonly Gauge StartupTimeMetric = Metrics.CreateGauge(
+            "helpmebot_startup_time_seconds",
+            "Start time of the process");
         
         private readonly ILogger logger;
         private readonly IIrcClient client;
@@ -39,13 +43,17 @@
         private readonly ISession globalSession;
         private readonly ManualResetEvent exitLock;
         
-        public DateTime StartupTime { get; private set; }
+        private static DateTime startupTime;
+
+        public DateTime StartupTime => startupTime;
 
         /// <summary>
         /// The main.
         /// </summary>
         private static void Main(string[] args)
         {
+            startupTime = DateTime.Now;
+            
             // get the path to the configuration file
             string configurationFile = "configuration.xml";
             
@@ -113,8 +121,8 @@
             this.commandOverrideConfiguration = commandOverrideConfiguration;
             this.globalSession = globalSession;
 
-            this.StartupTime = DateTime.Now;
-
+            StartupTimeMetric.Set((this.StartupTime - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds);
+            
             this.exitLock = new ManualResetEvent(false);
 
             this.client.DisconnectedEvent += (sender, args) => this.Stop();
