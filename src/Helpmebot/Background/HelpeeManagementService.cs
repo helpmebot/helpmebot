@@ -28,6 +28,11 @@ namespace Helpmebot.Background
             "helpmebot_helpeemanagement_ignored",
             "The number of ignored users in the channel",
             new GaugeConfiguration {SuppressInitialValue = true});
+
+        private static readonly Gauge UserMismatchCount = Metrics.CreateGauge(
+            "helpmebot_helpeemanagement_usercount_mismatch",
+            "The size of any mismatch between IRC client channel users, and tracked users.",
+            new GaugeConfiguration {SuppressInitialValue = true});
         
         private readonly IIrcClient client;
         private readonly ILogger logger;
@@ -243,24 +248,48 @@ namespace Helpmebot.Background
         {
             lock (this.lockToken)
             {
+                bool done = false;
                 if (this.helpeeIdleCache.ContainsKey(ircUser))
                 {
                     this.helpeeIdleCache.Remove(ircUser);
                     this.logger.DebugFormat("Removed {0} from helpee cache", ircUser);
+                    done = true;
                 }
 
                 if (this.helperIdleCache.ContainsKey(ircUser))
                 {
                     this.helperIdleCache.Remove(ircUser);
                     this.logger.DebugFormat("Removed {0} from helper cache", ircUser);
+                    done = true;
                 }
 
                 if (this.ignoredInChannel.Contains(ircUser))
                 {
                     this.ignoredInChannel.Remove(ircUser);
                     this.logger.DebugFormat("Removed {0} from ignored cache", ircUser);
+                    done = true;
                 }
-                
+
+                if (!done)
+                {
+                    var helpeeList = this.helpeeIdleCache.Count == 0
+                        ? "(none)"
+                        : this.helpeeIdleCache.Aggregate("", (cur, next) => cur + ", " + next.Key).Substring(2);
+                    var helperList = this.helperIdleCache.Count == 0
+                        ? "(none)"
+                        : this.helperIdleCache.Aggregate("", (cur, next) => cur + ", " + next.Key).Substring(2);
+                    var ignoredList = this.ignoredInChannel.Count == 0
+                        ? "(none)"
+                        : this.ignoredInChannel.Aggregate("", (cur, next) => cur + ", " + next).Substring(2);
+                    
+                    this.logger.DebugFormat(
+                        "Removal of {0} from tracking was requested, but not executed. Helpees: {1} | Helpers: {2} | Ignored: {3}",
+                        ircUser,
+                        helpeeList,
+                        helperList,
+                        ignoredList);
+                }
+                 
                 this.SyncCounts();
             }
         }
@@ -301,6 +330,18 @@ namespace Helpmebot.Background
             IgnoredCount.Set(this.ignoredInChannel.Count);
             HelperCount.Set(this.helperIdleCache.Count);
             HelpeeCount.Set(this.helpeeIdleCache.Count);
+
+            if (this.client.Channels.ContainsKey(this.targetChannel))
+            {
+                var usersCount = this.client.Channels[this.targetChannel].Users.Count;
+                UserMismatchCount.Set(
+                    this.ignoredInChannel.Count + this.helperIdleCache.Count + this.helpeeIdleCache.Count
+                    - usersCount);
+            }
+            else
+            {
+                UserMismatchCount.Unpublish();
+            }
 
             var helpeeList = this.helpeeIdleCache.Count == 0
                 ? ""
