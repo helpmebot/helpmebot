@@ -34,11 +34,11 @@ namespace Helpmebot.Persistence.Mappings
         /// </summary>
         public NotificationMap()
         {
-            this.Table("acc_notifications");
-            this.Id(x => x.Id).Column("notif_id");
-            this.Map(x => x.Text).Column("notif_text");
-            this.Map(x => x.Type).Column("notif_type");
-            this.Map(x => x.Date).Column("notif_date");
+            this.Table("notification");
+            this.Id(x => x.Id).Column("id");
+            this.Map(x => x.Text).Column("text");
+            this.Map(x => x.Type).Column("type");
+            this.Map(x => x.Date).Column("date");
         }
     }
 }

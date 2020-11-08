@@ -7,9 +7,8 @@
         public BotConfiguration(string commandTrigger,
             string userAgent,
             int httpTimeout,
-            string debugChannel,
-            bool enableNotificationService
-            )
+            string debugChannel
+        )
         {
             if (commandTrigger == null)
             {
@@ -30,14 +29,14 @@
             this.UserAgent = userAgent;
             this.HttpTimeout = httpTimeout;
             this.DebugChannel = debugChannel;
-            this.EnableNotificationService = enableNotificationService;
         }
 
         public string CommandTrigger { get; private set; }
         public string UserAgent { get; private set; }
         public int HttpTimeout { get; private set; }
         public string DebugChannel { get; private set; }
-        public bool EnableNotificationService { get; private set; }
+        [Obsolete]
+        public bool EnableNotificationService { get; set; }
         public bool DisableCertificateValidation { get; set; }
         [Obsolete]
         public string GoogleApiKey { get; set; }

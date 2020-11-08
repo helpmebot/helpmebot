@@ -42,6 +42,6 @@ namespace Helpmebot.Model
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
-        public virtual int Type { get; set; }
+        public virtual string Type { get; set; }
     }
 }

@@ -105,6 +105,7 @@
     <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
+    <Compile Include="Configuration\NotificationReceiverConfiguration.cs" />
     <Compile Include="Exceptions\AclException.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
     <Compile Include="Commands\ACC\AccDeployCommand.cs" />
@@ -199,7 +200,6 @@
     <Compile Include="Model\MediaWikiSite.cs" />
     <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
     <Compile Include="Model\ModeMonitoring\ModeChanges.cs" />
-    <Compile Include="Model\NotificationType.cs" />
     <Compile Include="Model\RateLimitCacheEntry.cs" />
     <Compile Include="Model\Response.cs" />
     <Compile Include="Model\User.cs" />
@@ -224,7 +224,6 @@
     <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
     <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
     <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
-    <Compile Include="Persistence\Mappings\NotificationTypeMap.cs" />
     <Compile Include="Persistence\Mappings\ResponseMap.cs" />
     <Compile Include="Persistence\Mappings\UserMap.cs" />
     <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />

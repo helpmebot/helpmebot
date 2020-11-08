@@ -18,12 +18,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-
 namespace Helpmebot.Background
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Globalization;
     using System.Linq;
     using System.Timers;
     using Castle.Core.Logging;
@@ -50,15 +50,19 @@ namespace Helpmebot.Background
         
         private readonly IIrcClient ircClient;
         private readonly ISession session;
-        private readonly BotConfiguration configuration;
+        private readonly NotificationReceiverConfiguration configuration;
 
         /// <summary>
         /// The sync point.
         /// </summary>
         private readonly object syncLock = new object();
 
-        public NotificationBackgroundService(IIrcClient ircClient, ILogger logger, ISession session, BotConfiguration configuration)
-            : base(logger, 5 * 1000, configuration.EnableNotificationService)
+        public NotificationBackgroundService(
+            IIrcClient ircClient,
+            ILogger logger,
+            ISession session,
+            NotificationReceiverConfiguration configuration)
+            : base(logger, configuration.PollingInterval * 1000, configuration.Enable)
         {
             this.ircClient = ircClient;
             this.session = session;
@@ -82,7 +86,6 @@ namespace Helpmebot.Background
                 }
 
                 IList<Notification> list;
-                IList<NotificationType> types;
 
                 // Get items from the notification queue
                 try
@@ -90,9 +93,7 @@ namespace Helpmebot.Background
 
                     list = this.session.CreateCriteria<Notification>().List<Notification>();
                     list.ForEach(this.session.Delete);
-
-                    types = this.session.CreateCriteria<NotificationType>().List<NotificationType>();
-
+                    
                     transaction.Commit();
                 }
                 catch (Exception ex)
@@ -107,23 +108,24 @@ namespace Helpmebot.Background
                 // Iterate to send them.
                 foreach (var notification in list)
                 {
-                    var destinations = types.Where(x => x.Type == notification.Type)
-                        .Select(x => x.Channel.Name)
-                        .ToList();
+                    List<string> destinations;
 
-                    var sanitisedMessage = this.SanitiseMessage(notification.Text);
-                    if (destinations.Any())
+                    var notificationTypeKey = notification.Type.ToString(CultureInfo.InvariantCulture);
+                    if (this.configuration.NotificationTargets.ContainsKey(notificationTypeKey))
                     {
-                        foreach (var x in destinations)
-                        {
-                            this.ircClient.SendMessage(x, sanitisedMessage);
-                            NotificationsSent.WithLabels(x).Inc();
-                        }
+                        destinations = this.configuration.NotificationTargets[notificationTypeKey].ToList();
                     }
                     else
                     {
-                        this.ircClient.SendMessage(this.configuration.DebugChannel, sanitisedMessage);
-                        NotificationsSent.WithLabels(this.configuration.DebugChannel).Inc();
+                        this.Logger.ErrorFormat("Unknown notification with type '{0}' received", notificationTypeKey);
+                        continue;
+                    }
+
+                    var sanitisedMessage = this.SanitiseMessage(notification.Text);
+                    foreach (var x in destinations)
+                    {
+                        this.ircClient.SendMessage(x, sanitisedMessage);
+                        NotificationsSent.WithLabels(x).Inc();
                     }
                 }
             }
