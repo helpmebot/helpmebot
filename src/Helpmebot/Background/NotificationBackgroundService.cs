@@ -33,12 +33,21 @@ namespace Helpmebot.Background
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Util;
+    using Prometheus;
 
     /// <summary>
     /// The notification service.
     /// </summary>
     public class NotificationBackgroundService : TimerBackgroundServiceBase, INotificationBackgroundService
     {
+        private static readonly Counter NotificationsSent = Metrics.CreateCounter(
+            "helpmebot_notifications_total",
+            "Number of notifications sent",
+            new CounterConfiguration
+            {
+                LabelNames = new[] {"channel"}
+            });
+        
         private readonly IIrcClient ircClient;
         private readonly ISession session;
         private readonly BotConfiguration configuration;
@@ -98,18 +107,23 @@ namespace Helpmebot.Background
                 // Iterate to send them.
                 foreach (var notification in list)
                 {
-                    var destinations = types.Where(x => x.Type == notification.Type).Select(x => x.Channel.Name).ToList();
+                    var destinations = types.Where(x => x.Type == notification.Type)
+                        .Select(x => x.Channel.Name)
+                        .ToList();
 
+                    var sanitisedMessage = this.SanitiseMessage(notification.Text);
                     if (destinations.Any())
                     {
-                        destinations.ForEach(
-                            x => this.ircClient.SendMessage(x, this.SanitiseMessage(notification.Text)));
+                        foreach (var x in destinations)
+                        {
+                            this.ircClient.SendMessage(x, sanitisedMessage);
+                            NotificationsSent.WithLabels(x).Inc();
+                        }
                     }
                     else
                     {
-                        this.ircClient.SendMessage(
-                            this.configuration.DebugChannel,
-                            this.SanitiseMessage(notification.Text));
+                        this.ircClient.SendMessage(this.configuration.DebugChannel, sanitisedMessage);
+                        NotificationsSent.WithLabels(this.configuration.DebugChannel).Inc();
                     }
                 }
             }

@@ -289,7 +289,6 @@
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\Launch.cs" />
     <Compile Include="Startup\MainInstaller.cs" />
-    <Compile Include="Threading\IThreadedSystem.cs" />
     <Compile Include="TypedFactories\IMediaWikiApiTypedFactory.cs" />
   </ItemGroup>
   <ItemGroup>

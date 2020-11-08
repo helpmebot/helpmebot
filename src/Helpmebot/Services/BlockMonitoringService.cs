@@ -36,6 +36,7 @@ namespace Helpmebot.Services
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using Prometheus;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -46,6 +47,14 @@ namespace Helpmebot.Services
     /// </summary>
     public class BlockMonitoringService : IBlockMonitoringService
     {
+        private static readonly Counter BlockMonitorEventsCounter = Metrics.CreateCounter(
+            "helpmebot_blockmonitor_events_total",
+            "Number of block monitor events",
+            new CounterConfiguration
+            {
+                LabelNames = new[] {"channel"}
+            });
+        
         /// <summary>
         /// The logger.
         /// </summary>
@@ -120,7 +129,9 @@ namespace Helpmebot.Services
                 }
 
                 var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-
+                
+                bool triggered = false;
+                
                 var ip = this.GetIpAddress(e.User);
                 if (ip == null)
                 {
@@ -153,6 +164,7 @@ namespace Helpmebot.Services
 
                     foreach (var blockInformation in blockInformationData)
                     {
+                        triggered = true;
                         foreach (var c in alertChannel)
                         {
                             var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
@@ -174,6 +186,7 @@ namespace Helpmebot.Services
                 var userBlockInfo = mediaWikiApi.GetBlockInformation(e.User.Nickname);
                 foreach (var blockInformation in userBlockInfo)
                 {
+                    triggered = true;
                     foreach (var c in alertChannel)
                     {
                         var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
@@ -189,6 +202,11 @@ namespace Helpmebot.Services
 
                         ((IIrcClient) sender).SendMessage(c, message);
                     }
+                }
+
+                if (triggered)
+                {
+                    BlockMonitorEventsCounter.WithLabels(e.Channel).Inc();
                 }
             }
             catch (WebException ex)
