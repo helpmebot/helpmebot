@@ -26,10 +26,8 @@
                 <httpTimeout>5000</httpTimeout>
                 <debugChannel></debugChannel>
                 <enableNotificationService>false</enableNotificationService>
-                <!--<googleApiKey></googleApiKey>-->
                 <!--<ipInfoDbApiKey></ipInfoDbApiKey>-->
                 <!--<maxMindDatabasePath></maxMindDatabasePath>-->
-                <!--<systemMonitoringPort></systemMonitoringPort>-->
                 <!--<disableCertificateValidation>false</disableCertificateValidation>-->
                 <!--<accDeploymentPassword></accDeploymentPassword>-->
                 <!--<log4netConfiguration>logger.config</log4netConfiguration>-->

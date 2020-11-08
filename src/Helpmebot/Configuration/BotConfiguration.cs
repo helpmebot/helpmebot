@@ -1,7 +1,6 @@
 ﻿namespace Helpmebot.Configuration
 {
     using System;
-    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class BotConfiguration
     {
@@ -40,10 +39,12 @@
         public string DebugChannel { get; private set; }
         public bool EnableNotificationService { get; private set; }
         public bool DisableCertificateValidation { get; set; }
+        [Obsolete]
         public string GoogleApiKey { get; set; }
         public string IpInfoDbApiKey { get; set; }
         public string MaxMindDatabasePath { get; set; }
         public string AccDeploymentPassword { get; set; }
+        [Obsolete]
         public int? SystemMonitoringPort { get; set; }
         public int? PrometheusMetricsPort { get; set; }
         public string Log4NetConfiguration { get; set; }
