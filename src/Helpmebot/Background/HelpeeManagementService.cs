@@ -281,13 +281,24 @@ namespace Helpmebot.Background
                     var ignoredList = this.ignoredInChannel.Count == 0
                         ? "(none)"
                         : this.ignoredInChannel.Aggregate("", (cur, next) => cur + ", " + next).Substring(2);
-                    
+
+                    int? resultHash = null;
+                    foreach (var pairs in this.helperIdleCache)
+                    {
+                        if (pairs.Key.Nickname == ircUser.Nickname)
+                        {
+                            resultHash = pairs.Key.GetHashCode();
+                        }
+                    }
+
                     this.logger.DebugFormat(
-                        "Removal of {0} from tracking was requested, but not executed. Helpees: {1} | Helpers: {2} | Ignored: {3}",
+                        "Removal of {0} ({4}) from tracking was requested, but not executed. Target: {5}. Helpees: {1} | Helpers: {2} | Ignored: {3}",
                         ircUser,
                         helpeeList,
                         helperList,
-                        ignoredList);
+                        ignoredList,
+                        ircUser.GetHashCode(),
+                        resultHash.HasValue ? resultHash.Value.ToString() : "null");
                 }
                  
                 this.SyncCounts();
