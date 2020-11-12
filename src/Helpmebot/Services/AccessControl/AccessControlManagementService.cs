@@ -162,7 +162,6 @@ namespace Helpmebot.Services.AccessControl
             {
                 var fgu = new FlagGroupUser {User = user, FlagGroup = group, LastModified = DateTime.UtcNow};
                 session.Save(fgu);
-                ((AccessControlAuthorisationService) this.authService).Refresh(user);
             }
         }
 

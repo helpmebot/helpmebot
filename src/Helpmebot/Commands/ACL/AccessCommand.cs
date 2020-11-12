@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.ACL
     using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.Model;
+    using Helpmebot.Services.AccessControl;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
@@ -67,8 +68,9 @@ namespace Helpmebot.Commands.ACL
                 }
 
                 this.accessControlManagementService.GrantFlagGroupGlobally(user, flagGroup, this.session);
-                
                 tx.Commit();
+                
+                ((AccessControlAuthorisationService) this.FlagService).Refresh(user);
                 
                 return new[] {new CommandResponse {Message = "Done"}};
             }
