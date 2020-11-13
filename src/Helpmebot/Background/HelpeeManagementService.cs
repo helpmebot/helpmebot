@@ -290,9 +290,16 @@ namespace Helpmebot.Background
                             resultHash = pairs.Key.GetHashCode();
                         }
                     }
+                    foreach (var pairs in this.helpeeIdleCache)
+                    {
+                        if (pairs.Key.Nickname == ircUser.Nickname)
+                        {
+                            resultHash = pairs.Key.GetHashCode();
+                        }
+                    }
 
                     this.logger.DebugFormat(
-                        "Removal of {0} ({4}) from tracking was requested, but not executed. Target: {5}. Helpees: {1} | Helpers: {2} | Ignored: {3}",
+                        "Removal of {0} (hash {4}) from tracking was requested, but not executed. Lost hash caches: {5}. Helpees: {1} | Helpers: {2} | Ignored: {3}",
                         ircUser,
                         helpeeList,
                         helperList,
