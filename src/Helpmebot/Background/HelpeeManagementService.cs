@@ -375,10 +375,6 @@ namespace Helpmebot.Background
             this.logger.TraceFormat("Helpee cache: {0}", helpeeList);
             this.logger.TraceFormat("Helper cache: {0}", helperList);
             this.logger.TraceFormat("Ignore cache: {0}", ignoredList);
-
-            this.client.SendMessage(
-                this.monitoringChannel,
-                $"SYNC: {this.helperIdleCache.Count} helpers, {this.helpeeIdleCache.Count} helpees ({helpeeList}), {this.ignoredInChannel.Count} ignored ({ignoredList}); tracking total {this.helperIdleCache.Count + this.helpeeIdleCache.Count + this.ignoredInChannel.Count} out of {this.client.Channels[this.targetChannel].Users.Count} reported by client");
         }
 
         void StopTracking()
