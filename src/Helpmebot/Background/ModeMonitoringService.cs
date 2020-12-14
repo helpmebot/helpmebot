@@ -359,7 +359,7 @@
                     needsChanges = true;
                 }
 
-                if (status.Bans.Contains("$~a") || status.Quiets.Contains("$~a"))
+                if (status.Bans.Contains("$~a") || status.Quiets.Contains("$~a") || status.Quiets.Contains("*!*@*"))
                 {
                     needsOps = true;
                 }
