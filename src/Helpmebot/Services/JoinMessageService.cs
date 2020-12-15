@@ -38,9 +38,6 @@ namespace Helpmebot.Services
     using Stwalkerster.IrcClient.Interfaces;
     using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
 
-    /// <summary>
-    /// The join message service.
-    /// </summary>
     public class JoinMessageService : IJoinMessageService
     {
         private static readonly Counter WelcomerActivations = Metrics.CreateCounter(
@@ -50,7 +47,7 @@ namespace Helpmebot.Services
             {
                 LabelNames = new[] {"channel"}
             });
-        
+
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
         private readonly MessageService messageService;
@@ -66,7 +63,7 @@ namespace Helpmebot.Services
             IGeolocationService geolocationService)
         {
             this.logger = logger;
-            this.messageService = (MessageService)messageService;
+            this.messageService = (MessageService) messageService;
             this.session = session;
             this.configuration = configuration;
             this.geolocationService = geolocationService;
@@ -157,29 +154,36 @@ namespace Helpmebot.Services
                 }
             }
 
-            IPAddress clientip = null;
-            var ipmatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
-            if (ipmatch.Success)
+            this.SendWelcome(networkUser, channel, client);
+        }
+
+        public void SendWelcome(IUser networkUser, string channel, IIrcClient client)
+        {
+            var welcomeOverride = this.GetOverride(channel);
+            var applyOverride  = false;
+
+            if (welcomeOverride != null)
             {
-                // We've got a hex-encoded IP.
-                clientip = networkUser.Username.GetIpAddressFromHex();
+                applyOverride = this.DoesOverrideApply(networkUser, welcomeOverride);
             }
             
-            if (channel == "#wikipedia-en-help" && clientip != null && this.geolocationService.GetLocation(clientip).Country == "Pakistan")
+            
+            if (applyOverride)
             {
-                this.logger.WarnFormat("Detected Pakistan IP, firing alternate welcome");
+                this.logger.WarnFormat("Detected applicable override, firing alternate welcome");
+                
                 var welcomeMessage = this.messageService.RetrieveAllMessagesForKey(
-                    "WelcomeMessage-caliphate",
+                    welcomeOverride.Message,
                     channel,
                     new[] {networkUser.Nickname, channel});
-
+                
                 foreach (var message in welcomeMessage)
                 {
                     client.SendMessage(channel, message);
                 }
-            }
-            else
+            } else
             {
+                // Either no override defined, or override not matching.
                 this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
 
                 var welcomeMessage = this.messageService.RetrieveMessage(
@@ -187,28 +191,65 @@ namespace Helpmebot.Services
                     channel,
                     new[] {networkUser.Nickname, channel});
                 
+                if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
+                {
+                    client.Mode(channel, "+e " + networkUser.Nickname + "!*@*");
+
+                    var notificationTarget = this.GetCrossChannelNotificationTarget(channel);
+                    if (notificationTarget != null)
+                    {
+                        client.SendMessage(
+                            notificationTarget,
+                            $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {networkUser.Nickname}!*@*  )");
+                    }
+                }
+
                 client.SendMessage(channel, welcomeMessage);
             }
 
             WelcomerActivations.WithLabels(channel).Inc();
             this.session.SaveOrUpdate(
-                    new WelcomeLog
+                new WelcomeLog
+                {
+                    Channel = channel,
+                    Usermask = networkUser.ToString(),
+                    WelcomeTimestamp = DateTime.Now
+                });
+        }
+
+        private bool DoesOverrideApply(IUser networkUser, WelcomerOverride welcomeOverride)
+        {
+            if (welcomeOverride.Geolocation != null)
+            {
+                IPAddress clientip = null;
+                
+                var userMatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
+                if (userMatch.Success)
+                {
+                    // We've got a hex-encoded IP.
+                    clientip = networkUser.Username.GetIpAddressFromHex();
+                }
+
+                if (!networkUser.Hostname.Contains("/"))
+                {
+                    // real hostname, not a cloak
+                    var hostAddresses = Dns.GetHostAddresses(networkUser.Hostname);
+                    if (hostAddresses.Length > 0)
                     {
-                        Channel = channel,
-                        Usermask = networkUser.ToString(),
-                        WelcomeTimestamp = DateTime.Now
-                    });
+                        clientip = hostAddresses.First() as IPAddress;
+                    }
+                }
+
+                if (clientip != null
+                    && this.geolocationService.GetLocation(clientip).Country == welcomeOverride.Geolocation)
+                {
+                    return true;
+                }
             }
 
-        /// <summary>
-        /// The get exceptions.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IList{WelcomeUser}"/>.
-        /// </returns>
+            return false;
+        }
+
         public virtual IList<WelcomeUser> GetExceptions(string channel)
         {
             var exceptions = this.session.QueryOver<WelcomeUser>()
@@ -217,15 +258,19 @@ namespace Helpmebot.Services
             return exceptions;
         }
 
-        /// <summary>
-        /// The get welcome users.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IList{WelcomeUser}"/>.
-        /// </returns>
+        public virtual string GetCrossChannelNotificationTarget(string channel)
+        {
+            Channel frontendAlias = null, backendAlias = null;
+
+            var crossChannel = this.session.QueryOver<CrossChannel>()
+                .Inner.JoinAlias(x => x.FrontendChannel, () => frontendAlias)
+                .Inner.JoinAlias(x => x.BackendChannel, () => backendAlias)
+                .Where(x => frontendAlias.Name == channel)
+                .SingleOrDefault();
+            
+            return crossChannel?.BackendChannel?.Name;
+        }
+        
         public virtual IList<WelcomeUser> GetWelcomeUsers(string channel)
         {
             var users = this.session.QueryOver<WelcomeUser>()
@@ -234,9 +279,18 @@ namespace Helpmebot.Services
             return users;
         }
 
-        /// <summary>
-        /// The clear rate limit cache.
-        /// </summary>
+        public virtual WelcomerOverride GetOverride(string channel)
+        {
+            Channel channelAlias = null;
+            var overrides = this.session.QueryOver<WelcomerOverride>()
+                .Inner.JoinAlias(x => x.Channel, () => channelAlias)
+                .Where(x => x.ActiveFlag == channelAlias.WelcomerFlag)
+                .And(() => channelAlias.Name == channel)
+                .List();
+
+            return overrides.FirstOrDefault();
+        }
+        
         public void ClearRateLimitCache()
         {
             lock (this.rateLimitCache)
@@ -244,19 +298,7 @@ namespace Helpmebot.Services
                 this.rateLimitCache.Clear();
             }
         }
-
-        /// <summary>
-        /// The rate limit.
-        /// </summary>
-        /// <param name="hostname">
-        /// The hostname.
-        /// </param>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// true if rate limited, false otherwise
-        /// </returns>
+        
         private bool RateLimit(string hostname, string channel)
         {
             if (string.IsNullOrEmpty(hostname) || string.IsNullOrEmpty(channel))

@@ -40,6 +40,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Silenced, "silence");
             this.References(x => x.BaseWiki, "basewiki");
             this.Map(x => x.HedgehogMode, "hedgehog");
+            this.Map(x => x.WelcomerFlag, "welcomerflag");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask" />
   <PropertyGroup>
@@ -213,6 +213,7 @@
     <Compile Include="Model\Notification.cs" />
     <Compile Include="Model\ShortUrlCacheEntry.cs" />
     <Compile Include="Model\WelcomeLog.cs" />
+    <Compile Include="Model\WelcomerOverride.cs" />
     <Compile Include="Model\WelcomeUser.cs" />
     <Compile Include="Persistence\EntityBase.cs" />
     <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Persistence\Mappings\NotificationMap.cs" />
     <Compile Include="Persistence\Mappings\ShortUrlCacheEntryMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
+    <Compile Include="Persistence\Mappings\WelcomerOverrideMap.cs" />
     <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
     <Compile Include="Persistence\SessionFactoryProvider.cs" />
     <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />

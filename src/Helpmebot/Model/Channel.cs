@@ -43,6 +43,8 @@ namespace Helpmebot.Model
         public virtual bool Silenced { get; set; }
         public virtual bool HedgehogMode { get; set; }
         
+        public virtual string WelcomerFlag { get; set; }
+        
         public virtual MediaWikiSite BaseWiki { get; set; }
 
         /// <summary>
