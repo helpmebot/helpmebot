@@ -80,5 +80,7 @@ namespace Helpmebot.Services.Interfaces
         /// database.
         /// </summary>
         void RefreshResponseRepository();
+
+        List<string> RetrieveAllMessagesForKey(string messageKey, object context, IEnumerable<string> arguments);
     }
 }

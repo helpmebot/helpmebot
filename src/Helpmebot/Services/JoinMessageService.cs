@@ -50,7 +50,7 @@ namespace Helpmebot.Services
 
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
-        private readonly MessageService messageService;
+        private readonly IMessageService messageService;
         private readonly ISession session;
         private readonly JoinMessageServiceConfiguration configuration;
         private readonly IGeolocationService geolocationService;
@@ -63,7 +63,7 @@ namespace Helpmebot.Services
             IGeolocationService geolocationService)
         {
             this.logger = logger;
-            this.messageService = (MessageService) messageService;
+            this.messageService = messageService;
             this.session = session;
             this.configuration = configuration;
             this.geolocationService = geolocationService;

@@ -46,7 +46,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.15.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920">
-      <HintPath>..\packages\Moq.4.15.1\lib\net45\Moq.dll</HintPath>
+      <HintPath>..\packages\Moq.4.15.2\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="mscorlib" />
@@ -59,7 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Prometheus.NetStandard, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
-      <HintPath>..\packages\prometheus-net.4.0.0\lib\net461\Prometheus.NetStandard.dll</HintPath>
+      <HintPath>..\packages\prometheus-net.4.1.1\lib\net461\Prometheus.NetStandard.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null">

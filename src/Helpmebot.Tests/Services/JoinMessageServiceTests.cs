@@ -178,6 +178,8 @@ namespace Helpmebot.Tests.Services
             this.joinMessageService.Object.ClearRateLimitCache();
             var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
             
+            this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
+            
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
 
@@ -237,6 +239,8 @@ namespace Helpmebot.Tests.Services
             var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
             var ea2 = new JoinEventArgs(null, networkUser2.Object, "ab", this.ircClient.Object);
 
+            this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
+            
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea2);
@@ -260,6 +264,8 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Username = "ab";
             networkUser.Object.Hostname = "ab/test";
 
+            this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
+            
             this.joinMessageService.Object.ClearRateLimitCache();
             var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
 
@@ -289,6 +295,8 @@ namespace Helpmebot.Tests.Services
             var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
             var ea2 = new JoinEventArgs(null, networkUser.Object, "ef", this.ircClient.Object);
 
+            this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
+            
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
