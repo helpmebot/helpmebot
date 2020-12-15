@@ -90,6 +90,58 @@ namespace Helpmebot.Services
             return this.RetrieveMessage(messageKey, string.Empty, arguments);
         }
         
+        public List<string> RetrieveAllMessagesForKey(string messageKey, object context, IEnumerable<string> arguments)
+        {
+            if (string.IsNullOrEmpty(messageKey))
+            {
+                throw new ArgumentNullException("messageKey");
+            }
+
+            string contextPath = context != null ? context.ToString() : string.Empty;
+
+            if (!string.IsNullOrEmpty(contextPath))
+            {
+                contextPath = string.Format("/{0}", contextPath);
+
+                contextPath = contextPath.Replace("#", string.Empty) // will cause issues
+                    .Replace("|", string.Empty) // link syntax
+                    .Replace("[", string.Empty) // link syntax
+                    .Replace("]", string.Empty) // link syntax
+                    .Replace("{", string.Empty) // link syntax
+                    .Replace("}", string.Empty) // link syntax
+                    .Replace("<", string.Empty) // html issues
+                    .Replace(">", string.Empty); // html issues
+            }
+
+            // normalise message name to account for old messages
+            if (messageKey.Substring(0, 1).ToUpper() != messageKey.Substring(0, 1))
+            {
+                messageKey = messageKey.Substring(0, 1).ToUpper() + messageKey.Substring(1);
+            }
+
+            var messageFromDatabase = this.GetMessageFromDatabase(messageKey, contextPath);
+
+            if (messageFromDatabase == null)
+            {
+                return null;
+            }
+
+            List<string> messages = messageFromDatabase.ToList();
+
+            if (arguments != null)
+            {
+                // ReSharper disable once CoVariantArrayConversion
+                object[] args = arguments.ToArray();
+                
+                for (int i = 0; i < messages.Count; i++)
+                {
+                    messages[i] = string.Format(messages[i], args);
+                }
+            }
+
+            return messages;
+        }
+        
         public void RefreshResponseRepository()
         {
             lock (this.localSession)

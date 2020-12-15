@@ -25,9 +25,11 @@ namespace Helpmebot.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -51,20 +53,23 @@ namespace Helpmebot.Services
         
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
-        private readonly IMessageService messageService;
+        private readonly MessageService messageService;
         private readonly ISession session;
         private readonly JoinMessageServiceConfiguration configuration;
+        private readonly IGeolocationService geolocationService;
 
         public JoinMessageService(
             ILogger logger,
             IMessageService messageService,
             ISession session,
-            JoinMessageServiceConfiguration configuration)
+            JoinMessageServiceConfiguration configuration,
+            IGeolocationService geolocationService)
         {
             this.logger = logger;
-            this.messageService = messageService;
+            this.messageService = (MessageService)messageService;
             this.session = session;
             this.configuration = configuration;
+            this.geolocationService = geolocationService;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
@@ -152,24 +157,48 @@ namespace Helpmebot.Services
                 }
             }
 
-            this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
+            IPAddress clientip = null;
+            var ipmatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
+            if (ipmatch.Success)
+            {
+                // We've got a hex-encoded IP.
+                clientip = networkUser.Username.GetIpAddressFromHex();
+            }
+            
+            if (channel == "#wikipedia-en-help" && clientip != null && this.geolocationService.GetLocation(clientip).Country == "Pakistan")
+            {
+                this.logger.WarnFormat("Detected Pakistan IP, firing alternate welcome");
+                var welcomeMessage = this.messageService.RetrieveAllMessagesForKey(
+                    "WelcomeMessage-caliphate",
+                    channel,
+                    new[] {networkUser.Nickname, channel});
 
-            var welcomeMessage = this.messageService.RetrieveMessage(
-                "WelcomeMessage",
-                channel,
-                new[] {networkUser.Nickname, channel});
+                foreach (var message in welcomeMessage)
+                {
+                    client.SendMessage(channel, message);
+                }
+            }
+            else
+            {
+                this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
+
+                var welcomeMessage = this.messageService.RetrieveMessage(
+                    "WelcomeMessage",
+                    channel,
+                    new[] {networkUser.Nickname, channel});
+                
+                client.SendMessage(channel, welcomeMessage);
+            }
 
             WelcomerActivations.WithLabels(channel).Inc();
-            client.SendMessage(channel, welcomeMessage);
-
             this.session.SaveOrUpdate(
-                new WelcomeLog
-                {
-                    Channel = channel,
-                    Usermask = networkUser.ToString(),
-                    WelcomeTimestamp = DateTime.Now
-                });
-        }
+                    new WelcomeLog
+                    {
+                        Channel = channel,
+                        Usermask = networkUser.ToString(),
+                        WelcomeTimestamp = DateTime.Now
+                    });
+            }
 
         /// <summary>
         /// The get exceptions.
