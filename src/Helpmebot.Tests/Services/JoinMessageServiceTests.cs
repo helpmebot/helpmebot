@@ -71,6 +71,8 @@ namespace Helpmebot.Tests.Services
         /// </summary>
         private Mock<ISession> session;
 
+        private Mock<IGeolocationService> geolocService;
+
         /// <summary>
         /// The setup.
         /// </summary>
@@ -89,12 +91,14 @@ namespace Helpmebot.Tests.Services
         public void TestSetup()
         {
             this.ircClient = new Mock<IIrcClient>();
-
+            this.geolocService = new Mock<IGeolocationService>();
+            
             this.joinMessageService = new Mock<JoinMessageService>(
                 this.Logger.Object,
                 this.messageService.Object,
                 this.session.Object,
-                new JoinMessageServiceConfiguration(1, 10));
+                new JoinMessageServiceConfiguration(1, 10),
+                this.geolocService.Object);
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
