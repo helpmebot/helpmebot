@@ -151,5 +151,59 @@ namespace Helpmebot.Commands.Configuration
                 return new[] {new CommandResponse {Message = e.Message}};
             }
         }
+
+        [RequiredArguments(1)]
+        [SubcommandInvocation("mode")]
+        [SubcommandInvocation("override")]
+        [SubcommandInvocation("overridemode")]
+        [Help(
+            new[] {"none", "<mode>"},
+            new[]
+            {
+                "Sets the welcomer override mode",
+                "This enables a specific override rule for the welcomer allowing a different welcome message to be used for users matching pre-defined conditions"
+            })]
+        protected IEnumerable<CommandResponse> WelcomerMode()
+        {
+            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
+            try
+            {
+                string flagName = null;
+                
+                if (Arguments[0] != "none")
+                {
+                    Channel channelAlias = null;
+                    var welcomerOverride = this.databaseSession.QueryOver<WelcomerOverride>()
+                        .Inner.JoinAlias(x => x.Channel, () => channelAlias)
+                        .Where(x => x.ActiveFlag == this.Arguments[0])
+                        .And(x => channelAlias.Name == this.CommandSource)
+                        .SingleOrDefault();
+
+                    if (welcomerOverride == null)
+                    {
+                        throw new Exception(
+                            $"Unable to find welcomer override configuration with alias {this.Arguments[0]}");
+                    }
+
+                    flagName = welcomerOverride.ActiveFlag;
+                }
+                
+                var channel = this.databaseSession.QueryOver<Channel>().Where(x => x.Name == this.CommandSource).SingleOrDefault();
+                channel.WelcomerFlag = flagName;
+                this.databaseSession.SaveOrUpdate(channel);
+                
+                this.databaseSession.Transaction.Commit();
+
+                return new[] {new CommandResponse {Message = "Done."}};
+            }
+            catch (Exception e)
+            {
+                this.Logger.Error("Error occurred during addition of welcome mask.", e);
+
+                this.databaseSession.Transaction.Rollback();
+
+                return new[] {new CommandResponse {Message = e.Message}};
+            }
+        }
     }
 }
