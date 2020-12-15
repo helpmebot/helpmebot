@@ -23,38 +23,17 @@ namespace Helpmebot.Services.Interfaces
     using System.Collections.Generic;
     using Helpmebot.Model;
     using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
-    /// <summary>
-    /// The JoinMessageService interface.
-    /// </summary>
     public interface IJoinMessageService
     {
-        #region Public Methods and Operators
-
-        /// <summary>
-        /// The get exceptions.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IList"/>.
-        /// </returns>
         IList<WelcomeUser> GetExceptions(string channel);
 
-        /// <summary>
-        /// The get welcome users.
-        /// </summary>
-        /// <param name="channel">
-        /// The channel.
-        /// </param>
-        /// <returns>
-        /// The <see cref="IList"/>.
-        /// </returns>
         IList<WelcomeUser> GetWelcomeUsers(string channel);
 
         void OnJoinEvent(object sender, JoinEventArgs e);
 
-        #endregion
+        void SendWelcome(IUser networkUser, string channel, IIrcClient client);
     }
 }

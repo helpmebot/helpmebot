@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <UsingTask AssemblyFile="$(MSBuildExtensionsPath)\..\StyleCop 4.7\StyleCop.dll" TaskName="StyleCopTask" />
   <PropertyGroup>
@@ -89,6 +89,7 @@
     <Compile Include="Commands\ACL\AccessCommand.cs" />
     <Compile Include="Commands\ACL\FlagGroupCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
+    <Compile Include="Commands\ChannelManagement\ForceWelcomeCommand.cs" />
     <Compile Include="Commands\ChannelManagement\IdleHelpeesCommand.cs" />
     <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
     <Compile Include="Commands\Configuration\SilenceCommand.cs" />
