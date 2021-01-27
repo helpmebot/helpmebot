@@ -97,8 +97,7 @@
     <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
     <Compile Include="Commands\CrossChannel\CrossChannelNotifyCommand.cs" />
     <Compile Include="Commands\Information\DecodeCommand.cs" />
-    <Compile Include="Commands\Information\GeolocateCommand.cs" />
-    <Compile Include="Commands\Information\WhoisCommand.cs" />
+    <Compile Include="Commands\Information\IpInfoCommand.cs" />
     <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
     <Compile Include="Commands\WikiInformation\DraftStatusCommand.cs" />
     <Compile Include="Commands\WikiInformation\ContribsCommand.cs" />

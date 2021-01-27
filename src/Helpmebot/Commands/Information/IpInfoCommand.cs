@@ -13,13 +13,16 @@ namespace Helpmebot.Commands.Information
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
+    [CommandInvocation("ipinfo")]
+    [CommandInvocation("geolocate")]
     [CommandInvocation("whois")]
     [CommandFlag(Flags.Protected)]
-    public class WhoisCommand : CommandBase
+    public class IpInfoCommand : CommandBase
     {
         private readonly IWhoisService whoisService;
+        private readonly IGeolocationService geolocationService;
 
-        public WhoisCommand(
+        public IpInfoCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -27,7 +30,8 @@ namespace Helpmebot.Commands.Information
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IWhoisService whoisService) : base(
+            IWhoisService whoisService,
+            IGeolocationService geolocationService) : base(
             commandSource,
             user,
             arguments,
@@ -37,12 +41,13 @@ namespace Helpmebot.Commands.Information
             client)
         {
             this.whoisService = whoisService;
+            this.geolocationService = geolocationService;
         }
-
+        
         [RequiredArguments(1)]
         [Help(
             new[] {"<ip>", "<hexstring>", "<nickname>"},
-            "Returns the controlling organisation for the provided IP address")]
+            "Returns the controlling organisation and the real-world location for the provided IP address")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var ip = this.GetIPAddress();
@@ -52,14 +57,16 @@ namespace Helpmebot.Commands.Information
             }
 
             var orgName = this.whoisService.GetOrganisationName(ip);
+            var location = this.geolocationService.GetLocation(ip);
 
             if (orgName == null)
             {
-                throw new CommandErrorException(string.Format("Whois for {0} failed.", ip));
+                yield return new CommandResponse {Message = $"Whois failed for {ip}; Location: {location}"};
             }
-
-            var msg = string.Format("Whois for {0} gives organisation {1}", ip, orgName);
-            yield return new CommandResponse {Message = msg};
+            else
+            {
+                yield return new CommandResponse {Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}"};
+            }
         }
     }
 }
