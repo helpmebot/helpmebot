@@ -98,7 +98,8 @@ namespace Helpmebot.Tests.Services
                 this.messageService.Object,
                 this.session.Object,
                 new JoinMessageServiceConfiguration(1, 10),
-                this.geolocService.Object);
+                this.geolocService.Object,
+                this.ircClient.Object);
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
