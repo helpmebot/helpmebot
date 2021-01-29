@@ -2,8 +2,8 @@ namespace Helpmebot.Commands.ChannelManagement
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;

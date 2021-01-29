@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services
+namespace Helpmebot.Background
 {
     using System;
     using System.Collections.Generic;
@@ -30,6 +30,7 @@ namespace Helpmebot.Services
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
@@ -66,6 +67,7 @@ namespace Helpmebot.Services
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
+        private readonly IIrcClient client;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -86,8 +88,7 @@ namespace Helpmebot.Services
             this.apiHelper = apiHelper;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
-
-            client.JoinReceivedEvent += this.OnJoinEvent;
+            this.client = client;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
@@ -337,6 +338,18 @@ namespace Helpmebot.Services
 
                 return null;
             }
+        }
+        
+        public void Start()
+        {
+            this.logger.Debug("Starting block monitoring service");
+            this.client.JoinReceivedEvent += this.OnJoinEvent;
+        }
+
+        public void Stop()
+        {
+            this.logger.Debug("Stopping block monitoring service");
+            this.client.JoinReceivedEvent -= this.OnJoinEvent;
         }
     }
 }

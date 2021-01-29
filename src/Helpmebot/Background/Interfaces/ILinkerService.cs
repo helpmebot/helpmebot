@@ -1,9 +1,9 @@
-﻿namespace Helpmebot.Services.Interfaces
+﻿namespace Helpmebot.Background.Interfaces
 {
     using System.Collections.Generic;
-    using Stwalkerster.IrcClient.Events;
+    using Castle.Core;
 
-    public interface ILinkerService
+    public interface ILinkerService : IStartable
     {
         /// <summary>
         /// Gets the link.

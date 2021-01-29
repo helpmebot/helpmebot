@@ -14,12 +14,14 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Services
+namespace Helpmebot.Background
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -35,6 +37,8 @@ namespace Helpmebot.Services
     {
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly ISession databaseSession;
+        private readonly IIrcClient client;
+        private readonly ILogger logger;
         private readonly Dictionary<string, string> lastLink;
 
         /// <summary>
@@ -43,13 +47,14 @@ namespace Helpmebot.Services
         public LinkerService(
             IMediaWikiApiHelper apiHelper,
             ISession databaseSession,
-            IIrcClient client)
+            IIrcClient client,
+            ILogger logger)
         {
             this.apiHelper = apiHelper;
             this.databaseSession = databaseSession;
+            this.client = client;
+            this.logger = logger;
             this.lastLink = new Dictionary<string, string>();
-
-            client.ReceivedMessage += this.IrcPrivateMessageEvent;
         }
 
         #region Public Methods and Operators
@@ -223,5 +228,17 @@ namespace Helpmebot.Services
         }
 
         #endregion
+        
+        public void Start()
+        {
+            this.logger.Debug("Starting linker service");
+            this.client.ReceivedMessage += this.IrcPrivateMessageEvent;
+        }
+
+        public void Stop()
+        {
+            this.logger.Debug("Stopping linker service");
+            this.client.ReceivedMessage += this.IrcPrivateMessageEvent;
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IJoinMessageService.cs" company="Helpmebot Development Team">
+// <copyright file="IBlockMonitoringService.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,26 +14,31 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the IJoinMessageService type.
+//   Defines the IBlockMonitoringService type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.Background.Interfaces
 {
-    using System.Collections.Generic;
-    using Helpmebot.Model;
+    using Castle.Core;
+    using NHibernate;
     using Stwalkerster.IrcClient.Events;
-    using Stwalkerster.IrcClient.Interfaces;
-    using Stwalkerster.IrcClient.Model.Interfaces;
 
-    public interface IJoinMessageService
+    /// <summary>
+    /// The BlockMonitoringService interface.
+    /// </summary>
+    public interface IBlockMonitoringService : IStartable
     {
-        IList<WelcomeUser> GetExceptions(string channel);
-
-        IList<WelcomeUser> GetWelcomeUsers(string channel);
-
         void OnJoinEvent(object sender, JoinEventArgs e);
 
-        void SendWelcome(IUser networkUser, string channel, IIrcClient client);
+        /// <param name="monitorChannel">the channel to monitor</param>
+        /// <param name="reportChannel">the channel in which to report</param>
+        /// <param name="databaseSession">The hibernate session</param>
+        void AddMap(string monitorChannel, string reportChannel, ISession databaseSession);
+        
+        /// <param name="monitorChannel">the channel to monitor</param>
+        /// <param name="reportChannel">the channel in which to report</param>
+        /// <param name="databaseSession">The hibernate session</param>
+        void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession);
     }
 }

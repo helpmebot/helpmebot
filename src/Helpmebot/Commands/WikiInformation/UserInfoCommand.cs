@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.WikiInformation
     using System.Net;
     using System.Web;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;

@@ -18,9 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Stwalkerster.IrcClient.Model.Interfaces;
-
-namespace Helpmebot.Services
+namespace Helpmebot.Background
 {
     using System;
     using System.Collections.Generic;
@@ -28,6 +26,7 @@ namespace Helpmebot.Services
     using System.Net;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
@@ -36,7 +35,8 @@ namespace Helpmebot.Services
     using Prometheus;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
-    using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
+    using Stwalkerster.IrcClient.Model.Interfaces;
+    using Cache = System.Collections.Generic.Dictionary<string, Helpmebot.Model.RateLimitCacheEntry>;
 
     public class JoinMessageService : IJoinMessageService
     {
@@ -54,6 +54,7 @@ namespace Helpmebot.Services
         private readonly ISession session;
         private readonly JoinMessageServiceConfiguration configuration;
         private readonly IGeolocationService geolocationService;
+        private readonly IIrcClient client;
 
         public JoinMessageService(
             ILogger logger,
@@ -68,8 +69,7 @@ namespace Helpmebot.Services
             this.session = session;
             this.configuration = configuration;
             this.geolocationService = geolocationService;
-
-            client.JoinReceivedEvent += this.OnJoinEvent;
+            this.client = client;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
@@ -82,7 +82,7 @@ namespace Helpmebot.Services
 
             try
             {
-                this.DoWelcome(e.User, e.Channel, e.Client);
+                this.DoWelcome(e.User, e.Channel);
             }
             catch (Exception exception)
             {
@@ -90,7 +90,7 @@ namespace Helpmebot.Services
             }
         }
 
-        private void DoWelcome(IUser networkUser, string channel, IIrcClient client)
+        private void DoWelcome(IUser networkUser, string channel)
         {
             // Rate limit this per hostname/channel
             if (this.RateLimit(networkUser.Username, channel))
@@ -157,7 +157,7 @@ namespace Helpmebot.Services
                 }
             }
 
-            this.SendWelcome(networkUser, channel, client);
+            this.SendWelcome(networkUser, channel, this.client);
         }
 
         public void SendWelcome(IUser networkUser, string channel, IIrcClient client)
@@ -239,7 +239,7 @@ namespace Helpmebot.Services
                     var hostAddresses = Dns.GetHostAddresses(networkUser.Hostname);
                     if (hostAddresses.Length > 0)
                     {
-                        clientip = hostAddresses.First() as IPAddress;
+                        clientip = hostAddresses.First();
                     }
                 }
 
@@ -383,6 +383,18 @@ namespace Helpmebot.Services
             }
 
             return false;
+        }
+        
+        public void Start()
+        {
+            this.logger.Debug("Starting join message service");
+            this.client.JoinReceivedEvent += this.OnJoinEvent;
+        }
+
+        public void Stop()
+        {
+            this.logger.Debug("Stopping join message service");
+            this.client.JoinReceivedEvent -= this.OnJoinEvent;
         }
     }
 }

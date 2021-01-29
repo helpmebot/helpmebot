@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Commands.CategoryMonitoring;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
