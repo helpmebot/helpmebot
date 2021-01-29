@@ -1,6 +1,5 @@
 ﻿namespace Helpmebot.Startup
 {
-    using Castle.Facilities.EventWiring;
     using Castle.Facilities.Logging;
     using Castle.Facilities.Startable;
     using Castle.Facilities.TypedFactory;
@@ -12,13 +11,11 @@
     using Castle.Windsor;
     using Castle.Windsor.Installer;
     using Helpmebot.Configuration;
-    using Helpmebot.Services;
     using Helpmebot.Services.AccessControl;
     using Helpmebot.Startup.Converters;
     using Helpmebot.Startup.Facilities;
     using Helpmebot.TypedFactories;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
-    using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
@@ -35,7 +32,6 @@
             container.AddFacility<LoggingFacility>(
                 f => f.LogUsing<Log4netFactory>().WithConfig(botConfiguration.Log4NetConfiguration));
             container.AddFacility<PersistenceFacility>();
-            container.AddFacility<EventWiringFacility>();
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
             container.AddFacility<TypedFactoryFacility>();
 
@@ -71,21 +67,7 @@
                 Component.For<IWebServiceClient>().ImplementedBy<WebServiceClient>(),
 
                 // IRC client
-                Component
-                    .For<IIrcClient>()
-                    .ImplementedBy<IrcClient>()
-                    .Start()
-                    .PublishEvent(
-                        p => p.JoinReceivedEvent += null,
-                        x => x
-                            .To<JoinMessageService>(l => l.OnJoinEvent(null, null))
-                            .To<BlockMonitoringService>(l => l.OnJoinEvent(null, null)))
-                    .PublishEvent(
-                        p => p.ReceivedMessage += null,
-                        x => x
-                            .To<LinkerService>(l => l.IrcPrivateMessageEvent(null, null))
-                            .To<CommandHandler>(l => l.OnMessageReceived(null, null))
-                    )
+                Component.For<IIrcClient>().ImplementedBy<IrcClient>().Start()
             );
         }
     }

@@ -60,13 +60,16 @@ namespace Helpmebot.Services
             IMessageService messageService,
             ISession session,
             JoinMessageServiceConfiguration configuration,
-            IGeolocationService geolocationService)
+            IGeolocationService geolocationService,
+            IIrcClient client)
         {
             this.logger = logger;
             this.messageService = messageService;
             this.session = session;
             this.configuration = configuration;
             this.geolocationService = geolocationService;
+
+            client.JoinReceivedEvent += this.OnJoinEvent;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)

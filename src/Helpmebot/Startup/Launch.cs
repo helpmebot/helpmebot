@@ -112,6 +112,7 @@
             ILogger logger,
             IIrcClient client,
             ICommandParser commandParser,
+            ICommandHandler commandHandler,
             CommandOverrideConfiguration commandOverrideConfiguration,
             ISession globalSession)
         {
@@ -126,6 +127,7 @@
             this.exitLock = new ManualResetEvent(false);
 
             this.client.DisconnectedEvent += (sender, args) => this.Stop();
+            this.client.ReceivedMessage += commandHandler.OnMessageReceived;
         }
         
         public void Stop()

@@ -76,7 +76,8 @@ namespace Helpmebot.Services
             ISession globalSession,
             IMediaWikiApiHelper apiHelper,
             BotConfiguration botConfiguration,
-            IWebServiceClient webServiceClient)
+            IWebServiceClient webServiceClient,
+            IIrcClient client)
         {
             this.logger = logger;
             this.linkerService = linkerService;
@@ -85,6 +86,8 @@ namespace Helpmebot.Services
             this.apiHelper = apiHelper;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
+
+            client.JoinReceivedEvent += this.OnJoinEvent;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())

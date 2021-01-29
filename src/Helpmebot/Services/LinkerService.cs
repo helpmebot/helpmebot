@@ -26,6 +26,7 @@ namespace Helpmebot.Services
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
     ///     LinkerService and link parser
@@ -41,11 +42,14 @@ namespace Helpmebot.Services
         /// </summary>
         public LinkerService(
             IMediaWikiApiHelper apiHelper,
-            ISession databaseSession)
+            ISession databaseSession,
+            IIrcClient client)
         {
             this.apiHelper = apiHelper;
             this.databaseSession = databaseSession;
             this.lastLink = new Dictionary<string, string>();
+
+            client.ReceivedMessage += this.IrcPrivateMessageEvent;
         }
 
         #region Public Methods and Operators
