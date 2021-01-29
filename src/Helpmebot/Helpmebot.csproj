@@ -370,8 +370,8 @@
       <HintPath>..\packages\Remotion.Linq.EagerFetching.2.2.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.CommandLib, Version=13.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.13.4.67\lib\net472\Stwalkerster.Bot.CommandLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=14.0.73.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.14.0.73-beta\lib\netstandard2.0\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=3.2.0.0, Culture=neutral, PublicKeyToken=null">
