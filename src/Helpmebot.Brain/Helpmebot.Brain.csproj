@@ -13,14 +13,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Helpmebot\Helpmebot.csproj" />
+        <ProjectReference Include="..\Helpmebot\Helpmebot.csproj"/>
+        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Castle.Core" Version="4.4.1" />
-      <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
-      <PackageReference Include="NHibernate" Version="4.1.2.4000" />
-      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75" />
+        <PackageReference Include="Castle.Core" Version="4.4.1"/>
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1"/>
+        <PackageReference Include="NHibernate" Version="4.1.2.4000"/>
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75"/>
     </ItemGroup>
 
 </Project>
