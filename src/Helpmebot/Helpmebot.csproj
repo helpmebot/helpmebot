@@ -74,11 +74,9 @@
     </Compile>
     <Compile Include="Attributes\HelpCategoryAttribute.cs" />
     <Compile Include="Background\BlockMonitoringService.cs" />
-    <Compile Include="Background\CategoryWatcherBackgroundService.cs" />
     <Compile Include="Background\EirVoiceMonitorService.cs" />
     <Compile Include="Background\HelpeeManagementService.cs" />
     <Compile Include="Background\Interfaces\IBlockMonitoringService.cs" />
-    <Compile Include="Background\Interfaces\ICategoryWatcherBackgroundService.cs" />
     <Compile Include="Background\Interfaces\IEirVoiceMonitorService.cs" />
     <Compile Include="Background\Interfaces\IHelpeeManagementService.cs" />
     <Compile Include="Background\Interfaces\IJoinMessageService.cs" />
@@ -92,8 +90,6 @@
     <Compile Include="Background\ModeMonitoringService.cs" />
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
-    <Compile Include="Commands\CategoryMonitoring\ForceUpdateCommand.cs" />
     <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
     <Compile Include="Commands\CrossChannel\CrossChannelNotifyCommand.cs" />
     <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
@@ -171,7 +167,6 @@
     <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
-    <Compile Include="Services\CategoryWatcherHelperService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
     <Compile Include="Services\CrossChannelService.cs" />
     <Compile Include="Services\DraftStatusService.cs" />
@@ -180,7 +175,6 @@
     <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
     <Compile Include="Services\Interfaces\IAccessControlManagementService.cs" />
-    <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
     <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
     <Compile Include="Services\Interfaces\IDraftStatusService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />

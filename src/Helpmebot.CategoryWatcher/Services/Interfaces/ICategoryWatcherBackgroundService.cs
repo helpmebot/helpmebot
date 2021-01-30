@@ -1,6 +1,7 @@
-﻿namespace Helpmebot.Background.Interfaces
+﻿namespace Helpmebot.CategoryWatcher.Services.Interfaces
 {
     using System.Collections.Generic;
+    using Helpmebot.Background.Interfaces;
     using Helpmebot.Model;
 
     public interface ICategoryWatcherBackgroundService : ITimerBackgroundService

@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.Services.Interfaces
+﻿namespace Helpmebot.CategoryWatcher.Services.Interfaces
 {
     using System;
     using System.Collections.Generic;

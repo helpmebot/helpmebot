@@ -1,9 +1,9 @@
-namespace Helpmebot.Commands.CategoryMonitoring
+namespace Helpmebot.CategoryWatcher.Commands
 {
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
+    using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using NDesk.Options;

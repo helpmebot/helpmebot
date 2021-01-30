@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.Background
+﻿namespace Helpmebot.CategoryWatcher.Services
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,9 @@
     using System.Threading;
     using System.Timers;
     using Castle.Core.Logging;
+    using Helpmebot.Background;
     using Helpmebot.Background.Interfaces;
+    using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
@@ -53,6 +55,8 @@
 
         protected override void OnStart()
         {
+            this.Logger.DebugFormat("Starting CatWatcher");
+            
             this.ircClient.WaitOnRegistration();
             Thread.Sleep(1000);
 
@@ -138,12 +142,15 @@
 
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
+            this.Logger.TraceFormat("CatWatcher timer elapsed");
+            
             try
             {
                 if (!this.timerSemaphore.WaitOne(new TimeSpan(0, 0, 0, this.crossoverTimeout)))
                 {
                     this.Logger.WarnFormat(
-                        "Semaphore timeout ({0}s) reached on timer trigger. Perhaps we're trying to do too much?");
+                        "Semaphore timeout ({0}s) reached on timer trigger. Perhaps we're trying to do too much?",
+                        this.crossoverTimeout);
                     return;
                 }
 
@@ -157,7 +164,7 @@
                     {
                         if (categoryChannel.Channel.Silenced)
                         {
-                            this.Logger.DebugFormat(
+                            this.Logger.InfoFormat(
                                 "Not reporting to {0}, bot is silenced",
                                 categoryChannel.Channel.Name);
                             continue;

@@ -1,12 +1,11 @@
-namespace Helpmebot.Commands.CategoryMonitoring
+namespace Helpmebot.CategoryWatcher.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
+    using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
