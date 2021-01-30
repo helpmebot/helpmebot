@@ -127,5 +127,16 @@
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
+
+        <!-- Loadable modules -->
+        <component type="ModuleLoader">
+            <parameters>
+                <moduleList>
+                    <list>
+                        <item>netstandard2.0/Helpmebot.Commands.dll</item>
+                    </list>
+                </moduleList>
+            </parameters>
+        </component>
     </components>
 </configuration>

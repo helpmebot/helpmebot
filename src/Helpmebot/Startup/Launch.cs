@@ -21,6 +21,7 @@
     using Stwalkerster.Bot.MediaWikiLib.Services;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
+    using WindsorConfiguration = Castle.Windsor.Installer.Configuration;
 
     public class Launch : IApplication
     {
@@ -75,6 +76,8 @@
 
             // post-configuration, pre-initialisation actions
             ConfigureCertificateValidation(container);
+
+            LoadModules(container);
             
             // install into the container
             container.Install(new MainInstaller());
@@ -106,6 +109,11 @@
             
             container.Release(application);
             container.Dispose();
+        }
+
+        private static void LoadModules(WindsorContainer container)
+        {
+            container.Resolve<ModuleLoader>().LoadModules(container);
         }
 
         public Launch(
