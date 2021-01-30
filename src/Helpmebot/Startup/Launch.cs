@@ -76,7 +76,7 @@
 
             // post-configuration, pre-initialisation actions
             ConfigureCertificateValidation(container);
-
+            
             LoadModules(container);
             
             // install into the container
@@ -113,6 +113,7 @@
 
         private static void LoadModules(WindsorContainer container)
         {
+            container.Install(WindsorConfiguration.FromXmlFile("modules.xml"));
             container.Resolve<ModuleLoader>().LoadModules();
         }
 
