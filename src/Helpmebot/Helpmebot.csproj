@@ -90,6 +90,10 @@
     <Compile Include="Background\ModeMonitoringService.cs" />
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
+    <Compile Include="Commands\ACC\AccCountCommand.cs" />
+    <Compile Include="Commands\ACC\AccDeployCommand.cs" />
+    <Compile Include="Commands\ACC\AccStatsCommand.cs" />
+    <Compile Include="Commands\ACC\AccStatusCommand.cs" />
     <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
