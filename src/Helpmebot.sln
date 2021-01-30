@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.CoreServices", "H
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{AF638120-4152-41AF-9CD3-14CDF78A7760}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.AccountCreations", "Helpmebot.AccountCreations\Helpmebot.AccountCreations.csproj", "{D43894FA-A152-404C-9245-001E806287D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -38,10 +40,15 @@ Global
 		{BBF8FDD2-E673-488F-B379-A41E2FA4A087}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BBF8FDD2-E673-488F-B379-A41E2FA4A087}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BBF8FDD2-E673-488F-B379-A41E2FA4A087}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D43894FA-A152-404C-9245-001E806287D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D43894FA-A152-404C-9245-001E806287D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D43894FA-A152-404C-9245-001E806287D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D43894FA-A152-404C-9245-001E806287D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{D43894FA-A152-404C-9245-001E806287D1} = {AF638120-4152-41AF-9CD3-14CDF78A7760}
 	EndGlobalSection
 EndGlobal
