@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Background.Interfaces
+namespace Helpmebot.ChannelServices.Services.Interfaces
 {
     using Castle.Core;
     using NHibernate;

@@ -1,4 +1,4 @@
-namespace Helpmebot.Services.UrlShortening
+namespace Helpmebot.ChannelServices.Services.UrlShortening
 {
     using System;
     using System.Collections.Generic;

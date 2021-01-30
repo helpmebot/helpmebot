@@ -15,16 +15,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
-namespace Helpmebot.Services.UrlShortening
+namespace Helpmebot.ChannelServices.Services.UrlShortening
 {
+    using System;
     using System.IO;
     using System.Net;
     using System.Web;
-
     using Castle.Core.Logging;
-
     using Helpmebot.Configuration;
     using Helpmebot.Services.Interfaces;
 

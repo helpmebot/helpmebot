@@ -14,7 +14,7 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Services.UrlShortening
+namespace Helpmebot.ChannelServices.Services.UrlShortening
 {
     using Castle.Core.Logging;
     using Helpmebot.Services.Interfaces;

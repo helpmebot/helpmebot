@@ -1,13 +1,13 @@
-﻿namespace Helpmebot.Background
+﻿namespace Helpmebot.ChannelServices.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
+    using Helpmebot.ChannelServices.Model.ModeMonitoring;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
-    using Helpmebot.Model.ModeMonitoring;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;

@@ -1,8 +1,8 @@
-namespace Helpmebot.Background
+namespace Helpmebot.ChannelServices.Services
 {
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
-    using Helpmebot.Model.ModeMonitoring;
+    using Helpmebot.ChannelServices.Model.ModeMonitoring;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
 

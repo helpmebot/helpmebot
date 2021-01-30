@@ -23,5 +23,10 @@
         <PackageReference Include="NDesk.Options" Version="0.2.1" />
         <PackageReference Include="NHibernate" Version="4.1.2.4000" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Model" />
     </ItemGroup>
 </Project>

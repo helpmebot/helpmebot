@@ -13,6 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj" />
       <ProjectReference Include="..\Helpmebot\Helpmebot.csproj" />
     </ItemGroup>
 

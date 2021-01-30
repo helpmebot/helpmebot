@@ -1,11 +1,11 @@
-namespace Helpmebot.Background
+namespace Helpmebot.ChannelServices.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Prometheus;
     using Stwalkerster.IrcClient.Events;
@@ -89,7 +89,7 @@ namespace Helpmebot.Background
         #region IRC tracking
         private void IrcJoinReceived(object sender, JoinEventArgs e)
         {
-            if (e.Channel == targetChannel && e.User.Nickname == e.Client.Nickname)
+            if (e.Channel == this.targetChannel && e.User.Nickname == e.Client.Nickname)
             {
                 lock (this.lockToken)
                 {
@@ -104,7 +104,7 @@ namespace Helpmebot.Background
                 return;
             }
             
-            if (e.Channel != targetChannel)
+            if (e.Channel != this.targetChannel)
             {
                 // not for this channel
                 return;
@@ -213,7 +213,7 @@ namespace Helpmebot.Background
 
         private void IrcKickReceived(object sender, KickEventArgs e)
         {
-            if (e.Channel != targetChannel)
+            if (e.Channel != this.targetChannel)
             {
                 // not for us
                 return;
@@ -225,7 +225,7 @@ namespace Helpmebot.Background
 
         private void IrcPartReceived(object sender, JoinEventArgs e)
         {
-            if (e.Channel != targetChannel)
+            if (e.Channel != this.targetChannel)
             {
                 // not for us
                 return;

@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.Commands.Standard
+namespace Helpmebot.ChannelServices.Commands.Standard
 {
     using System.Collections.Generic;
     using System.Linq;

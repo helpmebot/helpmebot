@@ -16,7 +16,7 @@
 //   IN THE SOFTWARE.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Model.ModeMonitoring
+namespace Helpmebot.ChannelServices.Model.ModeMonitoring
 {
     using System.Collections.Generic;
     using System.Linq;

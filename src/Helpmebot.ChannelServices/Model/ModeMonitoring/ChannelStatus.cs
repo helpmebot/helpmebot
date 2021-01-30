@@ -19,7 +19,7 @@
 
 using System.Collections.Generic;
 
-namespace Helpmebot.Model.ModeMonitoring
+namespace Helpmebot.ChannelServices.Model.ModeMonitoring
 {
     using System;
 
