@@ -9,7 +9,7 @@ namespace Helpmebot.Commands
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Classes.FromAssemblyContaining<WindsorInstaller>().BasedOn<ICommand>());
+            container.Register(Classes.FromAssemblyContaining<WindsorInstaller>().BasedOn<ICommand>().LifestyleTransient());
         }
     }
 }
