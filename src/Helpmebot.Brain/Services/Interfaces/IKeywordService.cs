@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.Brain.Services.Interfaces
 {
     using Castle.Core;
     using Helpmebot.Model;

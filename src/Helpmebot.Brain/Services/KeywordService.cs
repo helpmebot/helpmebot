@@ -18,14 +18,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services
+namespace Helpmebot.Brain.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.Commands.Brain;
+    using Helpmebot.Brain.Commands;
+    using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

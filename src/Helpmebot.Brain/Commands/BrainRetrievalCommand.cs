@@ -1,11 +1,11 @@
-namespace Helpmebot.Commands.Brain
+namespace Helpmebot.Brain.Commands
 {
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.ExtensionMethods;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;

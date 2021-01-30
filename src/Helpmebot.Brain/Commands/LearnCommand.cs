@@ -1,9 +1,11 @@
-namespace Helpmebot.Commands.Brain
+namespace Helpmebot.Brain.Commands
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Brain.Services.Interfaces;
+    using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -12,12 +14,13 @@ namespace Helpmebot.Commands.Brain
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.Brain)]
-    [CommandInvocation("forget")]
-    public class ForgetCommand : CommandBase
+    [CommandInvocation("learn")]
+    [CommandInvocation("teach")]
+    public class LearnCommand : CommandBase
     {
         private readonly IKeywordService keywordService;
 
-        public ForgetCommand(
+        public LearnCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -37,18 +40,30 @@ namespace Helpmebot.Commands.Brain
             this.keywordService = keywordService;
         }
 
-        [RequiredArguments(1)]
-        [Help("<keyword> [keyword...]", "Removes the provided keywords from the learnt command list.")]
+        [RequiredArguments(2)]
+        [Help(new[]{"<keyword> <message>", "@action <keyword> <message>"}, 
+            new[]{"Creates a new learnt command invoked by <keyword> to respond with the provided message",
+                "Optionally sends message as a CTCP ACTION (aka a /me command) if @action is provided before the first parameter."})]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            foreach (var argument in this.Arguments)
+            var action = false;
+            var args = new List<string>(this.Arguments);
+
+            if (args.Count >= 3)
             {
-                this.keywordService.Delete(argument);
+                if (args[0] == "@action")
+                {
+                    action = true;
+                    args.PopFromFront();
+                }
             }
-            
+
+            var keywordName = args.PopFromFront();
+            this.keywordService.Create(keywordName, string.Join(" ", Enumerable.ToArray(args)), action);
+  
             yield return new CommandResponse
             {
-                Message = "Command removed",
+                Message = "New command created",
                 Type = CommandResponseType.Notice,
                 Destination = CommandResponseDestination.PrivateMessage
             };

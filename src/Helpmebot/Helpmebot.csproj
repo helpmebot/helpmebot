@@ -92,9 +92,6 @@
     <Compile Include="Background\ModeMonitoringService.cs" />
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
-    <Compile Include="Commands\Brain\ForgetCommand.cs" />
-    <Compile Include="Commands\Brain\LearnCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
     <Compile Include="Commands\CategoryMonitoring\ForceUpdateCommand.cs" />
     <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
@@ -189,7 +186,6 @@
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
     <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
-    <Compile Include="Services\Interfaces\IKeywordService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
     <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
@@ -198,7 +194,6 @@
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\ChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IWhoisService.cs" />
-    <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\MediaWikiApiHelper.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\ShortUrlCacheService.cs" />

@@ -113,7 +113,7 @@
 
         private static void LoadModules(WindsorContainer container)
         {
-            container.Resolve<ModuleLoader>().LoadModules(container);
+            container.Resolve<ModuleLoader>().LoadModules();
         }
 
         public Launch(

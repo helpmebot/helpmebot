@@ -134,6 +134,7 @@
                 <moduleList>
                     <list>
                         <item>netstandard2.0/Helpmebot.Commands.dll</item>
+                        <item>netstandard2.0/Helpmebot.Brain.dll</item>
                     </list>
                 </moduleList>
             </parameters>
