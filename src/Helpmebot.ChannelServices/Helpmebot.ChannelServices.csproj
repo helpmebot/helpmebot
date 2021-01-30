@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <OutputPath>../Helpmebot/bin/Debug/</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputPath>../Helpmebot/bin/Release/</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Helpmebot\Helpmebot.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Castle.Core" Version="4.4.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="FluentNHibernate" Version="2.0.3" />
+        <PackageReference Include="NDesk.Options" Version="0.2.1" />
+        <PackageReference Include="NHibernate" Version="4.1.2.4000" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75" />
+    </ItemGroup>
+</Project>

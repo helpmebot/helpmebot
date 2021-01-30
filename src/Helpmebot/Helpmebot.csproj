@@ -90,8 +90,6 @@
     <Compile Include="Background\ModeMonitoringService.cs" />
     <Compile Include="Background\NotificationBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
-    <Compile Include="Commands\CrossChannel\CrossChannelNotifyCommand.cs" />
     <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
     <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
     <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
@@ -168,17 +166,14 @@
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\CrossChannelService.cs" />
     <Compile Include="Services\DraftStatusService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeolocationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
     <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
     <Compile Include="Services\Interfaces\IAccessControlManagementService.cs" />
-    <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
     <Compile Include="Services\Interfaces\IDraftStatusService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
-    <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
@@ -186,7 +181,6 @@
     <Compile Include="Services\Interfaces\IShortUrlCacheService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
-    <Compile Include="Services\ChannelManagementService.cs" />
     <Compile Include="Services\Interfaces\IWhoisService.cs" />
     <Compile Include="Services\MediaWikiApiHelper.cs" />
     <Compile Include="Services\RedirectionParserService.cs" />
@@ -370,9 +364,6 @@
     <Content Include="modules.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands" />
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

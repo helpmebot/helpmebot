@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.Services.Interfaces
+﻿namespace Helpmebot.ChannelServices.Services.Interfaces
 {
     using NHibernate;
     using Stwalkerster.IrcClient.Events;

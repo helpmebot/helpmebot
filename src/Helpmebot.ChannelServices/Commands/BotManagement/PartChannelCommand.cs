@@ -1,8 +1,9 @@
-namespace Helpmebot.Commands.BotManagement
+namespace Helpmebot.ChannelServices.Commands.BotManagement
 {
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
@@ -14,14 +15,16 @@ namespace Helpmebot.Commands.BotManagement
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("join")]
+    [CommandInvocation("part")]
     [CommandFlag(Flags.BotManagement)]
-    public class JoinChannelCommand : CommandBase
+    [CommandFlag(Flags.LocalConfiguration)]
+    public class PartChannelCommand : CommandBase
     {
         private readonly ISession session;
         private readonly IChannelManagementService channelManagementService;
+        private readonly IMessageService messageService;
 
-        public JoinChannelCommand(
+        public PartChannelCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -30,7 +33,8 @@ namespace Helpmebot.Commands.BotManagement
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession session,
-            IChannelManagementService channelManagementService) : base(
+            IChannelManagementService channelManagementService,
+            IMessageService messageService) : base(
             commandSource,
             user,
             arguments,
@@ -41,26 +45,31 @@ namespace Helpmebot.Commands.BotManagement
         {
             this.session = session;
             this.channelManagementService = channelManagementService;
+            this.messageService = messageService;
         }
 
-        [RequiredArguments(1)]
-        [Help("<channel>", "Joins the specified channel")]
+        [Help(new[]{"","<channel>"}, new[]{"Leaves the current channel", "Leaves the specified channel"})]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var channelName = this.Arguments.First();
+            var channel = this.CommandSource;
 
-            if (channelName == "0")
+            if (this.Arguments.Any())
             {
-                throw new CommandInvocationException();
+                channel = this.Arguments.First();
             }
             
-            if (!channelName.StartsWith("#"))
+            if (!channel.StartsWith("#"))
             {
-                throw new CommandErrorException(channelName + " is not a valid channel");
+                throw new CommandErrorException(channel + " is not a valid channel");
             }
 
-            this.channelManagementService.JoinChannel(channelName, this.session);
-
+            var partMessage = this.messageService.RetrieveMessage(
+                Messages.RequestedBy,
+                this.CommandSource,
+                new[] {this.User.ToString()});
+            
+            this.channelManagementService.PartChannel(channel, this.session, partMessage);
+                
             yield break;
         }
     }

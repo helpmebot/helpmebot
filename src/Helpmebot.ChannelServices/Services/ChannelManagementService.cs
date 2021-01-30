@@ -1,7 +1,8 @@
-﻿namespace Helpmebot.Services
+﻿namespace Helpmebot.ChannelServices.Services
 {
     using System.Data;
     using System.Linq;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

@@ -1,11 +1,11 @@
-namespace Helpmebot.Services
+namespace Helpmebot.ChannelServices.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using FluentNHibernate.Utils;
-    using Helpmebot.Commands.CrossChannel;
+    using Helpmebot.ChannelServices.Commands.CrossChannel;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;

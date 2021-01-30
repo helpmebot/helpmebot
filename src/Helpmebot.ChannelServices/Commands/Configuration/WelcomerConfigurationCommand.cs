@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.Configuration
+namespace Helpmebot.ChannelServices.Commands.Configuration
 {
     using System;
     using System.Collections.Generic;
@@ -170,7 +170,7 @@ namespace Helpmebot.Commands.Configuration
             {
                 string flagName = null;
                 
-                if (Arguments[0] != "none")
+                if (this.Arguments[0] != "none")
                 {
                     Channel channelAlias = null;
                     var welcomerOverride = this.databaseSession.QueryOver<WelcomerOverride>()
