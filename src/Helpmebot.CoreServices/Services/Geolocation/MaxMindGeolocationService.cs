@@ -14,16 +14,16 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Services.Geolocation
+namespace Helpmebot.CoreServices.Services.Geolocation
 {
     using System;
     using System.Net;
-
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
-
     using MaxMind.GeoIP2;
     using MaxMind.GeoIP2.Responses;
 

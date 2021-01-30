@@ -14,10 +14,10 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using System.Net;
-
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
 
     /// <summary>

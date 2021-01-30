@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Model
+namespace Helpmebot.CoreServices.Model
 {
     using System.Collections.Generic;
 

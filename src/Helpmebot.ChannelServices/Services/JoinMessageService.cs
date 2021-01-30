@@ -29,6 +29,7 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;

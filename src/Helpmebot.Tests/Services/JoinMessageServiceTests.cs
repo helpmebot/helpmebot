@@ -23,6 +23,7 @@ namespace Helpmebot.Tests.Services
     using System.Collections.Generic;
     using Helpmebot.ChannelServices.Services;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
 
