@@ -8,11 +8,9 @@
     using System.Timers;
     using Castle.Core.Logging;
     using Helpmebot.Background;
-    using Helpmebot.Background.Interfaces;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>

@@ -30,7 +30,6 @@ namespace Helpmebot.ChannelServices.Services
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using Helpmebot.Background.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
