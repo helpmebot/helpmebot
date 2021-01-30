@@ -3,9 +3,9 @@ namespace Helpmebot.Tests.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Helpmebot.Commands.Model;
+    using Helpmebot.Commands.Services;
     using Helpmebot.Configuration;
-    using Helpmebot.Model;
-    using Helpmebot.Services;
     using Moq;
     using NUnit.Framework;
     using Stwalkerster.Bot.MediaWikiLib.Model;

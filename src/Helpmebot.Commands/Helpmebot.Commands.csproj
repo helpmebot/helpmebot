@@ -29,7 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Commands\Standard" />
-      <Folder Include="Services" />
     </ItemGroup>
 
 </Project>

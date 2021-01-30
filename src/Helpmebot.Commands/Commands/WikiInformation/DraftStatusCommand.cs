@@ -6,6 +6,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Castle.Core.Logging;
     using Helpmebot.Background.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.Commands.Model;
+    using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;

@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Commands.CrossChannel;
+    using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;

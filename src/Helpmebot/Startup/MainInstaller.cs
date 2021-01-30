@@ -11,7 +11,6 @@
     using Castle.Windsor;
     using Castle.Windsor.Installer;
     using Helpmebot.Configuration;
-    using Helpmebot.Services.AccessControl;
     using Helpmebot.Startup.Converters;
     using Helpmebot.Startup.Facilities;
     using Helpmebot.TypedFactories;
@@ -49,7 +48,7 @@
 
             container.Register(
                 // Legacy stuff
-                Component.For<IFlagService>().ImplementedBy<AccessControlAuthorisationService>(),
+                Component.For<IFlagService>().ImplementedBy<Helpmebot.CoreServices.Services.AccessControl.AccessControlAuthorisationService>(),
 
                 // Startup
                 Component.For<IApplication>().ImplementedBy<Launch>(),

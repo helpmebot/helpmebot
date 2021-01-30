@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.ACL
     using System.Collections.Generic;
     using System.Data;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;

@@ -3,9 +3,9 @@ namespace Helpmebot.Commands.Commands.ACL
     using System.Collections.Generic;
     using System.Data;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Services.AccessControl;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.AccessControl;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RateLimitCacheEntry.cs" company="Helpmebot Development Team">
+// <copyright file="ISessionFactoryProvider.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -13,24 +13,27 @@
 //   You should have received a copy of the GNU General Public License
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
+// <summary>
+//   Defines the ISessionFactoryProvider type.
+// </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.Model
+
+namespace Helpmebot.Persistence.Interfaces
 {
     using System;
 
+    using Castle.Core;
+
+    using NHibernate;
+
     /// <summary>
-    /// The rate limit cache entry.
+    /// The SessionFactoryProvider interface.
     /// </summary>
-    public class RateLimitCacheEntry
+    public interface ISessionFactoryProvider : IInitializable, IDisposable
     {
         /// <summary>
-        /// Gets or sets the counter.
+        /// Gets the session factory.
         /// </summary>
-        public int Counter { get; set; }
-
-        /// <summary>
-        /// Gets or sets the expiry.
-        /// </summary>
-        public DateTime Expiry { get; set; }
+        ISessionFactory SessionFactory { get; }
     }
 }

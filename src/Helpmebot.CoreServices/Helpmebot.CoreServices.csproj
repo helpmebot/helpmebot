@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+        <PackageReference Include="FluentNHibernate" Version="2.0.3" />
+        <PackageReference Include="NHibernate" Version="4.1.2.4000" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
+    </ItemGroup>
+
+
+</Project>

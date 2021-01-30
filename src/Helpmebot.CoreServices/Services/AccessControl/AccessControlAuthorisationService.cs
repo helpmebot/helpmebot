@@ -1,4 +1,4 @@
-namespace Helpmebot.Services.AccessControl
+namespace Helpmebot.CoreServices.Services.AccessControl
 {
     using System.Collections.Generic;
     using System.Linq;

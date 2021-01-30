@@ -1,4 +1,4 @@
-namespace Helpmebot.Services.AccessControl
+namespace Helpmebot.CoreServices.Services.AccessControl
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +7,7 @@ namespace Helpmebot.Services.AccessControl
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Model;

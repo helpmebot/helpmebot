@@ -1,10 +1,12 @@
-namespace Helpmebot.Services
+namespace Helpmebot.Commands.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Commands.Model;
+    using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;

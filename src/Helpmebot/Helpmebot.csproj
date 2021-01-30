@@ -72,90 +72,28 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties/GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\HelpCategoryAttribute.cs" />
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Exceptions\AclException.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
-    <Compile Include="Exceptions\MediawikiApiException.cs" />
     <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
     <Compile Include="ExtensionMethods\DateTimeExtensions.cs" />
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Model\BlockMonitor.cs" />
-    <Compile Include="Model\CategoryItem.cs" />
-    <Compile Include="Model\CategoryWatcherChannel.cs" />
-    <Compile Include="Model\CrossChannel.cs" />
-    <Compile Include="Model\DraftStatus.cs" />
-    <Compile Include="Model\DraftStatusCode.cs" />
-    <Compile Include="Model\FlagAccessLogEntry.cs" />
     <Compile Include="Model\Flags.cs" />
-    <Compile Include="Model\Interfaces\ICommandParserEntity.cs" />
-    <Compile Include="Model\InterwikiPrefix.cs" />
-    <Compile Include="Model\MediaWikiSite.cs" />
-    <Compile Include="Model\RateLimitCacheEntry.cs" />
-    <Compile Include="Model\Response.cs" />
-    <Compile Include="Model\User.cs" />
-    <Compile Include="Model\WatchedCategory.cs" />
-    <Compile Include="Model\Channel.cs" />
-    <Compile Include="Model\IgnoredPage.cs" />
-    <Compile Include="Model\FlagGroupUser.cs" />
-    <Compile Include="Model\FlagGroup.cs" />
-    <Compile Include="Model\Keyword.cs" />
     <Compile Include="Model\Messages.cs" />
-    <Compile Include="Model\Notification.cs" />
-    <Compile Include="Model\ShortUrlCacheEntry.cs" />
-    <Compile Include="Model\WelcomeLog.cs" />
-    <Compile Include="Model\WelcomerOverride.cs" />
-    <Compile Include="Model\WelcomeUser.cs" />
-    <Compile Include="Persistence\EntityBase.cs" />
-    <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
-    <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
-    <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
-    <Compile Include="Persistence\Mappings\CategoryItemMap.cs" />
-    <Compile Include="Persistence\Mappings\CategoryWatcherChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\CrossChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
-    <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
-    <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
-    <Compile Include="Persistence\Mappings\ResponseMap.cs" />
-    <Compile Include="Persistence\Mappings\UserMap.cs" />
-    <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
-    <Compile Include="Persistence\Mappings\ChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
-    <Compile Include="Persistence\Mappings\IgnoredPageMap.cs" />
-    <Compile Include="Persistence\Mappings\KeywordMap.cs" />
-    <Compile Include="Persistence\Mappings\NotificationMap.cs" />
-    <Compile Include="Persistence\Mappings\ShortUrlCacheEntryMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomerOverrideMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
-    <Compile Include="Persistence\SessionFactoryProvider.cs" />
-    <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />
     <Compile Include="Services\AccessLogService.cs" />
-    <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\DraftStatusService.cs" />
     <Compile Include="Services\Geolocation\IpInfoDbGeolocationService.cs" />
     <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
-    <Compile Include="Services\HelpSyncService.cs" />
     <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
-    <Compile Include="Services\Interfaces\IAccessControlManagementService.cs" />
-    <Compile Include="Services\Interfaces\IDraftStatusService.cs" />
     <Compile Include="Services\Interfaces\IGeolocationService.cs" />
-    <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
-    <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
-    <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
     <Compile Include="Services\Interfaces\IShortUrlCacheService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Services\Interfaces\IWhoisService.cs" />
-    <Compile Include="Services\MediaWikiApiHelper.cs" />
-    <Compile Include="Services\RedirectionParserService.cs" />
     <Compile Include="Services\WhoisService.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
@@ -166,7 +104,6 @@
     <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\Launch.cs" />
     <Compile Include="Startup\MainInstaller.cs" />
-    <Compile Include="TypedFactories\IMediaWikiApiTypedFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f">
@@ -336,6 +273,10 @@
     <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj">
       <Project>{f5e4256a-b57f-4f8f-905f-ef85c925adf7}</Project>
       <Name>Helpmebot.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj">
+      <Project>{bbf8fdd2-e673-488f-b379-a41e2fa4a087}</Project>
+      <Name>Helpmebot.CoreServices</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />

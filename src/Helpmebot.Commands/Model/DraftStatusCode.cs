@@ -1,4 +1,4 @@
-namespace Helpmebot.Model
+namespace Helpmebot.Commands.Model
 {
     public enum DraftStatusCode
     {

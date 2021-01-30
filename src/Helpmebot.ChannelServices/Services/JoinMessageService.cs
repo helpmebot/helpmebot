@@ -26,6 +26,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Net;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.ExtensionMethods;
@@ -36,7 +37,7 @@ namespace Helpmebot.ChannelServices.Services
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
-    using Cache = System.Collections.Generic.Dictionary<string, Helpmebot.Model.RateLimitCacheEntry>;
+    using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
 
     public class JoinMessageService : IJoinMessageService
     {

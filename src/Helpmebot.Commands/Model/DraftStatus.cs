@@ -1,7 +1,8 @@
-namespace Helpmebot.Model
+namespace Helpmebot.Commands.Model
 {
     using System;
     using System.Collections.Generic;
+    using Helpmebot.Model;
 
     public class DraftStatus
     {
