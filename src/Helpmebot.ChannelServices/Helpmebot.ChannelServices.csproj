@@ -15,6 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Helpmebot\Helpmebot.csproj"/>
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj"/>
+        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
