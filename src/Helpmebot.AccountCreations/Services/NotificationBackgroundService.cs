@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Background
+namespace Helpmebot.AccountCreations.Services
 {
     using System;
     using System.Collections.Generic;
@@ -27,13 +27,14 @@ namespace Helpmebot.Background
     using System.Linq;
     using System.Timers;
     using Castle.Core.Logging;
-    using Stwalkerster.IrcClient.Interfaces;
-    using Helpmebot.Background.Interfaces;
+    using Helpmebot.AccountCreations.Services.Interfaces;
+    using Helpmebot.Background;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Util;
     using Prometheus;
+    using Stwalkerster.IrcClient.Interfaces;
 
     /// <summary>
     /// The notification service.

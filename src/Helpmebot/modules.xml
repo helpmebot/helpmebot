@@ -10,6 +10,7 @@
                         <item>netstandard2.0/Helpmebot.Brain.dll</item>
                         <item>netstandard2.0/Helpmebot.CategoryWatcher.dll</item>
                         <item>netstandard2.0/Helpmebot.ChannelServices.dll</item>
+                        <item>netstandard2.0/Helpmebot.AccountCreations.dll</item>
                     </list>
                 </moduleList>
             </parameters>

@@ -27,4 +27,9 @@
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Commands\Standard" />
+      <Folder Include="Services" />
+    </ItemGroup>
+
 </Project>

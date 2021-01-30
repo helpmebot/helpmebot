@@ -18,8 +18,10 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Background.Interfaces
+namespace Helpmebot.AccountCreations.Services.Interfaces
 {
+    using Helpmebot.Background.Interfaces;
+
     /// <summary>
     /// The NotificationService interface.
     /// </summary>

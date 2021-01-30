@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.ACC
+namespace Helpmebot.AccountCreations.Commands
 {
     using System;
     using System.Collections.Generic;
