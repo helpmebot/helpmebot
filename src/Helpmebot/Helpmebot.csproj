@@ -76,20 +76,8 @@
     <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
     <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
     <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
-    <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
-    <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
-    <Compile Include="Configuration\ModuleLoader.cs" />
-    <Compile Include="Configuration\NotificationReceiverConfiguration.cs" />
     <Compile Include="Exceptions\AclException.cs" />
     <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
-    <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
-    <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
-    <Compile Include="Configuration\DatabaseConfiguration.cs" />
-    <Compile Include="Configuration\BotConfiguration.cs" />
-    <Compile Include="Configuration\JoinMessageServiceConfiguration.cs" />
-    <Compile Include="Configuration\MediaWikiDocumentationConfiguration.cs" />
-    <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
     <Compile Include="Exceptions\MediawikiApiException.cs" />
     <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
     <Compile Include="ExtensionMethods\DateTimeExtensions.cs" />
@@ -345,7 +333,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands" />
+    <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj">
+      <Project>{f5e4256a-b57f-4f8f-905f-ef85c925adf7}</Project>
+      <Name>Helpmebot.Configuration</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

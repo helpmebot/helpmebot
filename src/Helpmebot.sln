@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.ChannelServices",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.AccountCreations", "Helpmebot.AccountCreations\Helpmebot.AccountCreations.csproj", "{06F36E16-2A9B-4D25-B414-492A1634BCDF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.Configuration", "Helpmebot.Configuration\Helpmebot.Configuration.csproj", "{F5E4256A-B57F-4F8F-905F-EF85C925ADF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Release|Any CPU = Release|Any CPU
@@ -60,6 +62,10 @@ Global
 		{06F36E16-2A9B-4D25-B414-492A1634BCDF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{06F36E16-2A9B-4D25-B414-492A1634BCDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{06F36E16-2A9B-4D25-B414-492A1634BCDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E4256A-B57F-4F8F-905F-EF85C925ADF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E4256A-B57F-4F8F-905F-EF85C925ADF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E4256A-B57F-4F8F-905F-EF85C925ADF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E4256A-B57F-4F8F-905F-EF85C925ADF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

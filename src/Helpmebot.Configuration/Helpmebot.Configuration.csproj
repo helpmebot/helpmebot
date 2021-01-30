@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <OutputPath>../Helpmebot/bin/Debug/</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputPath>../Helpmebot/bin/Release/</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="MySql.Data" Version="6.9.11"/>
+        <PackageReference Include="Castle.Windsor" Version="4.1.1"/>
+    </ItemGroup>
+
+</Project>

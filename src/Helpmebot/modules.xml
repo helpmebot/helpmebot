@@ -4,6 +4,11 @@
         <!-- Loadable modules -->
         <component type="ModuleLoader">
             <parameters>
+                <earlyModuleList>
+                    <list>                  
+                        <item>netstandard2.0/Helpmebot.Configuration.dll</item>
+                    </list>
+                </earlyModuleList>
                 <moduleList>
                     <list>
                         <item>netstandard2.0/Helpmebot.Commands.dll</item>
