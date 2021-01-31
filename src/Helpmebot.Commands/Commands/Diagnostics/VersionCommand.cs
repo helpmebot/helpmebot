@@ -1,5 +1,6 @@
 namespace Helpmebot.Commands.Commands.Diagnostics
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
@@ -43,7 +44,8 @@ namespace Helpmebot.Commands.Commands.Diagnostics
         [Help("", "Provides the current version of the bot and the key libraries")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var mainAssembly = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot"));
+            var version = mainAssembly.GetName().Version;
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
             var botLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(CommandHandler)));
             var mediaWikiLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(MediaWikiApi)));

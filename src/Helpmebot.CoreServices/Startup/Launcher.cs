@@ -71,8 +71,10 @@ namespace Helpmebot.CoreServices.Startup
                 var metricsServer = new MetricServer(botConfiguration.PrometheusMetricsPort.Value);
                 metricsServer.Start();
 
+                var mainAssembly = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot"));
+                
                 VersionInfo.WithLabels(
-                        FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion,
+                        FileVersionInfo.GetVersionInfo(mainAssembly.Location).FileVersion,
                         FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(IrcClient)).Location)
                             .FileVersion,
                         FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(CommandBase)).Location)
@@ -81,7 +83,7 @@ namespace Helpmebot.CoreServices.Startup
                             .FileVersion,
                         Environment.Version.ToString(),
                         Environment.OSVersion.ToString(),
-                        ((TargetFrameworkAttribute) Assembly.GetExecutingAssembly()
+                        ((TargetFrameworkAttribute) mainAssembly
                             .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)
                             .FirstOrDefault())?.FrameworkDisplayName ?? "Unknown"
                     )
