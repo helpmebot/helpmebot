@@ -1,10 +1,8 @@
-﻿using Helpmebot.Services;
-
-namespace Helpmebot.Tests.Services
+﻿namespace Helpmebot.Tests.Services
 {
     using System.Collections;
     using System.Collections.Generic;
-
+    using Helpmebot.CoreServices.Services;
     using NUnit.Framework;
 
     /// <summary>

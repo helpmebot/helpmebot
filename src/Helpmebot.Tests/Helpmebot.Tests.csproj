@@ -105,6 +105,22 @@
     <Compile Include="TestBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj">
+      <Project>{e5d06861-3c24-47c8-8538-df6a45d66892}</Project>
+      <Name>Helpmebot.ChannelServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpmebot.Commands\Helpmebot.Commands.csproj">
+      <Project>{b86f6c7c-d9cc-46a1-8945-4e58f9977f19}</Project>
+      <Name>Helpmebot.Commands</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj">
+      <Project>{f5e4256a-b57f-4f8f-905f-ef85c925adf7}</Project>
+      <Name>Helpmebot.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj">
+      <Project>{bbf8fdd2-e673-488f-b379-a41e2fa4a087}</Project>
+      <Name>Helpmebot.CoreServices</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Helpmebot\Helpmebot.csproj">
       <Project>{b9ddf39f-2c6c-4c0f-9da4-10c934dd24bd}</Project>
       <Name>Helpmebot</Name>

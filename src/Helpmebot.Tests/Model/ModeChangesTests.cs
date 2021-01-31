@@ -1,6 +1,6 @@
 namespace Helpmebot.Tests.Model
 {
-    using Helpmebot.Model.ModeMonitoring;
+    using Helpmebot.ChannelServices.Model.ModeMonitoring;
     using NUnit.Framework;
 
     [TestFixture]

@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Helpmebot</RootNamespace>
     <AssemblyName>Helpmebot</AssemblyName>
-    <StartupObject>Helpmebot.Startup.Launch</StartupObject>
+    <StartupObject>Helpmebot.Launch</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -72,225 +72,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties/GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Attributes\HelpCategoryAttribute.cs" />
-    <Compile Include="Background\BlockMonitoringService.cs" />
-    <Compile Include="Background\CategoryWatcherBackgroundService.cs" />
-    <Compile Include="Background\EirVoiceMonitorService.cs" />
-    <Compile Include="Background\HelpeeManagementService.cs" />
-    <Compile Include="Background\Interfaces\IBlockMonitoringService.cs" />
-    <Compile Include="Background\Interfaces\ICategoryWatcherBackgroundService.cs" />
-    <Compile Include="Background\Interfaces\IEirVoiceMonitorService.cs" />
-    <Compile Include="Background\Interfaces\IHelpeeManagementService.cs" />
-    <Compile Include="Background\Interfaces\IJoinMessageService.cs" />
-    <Compile Include="Background\Interfaces\ILinkerService.cs" />
-    <Compile Include="Background\Interfaces\IModeMonitoringService.cs" />
-    <Compile Include="Background\Interfaces\ISystemMonitoringClientService.cs" />
-    <Compile Include="Background\Interfaces\INotificationBackgroundService.cs" />
-    <Compile Include="Background\Interfaces\ITimerBackgroundService.cs" />
-    <Compile Include="Background\JoinMessageService.cs" />
-    <Compile Include="Background\LinkerService.cs" />
-    <Compile Include="Background\ModeMonitoringService.cs" />
-    <Compile Include="Background\NotificationBackgroundService.cs" />
-    <Compile Include="Background\TimerBackgroundServiceBase.cs" />
-    <Compile Include="Commands\ACL\AccessCommand.cs" />
-    <Compile Include="Commands\ACL\FlagGroupCommand.cs" />
-    <Compile Include="Commands\CategoryMonitoring\FetchAllCommand.cs" />
-    <Compile Include="Commands\ChannelManagement\ForceWelcomeCommand.cs" />
-    <Compile Include="Commands\ChannelManagement\IdleHelpeesCommand.cs" />
-    <Compile Include="Commands\Configuration\BlockMonitorConfigurationCommand.cs" />
-    <Compile Include="Commands\Configuration\SilenceCommand.cs" />
-    <Compile Include="Commands\Configuration\WelcomerConfigurationCommand.cs" />
-    <Compile Include="Commands\CrossChannel\CrossChannelConfigCommand.cs" />
-    <Compile Include="Commands\CrossChannel\CrossChannelNotifyCommand.cs" />
-    <Compile Include="Commands\Information\DecodeCommand.cs" />
-    <Compile Include="Commands\Information\IpInfoCommand.cs" />
-    <Compile Include="Commands\Standard\ShortenUrlCommand.cs" />
-    <Compile Include="Commands\WikiInformation\DraftStatusCommand.cs" />
-    <Compile Include="Commands\WikiInformation\ContribsCommand.cs" />
-    <Compile Include="Commands\WikiInformation\PageInfoCommand.cs" />
-    <Compile Include="Configuration\AfcCategoryConfiguration.cs" />
-    <Compile Include="Configuration\CrossChannelServiceConfiguration.cs" />
-    <Compile Include="Configuration\HelpeeManagementConfiguration.cs" />
-    <Compile Include="Configuration\NotificationReceiverConfiguration.cs" />
-    <Compile Include="Exceptions\AclException.cs" />
-    <Compile Include="ExtensionMethods\CommandBaseExtensions.cs" />
-    <Compile Include="Commands\ACC\AccDeployCommand.cs" />
-    <Compile Include="Commands\ACC\AccStatsCommand.cs" />
-    <Compile Include="Commands\ACC\AccStatusCommand.cs" />
-    <Compile Include="Commands\BotInfo\PingCommand.cs" />
-    <Compile Include="Commands\BotInfo\TimeCommand.cs" />
-    <Compile Include="Commands\BotInfo\UptimeCommand.cs" />
-    <Compile Include="Commands\BotManagement\JoinChannelCommand.cs" />
-    <Compile Include="Commands\BotManagement\PartChannelCommand.cs" />
-    <Compile Include="Commands\BotManagement\QuitCommand.cs" />
-    <Compile Include="Commands\BotManagement\RefreshResponseCommand.cs" />
-    <Compile Include="Commands\BotManagement\SyncHelpCommand.cs" />
-    <Compile Include="Commands\ACC\AccCountCommand.cs" />
-    <Compile Include="Commands\Brain\BrainRetrievalCommand.cs" />
-    <Compile Include="Commands\Brain\ForgetCommand.cs" />
-    <Compile Include="Commands\Brain\LearnCommand.cs" />
-    <Compile Include="Commands\CategoryMonitoring\ForceUpdateCommand.cs" />
-    <Compile Include="Commands\Configuration\AutoLinkCommand.cs" />
-    <Compile Include="Commands\Diagnostics\RawCommand.cs" />
-    <Compile Include="Commands\Diagnostics\RawCtcpCommand.cs" />
-    <Compile Include="Commands\Diagnostics\VersionCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\BeerCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\ChampagneCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\ChargeCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\ChillPillCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\CluebatCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\CoffeeCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\CookieCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\DrinkCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\ElectrocuteCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\ExorciseCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\GameCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\IceCreamCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\KillCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\MinnowCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\NukeCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\PatCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\PieCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\PillowCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\SalmonCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\SayHiCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\SirCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\SodaCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\TeaCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\TroutCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\VorticoughCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\WhaleCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\WhistleCommand.cs" />
-    <Compile Include="Commands\FunCommands\Commands\WineCommand.cs" />
-    <Compile Include="Commands\FunCommands\CurlCommand.cs" />
-    <Compile Include="Commands\FunCommands\FunCommandBase.cs" />
-    <Compile Include="Commands\FunCommands\ProtectedTargetedFunCommandBase.cs" />
-    <Compile Include="Commands\FunCommands\TargetedFunCommandBase.cs" />
-    <Compile Include="Commands\FunCommands\UncurlCommand.cs" />
-    <Compile Include="Commands\Information\DnsResolveCommand.cs" />
-    <Compile Include="Commands\Information\GoogleCommand.cs" />
-    <Compile Include="Commands\NullCommand.cs" />
-    <Compile Include="Commands\Standard\LinkCommand.cs" />
-    <Compile Include="Commands\WikiInformation\AfcCountCommand.cs" />
-    <Compile Include="Commands\WikiInformation\BlockInformationCommand.cs" />
-    <Compile Include="Commands\WikiInformation\CategorySizeCommand.cs" />
-    <Compile Include="Commands\WikiInformation\EditCountCommand.cs" />
-    <Compile Include="Commands\WikiInformation\GanCountCommand.cs" />
-    <Compile Include="Commands\WikiInformation\MaxLagCommand.cs" />
-    <Compile Include="Commands\WikiInformation\RegistrationCommand.cs" />
-    <Compile Include="Commands\WikiInformation\UserInfoCommand.cs" />
-    <Compile Include="Commands\WikiInformation\UserRightsCommand.cs" />
-    <Compile Include="Configuration\CategoryWatcherConfiguration.cs" />
-    <Compile Include="Configuration\CommandOverrideConfiguration.cs" />
-    <Compile Include="Configuration\DatabaseConfiguration.cs" />
-    <Compile Include="Configuration\BotConfiguration.cs" />
-    <Compile Include="Configuration\JoinMessageServiceConfiguration.cs" />
-    <Compile Include="Configuration\MediaWikiDocumentationConfiguration.cs" />
-    <Compile Include="Configuration\ModeMonitorConfiguration.cs" />
-    <Compile Include="Exceptions\MediawikiApiException.cs" />
-    <Compile Include="ExtensionMethods\DatabaseExtensions.cs" />
-    <Compile Include="ExtensionMethods\DateTimeExtensions.cs" />
-    <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
-    <Compile Include="ExtensionMethods\StringExtensions.cs" />
-    <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Model\BlockMonitor.cs" />
-    <Compile Include="Model\CategoryItem.cs" />
-    <Compile Include="Model\CategoryWatcherChannel.cs" />
-    <Compile Include="Model\CrossChannel.cs" />
-    <Compile Include="Model\DraftStatus.cs" />
-    <Compile Include="Model\DraftStatusCode.cs" />
-    <Compile Include="Model\FlagAccessLogEntry.cs" />
-    <Compile Include="Model\Flags.cs" />
-    <Compile Include="Model\Interfaces\ICommandParserEntity.cs" />
-    <Compile Include="Model\InterwikiPrefix.cs" />
-    <Compile Include="Model\MediaWikiSite.cs" />
-    <Compile Include="Model\ModeMonitoring\ChannelStatus.cs" />
-    <Compile Include="Model\ModeMonitoring\ModeChanges.cs" />
-    <Compile Include="Model\RateLimitCacheEntry.cs" />
-    <Compile Include="Model\Response.cs" />
-    <Compile Include="Model\User.cs" />
-    <Compile Include="Model\WatchedCategory.cs" />
-    <Compile Include="Model\Channel.cs" />
-    <Compile Include="Model\IgnoredPage.cs" />
-    <Compile Include="Model\FlagGroupUser.cs" />
-    <Compile Include="Model\FlagGroup.cs" />
-    <Compile Include="Model\Keyword.cs" />
-    <Compile Include="Model\Messages.cs" />
-    <Compile Include="Model\Notification.cs" />
-    <Compile Include="Model\ShortUrlCacheEntry.cs" />
-    <Compile Include="Model\WelcomeLog.cs" />
-    <Compile Include="Model\WelcomerOverride.cs" />
-    <Compile Include="Model\WelcomeUser.cs" />
-    <Compile Include="Persistence\EntityBase.cs" />
-    <Compile Include="Persistence\Interfaces\IDatabaseEntity.cs" />
-    <Compile Include="Persistence\Interfaces\ISessionFactoryProvider.cs" />
-    <Compile Include="Persistence\Mappings\BlockMonitorMap.cs" />
-    <Compile Include="Persistence\Mappings\CategoryItemMap.cs" />
-    <Compile Include="Persistence\Mappings\CategoryWatcherChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\CrossChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagAccessLogEntryMap.cs" />
-    <Compile Include="Persistence\Mappings\InterwikiPrefixMap.cs" />
-    <Compile Include="Persistence\Mappings\MediaWikiSiteMap.cs" />
-    <Compile Include="Persistence\Mappings\ResponseMap.cs" />
-    <Compile Include="Persistence\Mappings\UserMap.cs" />
-    <Compile Include="Persistence\Mappings\WatchedCategoryMap.cs" />
-    <Compile Include="Persistence\Mappings\ChannelMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagGroupUserMap.cs" />
-    <Compile Include="Persistence\Mappings\FlagGroupMap.cs" />
-    <Compile Include="Persistence\Mappings\IgnoredPageMap.cs" />
-    <Compile Include="Persistence\Mappings\KeywordMap.cs" />
-    <Compile Include="Persistence\Mappings\NotificationMap.cs" />
-    <Compile Include="Persistence\Mappings\ShortUrlCacheEntryMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomeLogMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomerOverrideMap.cs" />
-    <Compile Include="Persistence\Mappings\WelcomeUserMap.cs" />
-    <Compile Include="Persistence\SessionFactoryProvider.cs" />
-    <Compile Include="Services\AccessControl\AccessControlAuthorisationService.cs" />
-    <Compile Include="Services\AccessLogService.cs" />
-    <Compile Include="Services\AccessControl\AccessControlManagementService.cs" />
-    <Compile Include="Services\CategoryWatcherHelperService.cs" />
-    <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\CrossChannelService.cs" />
-    <Compile Include="Services\DraftStatusService.cs" />
-    <Compile Include="Services\Geolocation\IpInfoDbGeolocationService.cs" />
-    <Compile Include="Services\Geolocation\MaxMindGeolocationService.cs" />
-    <Compile Include="Services\HelpSyncService.cs" />
-    <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
-    <Compile Include="Services\Interfaces\IAccessControlManagementService.cs" />
-    <Compile Include="Services\Interfaces\ICategoryWatcherHelperService.cs" />
-    <Compile Include="Services\Interfaces\ICrossChannelService.cs" />
-    <Compile Include="Services\Interfaces\IDraftStatusService.cs" />
-    <Compile Include="Services\Interfaces\IGeolocationService.cs" />
-    <Compile Include="Services\Interfaces\IChannelManagementService.cs" />
-    <Compile Include="Services\Interfaces\IHelpSyncService.cs" />
-    <Compile Include="Services\Interfaces\IKeywordService.cs" />
-    <Compile Include="Services\Interfaces\IAccessLogService.cs" />
-    <Compile Include="Services\Interfaces\IMediaWikiApiHelper.cs" />
-    <Compile Include="Services\Interfaces\IRedirectionParserService.cs" />
-    <Compile Include="Services\Interfaces\IShortUrlCacheService.cs" />
-    <Compile Include="Services\Interfaces\IUserFlagService.cs" />
-    <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
-    <Compile Include="Services\ChannelManagementService.cs" />
-    <Compile Include="Services\Interfaces\IWhoisService.cs" />
-    <Compile Include="Services\KeywordService.cs" />
-    <Compile Include="Services\MediaWikiApiHelper.cs" />
-    <Compile Include="Services\RedirectionParserService.cs" />
-    <Compile Include="Services\ShortUrlCacheService.cs" />
-    <Compile Include="Services\UrlShortening\HmbUrlShorteningService.cs" />
-    <Compile Include="Services\UrlShortening\UrlShorteningServiceBase.cs" />
-    <Compile Include="Services\UrlShortening\WikimediaUrlShorteningService.cs" />
-    <Compile Include="Services\WhoisService.cs" />
-    <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
-    <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
-    <Compile Include="Model\GeolocateResult.cs" />
-    <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
-    <Compile Include="Services\UrlShortening\IsGdUrlShorteningService.cs" />
+    <Compile Include="Launch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Interfaces\IMessageService.cs" />
-    <Compile Include="Services\MessageService.cs" />
-    <Compile Include="Startup\Launch.cs" />
-    <Compile Include="Startup\MainInstaller.cs" />
-    <Compile Include="TypedFactories\IMediaWikiApiTypedFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f">
@@ -413,9 +196,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="logger.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -446,12 +226,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="afc-data.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="configuration.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj">
+      <Project>{f5e4256a-b57f-4f8f-905f-ef85c925adf7}</Project>
+      <Name>Helpmebot.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj">
+      <Project>{bbf8fdd2-e673-488f-b379-a41e2fa4a087}</Project>
+      <Name>Helpmebot.CoreServices</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

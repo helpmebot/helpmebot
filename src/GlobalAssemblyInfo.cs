@@ -29,7 +29,7 @@ using System.Resources;
 
 [assembly: AssemblyCompany("Simon Walker")]
 [assembly: AssemblyProduct("Helpmebot IRC Bot")]
-[assembly: AssemblyCopyright("Copyright Simon Walker and others (c) 2009-2020")]
+[assembly: AssemblyCopyright("Copyright Simon Walker and others (c) 2009-2021")]
 
 [assembly: NeutralResourcesLanguage("en-GB")]
 

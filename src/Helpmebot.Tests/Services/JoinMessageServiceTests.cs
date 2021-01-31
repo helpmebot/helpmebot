@@ -21,12 +21,10 @@
 namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
-    using Helpmebot.Background;
+    using Helpmebot.ChannelServices.Services;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services;
-    using Helpmebot.Services.Interfaces;
-
     using Moq;
 
     using NHibernate;
