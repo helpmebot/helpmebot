@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;

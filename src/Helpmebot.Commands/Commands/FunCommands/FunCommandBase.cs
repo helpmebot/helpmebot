@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

@@ -3,6 +3,8 @@
     using System.Data;
     using System.Linq;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

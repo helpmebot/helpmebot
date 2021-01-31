@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Exceptions;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;

@@ -1,4 +1,4 @@
-namespace Helpmebot.Model
+namespace Helpmebot.CoreServices.Model
 {
     using Stwalkerster.Bot.CommandLib.Model;
 

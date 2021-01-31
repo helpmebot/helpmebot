@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;

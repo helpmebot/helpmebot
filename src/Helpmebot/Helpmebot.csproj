@@ -78,18 +78,12 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Model\Flags.cs" />
-    <Compile Include="Model\Messages.cs" />
-    <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\Interfaces\IAccessLogService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\Interfaces\IMessageService.cs" />
-    <Compile Include="Services\MessageService.cs" />
     <Compile Include="Startup\Launch.cs" />
     <Compile Include="Startup\MainInstaller.cs" />
   </ItemGroup>

@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
     using NDesk.Options;
     using NHibernate;

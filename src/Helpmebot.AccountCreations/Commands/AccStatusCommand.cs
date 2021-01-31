@@ -8,6 +8,8 @@ namespace Helpmebot.AccountCreations.Commands
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;

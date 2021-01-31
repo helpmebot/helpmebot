@@ -3,6 +3,7 @@ namespace Helpmebot.Brain.Commands
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Brain.Services.Interfaces;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

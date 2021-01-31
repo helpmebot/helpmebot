@@ -2,6 +2,8 @@ namespace Helpmebot.Commands.Commands.BotInfo
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using Helpmebot.Startup;

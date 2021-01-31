@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.Commands.Information
     using Castle.Core.Logging;
     using DnsClient;
     using DnsClient.Protocol;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

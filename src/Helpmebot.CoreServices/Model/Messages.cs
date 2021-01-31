@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Model
+namespace Helpmebot.CoreServices.Model
 {
     /// <summary>
     /// Common messages defined in the wiki

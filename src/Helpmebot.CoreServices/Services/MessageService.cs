@@ -15,21 +15,21 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services
+namespace Helpmebot.CoreServices.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Text;
-
     using Castle.Core.Logging;
-    using Stwalkerster.IrcClient.Extensions;
-    
+    using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using Stwalkerster.IrcClient.Extensions;
 
     public class MessageService : IMessageService
     {

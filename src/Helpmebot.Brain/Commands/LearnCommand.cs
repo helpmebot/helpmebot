@@ -4,6 +4,7 @@ namespace Helpmebot.Brain.Commands
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Brain.Services.Interfaces;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.ExtensionMethods;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
