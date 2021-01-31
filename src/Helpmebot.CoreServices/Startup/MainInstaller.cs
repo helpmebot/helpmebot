@@ -18,10 +18,10 @@
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
-    using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
-    using Installer = Stwalkerster.IrcClient.Installer;
 
+    using IrcClient = Stwalkerster.IrcClient.IrcClient;
+    
     public class MainInstaller : IWindsorInstaller
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
@@ -42,7 +42,7 @@
 
             // Chainload other installers.
             container.Install(
-                new Installer(),
+                new Stwalkerster.IrcClient.Installer(),
                 new Stwalkerster.Bot.CommandLib.Startup.Installer()
             );
 

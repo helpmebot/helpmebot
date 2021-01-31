@@ -18,7 +18,6 @@ namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using System.Net;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.Model;
 
     /// <summary>
     /// The GeolocationService interface.

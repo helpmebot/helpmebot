@@ -125,7 +125,7 @@
         </component>
 
         <!-- Swappable components -->
-        <component service="IUrlShorteningService" type="GooglUrlShorteningService" />
+        <component service="IUrlShorteningService" type="IsGdUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
     </components>
 </configuration>
