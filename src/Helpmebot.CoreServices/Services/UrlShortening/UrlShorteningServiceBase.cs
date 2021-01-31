@@ -14,10 +14,10 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.ChannelServices.Services.UrlShortening
+namespace Helpmebot.CoreServices.Services.UrlShortening
 {
     using Castle.Core.Logging;
-    using Helpmebot.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
 
     /// <summary>
     /// The url shortening service base.

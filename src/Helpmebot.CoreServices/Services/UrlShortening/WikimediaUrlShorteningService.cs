@@ -1,4 +1,4 @@
-namespace Helpmebot.ChannelServices.Services.UrlShortening
+namespace Helpmebot.CoreServices.Services.UrlShortening
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,7 @@ namespace Helpmebot.ChannelServices.Services.UrlShortening
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.TypedFactories;
     using Stwalkerster.Bot.MediaWikiLib.Configuration;
     using Stwalkerster.Bot.MediaWikiLib.Exceptions;

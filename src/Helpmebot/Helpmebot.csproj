@@ -82,11 +82,8 @@
     <Compile Include="Model\Messages.cs" />
     <Compile Include="Services\AccessLogService.cs" />
     <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\Interfaces\CommandParserProviderServiceBase.cs" />
     <Compile Include="Services\Interfaces\IAccessLogService.cs" />
-    <Compile Include="Services\Interfaces\IShortUrlCacheService.cs" />
     <Compile Include="Services\Interfaces\IUserFlagService.cs" />
-    <Compile Include="Services\Interfaces\IUrlShorteningService.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />

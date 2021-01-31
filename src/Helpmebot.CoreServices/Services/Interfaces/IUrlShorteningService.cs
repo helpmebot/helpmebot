@@ -15,7 +15,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Interfaces
 {
     /// <summary>
     /// The Url Shortening Service interface.

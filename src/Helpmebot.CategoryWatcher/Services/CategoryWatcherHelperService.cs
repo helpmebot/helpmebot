@@ -8,6 +8,7 @@
     using Helpmebot.CategoryWatcher.Commands;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

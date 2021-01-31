@@ -27,6 +27,7 @@ namespace Helpmebot.Brain.Services
     using Castle.Core.Logging;
     using Helpmebot.Brain.Commands;
     using Helpmebot.Brain.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

@@ -15,14 +15,14 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ChannelServices.Services
+namespace Helpmebot.CoreServices.Services
 {
     using System;
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
 

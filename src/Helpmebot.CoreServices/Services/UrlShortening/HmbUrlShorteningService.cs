@@ -15,27 +15,26 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ChannelServices.Services.UrlShortening
+namespace Helpmebot.CoreServices.Services.UrlShortening
 {
-    using System;
     using System.IO;
     using System.Net;
     using System.Web;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
-    using Helpmebot.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
 
     /// <summary>
     ///     Shortens URLs
     /// </summary>
-    public class IsGdUrlShorteningService : UrlShorteningServiceBase
+    public class HmbUrlShorteningService : UrlShorteningServiceBase
     {
         private readonly string userAgent;
 
         #region Constructors and Destructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IsGdUrlShorteningService"/> class.
+        /// Initializes a new instance of the <see cref="HmbUrlShorteningService"/> class.
         /// </summary>
         /// <param name="logger">
         /// The logger.
@@ -44,7 +43,7 @@ namespace Helpmebot.ChannelServices.Services.UrlShortening
         /// The short url cache repository.
         /// </param>
         /// <param name="config"></param>
-        public IsGdUrlShorteningService(ILogger logger,
+        public HmbUrlShorteningService(ILogger logger,
             IShortUrlCacheService shortUrlCacheService,
             BotConfiguration config)
             : base(logger, shortUrlCacheService)
@@ -67,12 +66,15 @@ namespace Helpmebot.ChannelServices.Services.UrlShortening
         /// </returns>
         protected internal override string GetShortUrl(string longUrl)
         {
-            var wrq =
-                (HttpWebRequest)
-                WebRequest.Create("https://is.gd/create.php?format=simple&url=" + HttpUtility.UrlEncode(longUrl));
+            var wrq = (HttpWebRequest) WebRequest.Create(
+                "https://hmb.im/shorten.php?url=" + HttpUtility.UrlEncode(longUrl));
+            wrq.Timeout = 1000;
+           // wrq.ContinueTimeout = 1000;
+            wrq.ReadWriteTimeout = 1000;
+            
             wrq.UserAgent = this.userAgent;
             var wrs = (HttpWebResponse)wrq.GetResponse();
-            if (wrs.StatusCode == HttpStatusCode.OK)
+            if (wrs.StatusCode == HttpStatusCode.OK || wrs.StatusCode == HttpStatusCode.Created)
             {
                 Stream responseStream = wrs.GetResponseStream();
 
@@ -86,36 +88,7 @@ namespace Helpmebot.ChannelServices.Services.UrlShortening
                 return shorturl;
             }
 
-            string error = null;
-            try
-            {
-                Stream responseStream = wrs.GetResponseStream();
-
-                if (responseStream == null)
-                {
-                    throw new WebException("Response stream is null.");
-                }
-
-                var sr = new StreamReader(responseStream);
-                
-                error = sr.ReadToEnd();
-            }
-            // ReSharper disable once EmptyGeneralCatchClause
-            catch (Exception)
-            {
-                // Suppress any errors with the error handling - something already went wrong.
-            }
-
-            if (error != null)
-            {
-                error = wrs.StatusDescription + " " + error;
-            }
-            else
-            {
-                error = wrs.StatusDescription;
-            }
-
-            throw new WebException(error);
+            throw new WebException(wrs.StatusDescription);
         }
 
         #endregion
