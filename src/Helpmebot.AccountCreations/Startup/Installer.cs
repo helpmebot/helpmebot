@@ -9,7 +9,10 @@ namespace Helpmebot.AccountCreations.Startup
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Register(Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient());
+            container.Register(
+                Classes.FromAssemblyContaining<Installer>().BasedOn<ICommand>().LifestyleTransient(),
+                Classes.FromAssemblyContaining<Installer>().InNamespace("Helpmebot.AccountCreations.Services").WithServiceAllInterfaces()
+            );
         }
     }
 }

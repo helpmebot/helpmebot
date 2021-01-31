@@ -3,11 +3,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -48,7 +46,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.apiHelper = apiHelper;
         }
 
-        [Help("<page title", "Provides basic information on the provided page")]
+        [Help("<page title>", "Provides basic information on the provided page")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var pageTitle = this.GetPageTitle();

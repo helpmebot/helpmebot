@@ -16,6 +16,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("rights")]
+    [CommandInvocation("userrights")]
     [CommandFlag(Flags.Info)]
     public class UserRightsCommand : CommandBase
     {

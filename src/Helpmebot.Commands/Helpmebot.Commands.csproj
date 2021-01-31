@@ -31,10 +31,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Commands\Standard" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Content Include="afc-data.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
