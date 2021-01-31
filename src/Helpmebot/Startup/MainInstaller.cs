@@ -9,7 +9,6 @@
     using Castle.MicroKernel.SubSystems.Conversion;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
-    using Castle.Windsor.Installer;
     using Helpmebot.Configuration;
     using Helpmebot.Startup.Converters;
     using Helpmebot.Startup.Facilities;
@@ -42,8 +41,7 @@
             // Chainload other installers.
             container.Install(
                 new Installer(),
-                new Stwalkerster.Bot.CommandLib.Startup.Installer(),
-                Configuration.FromXmlFile("afc-data.xml")
+                new Stwalkerster.Bot.CommandLib.Startup.Installer()
             );
 
             container.Register(
