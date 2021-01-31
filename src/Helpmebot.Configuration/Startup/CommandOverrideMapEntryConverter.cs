@@ -1,4 +1,4 @@
-namespace Helpmebot.Startup.Converters
+namespace Helpmebot.Configuration.Startup
 {
     using System;
     using Castle.Core.Configuration;

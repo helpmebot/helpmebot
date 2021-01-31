@@ -6,6 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
         <PackageReference Include="Castle.Windsor" Version="4.1.1" />
         <PackageReference Include="FluentNHibernate" Version="2.0.3" />
         <PackageReference Include="MaxMind.Db" Version="2.6.1" />

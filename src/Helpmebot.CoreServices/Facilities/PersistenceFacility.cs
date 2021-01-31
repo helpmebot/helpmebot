@@ -18,18 +18,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.Startup.Facilities
+namespace Helpmebot.CoreServices.Facilities
 {
     using Castle.MicroKernel.Facilities;
     using Castle.MicroKernel.Registration;
-
     using FluentNHibernate.Cfg;
     using FluentNHibernate.Cfg.Db;
-
     using Helpmebot.Configuration;
     using Helpmebot.Persistence;
     using Helpmebot.Persistence.Interfaces;
-
     using NHibernate;
     using NHibernate.Cfg;
 

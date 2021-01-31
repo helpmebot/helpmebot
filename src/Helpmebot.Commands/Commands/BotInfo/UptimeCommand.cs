@@ -4,9 +4,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
-    using Helpmebot.Startup;
+    using Helpmebot.CoreServices.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,7 +17,6 @@ namespace Helpmebot.Commands.Commands.BotInfo
     public class UptimeCommand : CommandBase
     {
         private readonly IMessageService messageService;
-        private readonly IApplication application;
 
         public UptimeCommand(
             string commandSource,
@@ -29,8 +26,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService,
-            IApplication application) : base(
+            IMessageService messageService) : base(
             commandSource,
             user,
             arguments,
@@ -40,13 +36,12 @@ namespace Helpmebot.Commands.Commands.BotInfo
             client)
         {
             this.messageService = messageService;
-            this.application = application;
         }
 
         [Help("", "Returns the current uptime of the bot")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var startupTime = ((Launch)this.application).StartupTime;
+            var startupTime = Launcher.StartupTime;
             
             string[] messageParams =
             {
