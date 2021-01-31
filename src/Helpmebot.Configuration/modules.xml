@@ -4,11 +4,6 @@
         <!-- Loadable modules -->
         <component type="ModuleLoader">
             <parameters>
-                <earlyModuleList>
-                    <list>                  
-                        <item>Helpmebot.Configuration.dll</item>
-                    </list>
-                </earlyModuleList>
                 <moduleList>
                     <list>
                         <item>Helpmebot.Commands.dll</item>

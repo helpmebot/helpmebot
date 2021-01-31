@@ -3,8 +3,8 @@
     <components>
 
         <!-- IRC configuration -->
-        <component service="Stwalkerster.IrcClient.Interfaces.IIrcConfiguration"
-                   type="Stwalkerster.IrcClient.IrcConfiguration">
+        <component service="Stwalkerster.IrcClient.Interfaces.IIrcConfiguration, Stwalkerster.IrcClient"
+                   type="Stwalkerster.IrcClient.IrcConfiguration, Stwalkerster.IrcClient">
             <parameters>
                 <authToServices>true</authToServices>
                 <ssl>true</ssl>

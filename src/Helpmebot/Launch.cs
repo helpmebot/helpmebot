@@ -29,14 +29,22 @@
             }
 
             // setup the container
-            var container = new WindsorContainer(configurationFile);
+            var container = new WindsorContainer("modules.xml");
 
+            // Load other module assemblies, and add them to the relevant installation queues
+            var moduleLoader = container.Resolve<ModuleLoader>();
+            moduleLoader.LoadModules();
+            
+            // import the configuration
+            container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
+            
             // post-configuration, pre-initialisation actions
             ConfigureCertificateValidation(container);
-            LoadModules(container);
-
+            
             // install into the container
             container.Install(new MainInstaller());
+            moduleLoader.InstallModules(container);
+            container.Release(moduleLoader);
 
             var application = container.Resolve<IApplication>();
             application.Run();
@@ -53,12 +61,6 @@
             {
                 ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
             }
-        }
-
-        private static void LoadModules(IWindsorContainer container)
-        {
-            container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile("modules.xml"));
-            container.Resolve<ModuleLoader>().LoadModules();
         }
     }
 }

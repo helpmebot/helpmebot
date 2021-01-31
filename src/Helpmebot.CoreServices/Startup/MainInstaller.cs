@@ -68,8 +68,6 @@
                 // IRC client
                 Component.For<IIrcClient>().ImplementedBy<IrcClient>().Start()
             );
-
-            container.Resolve<ModuleLoader>().InstallModules(container);
         }
     }
 }
