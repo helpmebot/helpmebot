@@ -78,8 +78,6 @@
     <Compile Include="ExtensionMethods\ObjectExtensions.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="Services\ConfigurationProvider.cs" />
-    <Compile Include="Services\Interfaces\IUserFlagService.cs" />
     <Compile Include="Startup\Converters\CommandOverrideMapEntryConverter.cs" />
     <Compile Include="Startup\Facilities\PersistenceFacility.cs" />
     <Compile Include="ExtensionMethods\FormatWithExtension.cs" />
