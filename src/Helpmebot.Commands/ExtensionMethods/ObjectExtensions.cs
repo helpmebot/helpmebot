@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.Commands.ExtensionMethods
 {
     using System.Collections.Generic;
 

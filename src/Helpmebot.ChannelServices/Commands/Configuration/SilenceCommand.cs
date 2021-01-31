@@ -4,7 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.ExtensionMethods;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;

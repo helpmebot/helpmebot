@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StringExtensions.cs" company="Helpmebot Development Team">
+// <copyright file="FormatWithExtension.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,27 +14,32 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the StringExtensions type.
+//   Defines the FormatWithExtension type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.CoreServices.ExtensionMethods
 {
     using System;
-    using System.Net;
+    using System.Collections.Generic;
 
-    public static class StringExtensions
+    public static class FormatWithExtension
     {
-        public static IPAddress GetIpAddressFromHex(this string input)
+        public static string FormatWith(this string format, IDictionary<string, object> source)
         {
-            var ip = new byte[4];
-            ip[0] = Convert.ToByte(input.Substring(0, 2), 16);
-            ip[1] = Convert.ToByte(input.Substring(2, 2), 16);
-            ip[2] = Convert.ToByte(input.Substring(4, 2), 16);
-            ip[3] = Convert.ToByte(input.Substring(6, 2), 16);
+            if (format == null)
+            {
+                throw new ArgumentNullException("format");
+            }
 
-            var ipAddr = new IPAddress(ip);
-            return ipAddr;
+            string result = format;
+
+            foreach (KeyValuePair<string, object> o in source)
+            {
+                result = result.Replace("{" + o.Key + "}", o.Value.ToString());
+            }
+
+            return result;
         }
     }
 }

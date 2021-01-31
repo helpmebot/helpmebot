@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ListExtensions.cs" company="Helpmebot Development Team">
+// <copyright file="StringExtensions.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,22 +14,27 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the ListExtensions type.
+//   Defines the StringExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.CoreServices.ExtensionMethods
 {
-    using System.Collections.Generic;
+    using System;
+    using System.Net;
 
-    public static class ListExtensions
+    public static class StringExtensions
     {
-        public static T PopFromFront<T>(this List<T> list)
+        public static IPAddress GetIpAddressFromHex(this string input)
         {
-            var foo = list[0];
-            list.RemoveAt(0);
+            var ip = new byte[4];
+            ip[0] = Convert.ToByte(input.Substring(0, 2), 16);
+            ip[1] = Convert.ToByte(input.Substring(2, 2), 16);
+            ip[2] = Convert.ToByte(input.Substring(4, 2), 16);
+            ip[3] = Convert.ToByte(input.Substring(6, 2), 16);
 
-            return foo;
+            var ipAddr = new IPAddress(ip);
+            return ipAddr;
         }
     }
 }

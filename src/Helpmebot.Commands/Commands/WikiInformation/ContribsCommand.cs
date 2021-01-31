@@ -5,8 +5,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.ExtensionMethods;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;

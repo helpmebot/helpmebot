@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FormatWithExtension.cs" company="Helpmebot Development Team">
+// <copyright file="ListExtensions.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,32 +14,22 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // <summary>
-//   Defines the FormatWithExtension type.
+//   Defines the ListExtensions type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.CoreServices.ExtensionMethods
 {
-    using System;
     using System.Collections.Generic;
 
-    public static class FormatWithExtension
+    public static class ListExtensions
     {
-        public static string FormatWith(this string format, IDictionary<string, object> source)
+        public static T PopFromFront<T>(this List<T> list)
         {
-            if (format == null)
-            {
-                throw new ArgumentNullException("format");
-            }
+            var foo = list[0];
+            list.RemoveAt(0);
 
-            string result = format;
-
-            foreach (KeyValuePair<string, object> o in source)
-            {
-                result = result.Replace("{" + o.Key + "}", o.Value.ToString());
-            }
-
-            return result;
+            return foo;
         }
     }
 }

@@ -4,9 +4,8 @@ namespace Helpmebot.CategoryWatcher.Commands
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.ExtensionMethods;
-    using Helpmebot.Model;
     using NDesk.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;

@@ -21,10 +21,8 @@
 namespace Helpmebot.Tests.Extensions
 {
     using System.Collections.Generic;
-
-    using Helpmebot.ExtensionMethods;
-
     using NUnit.Framework;
+    using Helpmebot.CoreServices.ExtensionMethods;
 
     /// <summary>
     /// The list extensions tests.

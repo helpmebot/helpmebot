@@ -7,7 +7,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.ExtensionMethods;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NDesk.Options;

@@ -22,7 +22,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.ExtensionMethods;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.Model;
     using Helpmebot.Services.Interfaces;
     using NHibernate;

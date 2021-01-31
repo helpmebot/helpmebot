@@ -1,4 +1,4 @@
-namespace Helpmebot.ExtensionMethods
+namespace Helpmebot.CoreServices.ExtensionMethods
 {
     using Helpmebot.Model;
     using NHibernate;

@@ -4,7 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.ExtensionMethods;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
