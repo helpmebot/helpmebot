@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.ChannelServices.Services.Interfaces
+﻿namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using System.Collections.Generic;
     using Castle.Core;

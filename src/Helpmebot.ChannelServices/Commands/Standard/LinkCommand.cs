@@ -3,7 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;

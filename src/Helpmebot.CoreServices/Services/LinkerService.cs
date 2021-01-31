@@ -14,14 +14,13 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-namespace Helpmebot.ChannelServices.Services
+namespace Helpmebot.CoreServices.Services
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
