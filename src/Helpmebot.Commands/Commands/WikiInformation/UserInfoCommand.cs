@@ -13,7 +13,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

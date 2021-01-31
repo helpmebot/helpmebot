@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;

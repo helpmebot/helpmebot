@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FluentNHibernate.Conventions;
-using Helpmebot.Services.Interfaces;
-using NHibernate.Cfg.ConfigurationSchema;
-
-namespace Helpmebot.Services
+﻿namespace Helpmebot.CoreServices.Services
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Helpmebot.CoreServices.Services.Interfaces;
+
     public class RedirectionParserService : IRedirectionParserService
     {
         public RedirectionParserResult Parse(IEnumerable<string> messageData)

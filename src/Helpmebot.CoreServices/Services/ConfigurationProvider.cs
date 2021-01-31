@@ -1,4 +1,4 @@
-namespace Helpmebot.Services
+namespace Helpmebot.CoreServices.Services
 {
     using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;

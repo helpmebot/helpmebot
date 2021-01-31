@@ -6,7 +6,6 @@
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;

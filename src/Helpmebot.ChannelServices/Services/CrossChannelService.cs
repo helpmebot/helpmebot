@@ -10,7 +10,6 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;

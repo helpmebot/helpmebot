@@ -11,7 +11,6 @@ namespace Helpmebot.AccountCreations.Commands
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;

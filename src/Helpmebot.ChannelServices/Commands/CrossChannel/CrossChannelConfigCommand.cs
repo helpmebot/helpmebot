@@ -9,7 +9,6 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NDesk.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;

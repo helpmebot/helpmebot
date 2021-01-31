@@ -10,7 +10,6 @@
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;

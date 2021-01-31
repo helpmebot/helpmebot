@@ -2,7 +2,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
-    using Helpmebot.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

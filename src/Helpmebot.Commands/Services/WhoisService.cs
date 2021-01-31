@@ -6,7 +6,6 @@ namespace Helpmebot.Commands.Services
     using System.Net;
     using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.Configuration;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
     public class WhoisService : IWhoisService

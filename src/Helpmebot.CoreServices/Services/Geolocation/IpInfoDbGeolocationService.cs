@@ -25,7 +25,6 @@ namespace Helpmebot.CoreServices.Services.Geolocation
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
     /// <summary>

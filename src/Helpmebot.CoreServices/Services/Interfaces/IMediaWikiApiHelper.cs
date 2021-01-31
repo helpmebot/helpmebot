@@ -1,4 +1,4 @@
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using Helpmebot.Model;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;

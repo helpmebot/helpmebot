@@ -1,8 +1,8 @@
-namespace Helpmebot.Services
+namespace Helpmebot.CoreServices.Services
 {
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Helpmebot.TypedFactories;
     using Stwalkerster.Bot.MediaWikiLib.Configuration;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;

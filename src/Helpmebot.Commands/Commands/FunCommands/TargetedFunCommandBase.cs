@@ -4,7 +4,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;

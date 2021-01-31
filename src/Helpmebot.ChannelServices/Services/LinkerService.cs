@@ -23,8 +23,8 @@ namespace Helpmebot.ChannelServices.Services
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Events;

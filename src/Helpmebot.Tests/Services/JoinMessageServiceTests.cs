@@ -25,8 +25,6 @@ namespace Helpmebot.Tests.Services
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
-
     using Moq;
 
     using NHibernate;

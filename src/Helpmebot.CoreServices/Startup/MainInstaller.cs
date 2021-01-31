@@ -55,10 +55,9 @@
 
                 // Registration by convention
                 Classes.FromAssemblyContaining<MainInstaller>().BasedOn<ICommand>().LifestyleTransient(),
-                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.Repositories").WithService.AllInterfaces(),
-                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.Services").WithService.AllInterfaces(),
-                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.Services.AccessControl").WithService.AllInterfaces(),
-                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.Background").WithService.AllInterfaces(),
+                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Services").WithService.AllInterfaces(),
+                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Services.AccessControl").WithService.AllInterfaces(),
+                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Background").WithService.AllInterfaces(),
 
                 // MediaWiki API stuff
                 Component.For<IMediaWikiApiTypedFactory>().AsFactory(),

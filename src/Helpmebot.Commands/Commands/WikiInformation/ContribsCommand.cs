@@ -7,7 +7,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

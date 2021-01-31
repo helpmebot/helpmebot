@@ -6,7 +6,6 @@ namespace Helpmebot.CoreServices.Services.AccessControl
     using Castle.Core.Logging;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;

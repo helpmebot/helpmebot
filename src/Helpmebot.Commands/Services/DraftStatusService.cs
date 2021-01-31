@@ -9,7 +9,6 @@ namespace Helpmebot.Commands.Services
     using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.Model;
-    using Helpmebot.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 

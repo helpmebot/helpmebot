@@ -1,4 +1,4 @@
-namespace Helpmebot.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using NHibernate;
     using Stwalkerster.IrcClient.Model.Interfaces;
