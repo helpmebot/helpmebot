@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.ExtensionMethods
 {
     using System.Net;
     using System.Text.RegularExpressions;
+    using Helpmebot.ChannelServices.ExtensionMethods;
     using NHibernate.Util;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.IrcClient.Model;
@@ -27,22 +28,7 @@ namespace Helpmebot.Commands.ExtensionMethods
             IrcUser ircUser;
             if (command.Client.UserCache.TryGetValue(command.Arguments[0], out ircUser))
             {
-                var userMatch = Regex.Match(ircUser.Username, "^[a-fA-F0-9]{8}$");
-                if (userMatch.Success)
-                {
-                    // We've got a hex-encoded IP.
-                    return ircUser.Username.GetIpAddressFromHex();
-                }
-
-                if (!ircUser.Hostname.Contains("/"))
-                {
-                    // real hostname, not a cloak
-                    var hostAddresses = Dns.GetHostAddresses(ircUser.Hostname);
-                    if (hostAddresses.Length > 0)
-                    {
-                        return hostAddresses.First() as IPAddress;
-                    }
-                }
+                return ircUser.GetIpAddress();
             }
             
             return null;

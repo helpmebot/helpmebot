@@ -3,6 +3,8 @@ namespace Helpmebot.ChannelServices.Startup
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
     using Castle.Windsor;
+    using Helpmebot.ChannelServices.Services;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
 
     public class Installer : IWindsorInstaller
