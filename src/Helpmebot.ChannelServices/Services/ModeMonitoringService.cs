@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Model.ModeMonitoring;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
@@ -22,7 +23,7 @@
         private readonly IDictionary<string, List<string>> banlist = new Dictionary<string, List<string>>();
         private readonly IIrcClient ircClient;
         private readonly ILogger logger;
-
+        private readonly IDictionary<string, IChannelOperator> onOpTaskList = new Dictionary<string, IChannelOperator>();
 
         /// <summary>
         /// Regex for detecting a rejection for chanops by ChanServ
@@ -238,6 +239,55 @@
 
         #endregion
 
+        #region Op requests
+
+        public void RequestPersistentOps(string channel, IChannelOperator requester, string token)
+        {
+            bool existingOps = false;
+            
+            lock (this.channelStatus)
+            {
+                if (!this.channelStatus.ContainsKey(channel))
+                {
+                    return;
+                }
+
+                this.channelStatus[channel].PersistentChanops.Add(token, requester);
+
+                existingOps = this.channelStatus[channel].BotOpsHeld;
+            }
+
+            if (existingOps)
+            {
+                // We're already opped, so fire this event immediately
+                requester.OnChannelOperatorGranted(this, new OppedEventArgs(channel, token, this, this.ircClient));
+            }
+            
+            this.CheckRestrictivity(channel);
+        }
+
+        public void ReleasePersistentOps(string channel, string token)
+        {
+            lock (this.channelStatus)
+            {
+                if (!this.channelStatus.ContainsKey(channel))
+                {
+                    return;
+                }
+
+                this.channelStatus[channel].PersistentChanops.Remove(token);
+            }
+            
+            this.CheckRestrictivity(channel);
+        }
+
+        public void PerformAsOperator(string channel, Action<IIrcClient> tasks)
+        {
+            this.RequestPersistentOps(channel, new ChanOpTaskList(tasks), Guid.NewGuid().ToString());
+        }
+        
+        #endregion
+        
         #region Banlist stuff
 
         private void ProcessBanListEntry(string ban, string channel, string type)
@@ -322,6 +372,18 @@
             // request exemption lists
             this.ircClient.Mode(channel, "e");
             this.logger.DebugFormat("Requested exemption lists for {0}", channel);
+
+            Dictionary<string, IChannelOperator> channelOperatorTasks;
+            lock (this.channelStatus)
+            {
+                channelOperatorTasks =
+                    new Dictionary<string, IChannelOperator>(this.channelStatus[channel].PersistentChanops);
+            }
+
+            foreach (var task in channelOperatorTasks)
+            {
+                task.Value.OnChannelOperatorGranted(this, new OppedEventArgs(channel, task.Key, this, this.ircClient));
+            }
         }
 
         private void OnBotDeOpped(string channel)
@@ -364,6 +426,11 @@
                     needsOps = true;
                 }
 
+                if (status.PersistentChanops.Count > 0)
+                {
+                    needsOps = true;
+                }
+
                 hasOps = status.BotOpsHeld;
             }
 
@@ -381,7 +448,6 @@
                 this.logger.DebugFormat("Detected we need ops, and don't have it. Requesting on {0}", channel);
                 this.ircClient.SendMessage("ChanServ", "op " + channel);
             }
-            
         }
 
         private void FixChannel(string channel)

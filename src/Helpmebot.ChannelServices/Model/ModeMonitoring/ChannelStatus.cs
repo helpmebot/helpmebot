@@ -22,6 +22,7 @@ using System.Collections.Generic;
 namespace Helpmebot.ChannelServices.Model.ModeMonitoring
 {
     using System;
+    using Helpmebot.ChannelServices.Services.Interfaces;
 
     internal class ChannelStatus
     {
@@ -31,8 +32,12 @@ namespace Helpmebot.ChannelServices.Model.ModeMonitoring
             this.Quiets = new List<string>();
             this.Exempts = new List<string>();
 
+            this.PersistentChanops = new Dictionary<string, IChannelOperator>();
+
             this.LastOverrideTime = DateTime.MinValue;
         }
+
+        public Dictionary<string, IChannelOperator> PersistentChanops { get; set; }
 
         public bool BotOpsRequested { get; set; }
         public bool BotOpsHeld { get; set; }
