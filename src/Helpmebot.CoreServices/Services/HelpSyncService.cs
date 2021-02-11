@@ -8,6 +8,7 @@ namespace Helpmebot.CoreServices.Services
     using Castle.Core.Internal;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
@@ -172,6 +173,18 @@ namespace Helpmebot.CoreServices.Services
             out string mainFlags,
             out string category)
         {
+            var undocumentedAttribute =
+                commandClass.GetCustomAttributes(typeof(UndocumentedAttribute), false);
+            if (undocumentedAttribute.Length == 0)
+            {
+                canonicalName = null;
+                pageName = null;
+                aliases = null;
+                mainFlags = null;
+                category = null;
+                return null;
+            }
+            
             var commandInvocationAttribute =
                 commandClass.GetCustomAttributes(typeof(CommandInvocationAttribute), false);
             if (commandInvocationAttribute.Length == 0)
