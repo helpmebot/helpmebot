@@ -33,7 +33,7 @@
             this.Schema = schema;
 
             this.Port = 3306;
-            this.CharSet = "utf8";
+            this.CharSet = "utf8mb4";
         }
 
         public string Hostname { get; private set; }
