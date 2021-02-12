@@ -131,7 +131,7 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.DebugFormat("Tracking {0}, in targeted ranges", user);
                 this.trackedUsers.Add(user, 0);
             
-                this.SendIrcAlert("Tracked user {user} in -en-help from target ranges");
+                this.SendIrcAlert($"Tracked user {user} in -en-help from target ranges");
                 return;
             }
             
