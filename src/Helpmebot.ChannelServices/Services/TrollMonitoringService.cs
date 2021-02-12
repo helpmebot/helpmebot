@@ -61,21 +61,27 @@ namespace Helpmebot.ChannelServices.Services
             var emojiMatch = this.emojiRegex.Match(e.Message);
             if (emojiMatch.Success)
             {
-                this.client.SendNotice("stwalkerster", $"Tracked user {e.User} in -en-help SENT EMOJI");
+                this.SendIrcAlert($"Tracked user {e.User} in -en-help SENT EMOJI");
                 this.trackedUsers[e.User]++;
             }
 
             var badWordMatch = this.badWordRegex.Match(e.Message);
             if (badWordMatch.Success)
             {
-                this.client.SendNotice("stwalkerster", $"Tracked user {e.User} in -en-help SENT BADWORD");
+                this.SendIrcAlert($"Tracked user {e.User} in -en-help SENT BADWORD");
                 this.trackedUsers[e.User]++;
             }
 
             if (this.trackedUsers[e.User] >= 5) 
             {
-                this.client.SendNotice("stwalkerster", $"Tracked user {e.User} in -en-help   *** PROPOSED BAN ***");
+                this.SendIrcAlert($"Tracked user {e.User} in -en-help   *** PROPOSED BAN ***");
             }
+        }
+
+        private void SendIrcAlert(string message)
+        {
+            this.client.SendNotice("stwalkerster", message);
+            this.client.SendNotice("Waggie", message);
         }
 
         #region tracking events
@@ -125,7 +131,7 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.DebugFormat("Tracking {0}, in targeted ranges", user);
                 this.trackedUsers.Add(user, 0);
             
-                this.client.SendNotice("stwalkerster", $"Tracked user {user} in -en-help from target ranges");
+                this.SendIrcAlert("Tracked user {user} in -en-help from target ranges");
                 return;
             }
             
@@ -134,7 +140,7 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.DebugFormat("Tracking {0}, nickname matches AmberRhino*", user);
                 this.trackedUsers.Add(user, 0);
             
-                this.client.SendNotice("stwalkerster", $"Tracked user {user} in -en-help by nickname pattern");
+                this.SendIrcAlert($"Tracked user {user} in -en-help by nickname pattern");
                 return;
             }
 
