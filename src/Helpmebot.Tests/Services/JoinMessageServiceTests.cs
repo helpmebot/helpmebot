@@ -22,6 +22,7 @@ namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
     using Helpmebot.ChannelServices.Services;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
@@ -59,6 +60,8 @@ namespace Helpmebot.Tests.Services
         /// The join message service.
         /// </summary>
         private Mock<JoinMessageService> joinMessageService;
+        
+        private Mock<IBlockMonitoringService> blockMonitoringService;
 
         /// <summary>
         /// The IRC network.
@@ -91,6 +94,8 @@ namespace Helpmebot.Tests.Services
         {
             this.ircClient = new Mock<IIrcClient>();
             this.geolocService = new Mock<IGeolocationService>();
+
+            this.blockMonitoringService = new Mock<IBlockMonitoringService>();
             
             this.joinMessageService = new Mock<JoinMessageService>(
                 this.Logger.Object,
@@ -98,7 +103,8 @@ namespace Helpmebot.Tests.Services
                 this.session.Object,
                 new JoinMessageServiceConfiguration(1, 10),
                 this.geolocService.Object,
-                this.ircClient.Object);
+                this.ircClient.Object,
+                this.blockMonitoringService.Object);
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
