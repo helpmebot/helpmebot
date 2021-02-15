@@ -32,12 +32,20 @@ namespace Helpmebot.ChannelServices.Services
 
         private IUser banProposal;
 
-        private string targetChannel = "#wikipedia-en-help";
-        private string publicAlertChannel = "#wikipedia-en-helpers";
-        private string[] privateAlertTargets = {"stwalkerster" , "Waggie"};
-        
+        #if DEBUG
+            private string targetChannel = "##stwalkerster";
+            private string publicAlertChannel = "##stwalkerster-development2";
+            private string[] privateAlertTargets = {"stwalkerster"};
+            private string banTracker = "stwalkerster";
+        #else
+            private string targetChannel = "#wikipedia-en-help";
+            private string publicAlertChannel = "#wikipedia-en-helpers";
+            private string[] privateAlertTargets = {"stwalkerster" , "Waggie"};
+            private string banTracker = "eir";
+        #endif        
+
         private Timer banProposalTimer = new Timer(60000);
-        private string banTracker = "eir";
+        
 
         public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser)
         {
