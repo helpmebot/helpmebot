@@ -1,6 +1,9 @@
 namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Attributes;
@@ -10,15 +13,17 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Configuration)]
+    [CommandFlag(Flags.Owner)]
+    [CommandInvocation("kb")]
     [Undocumented]
-    public class EnactBanCommand : CommandBase
+    public class BanCommand : CommandBase
     {
-        private readonly ITrollMonitoringService trollMonitoringService;
+        private readonly IModeMonitoringService modeMonitoringService;
 
-        public EnactBanCommand(
+        public BanCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -26,7 +31,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ITrollMonitoringService trollMonitoringService) : base(
+            IModeMonitoringService modeMonitoringService) : base(
             commandSource,
             user,
             arguments,
@@ -35,13 +40,40 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             configurationProvider,
             client)
         {
-            this.trollMonitoringService = trollMonitoringService;
+            this.modeMonitoringService = modeMonitoringService;
         }
 
+        [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            this.trollMonitoringService.EnactBan();
-            yield break;
+            try
+            {
+                var channel = "#wikipedia-en-help";
+                var bantracker = "eir";
+                
+                var banTarget = this.Client.Channels[channel]
+                    .Users.First(x => x.Value.User.Nickname == this.Arguments[0]);
+
+                this.modeMonitoringService.PerformAsOperator(
+                    channel,
+                    ircClient =>
+                    {
+                        ircClient.Mode(channel, $"+b *!*@{banTarget.Value.User.Hostname}");
+                        ircClient.Send(
+                            new Message("REMOVE", new[] {channel, banTarget.Value.User.Nickname}));
+                        
+                        // allow time for eir to message us
+                        Thread.Sleep(1000);
+                        ircClient.SendMessage(bantracker, $"~1d Requested by {this.User} via manual request");
+                    });
+                
+            }
+            catch (Exception ex)
+            {
+                return new[] {new CommandResponse {Message = ex.Message}};
+            }
+
+            return null;
         }
     }
 }

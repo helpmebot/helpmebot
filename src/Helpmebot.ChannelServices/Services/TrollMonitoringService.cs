@@ -4,44 +4,119 @@ namespace Helpmebot.ChannelServices.Services
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Timers;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Commands.ChannelManagement;
     using Helpmebot.ChannelServices.ExtensionMethods;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
+    using Timer = System.Timers.Timer;
 
     public class TrollMonitorService : ITrollMonitoringService
     {
         private readonly IIrcClient client;
         private readonly ILogger logger;
+        private readonly IModeMonitoringService modeMonitoringService;
+        private readonly ICommandParser commandParser;
         private List<IPNetwork> networks;
 
         private Dictionary<IUser, uint> trackedUsers = new Dictionary<IUser, uint>();
         private Regex emojiRegex;
         private Regex badWordRegex;
 
-        private string targetChannel = "#wikipedia-en-help";
+        private IUser banProposal;
 
-        public TrollMonitorService(IIrcClient client, ILogger logger)
+        private string targetChannel = "#wikipedia-en-help";
+        private string publicAlertChannel = "#wikipedia-en-helpers";
+        private string[] privateAlertTargets = {"stwalkerster" , "Waggie"};
+        
+        private Timer banProposalTimer = new Timer(60000);
+        private string banTracker = "eir";
+
+        public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser)
         {
             this.client = client;
             this.logger = logger;
+            this.modeMonitoringService = modeMonitoringService;
+            this.commandParser = commandParser;
 
             this.networks = new List<IPNetwork>
             {
-                IPNetwork.Parse("103.139.56.0/24"),
-                IPNetwork.Parse("110.235.229.0/24"),
-                IPNetwork.Parse("110.235.230.0/24"),
-                IPNetwork.Parse("47.8.32.0/19"),
-                IPNetwork.Parse("47.9.128.0/19"),
+                IPNetwork.Parse("103.139.56.0/23"), // Avjr
+                IPNetwork.Parse("110.235.224.0/20"), // Excitel
+                
+                // Reliance Jio
+                IPNetwork.Parse("45.123.16.0/22"),
+                IPNetwork.Parse("47.8.0.0/15"),
+                IPNetwork.Parse("47.11.0.0/16"),
                 IPNetwork.Parse("47.15.0.0/16"),
-                IPNetwork.Parse("49.37.128.0/19")
+                IPNetwork.Parse("47.29.0.0/16"),
+                IPNetwork.Parse("47.30.0.0/15"),
+                IPNetwork.Parse("47.247.0.0/16"),
+                IPNetwork.Parse("49.32.0.0/13"),
+                IPNetwork.Parse("49.40.0.0/14"),
+                IPNetwork.Parse("49.44.48.0/20"),
+                IPNetwork.Parse("49.44.64.0/18"),
+                IPNetwork.Parse("49.44.128.0/17"),
+                IPNetwork.Parse("49.45.0.0/16"),
+                IPNetwork.Parse("49.46.0.0/15"),
+                IPNetwork.Parse("103.63.128.0/22"),
+                IPNetwork.Parse("115.240.0.0/13"),
+                IPNetwork.Parse("132.154.0.0/16"),
+                IPNetwork.Parse("136.232.0.0/15"),
+                IPNetwork.Parse("137.97.0.0/16"),
+                IPNetwork.Parse("139.167.0.0/16"),
+                IPNetwork.Parse("152.56.0.0/14"),
+                IPNetwork.Parse("157.32.0.0/12"),
+                IPNetwork.Parse("157.48.0.0/14"),
+                IPNetwork.Parse("169.149.0.0/16"),
+                IPNetwork.Parse("205.253.0.0/16"),
+                
+                // M247 / NordVPN
+                IPNetwork.Parse("37.120.221.0/24")
             };
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
-            this.badWordRegex = new Regex("(?: |^)(cock|pussy|fuck|hard core|hardcore|babes|dick|ur mom)(?: |$)", RegexOptions.IgnoreCase);
+            this.badWordRegex = new Regex("(?: |^)(cock|pussy|fuck|hard core|hardcore|babes|dick|ur mom|cunt|nigger)(?: |$)", RegexOptions.IgnoreCase);
+
+            this.banProposalTimer.Enabled = false;
+            this.banProposalTimer.AutoReset = false;
+            this.banProposalTimer.Elapsed += BanProposalTimerOnElapsed;
+        }
+
+        private void BanProposalTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            this.commandParser.UnregisterCommand("enact");
+            this.banProposal = null;
+        }
+
+        public void EnactBan(IUser enactingUser)
+        {
+            if (this.banProposal != null)
+            {
+                // copy locally due to threading race conditions
+                var proposal = this.banProposal;
+                
+                this.modeMonitoringService.PerformAsOperator(this.targetChannel,
+                    ircClient =>
+                    {
+                        ircClient.Mode(this.targetChannel, $"+b *!*@{proposal.Hostname}");
+                        ircClient.Send(new Message("REMOVE", new[] {this.targetChannel, proposal.Nickname}));
+                        
+                        // allow time for eir to message us
+                        Thread.Sleep(1000);
+                        ircClient.SendMessage(this.banTracker, $"~1d Requested by {enactingUser} following bot-initiated proposal");
+                    });
+                
+                this.banProposalTimer.Stop();
+                this.BanProposalTimerOnElapsed(this, null);
+            }
         }
 
         private void ClientOnReceivedMessage(object sender, MessageReceivedEventArgs e)
@@ -52,36 +127,58 @@ namespace Helpmebot.ChannelServices.Services
                 return;
             }
 
+            var badWordMatch = this.badWordRegex.Match(e.Message);
+            
             if (!this.trackedUsers.ContainsKey(e.User))
             {
-                // don't care about non-tracked users
-                return;
+                var channelUser = this.client.Channels[this.targetChannel].Users[e.User.Nickname];
+                if (badWordMatch.Success && !channelUser.Voice)
+                {
+                    // add to tracking anyway.
+                    this.trackedUsers.Add(e.User, 0);
+                    this.SendIrcPrivateAlert($"UNTRACKED unvoiced user {e.User} added to tracking due to badword filter");
+
+                } else {
+                    // don't care about non-tracked users
+                    return;
+                }
             }
 
             var emojiMatch = this.emojiRegex.Match(e.Message);
             if (emojiMatch.Success)
             {
-                this.SendIrcAlert($"Tracked user {e.User} in -en-help SENT EMOJI");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT EMOJI");
                 this.trackedUsers[e.User]++;
             }
 
-            var badWordMatch = this.badWordRegex.Match(e.Message);
             if (badWordMatch.Success)
             {
-                this.SendIrcAlert($"Tracked user {e.User} in -en-help SENT BADWORD");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT BADWORD");
                 this.trackedUsers[e.User]++;
             }
 
-            if (this.trackedUsers[e.User] >= 5) 
+            if (this.trackedUsers[e.User] >= 3) 
             {
-                this.SendIrcAlert($"Tracked user {e.User} in -en-help   *** PROPOSED BAN ***");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
+                this.SendIrcAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts");
+                this.banProposal = e.User;
+                this.commandParser.RegisterCommand("enact", typeof(EnactBanCommand));
+                this.banProposalTimer.Start();
+                
+            }
+        }
+
+        private void SendIrcPrivateAlert(string message)
+        {
+            foreach (var target in privateAlertTargets)
+            {
+                this.client.SendNotice(target, message);    
             }
         }
 
         private void SendIrcAlert(string message)
         {
-            this.client.SendNotice("stwalkerster", message);
-            this.client.SendNotice("Waggie", message);
+            this.client.SendNotice(this.publicAlertChannel, message);
         }
 
         #region tracking events
@@ -131,7 +228,7 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.DebugFormat("Tracking {0}, in targeted ranges", user);
                 this.trackedUsers.Add(user, 0);
             
-                this.SendIrcAlert($"Tracked user {user} in -en-help from target ranges");
+                this.SendIrcPrivateAlert($"Tracked user {user} in -en-help from target ranges");
                 return;
             }
             
@@ -140,7 +237,7 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.DebugFormat("Tracking {0}, nickname matches AmberRhino*", user);
                 this.trackedUsers.Add(user, 0);
             
-                this.SendIrcAlert($"Tracked user {user} in -en-help by nickname pattern");
+                this.SendIrcPrivateAlert($"Tracked user {user} in -en-help by nickname pattern");
                 return;
             }
 
