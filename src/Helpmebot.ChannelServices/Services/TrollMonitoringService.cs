@@ -28,6 +28,7 @@ namespace Helpmebot.ChannelServices.Services
         private Dictionary<IUser, uint> trackedUsers = new Dictionary<IUser, uint>();
         private Regex emojiRegex;
         private Regex badWordRegex;
+        private Regex reallyBadWordRegex;
 
         private IUser banProposal;
 
@@ -83,7 +84,8 @@ namespace Helpmebot.ChannelServices.Services
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
-            this.badWordRegex = new Regex("(?: |^)(cock|pussy|fuck|hard core|hardcore|babes|dick|ur mom|cunt|nigger)(?: |$)", RegexOptions.IgnoreCase);
+            this.badWordRegex = new Regex("(?:[ -]|^)(cock|pussy|fuck|babes|dick|ur mom)(?:[ -]|$)", RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex("(?:[ -]|^)(hard core|hardcore|cunt|nigger|jews|9/11|aids|blowjob|cumshot)(?:[ -]|$)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -128,11 +130,12 @@ namespace Helpmebot.ChannelServices.Services
             }
 
             var badWordMatch = this.badWordRegex.Match(e.Message);
+            var reallyBadWordMatch = this.reallyBadWordRegex.Match(e.Message);
             
             if (!this.trackedUsers.ContainsKey(e.User))
             {
                 var channelUser = this.client.Channels[this.targetChannel].Users[e.User.Nickname];
-                if (badWordMatch.Success && !channelUser.Voice)
+                if ((badWordMatch.Success || reallyBadWordMatch.Success ) && !channelUser.Voice)
                 {
                     // add to tracking anyway.
                     this.trackedUsers.Add(e.User, 0);
@@ -151,6 +154,12 @@ namespace Helpmebot.ChannelServices.Services
                 this.trackedUsers[e.User]++;
             }
 
+            if (reallyBadWordMatch.Success)
+            {
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT REALLYBADWORD");
+                this.trackedUsers[e.User] += 3;
+            }
+            
             if (badWordMatch.Success)
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT BADWORD");
@@ -211,6 +220,20 @@ namespace Helpmebot.ChannelServices.Services
             }
         }
         #endregion
+
+        public void ForceAddTracking(IUser user, object sender)
+        {
+            this.logger.DebugFormat("Tracking {0} per request of other service", user);
+            try
+            {
+                this.trackedUsers.Add(user, 0);
+            }
+            catch
+            {
+            }
+
+            this.SendIrcPrivateAlert($"Tracked user {user} in -en-help per request of {sender}");
+        }
         
         private void AddTracking(IUser user)
         {

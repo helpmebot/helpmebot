@@ -6,5 +6,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
     public interface ITrollMonitoringService : IStartable
     {
         void EnactBan(IUser enactingUser);
+        void ForceAddTracking(IUser user, object sender);
     }
 }

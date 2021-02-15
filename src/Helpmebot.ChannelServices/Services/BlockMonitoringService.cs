@@ -68,6 +68,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
         private readonly IIrcClient client;
+        private readonly ITrollMonitoringService trollMonitoringService;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -79,7 +80,8 @@ namespace Helpmebot.ChannelServices.Services
             IMediaWikiApiHelper apiHelper,
             BotConfiguration botConfiguration,
             IWebServiceClient webServiceClient,
-            IIrcClient client)
+            IIrcClient client,
+            ITrollMonitoringService trollMonitoringService)
         {
             this.logger = logger;
             this.linkerService = linkerService;
@@ -89,6 +91,7 @@ namespace Helpmebot.ChannelServices.Services
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
             this.client = client;
+            this.trollMonitoringService = trollMonitoringService;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
@@ -205,6 +208,11 @@ namespace Helpmebot.ChannelServices.Services
                             url);
 
                         ((IIrcClient) sender).SendMessage(c, message);
+
+                        if (e.Channel == "#wikipedia-en-help")
+                        {
+                            this.trollMonitoringService.ForceAddTracking(e.User, this);
+                        }
                     }
                 }
 
