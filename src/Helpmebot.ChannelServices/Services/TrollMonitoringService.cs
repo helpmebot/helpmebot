@@ -181,7 +181,7 @@ namespace Helpmebot.ChannelServices.Services
         {
             foreach (var target in privateAlertTargets)
             {
-                this.client.SendNotice(target, message);    
+                this.client.SendMessage(target, message);    
             }
         }
 
@@ -254,16 +254,6 @@ namespace Helpmebot.ChannelServices.Services
                 this.SendIrcPrivateAlert($"Tracked user {user} in -en-help from target ranges");
                 return;
             }
-            
-            if (user.Nickname.Contains("AmberRhino"))
-            {
-                this.logger.DebugFormat("Tracking {0}, nickname matches AmberRhino*", user);
-                this.trackedUsers.Add(user, 0);
-            
-                this.SendIrcPrivateAlert($"Tracked user {user} in -en-help by nickname pattern");
-                return;
-            }
-
         }
 
         private void RemoveTracking(IUser user)
