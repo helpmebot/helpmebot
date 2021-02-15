@@ -14,18 +14,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj"/>
-        <ProjectReference Include="..\Helpmebot\Helpmebot.csproj"/>
-        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj"/>
-        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj"/>
+        <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj" />
+        <ProjectReference Include="..\Helpmebot\Helpmebot.csproj" />
+        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
+        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="4.4.1"/>
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1"/>
-        <PackageReference Include="NDesk.Options" Version="0.2.1"/>
-        <PackageReference Include="NHibernate" Version="4.1.2.4000"/>
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75"/>
-        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41"/>
+        <PackageReference Include="Castle.Core" Version="4.4.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
+        <PackageReference Include="NHibernate" Version="4.1.2.4000" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.75" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
     </ItemGroup>
 </Project>
