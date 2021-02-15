@@ -30,6 +30,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -117,106 +118,26 @@ namespace Helpmebot.ChannelServices.Services
                     return;
                 }
 
-                var alertChannel = alertChannelEnumerable.ToList();
+                var alertChannels = alertChannelEnumerable.ToList();
 
-                if (!alertChannel.Any())
+                if (!alertChannels.Any())
                 {
                     this.logger.Debug("No block monitoring alert channels found");
                     return;
                 }
 
-                MediaWikiSite mediaWikiSite;
-                using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
-                {
-                    mediaWikiSite = this.globalSession.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq("Name", e.Channel))
-                        .UniqueResult<Channel>().BaseWiki;
-                    
-                    tx.Rollback();
-                }
+                var blockDetails = this.GetBlockData(e.User, e.Channel).ToList();
 
-                var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+                foreach (var alertChannel in alertChannels)
+                {
+                    foreach (var detail in blockDetails)
+                    {
+                        this.client.SendMessage(alertChannel, detail.ToString());
+                    }
+                }
                 
-                bool triggered = false;
                 
-                var ip = this.GetIpAddress(e.User);
-                if (ip == null)
-                {
-                    this.logger.DebugFormat("Could not detect IP address for user {0}", e.User);
-                }
-                else
-                {
-                    var ipInfo = string.Format(" ({0})", ip);
-
-                    var queryParameters = new NameValueCollection
-                    {
-                        {"fields", "org,as,status"}
-                    };
-
-                    var lookupUrl = string.Format("http://ip-api.com/line/{0}", ip);
-
-                    var httpResponseData = this.webServiceClient.DoApiCall(
-                        queryParameters,
-                        lookupUrl,
-                        this.botConfiguration.UserAgent);
-
-                    var textResult = new StreamReader(httpResponseData).ReadToEnd();
-                    var resultData = textResult.Split('\r', '\n');
-                    if (resultData.FirstOrDefault() == "success")
-                    {
-                        ipInfo = string.Format(" ({1}, org: {0})", resultData[1], ip);
-                    }
-
-                    var blockInformationData = mediaWikiApi.GetBlockInformation(ip.ToString());
-
-                    foreach (var blockInformation in blockInformationData)
-                    {
-                        triggered = true;
-                        foreach (var c in alertChannel)
-                        {
-                            var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
-                            url = this.urlShorteningService.Shorten(url);
-
-                            var message = string.Format(
-                                "Joined user {0}{4} in channel {1} is IP-blocked ({2}) because: {3} ( {5} )",
-                                e.User.Nickname,
-                                e.Channel,
-                                blockInformation.Target,
-                                blockInformation.BlockReason,
-                                ipInfo,
-                                url);
-                            ((IIrcClient) sender).SendMessage(c, message);
-                        }
-                    }
-                }
-
-                var userBlockInfo = mediaWikiApi.GetBlockInformation(e.User.Nickname);
-                foreach (var blockInformation in userBlockInfo)
-                {
-                    triggered = true;
-                    foreach (var c in alertChannel)
-                    {
-                        var url = this.linkerService.ConvertWikilinkToUrl(c, "Special:Contributions/" + blockInformation.Target);
-                        url = this.urlShorteningService.Shorten(url);
-
-                        var message = string.Format(
-                            "Joined user {0} in channel {1} is blocked ({2}) because: {3} ( {4} )",
-                            e.User.Nickname,
-                            e.Channel,
-                            blockInformation.Target,
-                            blockInformation.BlockReason,
-                            url);
-
-                        ((IIrcClient) sender).SendMessage(c, message);
-
-                        if (e.Channel == "#wikipedia-en-help")
-                        {
-                            this.trollMonitoringService.ForceAddTracking(e.User, this);
-                        }
-                    }
-                }
-
-                if (triggered)
+                if (blockDetails.Any())
                 {
                     BlockMonitorEventsCounter.WithLabels(e.Channel).Inc();
                 }
@@ -228,6 +149,95 @@ namespace Helpmebot.ChannelServices.Services
             catch (Exception ex)
             {
                 this.logger.Error("Unknown error occurred in BlockMonitoringService", ex);
+            }
+        }
+
+        public IEnumerable<BlockData> GetBlockData(IUser joinedUser, string joinedChannel)
+        {
+            MediaWikiSite mediaWikiSite;
+            using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                mediaWikiSite = this.globalSession.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq("Name", joinedChannel))
+                    .UniqueResult<Channel>()
+                    .BaseWiki;
+
+                tx.Rollback();
+            }
+
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            
+            var ip = this.GetIpAddress(joinedUser);
+            if (ip == null)
+            {
+                this.logger.DebugFormat("Could not detect IP address for user {0}", joinedUser);
+            }
+            else
+            {
+                var org = "";
+                var queryParameters = new NameValueCollection
+                {
+                    {"fields", "org,as,status"}
+                };
+
+                var lookupUrl = string.Format("http://ip-api.com/line/{0}", ip);
+
+                var httpResponseData = this.webServiceClient.DoApiCall(
+                    queryParameters,
+                    lookupUrl,
+                    this.botConfiguration.UserAgent);
+
+                var textResult = new StreamReader(httpResponseData).ReadToEnd();
+                var resultData = textResult.Split('\r', '\n');
+                if (resultData.FirstOrDefault() == "success")
+                {
+                    org = resultData[1];
+                }
+
+                var blockInformationData = mediaWikiApi.GetBlockInformation(ip.ToString());
+
+                foreach (var blockInformation in blockInformationData)
+                {
+                    var url = this.linkerService.ConvertWikilinkToUrl(
+                        joinedChannel,
+                        "Special:Contributions/" + blockInformation.Target);
+                    url = this.urlShorteningService.Shorten(url);
+
+                    yield return new BlockData
+                    {
+                        Nickname = joinedUser.Nickname,
+                        Channel = joinedChannel, 
+                        Ip = ip, 
+                        BlockInformation = blockInformation, 
+                        ContribsUrl = url,
+                        IpOrg = org, 
+                        RegisteredUser = false
+                    };
+                    
+                }
+            }
+
+            var userBlockInfo = mediaWikiApi.GetBlockInformation(joinedUser.Nickname);
+            foreach (var blockInformation in userBlockInfo)
+            {
+                var url = this.linkerService.ConvertWikilinkToUrl(joinedChannel, "Special:Contributions/" + blockInformation.Target);
+                url = this.urlShorteningService.Shorten(url);
+
+                yield return new BlockData
+                {
+                    Nickname = joinedUser.Nickname,
+                    Channel = joinedChannel, 
+                    Ip = null, 
+                    BlockInformation = blockInformation, 
+                    ContribsUrl = url,
+                    IpOrg = null, 
+                    RegisteredUser = true
+                };
+
+                if (joinedChannel == "#wikipedia-en-help")
+                {
+                    this.trollMonitoringService.ForceAddTracking(joinedUser, this);
+                }
             }
         }
 

@@ -56,6 +56,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly JoinMessageServiceConfiguration configuration;
         private readonly IGeolocationService geolocationService;
         private readonly IIrcClient client;
+        private readonly IBlockMonitoringService blockMonitoringService;
 
         public JoinMessageService(
             ILogger logger,
@@ -63,7 +64,8 @@ namespace Helpmebot.ChannelServices.Services
             ISession session,
             JoinMessageServiceConfiguration configuration,
             IGeolocationService geolocationService,
-            IIrcClient client)
+            IIrcClient client,
+            IBlockMonitoringService blockMonitoringService)
         {
             this.logger = logger;
             this.messageService = messageService;
@@ -71,6 +73,7 @@ namespace Helpmebot.ChannelServices.Services
             this.configuration = configuration;
             this.geolocationService = geolocationService;
             this.client = client;
+            this.blockMonitoringService = blockMonitoringService;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
@@ -175,17 +178,21 @@ namespace Helpmebot.ChannelServices.Services
             if (applyOverride)
             {
                 this.logger.WarnFormat("Detected applicable override, firing alternate welcome");
-                
-                var welcomeMessage = this.messageService.RetrieveAllMessagesForKey(
-                    welcomeOverride.Message,
-                    channel,
-                    new[] {networkUser.Nickname, channel});
-                
-                foreach (var message in welcomeMessage)
+
+                if (welcomeOverride.Message != null)
                 {
-                    client.SendMessage(channel, message);
+                    var welcomeMessage = this.messageService.RetrieveAllMessagesForKey(
+                        welcomeOverride.Message,
+                        channel,
+                        new[] {networkUser.Nickname, channel});
+
+                    foreach (var message in welcomeMessage)
+                    {
+                        client.SendMessage(channel, message);
+                    }
                 }
-            } else
+            } 
+            else
             {
                 // Either no override defined, or override not matching.
                 this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
@@ -223,35 +230,42 @@ namespace Helpmebot.ChannelServices.Services
 
         private bool DoesOverrideApply(IUser networkUser, WelcomerOverride welcomeOverride)
         {
-            if (welcomeOverride.Geolocation != null)
-            {
-                IPAddress clientip = null;
+            bool matches = true;
+            
+            IPAddress clientip = null;
                 
-                var userMatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
-                if (userMatch.Success)
-                {
-                    // We've got a hex-encoded IP.
-                    clientip = networkUser.Username.GetIpAddressFromHex();
-                }
-
-                if (!networkUser.Hostname.Contains("/"))
-                {
-                    // real hostname, not a cloak
-                    var hostAddresses = Dns.GetHostAddresses(networkUser.Hostname);
-                    if (hostAddresses.Length > 0)
-                    {
-                        clientip = hostAddresses.First();
-                    }
-                }
-
-                if (clientip != null
-                    && this.geolocationService.GetLocation(clientip).Country == welcomeOverride.Geolocation)
-                {
-                    return true;
-                }
+            var userMatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
+            if (userMatch.Success)
+            {
+                // We've got a hex-encoded IP.
+                clientip = networkUser.Username.GetIpAddressFromHex();
             }
 
-            return false;
+            if (!networkUser.Hostname.Contains("/"))
+            {
+                // real hostname, not a cloak
+                var hostAddresses = Dns.GetHostAddresses(networkUser.Hostname);
+                if (hostAddresses.Length > 0)
+                {
+                    clientip = hostAddresses.First();
+                }
+            }
+            
+            // checks
+            
+            if (welcomeOverride.Geolocation != null && clientip != null)
+            {
+                matches &= this.geolocationService.GetLocation(clientip).Country == welcomeOverride.Geolocation;
+            }
+
+            if (welcomeOverride.BlockMessage != null)
+            {
+                Regex blockMessageRegex = new Regex(welcomeOverride.BlockMessage, RegexOptions.IgnoreCase);
+                var blockDatas = this.blockMonitoringService.GetBlockData(networkUser, welcomeOverride.Channel.Name);
+                matches &= blockDatas.Any(x => blockMessageRegex.IsMatch(x.BlockInformation.BlockReason));
+            }
+
+            return matches;
         }
 
         public virtual IList<WelcomeUser> GetExceptions(string channel)

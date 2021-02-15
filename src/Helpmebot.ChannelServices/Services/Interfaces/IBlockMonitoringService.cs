@@ -20,9 +20,12 @@
 
 namespace Helpmebot.ChannelServices.Services.Interfaces
 {
+    using System.Collections.Generic;
     using Castle.Core;
+    using Helpmebot.ChannelServices.Model;
     using NHibernate;
     using Stwalkerster.IrcClient.Events;
+    using Stwalkerster.IrcClient.Model.Interfaces;
 
     /// <summary>
     /// The BlockMonitoringService interface.
@@ -40,5 +43,7 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
         /// <param name="reportChannel">the channel in which to report</param>
         /// <param name="databaseSession">The hibernate session</param>
         void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession);
+
+        IEnumerable<BlockData> GetBlockData(IUser joinedUser, string joinedChannel);
     }
 }
