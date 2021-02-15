@@ -170,7 +170,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             try
             {
                 string flagName = null;
-                
+
                 if (this.Arguments[0] != "none")
                 {
                     Channel channelAlias = null;
@@ -182,17 +182,24 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                     if (welcomerOverride == null)
                     {
-                        throw new Exception(
-                            $"Unable to find welcomer override configuration with alias {this.Arguments[0]}");
+                        return new[]
+                        {
+                            new CommandResponse
+                            {
+                                Message = $"Unable to find welcomer override configuration with alias {this.Arguments[0]}"
+                            }
+                        };
                     }
 
                     flagName = welcomerOverride.ActiveFlag;
                 }
-                
-                var channel = this.databaseSession.QueryOver<Channel>().Where(x => x.Name == this.CommandSource).SingleOrDefault();
+
+                var channel = this.databaseSession.QueryOver<Channel>()
+                    .Where(x => x.Name == this.CommandSource)
+                    .SingleOrDefault();
                 channel.WelcomerFlag = flagName;
                 this.databaseSession.SaveOrUpdate(channel);
-                
+
                 this.databaseSession.Transaction.Commit();
 
                 return new[] {new CommandResponse {Message = "Done."}};
@@ -204,6 +211,13 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 this.databaseSession.Transaction.Rollback();
 
                 return new[] {new CommandResponse {Message = e.Message}};
+            }
+            finally
+            {
+                if (this.databaseSession.Transaction != null && this.databaseSession.Transaction.IsActive)
+                {
+                    this.databaseSession.Transaction.Rollback();
+                }
             }
         }
     }
