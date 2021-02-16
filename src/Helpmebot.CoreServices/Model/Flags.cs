@@ -15,5 +15,6 @@ namespace Helpmebot.CoreServices.Model
         public const string Brain = "b";
         public const string Configuration = "C";
         public const string Uncurl = "U";
+        public const string ChanOp = "o";
     }
 }

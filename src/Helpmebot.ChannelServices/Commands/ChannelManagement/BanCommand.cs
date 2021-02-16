@@ -16,7 +16,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Owner)]
+    [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("kb")]
     [Undocumented]
     public class BanCommand : CommandBase
