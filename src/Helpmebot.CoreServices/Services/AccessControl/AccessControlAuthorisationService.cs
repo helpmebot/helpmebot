@@ -38,8 +38,10 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             var matchingUsers = this.session.QueryOver<User>()
                 .List<User>()
                 .Where(
-                    x => new IrcUserMask(x.Mask, ircUser.Client).Matches(user).GetValueOrDefault()
-                         || (x.Account == user.Account && x.Account != null && user.Account != null))
+                    x =>
+                        (!string.IsNullOrEmpty(x.Mask) && new IrcUserMask(x.Mask, ircUser.Client).Matches(user).GetValueOrDefault())
+                        || (x.Account == user.Account && x.Account != null && user.Account != null)
+                )
                 .ToList();
 
             var flagGroups = new List<FlagGroup>();
