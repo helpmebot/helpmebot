@@ -82,7 +82,8 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             }
 
             this.logger.DebugFormat("Updating flag group {0} with flag changes {1} to {2}", name, flagChanges, item.Flags);
-
+            item.LastModified = DateTime.UtcNow;
+            
             try
             {
                 session.Update(item);
@@ -106,10 +107,17 @@ namespace Helpmebot.CoreServices.Services.AccessControl
                 throw new AclException("This flag group does not exist.");
             }
 
-            item.Flags = flags;
-
+            var flagChanges = string.Empty;
+            item.Flags = string.Join(
+                "",
+                ApplyFlagChangesToFlags(
+                    ref flagChanges,
+                    new string[0],
+                    new List<string>()));
+            
             this.logger.DebugFormat("Updating flag group {0} with flags {1}", name, flags);
-
+            item.LastModified = DateTime.UtcNow;
+            
             try
             {
                 session.Update(item);
