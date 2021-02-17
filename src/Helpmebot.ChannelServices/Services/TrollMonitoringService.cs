@@ -1,5 +1,6 @@
 namespace Helpmebot.ChannelServices.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -92,8 +93,8 @@ namespace Helpmebot.ChannelServices.Services
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
-            this.badWordRegex = new Regex("(?:[ -]|^)(cock|pussy|fuck|babes|dick|ur mom)(?:[ -]|$)", RegexOptions.IgnoreCase);
-            this.reallyBadWordRegex = new Regex("(?:[ -]|^)(hard core|hardcore|cunt|nigger|jews|9/11|aids|blowjob|cumshot)(?:[ -]|$)", RegexOptions.IgnoreCase);
+            this.badWordRegex = new Regex("(?:[ -]|^)(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu)(?:[ -]|$)", RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex("(?:[ -]|^)(hard core|hardcore|cunt|nigger|jews|9/11|aids|blowjob|cumshot|suk mai dik)(?:[ -]|$)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -179,7 +180,15 @@ namespace Helpmebot.ChannelServices.Services
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
                 this.SendIrcAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts");
                 this.banProposal = e.User;
-                this.commandParser.RegisterCommand("enact", typeof(EnactBanCommand));
+                try
+                {
+                    this.commandParser.RegisterCommand("enact", typeof(EnactBanCommand));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.Error("Could not register command, is it already registered?");
+                }
+
                 this.banProposalTimer.Start();
                 
             }
