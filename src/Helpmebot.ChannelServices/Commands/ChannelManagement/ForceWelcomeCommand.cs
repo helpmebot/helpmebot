@@ -1,10 +1,13 @@
 namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
+    using NHibernate;
+    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,6 +22,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     public class ForceWelcomeCommand : CommandBase
     {
         private readonly IJoinMessageService joinMessageService;
+        private readonly ISession session;
 
         public ForceWelcomeCommand(
             string commandSource,
@@ -28,7 +32,8 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IJoinMessageService joinMessageService) : base(
+            IJoinMessageService joinMessageService,
+            ISession session) : base(
             commandSource,
             user,
             arguments,
@@ -38,6 +43,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             client)
         {
             this.joinMessageService = joinMessageService;
+            this.session = session;
         }
 
         [RequiredArguments(1)]
@@ -49,9 +55,24 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 var user = this.Client.Channels[this.CommandSource].Users[this.Arguments[0]];
                 
                 this.joinMessageService.SendWelcome(user.User, this.CommandSource, this.Client);
+                yield break;
             }
             
-            yield break;
+            var crossChannelConfig = this.session.CreateCriteria<CrossChannel>()
+                .Add(Restrictions.Eq("BackendChannel", this.CommandSource))
+                .List<CrossChannel>();
+
+            if (crossChannelConfig.Count == 1)
+            {
+                var frontendChannelName = crossChannelConfig.First().FrontendChannel.Name;
+                if (this.Client.Channels[frontendChannelName].Users.ContainsKey(this.Arguments[0]))
+                {
+                    var user = this.Client.Channels[frontendChannelName].Users[this.Arguments[0]];
+                
+                    this.joinMessageService.SendWelcome(user.User, frontendChannelName, this.Client);
+                    yield break;
+                }
+            }
         }
     }
 }
