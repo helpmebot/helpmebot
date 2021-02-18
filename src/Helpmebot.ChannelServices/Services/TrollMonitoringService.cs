@@ -93,8 +93,8 @@ namespace Helpmebot.ChannelServices.Services
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
-            this.badWordRegex = new Regex("(?:[ -]|^)(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu)(?:[ -]|$)", RegexOptions.IgnoreCase);
-            this.reallyBadWordRegex = new Regex("(?:[ -]|^)(hard core|hardcore|cunt|nigger|jews|9/11|aids|blowjob|cumshot|suk mai dik)(?:[ -]|$)", RegexOptions.IgnoreCase);
+            this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -154,6 +154,18 @@ namespace Helpmebot.ChannelServices.Services
                     // don't care about non-tracked users
                     return;
                 }
+            }
+
+            try
+            {
+                if (this.client.Channels[this.targetChannel].Users[e.User.Nickname].Voice)
+                {
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.Error("Exception encountered checking user's voice status", ex);
             }
 
             var emojiMatch = this.emojiRegex.Match(e.Message);
