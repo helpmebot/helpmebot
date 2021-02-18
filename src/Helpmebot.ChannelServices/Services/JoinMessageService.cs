@@ -96,8 +96,8 @@ namespace Helpmebot.ChannelServices.Services
 
         private void DoWelcome(IUser networkUser, string channel)
         {
-            // Rate limit this per hostname/channel
-            if (this.RateLimit(networkUser.Username, channel))
+            // Rate limit this per hostname/channel. Make sure this matches the exemption setting below.
+            if (this.RateLimit(networkUser.Hostname, channel))
             {
                 return;
             }
@@ -204,14 +204,16 @@ namespace Helpmebot.ChannelServices.Services
                 
                 if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
                 {
-                    client.Mode(channel, "+e " + networkUser.Nickname + "!*@*");
+                    var modeTarget = $"*!*@{networkUser.Hostname}";
+                    
+                    client.Mode(channel, "+e " + modeTarget);
 
                     var notificationTarget = this.GetCrossChannelNotificationTarget(channel);
                     if (notificationTarget != null)
                     {
                         client.SendMessage(
                             notificationTarget,
-                            $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {networkUser.Nickname}!*@*  )");
+                            $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {modeTarget}  )");
                     }
                 }
 
