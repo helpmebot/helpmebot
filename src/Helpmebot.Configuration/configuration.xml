@@ -124,6 +124,13 @@
             </parameters>
         </component>
 
+        <component type="RabbitMqConfiguration">
+            <parameters>
+                <enabled>false</enabled>
+                <notificationQueue>notification</notificationQueue>
+            </parameters>
+        </component>
+
         <!-- Swappable components -->
         <component service="IUrlShorteningService" type="IsGdUrlShorteningService" />
         <component service="IGeolocationService" type="MaxMindGeolocationService" />
