@@ -292,22 +292,24 @@ namespace Helpmebot.ChannelServices.Services
         
         public void Start()
         {
-            this.client.JoinReceivedEvent += this.IrcJoinReceived;
-            this.client.ReceivedMessage += this.ClientOnReceivedMessage;
-            this.client.PartReceivedEvent += this.IrcPartReceived;
-            this.client.KickReceivedEvent += this.IrcKickReceived;
-            this.client.QuitReceivedEvent += this.IrcQuitReceived;
-            this.logger.Debug("Troll monitoring startup");
+            // disabled for now, pending configuration.
+            
+            // this.client.JoinReceivedEvent += this.IrcJoinReceived;
+            // this.client.ReceivedMessage += this.ClientOnReceivedMessage;
+            // this.client.PartReceivedEvent += this.IrcPartReceived;
+            // this.client.KickReceivedEvent += this.IrcKickReceived;
+            // this.client.QuitReceivedEvent += this.IrcQuitReceived;
+            // this.logger.Debug("Troll monitoring startup");
         }
 
         public void Stop()
         {
-            this.logger.Debug("Troll monitoring shutdown");
-            this.client.JoinReceivedEvent -= this.IrcJoinReceived;
-            this.client.ReceivedMessage -= this.ClientOnReceivedMessage;
-            this.client.PartReceivedEvent -= this.IrcPartReceived;
-            this.client.KickReceivedEvent -= this.IrcKickReceived;
-            this.client.QuitReceivedEvent -= this.IrcQuitReceived;
+            // this.logger.Debug("Troll monitoring shutdown");
+            // this.client.JoinReceivedEvent -= this.IrcJoinReceived;
+            // this.client.ReceivedMessage -= this.ClientOnReceivedMessage;
+            // this.client.PartReceivedEvent -= this.IrcPartReceived;
+            // this.client.KickReceivedEvent -= this.IrcKickReceived;
+            // this.client.QuitReceivedEvent -= this.IrcQuitReceived;
         }
     }
 }
