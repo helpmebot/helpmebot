@@ -122,6 +122,9 @@ namespace Helpmebot.AccountCreations.Services
                         continue;
                     }
 
+                    this.Logger.Debug(
+                        $"Handling message {notification.Id} for {notification.Type}, dated {notification.Date:u}");
+
                     var sanitisedMessage = this.SanitiseMessage(notification.Text);
                     foreach (var x in destinations)
                     {
