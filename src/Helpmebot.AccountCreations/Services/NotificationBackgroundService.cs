@@ -32,6 +32,7 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.Configuration;
     using Helpmebot.Model;
     using NHibernate;
+    using NHibernate.Criterion;
     using NHibernate.Util;
     using Prometheus;
     using Stwalkerster.IrcClient.Interfaces;
@@ -91,9 +92,14 @@ namespace Helpmebot.AccountCreations.Services
                 // Get items from the notification queue
                 try
                 {
-
-                    list = this.session.CreateCriteria<Notification>().List<Notification>();
-                    list.ForEach(this.session.Delete);
+                    list = this.session.CreateCriteria<Notification>().Add(Restrictions.Eq(nameof(Notification.Handled), false)).List<Notification>();
+                    
+                    list.ForEach(
+                        x =>
+                        {
+                            x.Handled = true;
+                            this.session.Update(x);
+                        });
                     
                     transaction.Commit();
                 }

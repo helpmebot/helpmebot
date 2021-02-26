@@ -39,6 +39,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Text).Column("text");
             this.Map(x => x.Type).Column("type");
             this.Map(x => x.Date).Column("date");
+            this.Map(x => x.Handled).Column("handled");
         }
     }
 }
