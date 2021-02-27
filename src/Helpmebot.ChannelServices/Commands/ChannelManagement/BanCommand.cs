@@ -67,6 +67,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                         ircClient.SendMessage(bantracker, $"~1d Requested by {this.User} via manual request");
                     });
                 
+                this.Client.SendMessage("#wikipedia-en-helpers", $"{banTarget.Value.User.Nickname} banned by request of {this.User}");
             }
             catch (Exception ex)
             {
