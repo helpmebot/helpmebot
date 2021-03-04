@@ -27,6 +27,6 @@
         <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
         <PackageReference Include="NHibernate" Version="4.1.2.4000" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.80" />
-        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
     </ItemGroup>
 </Project>

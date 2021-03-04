@@ -62,8 +62,8 @@
       <HintPath>..\packages\prometheus-net.4.1.1\lib\net461\Prometheus.NetStandard.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=4.0.41.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.4.0.41\lib\netstandard2.0\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=4.1.42.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.4.1.42\lib\netstandard2.0\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Stwalkerster.IrcClient, Version=9.1.81.0, Culture=neutral, PublicKeyToken=null">

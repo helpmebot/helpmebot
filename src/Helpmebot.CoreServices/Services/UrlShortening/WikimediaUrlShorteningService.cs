@@ -16,6 +16,7 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
     {
         private readonly ILogger logger;
         private readonly IMediaWikiApiTypedFactory apiTypedFactory;
+        private readonly BannedShortUrlTokenManager badWordManager;
         private readonly UrlShorteningServiceBase secondaryShortener;
         private readonly List<Regex> allowedDomains;
         private readonly MediaWikiConfiguration mediaWikiConfig;
@@ -26,6 +27,7 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
             IMediaWikiApiTypedFactory apiTypedFactory,
             BotConfiguration configuration,
             IUrlShorteningService secondaryShortener,
+            BannedShortUrlTokenManager badWordManager,
             List<string> allowedDomains,
             string mediaWikiApiEndpoint,
             string mediaWikiApiUsername,
@@ -34,6 +36,7 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
         {
             this.logger = logger;
             this.apiTypedFactory = apiTypedFactory;
+            this.badWordManager = badWordManager;
             this.secondaryShortener = (UrlShorteningServiceBase) secondaryShortener;
             this.allowedDomains = allowedDomains.Select(x => new Regex(x)).ToList();
 
@@ -70,7 +73,16 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
                 mediaWikiApi = this.apiTypedFactory.Create<IMediaWikiApi>(this.mediaWikiConfig);
                 mediaWikiApi.Login();
 
-                return mediaWikiApi.ShortenUrl(longUrl);
+                var resultUrl = mediaWikiApi.ShortenUrlWithAlt(longUrl);
+                foreach (var token in this.badWordManager.BannedTokens)
+                {
+                    if (resultUrl.Item1.ToLower().EndsWith(token))
+                    {
+                        return resultUrl.Item2;
+                    }
+                }
+                
+                return resultUrl.Item1;
             }
             catch (GeneralMediaWikiApiException ex)
             {
