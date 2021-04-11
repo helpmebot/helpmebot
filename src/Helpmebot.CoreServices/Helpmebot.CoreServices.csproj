@@ -14,7 +14,7 @@
         <PackageReference Include="MaxMind.GeoIP2" Version="3.3.0" />
         <PackageReference Include="NHibernate" Version="4.1.2.4000" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="14.0.80" />
-        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.0.41" />
     </ItemGroup>
 
     <ItemGroup>
