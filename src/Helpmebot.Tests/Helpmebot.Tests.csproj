@@ -66,8 +66,8 @@
       <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.4.0.41\lib\netstandard2.0\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.IrcClient, Version=9.1.81.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.9.1.81\lib\netstandard2.0\Stwalkerster.IrcClient.dll</HintPath>
+    <Reference Include="Stwalkerster.IrcClient, Version=9.1.82.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.IrcClient.9.1.82\lib\netstandard2.0\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
