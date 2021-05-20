@@ -22,6 +22,7 @@ namespace Helpmebot.CoreServices.ExtensionMethods
 {
     using System;
     using System.Collections.Generic;
+    using System.Web;
 
     public static class FormatWithExtension
     {
@@ -36,7 +37,21 @@ namespace Helpmebot.CoreServices.ExtensionMethods
 
             foreach (KeyValuePair<string, object> o in source)
             {
-                result = result.Replace("{" + o.Key + "}", o.Value.ToString());
+                var value = o.Value.ToString();
+                    
+                // plain text
+                result = result.Replace("{" + o.Key + "}", value);
+                
+                // url encoding
+                value = HttpUtility.UrlEncode(value);
+                result = result.Replace("{" + o.Key + ":url}", value);
+                
+                // backtrack a bit for MW title encoding
+                value = value
+                    .Replace("+", "_")
+                    .Replace("%2f", "/")
+                    .Replace("%3a", ":");
+                result = result.Replace("{" + o.Key + ":title}", value);
             }
 
             return result;
