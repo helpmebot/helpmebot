@@ -60,7 +60,7 @@ namespace Helpmebot.Model
         /// </returns>
         public override string ToString()
         {
-            return string.Format("Host: {0} {1}", this.Host, this.Exception ? "(!)" : string.Empty);
+            return string.Format("User: {2} Host: {0} {1}", this.Host, this.Exception ? "(!)" : string.Empty, this.User);
         }
     }
 }
