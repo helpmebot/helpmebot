@@ -51,6 +51,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [SubcommandInvocation("remove")]
         protected IEnumerable<CommandResponse> Remove()
         {
+            throw new NotImplementedException("Needs migration/config");
             var removableHelpees = this.GetRemovableHelpees();
             
             var channel = "#wikipedia-en-help";

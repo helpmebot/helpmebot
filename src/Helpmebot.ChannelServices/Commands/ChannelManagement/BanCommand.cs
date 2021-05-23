@@ -46,6 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
+            throw new NotImplementedException("Needs migration/config");
             try
             {
                 var channel = "#wikipedia-en-help";

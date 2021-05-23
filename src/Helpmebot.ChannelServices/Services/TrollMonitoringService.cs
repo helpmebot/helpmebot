@@ -17,7 +17,7 @@ namespace Helpmebot.ChannelServices.Services
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
     using Timer = System.Timers.Timer;
-
+/*
     public class TrollMonitorService : ITrollMonitoringService
     {
         private readonly IIrcClient client;
@@ -311,5 +311,6 @@ namespace Helpmebot.ChannelServices.Services
             // this.client.KickReceivedEvent -= this.IrcKickReceived;
             // this.client.QuitReceivedEvent -= this.IrcQuitReceived;
         }
-    }
+        
+    }*/
 }
