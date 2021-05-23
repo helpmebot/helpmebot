@@ -108,7 +108,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         [SubcommandInvocation("delete")]
         [SubcommandInvocation("remove")]
         [RequiredArguments(1)]
-        [Help("[--ignore] <mask>", new[]{"Adds a mask to the welcome list for the current channel.", "Use the --ignore flag to make this an exception rule instead of a match rule."})]
+        [Help("[--ignore] <mask>", new[]{"Removes a mask from the welcome list for the current channel.", "Use the --ignore flag to remove an exception rule instead of a match rule."})]
         protected IEnumerable<CommandResponse> DeleteMode()
         {
             var exception = false;
@@ -128,7 +128,12 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                 var welcomeUsers =
                     this.databaseSession.QueryOver<WelcomeUser>()
-                        .Where(x => x.Exception == exception && x.Host == implode && x.Channel == this.CommandSource)
+                        .Where(
+                            x => x.Exception == exception 
+                                 && x.Host == implode 
+                                 && x.User == ".*" 
+                                 && x.Nick == ".*"
+                                 && x.Channel == this.CommandSource)
                         .List();
 
                 this.Logger.Debug("Got list of WelcomeUsers, proceeding to Delete...");
