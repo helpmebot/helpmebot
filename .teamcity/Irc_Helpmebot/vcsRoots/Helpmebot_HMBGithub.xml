@@ -9,8 +9,8 @@
   <param name="submoduleCheckout" value="CHECKOUT" />
   <param name="teamcity:branchSpec" value="refs/heads/*" />
   <param name="teamcitySshKey" value="TeamCity key" />
-  <param name="url" value="ssh://git@phabricator.stwalkerster.co.uk/diffusion/HMB/helpmebot.git" />
-  <param name="useAlternates" value="true" />
+  <param name="url" value="git@github.com:helpmebot/helpmebot.git" />
+  <param name="useAlternates" value="USE_MIRRORS" />
   <param name="userForTags" value="TeamCity &lt;teamcity@stwalkerster.co.uk&gt;" />
   <param name="usernameStyle" value="FULL" />
 </vcs-root>
