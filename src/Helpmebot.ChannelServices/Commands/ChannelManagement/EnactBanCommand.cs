@@ -17,7 +17,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     [Undocumented]
     public class EnactBanCommand : CommandBase
     {
-        //private readonly ITrollMonitoringService trollMonitoringService;
+        private readonly ITrollMonitoringService trollMonitoringService;
 
         public EnactBanCommand(
             string commandSource,
@@ -26,8 +26,8 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client
-            // , ITrollMonitoringService trollMonitoringService
+            IIrcClient client,
+            ITrollMonitoringService trollMonitoringService
             ) : base(
             commandSource,
             user,
@@ -37,14 +37,13 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             configurationProvider,
             client)
         {
-         //   this.trollMonitoringService = trollMonitoringService;
+            this.trollMonitoringService = trollMonitoringService;
         }
 
         protected override IEnumerable<CommandResponse> Execute()
         {
-            throw new NotImplementedException("needs migration");
-           // this.trollMonitoringService.EnactBan(this.User);
-           // yield break;
+            this.trollMonitoringService.EnactBan(this.User);
+            yield break;
         }
     }
 }

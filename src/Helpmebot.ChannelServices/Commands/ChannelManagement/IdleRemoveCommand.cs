@@ -51,11 +51,10 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [SubcommandInvocation("remove")]
         protected IEnumerable<CommandResponse> Remove()
         {
-            throw new NotImplementedException("Needs migration/config");
             var removableHelpees = this.GetRemovableHelpees();
             
             var channel = "#wikipedia-en-help";
-            var removeMessage = "Idle; if you still need assistance editing Wikipedia, please re-join";
+            var removeMessage = "Idle; if you still need assistance editing Wikipedia, please re-join the channel";
 
             this.modeMonitoringService.PerformAsOperator(
                 channel,
@@ -63,7 +62,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 {
                     foreach (var helpee in removableHelpees)
                     {
-                        ircClient.Send(new Message("REMOVE", new[] {channel, helpee, removeMessage}));
+                        ircClient.Send(new Message("KICK", new[] {channel, helpee, removeMessage}));
                     }
                 });
 

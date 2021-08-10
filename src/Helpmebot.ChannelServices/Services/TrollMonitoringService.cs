@@ -17,7 +17,7 @@ namespace Helpmebot.ChannelServices.Services
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
     using Timer = System.Timers.Timer;
-/*
+
     public class TrollMonitorService : ITrollMonitoringService
     {
         private readonly IIrcClient client;
@@ -42,7 +42,7 @@ namespace Helpmebot.ChannelServices.Services
             private string targetChannel = "#wikipedia-en-help";
             private string publicAlertChannel = "#wikipedia-en-helpers";
             private string[] privateAlertTargets = {"stwalkerster" , "Waggie"};
-            private string banTracker = "eir";
+            private string banTracker = "litharge";
         #endif        
 
         private Timer banProposalTimer = new Timer(60000);
@@ -118,11 +118,11 @@ namespace Helpmebot.ChannelServices.Services
                     ircClient =>
                     {
                         ircClient.Mode(this.targetChannel, $"+b *!*@{proposal.Hostname}");
-                        ircClient.Send(new Message("REMOVE", new[] {this.targetChannel, proposal.Nickname}));
+                        ircClient.Send(new Message("KICK", new[] {this.targetChannel, proposal.Nickname}));
                         
                         // allow time for eir to message us
                         Thread.Sleep(1000);
-                        ircClient.SendMessage(this.banTracker, $"~1d Requested by {enactingUser} following bot-initiated proposal");
+                        ircClient.SendMessage(this.banTracker, $"1d Requested by {enactingUser} following bot-initiated proposal");
                     });
                 
                 this.banProposalTimer.Stop();
@@ -312,5 +312,5 @@ namespace Helpmebot.ChannelServices.Services
             // this.client.QuitReceivedEvent -= this.IrcQuitReceived;
         }
         
-    }*/
+    }
 }

@@ -46,11 +46,10 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            throw new NotImplementedException("Needs migration/config");
             try
             {
                 var channel = "#wikipedia-en-help";
-                var bantracker = "eir";
+                var bantracker = "litharge";
                 
                 var banTarget = this.Client.Channels[channel]
                     .Users.First(x => x.Value.User.Nickname == this.Arguments[0]);
@@ -61,11 +60,11 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                     {
                         ircClient.Mode(channel, $"+b *!*@{banTarget.Value.User.Hostname}");
                         ircClient.Send(
-                            new Message("REMOVE", new[] {channel, banTarget.Value.User.Nickname}));
+                            new Message("KICK", new[] {channel, banTarget.Value.User.Nickname}));
                         
                         // allow time for eir to message us
                         Thread.Sleep(1000);
-                        ircClient.SendMessage(bantracker, $"~1d Requested by {this.User} via manual request");
+                        ircClient.SendMessage(bantracker, $"1d Requested by {this.User} via manual request");
                     });
                 
                 this.Client.SendMessage("#wikipedia-en-helpers", $"{banTarget.Value.User.Nickname} banned by request of {this.User}");
