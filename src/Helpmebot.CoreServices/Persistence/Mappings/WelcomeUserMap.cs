@@ -35,12 +35,14 @@ namespace Helpmebot.Persistence.Mappings
         public WelcomeUserMap()
         {
             this.Table("welcomeusers");
-            this.Id(x => x.Id, "wu_id");
-            this.Map(x => x.Channel, "wu_channel");
-            this.Map(x => x.Nick, "wu_nick");
-            this.Map(x => x.User, "wu_user");
-            this.Map(x => x.Host, "wu_host");
-            this.Map(x => x.Exception, "wu_exception");
+            this.Id(x => x.Id, "id");
+            this.Map(x => x.Channel, "channel");
+            this.Map(x => x.Nick, "nick");
+            this.Map(x => x.User, "user");
+            this.Map(x => x.Host, "host");
+            this.Map(x => x.Account, "account");
+            this.Map(x => x.RealName, "realname");
+            this.Map(x => x.Exception, "exception");
         }
     }
 }

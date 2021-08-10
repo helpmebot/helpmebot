@@ -61,7 +61,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 Message = string.Format(
                     "Welcoming these masks to {0}: {1}",
                     this.CommandSource,
-                    string.Join("  ", welcomeForChannel.Select(x => x.ToString())))
+                    string.Join(" ; ", welcomeForChannel.Select(x => x.ToString())))
             };
         }
 
@@ -85,6 +85,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                     Nick = ".*",
                     User = ".*",
                     Host = string.Join(" ", extra),
+                    Account = ".*",
+                    RealName = ".*",
                     Channel = this.CommandSource,
                     Exception = exception
                 };
@@ -133,6 +135,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                                  && x.Host == implode 
                                  && x.User == ".*" 
                                  && x.Nick == ".*"
+                                 && x.Account == ".*"
+                                 && x.RealName == ".*"
                                  && x.Channel == this.CommandSource)
                         .List();
 

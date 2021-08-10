@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Model
 {
+    using System.Text;
     using Helpmebot.Persistence;
 
     /// <summary>
@@ -46,6 +47,10 @@ namespace Helpmebot.Model
         /// Gets or sets the host.
         /// </summary>
         public virtual string Host { get; set; }
+        
+        public virtual string Account { get; set; }
+        
+        public virtual string RealName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether exception.
@@ -60,7 +65,29 @@ namespace Helpmebot.Model
         /// </returns>
         public override string ToString()
         {
-            return string.Format("User: {2} Host: {0} {1}", this.Host, this.Exception ? "(!)" : string.Empty, this.User);
+            var sb = new StringBuilder();
+            if (this.Nick != ".*")
+            {
+                sb.AppendFormat(" Nick: {0}", this.Nick);
+            }
+            if (this.User != ".*")
+            {
+                sb.AppendFormat(" User: {0}", this.User);
+            }
+            if (this.Host != ".*")
+            {
+                sb.AppendFormat(" Host: {0}", this.Host);
+            }
+            if (this.Account != ".*")
+            {
+                sb.AppendFormat(" Account: {0}", this.Account);
+            }
+            if (this.RealName != ".*")
+            {
+                sb.AppendFormat(" RealName: {0}", this.RealName);
+            }
+
+            return string.Format("{0} {1}", sb.ToString().TrimStart(), this.Exception ? "(!)" : string.Empty);
         }
     }
 }

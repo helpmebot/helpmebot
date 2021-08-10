@@ -80,8 +80,8 @@ namespace Helpmebot.Tests.Services
         /// </summary>
         public override void LocalSetup()
         {
-            this.welcomeUser = new WelcomeUser { Host = "ab/.*", User = ".*", Nick = ".*" };
-            this.ignoreUser = new WelcomeUser { Host = ".*", User = "ign", Nick = ".*", Exception = true };
+            this.welcomeUser = new WelcomeUser { Host = "ab/.*", User = ".*", Nick = ".*", Account = ".*", RealName = ".*"};
+            this.ignoreUser = new WelcomeUser { Host = ".*", User = "ign", Nick = ".*", Account = ".*", RealName = ".*", Exception = true };
 
             this.session = new Mock<ISession>();
         }

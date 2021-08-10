@@ -116,8 +116,9 @@ namespace Helpmebot.ChannelServices.Services
                     Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
                     Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
                     Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
+                    Match account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
 
-                    if (nick.Success && user.Success && host.Success)
+                    if (nick.Success && user.Success && host.Success && account.Success)
                     {
                         this.logger.DebugFormat(
                             "Found a match for {0} in {1} with {2}",
@@ -147,8 +148,9 @@ namespace Helpmebot.ChannelServices.Services
                     Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
                     Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
                     Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
+                    Match account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
 
-                    if (nick.Success && user.Success && host.Success)
+                    if (nick.Success && user.Success && host.Success && account.Success)
                     {
                         this.logger.DebugFormat(
                             "Found an exception match for {0} in {1} with {2}",
