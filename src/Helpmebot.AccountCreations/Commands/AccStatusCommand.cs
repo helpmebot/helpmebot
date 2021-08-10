@@ -85,6 +85,8 @@ namespace Helpmebot.AccountCreations.Commands
                 nav.SelectSingleNode("//status/@hold").Value,
                 nav.SelectSingleNode("//status/@proxy").Value,
                 nav.SelectSingleNode("//status/@steward").Value,
+                nav.SelectSingleNode("//status/@x-hospital").Value,
+                nav.SelectSingleNode("//status/@x-jobqueue").Value,
 
                 nav.SelectSingleNode("//status/@bans").Value,
 
