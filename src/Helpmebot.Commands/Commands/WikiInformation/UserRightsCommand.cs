@@ -12,6 +12,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Exceptions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -64,10 +65,15 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 {
                     rights = string.Join(", ", mediaWikiApi.GetUserGroups(username).Where(x => x != "*"));
                 }
+                catch (MissingUserException e)
+                {
+                    this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
+                    return new[] { new CommandResponse { Message = $"The user [[User:{username}]] does not appear to exist on-wiki." } };
+                }
                 catch (MediawikiApiException e)
                 {
                     this.Logger.WarnFormat(e, "Encountered error retrieving rights from API for {0}", username);
-                    return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+                    return new[] { new CommandResponse { Message = "Encountered error retrieving result from API" } };
                 }
 
                 if (string.IsNullOrWhiteSpace(rights))
