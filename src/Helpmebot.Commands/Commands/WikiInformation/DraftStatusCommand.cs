@@ -155,7 +155,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                     "rejected");
                 
                 yield return new CommandResponse
-                    {Message = string.Format("This draft has been also been {0}", declineReason)};
+                    {Message = string.Format("This draft has also been {0}", declineReason)};
             }
             
             if (!reportedDecline && draftStatus.DeclineCategories.Any())
@@ -166,7 +166,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                     "declined");
                 
                 yield return new CommandResponse
-                    {Message = string.Format("This draft has been also been {0}", declineReason)};
+                    {Message = string.Format("This draft has also been {0}", declineReason)};
             }
 
             if (draftStatus.SubmissionDate.HasValue && draftStatus.StatusCode == DraftStatusCode.Pending)
