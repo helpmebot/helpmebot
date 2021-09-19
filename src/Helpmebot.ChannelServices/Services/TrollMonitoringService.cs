@@ -57,44 +57,44 @@ namespace Helpmebot.ChannelServices.Services
 
             this.networks = new List<IPNetwork>
             {
-                IPNetwork.Parse("103.139.56.0/23"), // Avjr
-                IPNetwork.Parse("110.235.224.0/20"), // Excitel
-                
-                // Reliance Jio
-                IPNetwork.Parse("45.123.16.0/22"),
-                IPNetwork.Parse("47.8.0.0/15"),
-                IPNetwork.Parse("47.11.0.0/16"),
-                IPNetwork.Parse("47.15.0.0/16"),
-                IPNetwork.Parse("47.29.0.0/16"),
-                IPNetwork.Parse("47.30.0.0/15"),
-                IPNetwork.Parse("47.247.0.0/16"),
-                IPNetwork.Parse("49.32.0.0/13"),
-                IPNetwork.Parse("49.40.0.0/14"),
-                IPNetwork.Parse("49.44.48.0/20"),
-                IPNetwork.Parse("49.44.64.0/18"),
-                IPNetwork.Parse("49.44.128.0/17"),
-                IPNetwork.Parse("49.45.0.0/16"),
-                IPNetwork.Parse("49.46.0.0/15"),
-                IPNetwork.Parse("103.63.128.0/22"),
-                IPNetwork.Parse("115.240.0.0/13"),
-                IPNetwork.Parse("132.154.0.0/16"),
-                IPNetwork.Parse("136.232.0.0/15"),
-                IPNetwork.Parse("137.97.0.0/16"),
-                IPNetwork.Parse("139.167.0.0/16"),
-                IPNetwork.Parse("152.56.0.0/14"),
-                IPNetwork.Parse("157.32.0.0/12"),
-                IPNetwork.Parse("157.48.0.0/14"),
-                IPNetwork.Parse("169.149.0.0/16"),
-                IPNetwork.Parse("205.253.0.0/16"),
-                
-                // M247 / NordVPN
-                IPNetwork.Parse("37.120.221.0/24")
+                // IPNetwork.Parse("103.139.56.0/23"), // Avjr
+                // IPNetwork.Parse("110.235.224.0/20"), // Excitel
+                //
+                // // Reliance Jio
+                // IPNetwork.Parse("45.123.16.0/22"),
+                // IPNetwork.Parse("47.8.0.0/15"),
+                // IPNetwork.Parse("47.11.0.0/16"),
+                // IPNetwork.Parse("47.15.0.0/16"),
+                // IPNetwork.Parse("47.29.0.0/16"),
+                // IPNetwork.Parse("47.30.0.0/15"),
+                // IPNetwork.Parse("47.247.0.0/16"),
+                // IPNetwork.Parse("49.32.0.0/13"),
+                // IPNetwork.Parse("49.40.0.0/14"),
+                // IPNetwork.Parse("49.44.48.0/20"),
+                // IPNetwork.Parse("49.44.64.0/18"),
+                // IPNetwork.Parse("49.44.128.0/17"),
+                // IPNetwork.Parse("49.45.0.0/16"),
+                // IPNetwork.Parse("49.46.0.0/15"),
+                // IPNetwork.Parse("103.63.128.0/22"),
+                // IPNetwork.Parse("115.240.0.0/13"),
+                // IPNetwork.Parse("132.154.0.0/16"),
+                // IPNetwork.Parse("136.232.0.0/15"),
+                // IPNetwork.Parse("137.97.0.0/16"),
+                // IPNetwork.Parse("139.167.0.0/16"),
+                // IPNetwork.Parse("152.56.0.0/14"),
+                // IPNetwork.Parse("157.32.0.0/12"),
+                // IPNetwork.Parse("157.48.0.0/14"),
+                // IPNetwork.Parse("169.149.0.0/16"),
+                // IPNetwork.Parse("205.253.0.0/16"),
+                //
+                // // M247 / NordVPN
+                // IPNetwork.Parse("37.120.221.0/24")
             };
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
             this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
-            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik)", RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|Susovan Sonu Roy)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -168,12 +168,12 @@ namespace Helpmebot.ChannelServices.Services
                 this.logger.Error("Exception encountered checking user's voice status", ex);
             }
 
-            var emojiMatch = this.emojiRegex.Match(e.Message);
-            if (emojiMatch.Success)
-            {
-                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT EMOJI");
-                this.trackedUsers[e.User]++;
-            }
+            // var emojiMatch = this.emojiRegex.Match(e.Message);
+            // if (emojiMatch.Success)
+            // {
+            //     this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT EMOJI");
+            //     this.trackedUsers[e.User]++;
+            // }
 
             if (reallyBadWordMatch.Success)
             {
@@ -294,22 +294,22 @@ namespace Helpmebot.ChannelServices.Services
         {
             // disabled for now, pending configuration.
             
-            // this.client.JoinReceivedEvent += this.IrcJoinReceived;
-            // this.client.ReceivedMessage += this.ClientOnReceivedMessage;
-            // this.client.PartReceivedEvent += this.IrcPartReceived;
-            // this.client.KickReceivedEvent += this.IrcKickReceived;
-            // this.client.QuitReceivedEvent += this.IrcQuitReceived;
-            // this.logger.Debug("Troll monitoring startup");
+            this.client.JoinReceivedEvent += this.IrcJoinReceived;
+            this.client.ReceivedMessage += this.ClientOnReceivedMessage;
+            this.client.PartReceivedEvent += this.IrcPartReceived;
+            this.client.KickReceivedEvent += this.IrcKickReceived;
+            this.client.QuitReceivedEvent += this.IrcQuitReceived;
+            this.logger.Debug("Troll monitoring startup");
         }
 
         public void Stop()
         {
-            // this.logger.Debug("Troll monitoring shutdown");
-            // this.client.JoinReceivedEvent -= this.IrcJoinReceived;
-            // this.client.ReceivedMessage -= this.ClientOnReceivedMessage;
-            // this.client.PartReceivedEvent -= this.IrcPartReceived;
-            // this.client.KickReceivedEvent -= this.IrcKickReceived;
-            // this.client.QuitReceivedEvent -= this.IrcQuitReceived;
+            this.logger.Debug("Troll monitoring shutdown");
+            this.client.JoinReceivedEvent -= this.IrcJoinReceived;
+            this.client.ReceivedMessage -= this.ClientOnReceivedMessage;
+            this.client.PartReceivedEvent -= this.IrcPartReceived;
+            this.client.KickReceivedEvent -= this.IrcKickReceived;
+            this.client.QuitReceivedEvent -= this.IrcQuitReceived;
         }
         
     }
