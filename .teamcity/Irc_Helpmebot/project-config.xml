@@ -13,6 +13,15 @@
       </parameters>
     </extension>
   </project-extensions>
-  <cleanup />
+  <cleanup>
+    <policy type="builds" cleanup-level="ARTIFACTS">
+      <parameters>
+        <param name="keepBuilds.count" value="20" />
+      </parameters>
+    </policy>
+    <options>
+      <option name="preventDependenciesArtifactsFromCleanup" value="true" />
+    </options>
+  </cleanup>
 </project>
 
