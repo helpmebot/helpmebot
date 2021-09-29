@@ -41,7 +41,7 @@ namespace Helpmebot.ChannelServices.Services
         #else
             private string targetChannel = "#wikipedia-en-help";
             private string publicAlertChannel = "#wikipedia-en-helpers";
-            private string[] privateAlertTargets = {"stwalkerster" , "Waggie"};
+            private string[] privateAlertTargets = {"stwalkerster", "stw", "Waggie"};
             private string banTracker = "litharge";
         #endif        
 
@@ -149,6 +149,7 @@ namespace Helpmebot.ChannelServices.Services
                     // add to tracking anyway.
                     this.trackedUsers.Add(e.User, 0);
                     this.SendIrcPrivateAlert($"UNTRACKED unvoiced user {e.User} added to tracking due to badword filter");
+                    this.logger.InfoFormat($"UNTRACKED unvoiced user {e.User} added to tracking due to badword filter");
 
                 } else {
                     // don't care about non-tracked users
@@ -178,12 +179,15 @@ namespace Helpmebot.ChannelServices.Services
             if (reallyBadWordMatch.Success)
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT REALLYBADWORD");
+                this.logger.InfoFormat($"Tracked user {e.User} in -en-help SENT REALLYBADWORD");
+
                 this.trackedUsers[e.User] += 3;
             }
             
             if (badWordMatch.Success)
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT BADWORD");
+                this.logger.InfoFormat($"Tracked user {e.User} in -en-help SENT BADWORD");
                 this.trackedUsers[e.User]++;
             }
 
@@ -191,6 +195,8 @@ namespace Helpmebot.ChannelServices.Services
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
                 this.SendIrcAlert($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts");
+                this.logger.InfoFormat($"Tracked user {e.User} in -en-help matched {this.trackedUsers[e.User]} alerts; registering ban proposal");
+
                 this.banProposal = e.User;
                 try
                 {
