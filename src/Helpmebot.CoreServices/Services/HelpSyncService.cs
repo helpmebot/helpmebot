@@ -175,7 +175,7 @@ namespace Helpmebot.CoreServices.Services
         {
             var undocumentedAttribute =
                 commandClass.GetCustomAttributes(typeof(UndocumentedAttribute), false);
-            if (undocumentedAttribute.Length == 0)
+            if (undocumentedAttribute.Length > 0)
             {
                 canonicalName = null;
                 pageName = null;
