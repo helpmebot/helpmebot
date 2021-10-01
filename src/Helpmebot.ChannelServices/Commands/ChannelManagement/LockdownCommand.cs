@@ -47,7 +47,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             try
             {
                 var channel = "#wikipedia-en-help";
-                var bantracker = "eir";
+                var bantracker = "litharge";
 
                 var chanop = this.User;
                 
@@ -60,7 +60,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                         
                         // allow time for eir to message us
                         Thread.Sleep(1000);
-                        ircClient.SendMessage(bantracker, $"~2h Channel lockdown triggered by {chanop}");
+                        ircClient.SendMessage(bantracker, $"2h Channel lockdown triggered by {chanop}");
                     });
             }
             catch (Exception ex)

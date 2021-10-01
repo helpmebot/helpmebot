@@ -15,7 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Owner)]
+    [CommandFlag(Flags.Protected)]
     [CommandInvocation("idlehelpees")]
     public class IdleHelpeesCommand :CommandBase
     {
@@ -35,6 +35,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.helpeeManagementService = helpeeManagementService;
         }
 
+        [Help("", "Returns a list of helpees and their in-channel idle time, including the last-active helpers")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var helpees = this.helpeeManagementService.Helpees

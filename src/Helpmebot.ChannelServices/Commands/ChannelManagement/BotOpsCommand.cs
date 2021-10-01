@@ -14,10 +14,8 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Owner)]
+    [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("botops")]
-    [Obsolete]
-    [Undocumented]
     public class BotOpsCommand : CommandBase
     {
         private readonly IPersistentChanOpsService persistentChanOpsService;
@@ -46,6 +44,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [SubcommandInvocation("grant")]
+        [Help("", "Requests the bot gain channel operator status.")]
         protected IEnumerable<CommandResponse> GrantCommand()
         {
             this.persistentChanOpsService.RequestOps(this.CommandSource);
@@ -53,6 +52,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
         
         [SubcommandInvocation("revoke")]
+        [Help("", "Requests the bot remove channel operator status from itself.")]
         protected IEnumerable<CommandResponse> RevokeCommand()
         {
             this.persistentChanOpsService.ReleaseOps(this.CommandSource);

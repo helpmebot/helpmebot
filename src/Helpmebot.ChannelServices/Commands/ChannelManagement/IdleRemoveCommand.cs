@@ -15,7 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Owner)]
+    [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("idleremove")]
     public class IdleRemoveCommand : CommandBase
     {
@@ -38,6 +38,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.modeMonitoringService = modeMonitoringService;
         }
 
+        [Help("[nickname...]", "Produces a list of who will be removed from the channel by the remove command")]
         [SubcommandInvocation("dryrun")]
         protected IEnumerable<CommandResponse> DryRun()
         {
@@ -48,6 +49,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             yield return new CommandResponse {Message = $"Proposing removal of: {helpees}"};
         }
 
+        [Help("[nickname...]", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
         [SubcommandInvocation("remove")]
         protected IEnumerable<CommandResponse> Remove()
         {

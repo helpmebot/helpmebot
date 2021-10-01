@@ -200,7 +200,14 @@ namespace Helpmebot.ChannelServices.Services
                 this.banProposal = e.User;
                 try
                 {
-                    this.commandParser.RegisterCommand("enact", typeof(EnactBanCommand));
+                    if (this.banProposalTimer.Enabled)
+                    {
+                        this.banProposalTimer.Stop();
+                    }
+                    else
+                    {
+                        this.commandParser.RegisterCommand("enact", typeof(EnactBanCommand));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +215,6 @@ namespace Helpmebot.ChannelServices.Services
                 }
 
                 this.banProposalTimer.Start();
-                
             }
         }
 

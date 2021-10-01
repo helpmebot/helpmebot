@@ -40,6 +40,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.trollMonitoringService = trollMonitoringService;
         }
 
+        [Help("", "Enacts the proposed ban.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             this.trollMonitoringService.EnactBan(this.User);
