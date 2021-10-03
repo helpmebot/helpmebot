@@ -2,6 +2,7 @@ namespace Helpmebot.ChannelServices.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Text.RegularExpressions;
@@ -11,6 +12,7 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.ChannelServices.Commands.ChannelManagement;
     using Helpmebot.ChannelServices.ExtensionMethods;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -24,19 +26,22 @@ namespace Helpmebot.ChannelServices.Services
         private readonly ILogger logger;
         private readonly IModeMonitoringService modeMonitoringService;
         private readonly ICommandParser commandParser;
+        private readonly BotConfiguration config;
         private List<IPNetwork> networks;
 
         private Dictionary<IUser, uint> trackedUsers = new Dictionary<IUser, uint>();
         private Regex emojiRegex;
         private Regex badWordRegex;
         private Regex reallyBadWordRegex;
+        private Regex pasteRegex;
+        private Regex instaQuietRegex;
 
         private IUser banProposal;
 
         #if DEBUG
             private string targetChannel = "##stwalkerster";
             private string publicAlertChannel = "##stwalkerster-development2";
-            private string[] privateAlertTargets = {"stwalkerster"};
+            private string[] privateAlertTargets = {"stw"};
             private string banTracker = "stwalkerster";
         #else
             private string targetChannel = "#wikipedia-en-help";
@@ -48,12 +53,13 @@ namespace Helpmebot.ChannelServices.Services
         private Timer banProposalTimer = new Timer(60000);
         
 
-        public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser)
+        public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser, BotConfiguration config)
         {
             this.client = client;
             this.logger = logger;
             this.modeMonitoringService = modeMonitoringService;
             this.commandParser = commandParser;
+            this.config = config;
 
             this.networks = new List<IPNetwork>
             {
@@ -94,7 +100,10 @@ namespace Helpmebot.ChannelServices.Services
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
             
             this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
-            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|Susovan Sonu Roy|skiyomi|yamlafuck|deepfuckfuck|pooyo)", RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|skiyomi|yamlafuck|deepfuckfuck|pooyo)", RegexOptions.IgnoreCase);
+            this.instaQuietRegex = new Regex("(yamlafuck pooyo and deepfuckfuck|free skiyomi and other ltas)", RegexOptions.IgnoreCase);
+            
+            this.pasteRegex = new Regex("^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -137,14 +146,46 @@ namespace Helpmebot.ChannelServices.Services
                 // don't care about other channels.
                 return;
             }
+            
+            var pasteMatch = this.pasteRegex.Match(e.Message);
 
             var badWordMatch = this.badWordRegex.Match(e.Message);
             var reallyBadWordMatch = this.reallyBadWordRegex.Match(e.Message);
+            var instaQuietMatch = this.instaQuietRegex.Match(e.Message);
             
+            if (pasteMatch.Success)
+            {
+                var url = pasteMatch.Groups["url"].Value;
+                    
+                var hwr = (HttpWebRequest)WebRequest.Create(url);
+                hwr.UserAgent = this.config.UserAgent;
+                hwr.Method = "GET";
+
+                var memoryStream = new MemoryStream();
+                using (var resp = (HttpWebResponse) hwr.GetResponse())
+                {               
+                    var responseStream = resp.GetResponseStream();
+
+                    if (responseStream != null)
+                    {
+                        responseStream.CopyTo(memoryStream);
+                        resp.Close();
+                    }
+                }
+
+                memoryStream.Position = 0;
+                var newMessage = new StreamReader(memoryStream).ReadToEnd();
+                
+                badWordMatch = this.badWordRegex.Match(newMessage);
+                reallyBadWordMatch = this.reallyBadWordRegex.Match(newMessage);
+                instaQuietMatch = this.instaQuietRegex.Match(newMessage);
+            }
+            
+            // add to tracking
             if (!this.trackedUsers.ContainsKey(e.User))
             {
                 var channelUser = this.client.Channels[this.targetChannel].Users[e.User.Nickname];
-                if ((badWordMatch.Success || reallyBadWordMatch.Success ) && !channelUser.Voice)
+                if ((badWordMatch.Success || reallyBadWordMatch.Success || instaQuietMatch.Success ) && !channelUser.Voice)
                 {
                     // add to tracking anyway.
                     this.trackedUsers.Add(e.User, 0);
@@ -176,6 +217,23 @@ namespace Helpmebot.ChannelServices.Services
             //     this.trackedUsers[e.User]++;
             // }
 
+            if (instaQuietMatch.Success)
+            {
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT INSTAQUIET WORD, and was quieted.");
+                this.logger.InfoFormat($"Tracked user {e.User} in -en-help automatically quieted due to expression match");
+                
+                this.modeMonitoringService.PerformAsOperator(
+                    this.targetChannel,
+                    ircClient =>
+                    {
+                        ircClient.Mode(this.targetChannel, $"+qzoo *!*@{e.User.Hostname} ozone stw");
+                        Thread.Sleep(1000);
+                        ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit.");
+                    });
+
+                this.trackedUsers[e.User] += 10;
+            }
+            
             if (reallyBadWordMatch.Success)
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in -en-help SENT REALLYBADWORD");
