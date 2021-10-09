@@ -243,6 +243,11 @@
 
         public void RequestPersistentOps(string channel, IChannelOperator requester, string token)
         {
+            this.RequestPersistentOps(channel, requester, token, false);
+        }
+        
+        public void RequestPersistentOps(string channel, IChannelOperator requester, string token, bool priority)
+        {
             bool existingOps = false;
             
             lock (this.channelStatus)
@@ -263,7 +268,7 @@
                 requester.OnChannelOperatorGranted(this, new OppedEventArgs(channel, token, this, this.ircClient));
             }
             
-            this.CheckRestrictivity(channel);
+            this.CheckRestrictivity(channel, priority);
         }
 
         public void ReleasePersistentOps(string channel, string token)
@@ -281,9 +286,14 @@
             this.CheckRestrictivity(channel);
         }
 
+        public void PerformAsOperator(string channel, Action<IIrcClient> tasks, bool priority)
+        {
+            this.RequestPersistentOps(channel, new ChanOpTaskList(tasks), Guid.NewGuid().ToString(), priority);
+        }
+        
         public void PerformAsOperator(string channel, Action<IIrcClient> tasks)
         {
-            this.RequestPersistentOps(channel, new ChanOpTaskList(tasks), Guid.NewGuid().ToString());
+            this.PerformAsOperator(channel, tasks, false);
         }
         
         #endregion
@@ -405,7 +415,7 @@
 
         #region Channel fixing
 
-        private void CheckRestrictivity(string channel)
+        private void CheckRestrictivity(string channel, bool priority = false)
         {
             bool needsChanges = false;
             bool needsOps = false;
@@ -446,7 +456,7 @@
             if (needsOps && !hasOps)
             {
                 this.logger.DebugFormat("Detected we need ops, and don't have it. Requesting on {0}", channel);
-                this.ircClient.SendMessage("ChanServ", "op " + channel);
+                this.ircClient.SendMessage("ChanServ", "op " + channel, null, priority);
             }
         }
 

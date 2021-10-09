@@ -225,10 +225,14 @@ namespace Helpmebot.ChannelServices.Services
                     this.targetChannel,
                     ircClient =>
                     {
-                        ircClient.Mode(this.targetChannel, $"+qzoo *!*@{e.User.Hostname} ozone stw");
+                        ircClient.PrioritySend(
+                            new Message(
+                                "MODE",
+                                new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
                         Thread.Sleep(1000);
                         ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit.");
-                    });
+                    },
+                    true);
                 
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was quieted.");
 

@@ -11,7 +11,7 @@
       <param name="nunitRunner" value="3.12.0" />
       <param name="pathPrefix" value="src/" />
       <param name="solutionName" value="Helpmebot" />
-      <param name="version" value="7.1" />
+      <param name="version" value="7.2" />
     </parameters>
     <build-runners />
     <vcs-settings>

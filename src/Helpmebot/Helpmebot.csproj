@@ -96,8 +96,8 @@
       <HintPath>..\packages\Castle.Windsor.4.1.1\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DnsClient, Version=1.4.0.0, Culture=neutral, PublicKeyToken=4574bb5573c51424">
-      <HintPath>..\packages\DnsClient.1.4.0\lib\net471\DnsClient.dll</HintPath>
+    <Reference Include="DnsClient, Version=1.5.0.0, Culture=neutral, PublicKeyToken=4574bb5573c51424">
+      <HintPath>..\packages\DnsClient.1.5.0\lib\net471\DnsClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentNHibernate, Version=2.0.3.0, Culture=neutral, PublicKeyToken=null">
@@ -120,7 +120,55 @@
       <HintPath>..\packages\MaxMind.GeoIP2.3.3.0\lib\net45\MaxMind.GeoIP2.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.Configuration, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.5.0.0\lib\net461\Microsoft.Extensions.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Binder, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Binder.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Binder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=5.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.5.0.2\lib\net461\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Http, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Http.5.0.0\lib\net461\Microsoft.Extensions.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.5.0.0\lib\net461\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Options.5.0.0\lib\net461\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Registry, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\Microsoft.Win32.Registry.5.0.0\lib\net461\Microsoft.Win32.Registry.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="MySql.Data, Version=6.9.11.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
       <HintPath>..\packages\MySql.Data.6.9.11\lib\net45\MySql.Data.dll</HintPath>
@@ -129,20 +177,20 @@
       <HintPath>..\packages\NDesk.Options.Core.1.2.5\lib\net472\NDesk.Options.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NHibernate, Version=4.1.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4">
       <HintPath>..\packages\NHibernate.4.1.2.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Prometheus.NetStandard, Version=4.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
-      <HintPath>..\packages\prometheus-net.4.1.1\lib\net461\Prometheus.NetStandard.dll</HintPath>
+    <Reference Include="Prometheus.NetStandard, Version=5.0.0.0, Culture=neutral, PublicKeyToken=a243e9817ba9d559">
+      <HintPath>..\packages\prometheus-net.5.0.1\lib\net461\Prometheus.NetStandard.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="RabbitMQ.Client, Version=6.0.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce">
-      <HintPath>..\packages\RabbitMQ.Client.6.2.1\lib\net461\RabbitMQ.Client.dll</HintPath>
+      <HintPath>..\packages\RabbitMQ.Client.6.2.2\lib\net461\RabbitMQ.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Remotion.Linq, Version=2.2.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b">
@@ -153,16 +201,16 @@
       <HintPath>..\packages\Remotion.Linq.EagerFetching.2.2.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.CommandLib, Version=14.0.80.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.14.0.80\lib\netstandard2.0\Stwalkerster.Bot.CommandLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.CommandLib, Version=15.0.84.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.CommandLib.15.0.84\lib\netstandard2.0\Stwalkerster.Bot.CommandLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=4.0.41.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.4.0.41\lib\netstandard2.0\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
+    <Reference Include="Stwalkerster.Bot.MediaWikiLib, Version=4.1.42.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.Bot.MediaWikiLib.4.1.42\lib\netstandard2.0\Stwalkerster.Bot.MediaWikiLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Stwalkerster.IrcClient, Version=9.1.82.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Stwalkerster.IrcClient.9.1.82\lib\netstandard2.0\Stwalkerster.IrcClient.dll</HintPath>
+    <Reference Include="Stwalkerster.IrcClient, Version=10.0.100.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Stwalkerster.IrcClient.10.0.100\lib\netstandard2.0\Stwalkerster.IrcClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -173,10 +221,19 @@
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Mono-2.6.1\lib\mono\2.0\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.5.0.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Globalization" />
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
@@ -184,8 +241,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.IPNetwork, Version=2.5.250.0, Culture=neutral, PublicKeyToken=717343cc2c25edcf">
-      <HintPath>..\packages\IPNetwork2.2.5.250\lib\net47\System.Net.IPNetwork.dll</HintPath>
+    <Reference Include="System.Net.IPNetwork, Version=2.5.353.0, Culture=neutral, PublicKeyToken=717343cc2c25edcf">
+      <HintPath>..\packages\IPNetwork2.2.5.353\lib\net47\System.Net.IPNetwork.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Numerics" />
@@ -193,11 +250,19 @@
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.AccessControl.5.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>..\packages\System.Threading.Channels.4.7.1\lib\net461\System.Threading.Channels.dll</HintPath>

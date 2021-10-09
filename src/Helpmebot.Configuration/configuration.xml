@@ -13,7 +13,9 @@
                 <nickname></nickname>
                 <realName></realName>
                 <username></username>
-                <password></password>
+                <serverPassword></serverPassword>
+                <servicesUsername></servicesUsername>
+                <servicesPassword></servicesPassword>
                 <clientName>Freenode</clientName>
             </parameters>
         </component>
