@@ -17,6 +17,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     public class LinkCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
+        private readonly ISession databaseSession;
 
         public LinkCommand(
             string commandSource,
@@ -26,7 +27,8 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ILinkerService linkerService) : base(
+            ILinkerService linkerService,
+            ISession databaseSession) : base(
             commandSource,
             user,
             arguments,
@@ -36,6 +38,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             client)
         {
             this.linkerService = linkerService;
+            this.databaseSession = databaseSession;
         }
 
         [Help(
@@ -50,20 +53,26 @@ namespace Helpmebot.ChannelServices.Commands.Standard
         {
             if (this.Arguments.Any())
             {
-                var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
+                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
+                if (channel == null || !channel.AutoLink) {
+                    var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
 
-                if (links.Count == 0)
-                {
-                    links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
+                    if (links.Count == 0)
+                    {
+                        links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
+                    }
+
+                    var message = links.Aggregate(
+                        string.Empty,
+                        (current, link) =>
+                            current + " " + this.linkerService.ConvertWikilinkToUrl(this.CommandSource, link));
+
+                    yield return new CommandResponse {Message = message.Trim()};
+                    yield break;
                 }
-
-                var message = links.Aggregate(
-                    string.Empty,
-                    (current, link) =>
-                        current + " " + this.linkerService.ConvertWikilinkToUrl(this.CommandSource, link));
-
-                yield return new CommandResponse {Message = message.Trim()};
-                yield break;
+                else {
+                    yield break;
+                }
             }
 
             yield return new CommandResponse
