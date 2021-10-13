@@ -54,26 +54,22 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             if (this.Arguments.Any())
             {
                 var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-                if (channel == null || !channel.AutoLink) {
-                    var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
+                var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
 
-                    if (links.Count == 0)
-                    {
-                        links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
-                    }
-
-                    var message = links.Aggregate(
-                        string.Empty,
-                        (current, link) =>
-                            current + " " + this.linkerService.ConvertWikilinkToUrl(this.CommandSource, link));
-
-                    yield return new CommandResponse {Message = message.Trim()};
-                    yield break;
+                if ((channel == null || !channel.AutoLink) && (links.Count == 0))
+                {
+                    links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
                 }
-                else {
-                    yield break;
-                }
+
+                var message = links.Aggregate(
+                    string.Empty,
+                    (current, link) =>
+                        current + " " + this.linkerService.ConvertWikilinkToUrl(this.CommandSource, link));
+
+                yield return new CommandResponse {Message = message.Trim()};
+                yield break;
             }
+        }
 
             yield return new CommandResponse
             {
