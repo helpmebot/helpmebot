@@ -45,5 +45,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
         void DeleteMap(string monitorChannel, string reportChannel, ISession databaseSession);
 
         IEnumerable<BlockData> GetBlockData(IUser joinedUser, string joinedChannel);
+        IJoinMessageService JoinMessageService { get; set; }
     }
 }

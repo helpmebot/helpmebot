@@ -36,5 +36,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
         void OnJoinEvent(object sender, JoinEventArgs e);
 
         void SendWelcome(IUser networkUser, string channel, IIrcClient client);
+        void RemoveExemption(string channel, IUser user, bool priority = false);
     }
 }

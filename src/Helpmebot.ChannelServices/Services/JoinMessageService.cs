@@ -36,6 +36,7 @@ namespace Helpmebot.ChannelServices.Services
     using Prometheus;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
+    using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
     using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
 
@@ -58,6 +59,9 @@ namespace Helpmebot.ChannelServices.Services
         private readonly IIrcClient client;
         private readonly IBlockMonitoringService blockMonitoringService;
 
+        private readonly Dictionary<string, List<ExemptListEntry>> appliedExemptions =
+            new Dictionary<string, List<ExemptListEntry>>();
+
         public JoinMessageService(
             ILogger logger,
             IMessageService messageService,
@@ -74,6 +78,8 @@ namespace Helpmebot.ChannelServices.Services
             this.geolocationService = geolocationService;
             this.client = client;
             this.blockMonitoringService = blockMonitoringService;
+
+            this.blockMonitoringService.JoinMessageService = this;
         }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
@@ -207,6 +213,17 @@ namespace Helpmebot.ChannelServices.Services
                 if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
                 {
                     var modeTarget = $"*!*@{networkUser.Hostname}";
+
+                    lock (this.appliedExemptions)
+                    {
+                        if (!this.appliedExemptions.ContainsKey(channel))
+                        {
+                            this.appliedExemptions.Add(channel, new List<ExemptListEntry>());
+                        }
+
+                        this.appliedExemptions[channel]
+                            .Add(new ExemptListEntry { User = networkUser, Exemption = modeTarget });
+                    }
                     
                     client.Mode(channel, "+e " + modeTarget);
 
@@ -403,17 +420,82 @@ namespace Helpmebot.ChannelServices.Services
 
             return false;
         }
+
+        public void RemoveExemption(string channel, IUser user, bool priority = false)
+        {
+            List<ExemptListEntry> exemptions;
+            
+            lock (this.appliedExemptions)
+            {
+                if (!this.appliedExemptions.ContainsKey(channel))
+                {
+                    return;
+                }
+                
+                exemptions = this.appliedExemptions[channel].Where(x => x.User.Equals(user)).ToList();
+                exemptions.ForEach(x => this.appliedExemptions[channel].Remove(x));
+            }
+
+            if (!this.client.Channels[channel].Users[this.client.Nickname].Operator)
+            {
+                return;
+            }
+
+            foreach (var exemption in exemptions)
+            {
+                var message = new Message("MODE", new[] { channel, "-e", exemption.Exemption });
+                if (priority)
+                {
+                    this.client.PrioritySend(message);
+                }
+                else
+                {
+                    this.client.Send(message);
+                }
+            }
+        }
         
         public void Start()
         {
             this.logger.Debug("Starting join message service");
             this.client.JoinReceivedEvent += this.OnJoinEvent;
+            this.client.QuitReceivedEvent += this.OnQuitEvent;
+            this.client.KickReceivedEvent += this.OnKickEvent;
+            this.client.PartReceivedEvent += this.OnPartEvent;
         }
 
         public void Stop()
         {
             this.logger.Debug("Stopping join message service");
             this.client.JoinReceivedEvent -= this.OnJoinEvent;
+            this.client.QuitReceivedEvent -= this.OnQuitEvent;
+            this.client.KickReceivedEvent -= this.OnKickEvent;
+            this.client.PartReceivedEvent -= this.OnPartEvent;
+        }
+
+        private void OnPartEvent(object sender, JoinEventArgs e)
+        {
+            this.RemoveExemption(e.Channel, e.User);
+        }
+
+        private void OnKickEvent(object sender, KickEventArgs e)
+        {
+            this.RemoveExemption(e.Channel, e.User);
+        }
+
+        private void OnQuitEvent(object sender, QuitEventArgs e)
+        {
+            List<string> appliedExemptionsKeys;
+            
+            lock (this.appliedExemptions)
+            {
+                appliedExemptionsKeys = this.appliedExemptions.Keys.ToList();
+            }
+            
+            foreach (var channel in appliedExemptionsKeys)
+            {
+                this.RemoveExemption(channel, e.User);    
+            }
         }
     }
 }

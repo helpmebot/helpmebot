@@ -93,6 +93,8 @@ namespace Helpmebot.ChannelServices.Services
             this.webServiceClient = webServiceClient;
             this.client = client;
             this.trollMonitoringService = trollMonitoringService;
+            
+            this.trollMonitoringService.BlockMonitoringService = this;
 
             // initialise the store
             foreach (var blockMonitor in globalSession.CreateCriteria<BlockMonitor>().List<BlockMonitor>())
@@ -105,6 +107,8 @@ namespace Helpmebot.ChannelServices.Services
                 this.monitors[blockMonitor.MonitorChannel].Add(blockMonitor.ReportChannel);
             }
         }
+
+        public IJoinMessageService JoinMessageService { get; set; }
 
         public void OnJoinEvent(object sender, JoinEventArgs e)
         {

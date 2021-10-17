@@ -9,5 +9,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
         void ForceAddTracking(IUser user, object sender);
         void SetScore(IUser user, int score, bool checkFirstMessage);
         IUser SetScore(string nickname, int score, bool checkFirstMessage);
+        IBlockMonitoringService BlockMonitoringService { get; set; }
     }
 }

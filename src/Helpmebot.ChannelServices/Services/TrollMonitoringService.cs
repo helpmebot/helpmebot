@@ -55,7 +55,12 @@ namespace Helpmebot.ChannelServices.Services
 
         private Timer banProposalTimer = new Timer(60000);
 
-        public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser, BotConfiguration config)
+        public TrollMonitorService(
+            IIrcClient client,
+            ILogger logger,
+            IModeMonitoringService modeMonitoringService,
+            ICommandParser commandParser,
+            BotConfiguration config)
         {
             this.client = client;
             this.logger = logger;
@@ -100,19 +105,22 @@ namespace Helpmebot.ChannelServices.Services
             };
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
-            
+
             this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
             this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|skiyomi|yamlafuck|deepfuckfuck|pooyo)", RegexOptions.IgnoreCase);
             this.instaQuietRegex = new Regex("(yamlafuck pooyo and deepfuckfuck|free skiyomi and other ltas)", RegexOptions.IgnoreCase);
-            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you)\\s*$", RegexOptions.IgnoreCase);
-            
+            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you|potato)\\s*$", RegexOptions.IgnoreCase);
+
             this.pasteRegex = new Regex("^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)", RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
-            this.banProposalTimer.Elapsed += BanProposalTimerOnElapsed;
+            this.banProposalTimer.Elapsed += this.BanProposalTimerOnElapsed;
         }
 
+        private IJoinMessageService JoinMessageService => this.BlockMonitoringService.JoinMessageService;
+        public IBlockMonitoringService BlockMonitoringService { get; set; }
+        
         private void BanProposalTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             this.commandParser.UnregisterCommand("enact");
@@ -234,10 +242,22 @@ namespace Helpmebot.ChannelServices.Services
                             new Message(
                                 "MODE",
                                 new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+                        
+                        if (this.JoinMessageService != null)
+                        {
+                            this.JoinMessageService.RemoveExemption(this.targetChannel, e.User, true);
+                        }
+                        else
+                        {
+                            this.logger.Error("Could not check for/remove exemptions set by JMS.");
+                        }
+
                         Thread.Sleep(1000);
                         ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit.");
                     },
                     true);
+                
+                
                 
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was quieted.");
 
@@ -256,6 +276,16 @@ namespace Helpmebot.ChannelServices.Services
                             new Message(
                                 "MODE",
                                 new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+
+                        if (this.JoinMessageService != null)
+                        {
+                            this.JoinMessageService.RemoveExemption(this.targetChannel, e.User, true);
+                        }
+                        else
+                        {
+                            this.logger.Error("Could not check for/remove exemptions set by JMS.");
+                        }
+
                         Thread.Sleep(1000);
                         ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit on first message.");
                     },
