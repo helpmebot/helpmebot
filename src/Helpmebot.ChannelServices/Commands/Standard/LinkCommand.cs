@@ -71,11 +71,10 @@ namespace Helpmebot.ChannelServices.Commands.Standard
                 yield return new CommandResponse {Message = message.Trim()};
                 yield break;
             }
+            yield return new CommandResponse
+            {
+              Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
+            };
         }
-
-        yield return new CommandResponse
-        {
-            Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
-        };
     }
 }
