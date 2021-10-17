@@ -58,9 +58,13 @@ namespace Helpmebot.ChannelServices.Commands.Standard
                 var channel = this.databaseSession.GetChannelObject(this.CommandSource);
                 var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
 
-                if ((channel == null || !channel.AutoLink) && (links.Count == 0))
+                if (links.Count == 0)
                 {
                     links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
+                } 
+                else if (channel != null && channel.autolink) 
+                {
+                    yield break;
                 }
 
                 var message = links.Aggregate(
