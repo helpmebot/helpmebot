@@ -2,8 +2,10 @@ namespace Helpmebot.ChannelServices.Commands.Standard
 {
     using System.Collections.Generic;
     using System.Linq;
+    using NHibernate;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -17,6 +19,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     public class LinkCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
+        private readonly ISession databaseSession;
 
         public LinkCommand(
             string commandSource,
@@ -26,7 +29,8 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ILinkerService linkerService) : base(
+            ILinkerService linkerService,
+            ISession databaseSession) : base(
             commandSource,
             user,
             arguments,
@@ -36,6 +40,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             client)
         {
             this.linkerService = linkerService;
+            this.databaseSession = databaseSession;
         }
 
         [Help(
@@ -50,11 +55,16 @@ namespace Helpmebot.ChannelServices.Commands.Standard
         {
             if (this.Arguments.Any())
             {
+                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
                 var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
 
                 if (links.Count == 0)
                 {
                     links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
+                } 
+                else if (channel != null && channel.AutoLink) 
+                {
+                    yield break;
                 }
 
                 var message = links.Aggregate(
@@ -65,10 +75,9 @@ namespace Helpmebot.ChannelServices.Commands.Standard
                 yield return new CommandResponse {Message = message.Trim()};
                 yield break;
             }
-
             yield return new CommandResponse
             {
-                Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
+              Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
             };
         }
     }
