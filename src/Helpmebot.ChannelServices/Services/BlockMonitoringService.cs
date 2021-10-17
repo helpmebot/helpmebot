@@ -213,7 +213,14 @@ namespace Helpmebot.ChannelServices.Services
                         IpOrg = org, 
                         RegisteredUser = false
                     };
-                    
+
+                    if (blockInformation.BlockReason.Contains("blocked proxy") || blockInformation.BlockReason.Contains("colocation"))
+                    {
+                        if (joinedChannel == "#wikipedia-en-help")
+                        {
+                            this.trollMonitoringService.ForceAddTracking(joinedUser, this);
+                        }
+                    }
                 }
             }
 

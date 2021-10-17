@@ -13,13 +13,13 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandInvocation("untrack")]
-    [CommandFlag(Flags.Protected)]
-    public class TrollIgnoreListCommand : CommandBase
+    [CommandInvocation("track")]
+    [CommandFlag(Flags.Owner)]
+    public class TrackCommand : CommandBase
     {
         private readonly ITrollMonitoringService trollMonitoringService;
 
-        public TrollIgnoreListCommand(
+        public TrackCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -40,14 +40,14 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [RequiredArguments(1)]
-        [Help("<nickname>", "Prevents the provided nickname from triggering tracking alerts. This safe-listing will only last until they leave the channel, and only gives a reprieve from bot-initiated violence by reducing the user's current score by a large value. Sufficient additional hits will result in the user being added back to tracking.")]
+        [Help("<nickname>", "Adds a user to tracking")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try
             {
-                var score = -1000;
+                var score = 0;
                 var nickname = this.Arguments.First();
-                var user = this.trollMonitoringService.SetScore(nickname, score, false);
+                var user = this.trollMonitoringService.SetScore(nickname, score, true);
 
                 if (user == null)
                 {

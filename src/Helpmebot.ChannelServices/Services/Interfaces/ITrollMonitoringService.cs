@@ -7,7 +7,7 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
     {
         void EnactBan(IUser enactingUser);
         void ForceAddTracking(IUser user, object sender);
-        void SetScore(IUser user, int score);
-        IUser SetScore(string nickname, int score);
+        void SetScore(IUser user, int score, bool checkFirstMessage);
+        IUser SetScore(string nickname, int score, bool checkFirstMessage);
     }
 }

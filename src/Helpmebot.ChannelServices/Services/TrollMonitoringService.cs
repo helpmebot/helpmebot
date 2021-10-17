@@ -11,6 +11,7 @@ namespace Helpmebot.ChannelServices.Services
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Commands.ChannelManagement;
     using Helpmebot.ChannelServices.ExtensionMethods;
+    using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -30,20 +31,21 @@ namespace Helpmebot.ChannelServices.Services
         private readonly BotConfiguration config;
         private List<IPNetwork> networks;
 
-        private Dictionary<IUser, int> trackedUsers = new Dictionary<IUser, int>();
+        private Dictionary<IUser, TrackedUser> trackedUsers = new Dictionary<IUser, TrackedUser>();
         private Regex emojiRegex;
-        private Regex badWordRegex;
-        private Regex reallyBadWordRegex;
-        private Regex pasteRegex;
-        private Regex instaQuietRegex;
+        private readonly Regex badWordRegex;
+        private readonly Regex reallyBadWordRegex;
+        private readonly Regex pasteRegex;
+        private readonly Regex instaQuietRegex;
+        private readonly Regex firstMessageQuietRegex;
 
         private IUser banProposal;
 
         #if DEBUG
-            private string targetChannel = "##stwalkerster";
-            private string publicAlertChannel = "##stwalkerster-development2";
+            private string targetChannel = "##stwalkerster-development2";
+            private string publicAlertChannel = "##stwalkerster-development";
             private string[] privateAlertTargets = {"stw"};
-            private string banTracker = "stw";
+            private string banTracker = "##stwalkerster-development3";
         #else
             private string targetChannel = "#wikipedia-en-help";
             private string publicAlertChannel = "#wikipedia-en-helpers";
@@ -52,7 +54,6 @@ namespace Helpmebot.ChannelServices.Services
         #endif        
 
         private Timer banProposalTimer = new Timer(60000);
-        
 
         public TrollMonitorService(IIrcClient client, ILogger logger, IModeMonitoringService modeMonitoringService, ICommandParser commandParser, BotConfiguration config)
         {
@@ -103,6 +104,7 @@ namespace Helpmebot.ChannelServices.Services
             this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
             this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|skiyomi|yamlafuck|deepfuckfuck|pooyo)", RegexOptions.IgnoreCase);
             this.instaQuietRegex = new Regex("(yamlafuck pooyo and deepfuckfuck|free skiyomi and other ltas)", RegexOptions.IgnoreCase);
+            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you)\\s*$", RegexOptions.IgnoreCase);
             
             this.pasteRegex = new Regex("^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)", RegexOptions.IgnoreCase);
 
@@ -153,6 +155,7 @@ namespace Helpmebot.ChannelServices.Services
             var badWordMatch = this.badWordRegex.Match(e.Message);
             var reallyBadWordMatch = this.reallyBadWordRegex.Match(e.Message);
             var instaQuietMatch = this.instaQuietRegex.Match(e.Message);
+            var firstMessageQuietMatch = this.firstMessageQuietRegex.Match(e.Message);
             
             if (pasteMatch.Success)
             {
@@ -180,20 +183,21 @@ namespace Helpmebot.ChannelServices.Services
                 badWordMatch = this.badWordRegex.Match(newMessage);
                 reallyBadWordMatch = this.reallyBadWordRegex.Match(newMessage);
                 instaQuietMatch = this.instaQuietRegex.Match(newMessage);
+                firstMessageQuietMatch = this.firstMessageQuietRegex.Match(newMessage);
             }
             
             // add to tracking
             if (!this.trackedUsers.ContainsKey(e.User))
             {
                 var channelUser = this.client.Channels[this.targetChannel].Users[e.User.Nickname];
-                if ((badWordMatch.Success || reallyBadWordMatch.Success || instaQuietMatch.Success ) && !channelUser.Voice)
+                if ((badWordMatch.Success || reallyBadWordMatch.Success || instaQuietMatch.Success || firstMessageQuietMatch.Success ) && !channelUser.Voice)
                 {
                     // add to tracking anyway.
-                    this.trackedUsers.Add(e.User, 0);
-                    this.logger.InfoFormat($"UNTRACKED unvoiced user {e.User} added to tracking due to badword filter");
+                    this.trackedUsers.Add(e.User, new TrackedUser(0, e.User));
+                    this.logger.InfoFormat($"UNTRACKED unvoiced user {e.User} added to tracking due to filter hit");
 
                 } else {
-                    // don't care about non-tracked users
+                    // don't care about non-tracked users who haven't hit the alert.
                     return;
                 }
             }
@@ -202,6 +206,7 @@ namespace Helpmebot.ChannelServices.Services
             {
                 if (this.client.Channels[this.targetChannel].Users[e.User.Nickname].Voice)
                 {
+                    this.trackedUsers[e.User].CheckFirstMessage = false;
                     return;
                 }
             }
@@ -236,15 +241,37 @@ namespace Helpmebot.ChannelServices.Services
                 
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was quieted.");
 
-                this.trackedUsers[e.User] += 1000;
-                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User]}");
+                this.trackedUsers[e.User].Score += 1000;
+                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
             } 
+            else if (firstMessageQuietMatch.Success && this.trackedUsers[e.User].CheckFirstMessage)
+            {
+                this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} automatically quieted due to expression match on first message");
+
+                this.modeMonitoringService.PerformAsOperator(
+                    this.targetChannel,
+                    ircClient =>
+                    {
+                        ircClient.PrioritySend(
+                            new Message(
+                                "MODE",
+                                new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+                        Thread.Sleep(1000);
+                        ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit on first message.");
+                    },
+                    true);
+                 
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} matched quiet-on-first-message filter, and was quieted.");
+
+                this.trackedUsers[e.User].Score += 100;
+                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
+            }
             else if (reallyBadWordMatch.Success)
             {
-                this.trackedUsers[e.User] += 3;
-                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User]}");
+                this.trackedUsers[e.User].Score += 3;
+                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
 
-                if (this.trackedUsers[e.User] > 0)
+                if (this.trackedUsers[e.User].Score > 0)
                 {
                     this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT REALLYBADWORD");
                     this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} SENT REALLYBADWORD");
@@ -253,21 +280,24 @@ namespace Helpmebot.ChannelServices.Services
             } 
             else if (badWordMatch.Success)
             {
-                this.trackedUsers[e.User]++;
-                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User]}");
+                this.trackedUsers[e.User].Score++;
+                this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
                 
-                if (this.trackedUsers[e.User] > 0)
+                if (this.trackedUsers[e.User].Score > 0)
                 {
                     this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT BADWORD");
                     this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} SENT BADWORD");
                 }
             }
+            
+            // we've now received a message, so don't check this again.
+            this.trackedUsers[e.User].CheckFirstMessage = false;
 
-            if (this.trackedUsers[e.User] >= 3) 
+            if (this.trackedUsers[e.User].Score >= 3) 
             {
-                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} matched {this.trackedUsers[e.User]} alerts  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
-                this.SendIrcAlert($"Tracked user {e.User} in {e.Target} matched {this.trackedUsers[e.User]} alerts");
-                this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} matched {this.trackedUsers[e.User]} alerts; registering ban proposal");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} has score={this.trackedUsers[e.User].Score}  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
+                this.SendIrcAlert($"Tracked user {e.User} in {e.Target} has score={this.trackedUsers[e.User].Score}");
+                this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} matched {this.trackedUsers[e.User].Score} alerts; registering ban proposal");
 
                 this.banProposal = e.User;
                 try
@@ -337,15 +367,21 @@ namespace Helpmebot.ChannelServices.Services
         public void ForceAddTracking(IUser user, object sender)
         {
             this.logger.DebugFormat("Tracking {0} per request of other service", user);
+            if (this.trackedUsers.ContainsKey(user))
+            {
+                // already tracked
+                return;
+            }
+            
             try
             {
-                this.trackedUsers.Add(user, 0);
+                this.trackedUsers.Add(user, new TrackedUser(0, user) { CheckFirstMessage = true });
+                this.SendIrcPrivateAlert($"Tracked user {user} in -en-help per request of {sender}");
             }
-            catch
+            catch(Exception ex)
             {
+                this.logger.Error("Could not add user to tracking", ex);
             }
-
-            this.SendIrcPrivateAlert($"Tracked user {user} in -en-help per request of {sender}");
         }
         
         private void AddNetworkTracking(IUser user)
@@ -362,26 +398,27 @@ namespace Helpmebot.ChannelServices.Services
             if (this.networks.Any(x => x.Contains(address)))
             {
                 this.logger.DebugFormat("Tracking {0}, in targeted ranges", user);
-                this.trackedUsers.Add(user, 0);
+                this.trackedUsers.Add(user, new TrackedUser(0, user));
             
                 this.SendIrcPrivateAlert($"Tracked user {user} in -en-help from target ranges");
                 return;
             }
         }
 
-        public void SetScore(IUser user, int score)
+        public void SetScore(IUser user, int score, bool checkFirstMessage)
         {
             if (!this.trackedUsers.ContainsKey(user))
             {
-                this.trackedUsers.Add(user, score);
+                this.trackedUsers.Add(user, new TrackedUser(score, user) { CheckFirstMessage = checkFirstMessage });
             }
             else
             {
-                this.trackedUsers[user] = score;
+                this.trackedUsers[user].Score = score;
+                this.trackedUsers[user].CheckFirstMessage = checkFirstMessage;
             }
         }
         
-        public IUser SetScore(string nickname, int score)
+        public IUser SetScore(string nickname, int score, bool checkFirstMessage)
         {
             IrcChannelUser channelUser;
 
@@ -392,7 +429,7 @@ namespace Helpmebot.ChannelServices.Services
 
             var user = channelUser.User;
             
-            this.SetScore(user, score);
+            this.SetScore(user, score, checkFirstMessage);
             return user;
         }
 
