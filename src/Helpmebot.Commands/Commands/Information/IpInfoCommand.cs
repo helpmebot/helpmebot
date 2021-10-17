@@ -52,22 +52,29 @@ namespace Helpmebot.Commands.Commands.Information
             "Returns the controlling organisation and the real-world location for the provided IP address")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var ip = this.GetIPAddress();
-            if (ip == null)
+            try
             {
-                throw new CommandInvocationException("Unable to find IP address to query");
-            }
+              var ip = this.GetIPAddress();
+              if (ip == null)
+              {
+                  throw new CommandInvocationException("Unable to find IP address to query");
+              }
 
-            var orgName = this.whoisService.GetOrganisationName(ip);
-            var location = this.geolocationService.GetLocation(ip);
+              var orgName = this.whoisService.GetOrganisationName(ip);
+              var location = this.geolocationService.GetLocation(ip);
 
-            if (orgName == null)
-            {
-                yield return new CommandResponse {Message = $"Whois failed for {ip}; Location: {location}"};
+              if (orgName == null)
+              {
+                  yield return new CommandResponse {Message = $"Whois failed for {ip}; Location: {location}"};
+              }
+              else
+              {
+                  yield return new CommandResponse {Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}"};
+              }
             }
-            else
+            catch (WebException e)
             {
-                yield return new CommandResponse {Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}"};
+                yield return new CommandResponse {Message = $"Exception during lookup: {e.Message}"};
             }
         }
     }
