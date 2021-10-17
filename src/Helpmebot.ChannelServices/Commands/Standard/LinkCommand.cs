@@ -2,8 +2,10 @@ namespace Helpmebot.ChannelServices.Commands.Standard
 {
     using System.Collections.Generic;
     using System.Linq;
+    using NHibernate;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -71,10 +73,9 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             }
         }
 
-            yield return new CommandResponse
-            {
-                Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
-            };
-        }
+        yield return new CommandResponse
+        {
+            Message = this.linkerService.GetLastLinkForChannel(this.CommandSource)
+        };
     }
 }
