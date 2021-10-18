@@ -1,12 +1,12 @@
 namespace Helpmebot.Commands.Commands.Information
 {
     using System.Collections.Generic;
+    using System.Net;
     using Castle.Core.Logging;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -65,16 +65,16 @@ namespace Helpmebot.Commands.Commands.Information
 
               if (orgName == null)
               {
-                  yield return new CommandResponse {Message = $"Whois failed for {ip}; Location: {location}"};
+                  return new[] { new CommandResponse { Message = $"Whois failed for {ip}; Location: {location}" } };
               }
               else
               {
-                  yield return new CommandResponse {Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}"};
+                  return new[] { new CommandResponse { Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}" } };
               }
             }
             catch (WebException e)
             {
-                yield return new CommandResponse {Message = $"Exception during lookup: {e.Message}"};
+                return new[] { new CommandResponse { Message = $"Exception during lookup: {e.Message}" } };
             }
         }
     }
