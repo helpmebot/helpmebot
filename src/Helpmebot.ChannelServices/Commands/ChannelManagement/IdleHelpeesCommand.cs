@@ -50,11 +50,12 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                     })
                 .Aggregate(string.Empty, (cur, next) => cur + "; " + next);
 
+            // U+200B is a zero-width space
             var lastActiveHelpers = this.helpeeManagementService.Helpers
                 .OrderByDescending(x => x.Value)
                 .Where(x => x.Value != DateTime.MinValue)
                 .Take(3)
-                .Select(x => $"{x.Key.Nickname.Insert(1, "_")} (idle {DateTime.UtcNow - x.Value:d\\d\\ hh\\:mm\\:ss})")
+                .Select(x => $"{x.Key.Nickname.Insert(1, "\u200B")} (idle {DateTime.UtcNow - x.Value:d\\d\\ hh\\:mm\\:ss})")
                 .Aggregate(string.Empty, (cur, next) => cur + "; " + next);
 
             helpees = helpees.TrimStart(' ', ';');
