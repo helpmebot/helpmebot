@@ -232,7 +232,7 @@ namespace Helpmebot.ChannelServices.Services
 
             if (instaQuietMatch.Success)
             {
-                this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} automatically quieted due to expression match");
+                this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} automatically banned due to expression match");
                 
                 this.modeMonitoringService.PerformAsOperator(
                     this.targetChannel,
@@ -241,7 +241,7 @@ namespace Helpmebot.ChannelServices.Services
                         ircClient.PrioritySend(
                             new Message(
                                 "MODE",
-                                new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+                                new[] { this.targetChannel, "+bzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
                         
                         if (this.JoinMessageService != null)
                         {
@@ -259,7 +259,7 @@ namespace Helpmebot.ChannelServices.Services
                 
                 
                 
-                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was quieted.");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was banned.");
 
                 this.trackedUsers[e.User].Score += 1000;
                 this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
