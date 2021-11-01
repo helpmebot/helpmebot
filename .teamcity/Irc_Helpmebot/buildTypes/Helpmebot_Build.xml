@@ -10,7 +10,6 @@
     </options>
     <disabled-settings>
       <setting-ref ref="BUILD_EXT_4" />
-      <setting-ref ref="phabricator" />
     </disabled-settings>
     <parameters>
       <param name="PHID" value="" />
@@ -64,13 +63,6 @@
       </build-trigger>
     </build-triggers>
     <build-extensions>
-      <extension id="phabricator" type="phabricator">
-        <parameters>
-          <param name="tcphab.conduitToken" value="api-ikmsmdgvnk5dqv47p47lvd4qhc2f" />
-          <param name="tcphab.pathToArc" value="/opt/phabricator/arcanist/bin/arc" />
-          <param name="tcphab.phabricatorUrl" value="https://phabricator.stwalkerster.co.uk/" />
-        </parameters>
-      </extension>
       <extension id="JetBrains.AssemblyInfo" type="JetBrains.AssemblyInfo">
         <parameters>
           <param name="assembly-format" value="%version%.%build.counter%.0" />
