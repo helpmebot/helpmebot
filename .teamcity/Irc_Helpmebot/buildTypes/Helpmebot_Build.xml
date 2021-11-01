@@ -13,7 +13,6 @@
     </disabled-settings>
     <parameters>
       <param name="PHID" value="" />
-      <param name="extraParameters" value="" />
       <param name="nunitRunner" value="3.12.0" />
       <param name="pathPrefix" value="src/" />
       <param name="primaryProjectName" value="%solutionName%" />
