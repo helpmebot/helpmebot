@@ -4,7 +4,7 @@
   <description />
   <settings>
     <options>
-      <option name="artifactRules" value="%pathPrefix%%primaryProjectName%/bin/Release/**" />
+      <option name="artifactRules" value="src/Helpmebot/bin/Release/**" />
       <option name="buildNumberPattern" value="%version%.%build.counter%" />
       <option name="cleanBuild" value="true" />
     </options>
