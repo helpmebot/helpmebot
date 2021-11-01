@@ -51,7 +51,7 @@ namespace Helpmebot.Commands.Commands.Diagnostics
             var mediaWikiLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(MediaWikiApi)));
 
             var messageFormat =
-                "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}, Stwalkerster.Bot.MediaWikiLib v{5}";
+                "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}, Stwalkerster.Bot.MediaWikiLib v{5} (Runtime: {6} / {7})";
             var message = string.Format(
                 messageFormat,
                 version.Major.ToString(CultureInfo.InvariantCulture),
@@ -59,7 +59,9 @@ namespace Helpmebot.Commands.Commands.Diagnostics
                 version.Build.ToString(CultureInfo.InvariantCulture),
                 ircVersion,
                 botLibVersion,
-                mediaWikiLibVersion
+                mediaWikiLibVersion,
+                Environment.Version,
+                Environment.OSVersion
             );
 
             yield return new CommandResponse
