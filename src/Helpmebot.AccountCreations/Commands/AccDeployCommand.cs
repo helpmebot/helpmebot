@@ -5,6 +5,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Collections.Specialized;
     using System.IO;
     using Castle.Core.Logging;
+    using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
@@ -26,6 +27,7 @@ namespace Helpmebot.AccountCreations.Commands
         private readonly IMessageService messageService;
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
+        private readonly DeploymentConfiguration deploymentConfiguration;
 
         public AccDeployCommand(
             string commandSource,
@@ -37,7 +39,8 @@ namespace Helpmebot.AccountCreations.Commands
             IIrcClient client,
             IMessageService messageService,
             BotConfiguration botConfiguration,
-            IWebServiceClient webServiceClient) : base(
+            IWebServiceClient webServiceClient,
+            DeploymentConfiguration deploymentConfiguration) : base(
             commandSource,
             user,
             arguments,
@@ -49,13 +52,14 @@ namespace Helpmebot.AccountCreations.Commands
             this.messageService = messageService;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
+            this.deploymentConfiguration = deploymentConfiguration;
         }
 
         [RequiredArguments(1)]
         [Help("<branch>", "Deploys the specified branch to the ACC sandbox environment")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var apiDeployPassword = this.botConfiguration.AccDeploymentPassword;
+            var apiDeployPassword = this.deploymentConfiguration.DeploymentPassword;
             if (apiDeployPassword == null)
             {
                 yield return new CommandResponse
@@ -87,8 +91,7 @@ namespace Helpmebot.AccountCreations.Commands
             using (var data = this.webServiceClient.DoApiCall(
                 queryParameters,
                 "https://accounts-dev.wmflabs.org/deploy/deploy.php",
-                this.botConfiguration
-                    .UserAgent))
+                this.botConfiguration.UserAgent))
             {
                 var r = new StreamReader(data);
 

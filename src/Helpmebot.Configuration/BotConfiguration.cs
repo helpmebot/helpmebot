@@ -42,10 +42,13 @@
         public string GoogleApiKey { get; set; }
         public string IpInfoDbApiKey { get; set; }
         public string MaxMindDatabasePath { get; set; }
+        [Obsolete]
         public string AccDeploymentPassword { get; set; }
         [Obsolete]
         public int? SystemMonitoringPort { get; set; }
         public int? PrometheusMetricsPort { get; set; }
         public string Log4NetConfiguration { get; set; }
+        
+        public string ModuleConfigurationPath { get; set; }
     }
 }

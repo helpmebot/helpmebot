@@ -28,4 +28,10 @@
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Configuration\Helpmebot.AccountCreations.config.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

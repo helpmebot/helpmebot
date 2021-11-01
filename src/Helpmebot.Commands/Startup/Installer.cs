@@ -10,7 +10,6 @@ namespace Helpmebot.Commands.Startup
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
-            container.Install(Configuration.FromXmlFile("afc-data.xml"));
             container.Register(
                 Classes.FromAssemblyContaining<Installer>()
                     .InNamespace("Helpmebot.Commands.Services")

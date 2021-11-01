@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Collections.ObjectModel;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Prometheus;

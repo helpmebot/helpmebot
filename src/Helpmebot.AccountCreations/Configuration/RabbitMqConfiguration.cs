@@ -1,4 +1,4 @@
-namespace Helpmebot.Configuration
+namespace Helpmebot.AccountCreations.Configuration
 {
     public class RabbitMqConfiguration
     {

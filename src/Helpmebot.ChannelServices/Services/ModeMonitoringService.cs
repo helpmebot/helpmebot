@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Model.ModeMonitoring;
     using Helpmebot.ChannelServices.Services.Interfaces;

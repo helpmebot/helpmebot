@@ -28,10 +28,10 @@
                 <httpTimeout>5000</httpTimeout>
                 <debugChannel></debugChannel>
                 <enableNotificationService>false</enableNotificationService>
+                <moduleConfigurationPath>Configuration</moduleConfigurationPath>
                 <!--<ipInfoDbApiKey></ipInfoDbApiKey>-->
                 <!--<maxMindDatabasePath></maxMindDatabasePath>-->
                 <!--<disableCertificateValidation>false</disableCertificateValidation>-->
-                <!--<accDeploymentPassword></accDeploymentPassword>-->
                 <!--<log4netConfiguration>logger.config</log4netConfiguration>-->
             </parameters>
         </component>
@@ -46,35 +46,7 @@
                 <!--<charset></charset>-->
             </parameters>
         </component>
-
-        <!-- configuration for mode monitoring service -->
-        <component type="Helpmebot.Configuration.ModeMonitorConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <channelMap>
-                    <dictionary>
-                        <!--<entry key="#channel-to-monitor">#channel-to-report</entry>-->
-                    </dictionary>
-                </channelMap>
-            </parameters>
-        </component>
-
-        <!-- Configuration for the Join Message service / Welcomer -->
-        <component type="Helpmebot.Configuration.JoinMessageServiceConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <rateLimitDuration>10</rateLimitDuration>
-                <rateLimitMax>1</rateLimitMax>
-            </parameters>
-        </component>
-
-        <!-- Category monitoring -->
-        <component type="Helpmebot.Configuration.CategoryWatcherConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <enabled>false</enabled>
-                <updateFrequency>60</updateFrequency>
-                <crossoverTimeout>30</crossoverTimeout>
-            </parameters>
-        </component>
-
+        
         <!-- Override commands in specific channels -->
         <component type="Helpmebot.Configuration.CommandOverrideConfiguration, Helpmebot.Configuration">
             <parameters>
@@ -93,46 +65,7 @@
                 <humanDocumentationPrefix>Command:</humanDocumentationPrefix>
             </parameters>
         </component>
-
-        <!-- Cross-channel notification configuration -->
-        <component type="Helpmebot.Configuration.CrossChannelServiceConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <rateLimitMax>2</rateLimitMax>
-                <rateLimitDuration>5</rateLimitDuration>
-            </parameters>
-        </component>
-
-        <component type="Helpmebot.Configuration.HelpeeManagementConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <targetChannel/>
-                <monitorChannel/>
-                <ignoredNicknames>
-                    <list>
-                        <item>ChanServ</item>
-                    </list>
-                </ignoredNicknames>
-            </parameters>
-        </component>
-
-        <component type="Helpmebot.Configuration.NotificationReceiverConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <enable>false</enable>
-                <pollingInterval>5</pollingInterval>
-                <channelMap>
-                    <dictionary>
-                        <!--<entry key="type"><list><entry>#channel-to-report</entry></list></entry>-->
-                    </dictionary>
-                </channelMap>
-            </parameters>
-        </component>
-
-        <component type="Helpmebot.Configuration.RabbitMqConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <enabled>false</enabled>
-                <notificationQueue>notification</notificationQueue>
-            </parameters>
-        </component>
-
+        
         <!-- Swappable components -->
         <component service="Helpmebot.CoreServices.Services.Interfaces.IUrlShorteningService, Helpmebot.CoreServices"
                    type="Helpmebot.CoreServices.Services.UrlShortening.IsGdUrlShorteningService, Helpmebot.CoreServices" />

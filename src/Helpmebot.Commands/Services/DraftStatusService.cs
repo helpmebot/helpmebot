@@ -11,6 +11,7 @@ namespace Helpmebot.Commands.Services
     using Helpmebot.Model;
     using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
+    using AfcCategoryConfiguration = Helpmebot.Commands.Configuration.AfcCategoryConfiguration;
 
     public class DraftStatusService : IDraftStatusService
     {

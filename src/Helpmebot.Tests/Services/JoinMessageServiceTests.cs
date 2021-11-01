@@ -21,9 +21,9 @@
 namespace Helpmebot.Tests.Services
 {
     using System.Collections.Generic;
+    using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Services;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Moq;

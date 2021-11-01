@@ -20,6 +20,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
+    using AfcCategoryConfiguration = Helpmebot.Commands.Configuration.AfcCategoryConfiguration;
 
     [CommandInvocation("reviewstatus")]
     [CommandInvocation("draftstatus")]

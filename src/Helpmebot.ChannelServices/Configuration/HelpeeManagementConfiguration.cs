@@ -1,4 +1,4 @@
-namespace Helpmebot.Configuration
+namespace Helpmebot.ChannelServices.Configuration
 {
     using System.Collections.Generic;
 

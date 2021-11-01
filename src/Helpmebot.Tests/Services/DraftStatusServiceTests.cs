@@ -5,7 +5,7 @@ namespace Helpmebot.Tests.Services
     using System.Linq;
     using Helpmebot.Commands.Model;
     using Helpmebot.Commands.Services;
-    using Helpmebot.Configuration;
+    using Helpmebot.Commands.Configuration;
     using Moq;
     using NUnit.Framework;
     using Stwalkerster.Bot.MediaWikiLib.Model;

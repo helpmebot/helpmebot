@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="afc-data.xml">
+      <Content Include="Configuration\Helpmebot.Commands.config.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

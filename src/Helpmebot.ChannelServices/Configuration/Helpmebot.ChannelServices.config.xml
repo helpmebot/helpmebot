@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <components>
+        <!-- Helpee management configuration -->
+        <component type="Helpmebot.ChannelServices.Configuration.HelpeeManagementConfiguration, Helpmebot.ChannelServices">
+            <parameters>
+                <targetChannel>##helpmebot-help</targetChannel>
+                <monitorChannel>##helpmebot-helpers</monitorChannel>
+                <ignoredNicknames>
+                    <list>
+                        <item>ChanServ</item>
+                    </list>
+                </ignoredNicknames>
+            </parameters>
+        </component>
+        
+        <!-- Cross-channel notification configuration -->
+        <component type="Helpmebot.ChannelServices.Configuration.CrossChannelServiceConfiguration, Helpmebot.ChannelServices">
+            <parameters>
+                <rateLimitMax>2</rateLimitMax>
+                <rateLimitDuration>5</rateLimitDuration>
+            </parameters>
+        </component>
+
+        <!-- Configuration for the Join Message service / Welcomer -->
+        <component type="Helpmebot.ChannelServices.Configuration.JoinMessageServiceConfiguration, Helpmebot.ChannelServices">
+            <parameters>
+                <rateLimitDuration>10</rateLimitDuration>
+                <rateLimitMax>1</rateLimitMax>
+            </parameters>
+        </component>
+
+
+        <!-- configuration for mode monitoring service -->
+        <component type="Helpmebot.ChannelServices.Configuration.ModeMonitorConfiguration, Helpmebot.ChannelServices">
+            <parameters>
+                <channelMap>
+                    <dictionary>
+                        <!--<entry key="#channel-to-monitor">#channel-to-report</entry>-->
+                    </dictionary>
+                </channelMap>
+            </parameters>
+        </component>
+    </components>
+</configuration>

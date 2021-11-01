@@ -26,6 +26,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Net;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;

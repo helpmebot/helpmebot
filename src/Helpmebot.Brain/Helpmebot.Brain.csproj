@@ -26,4 +26,10 @@
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="15.0.84" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Configuration\Helpmebot.Brain.config.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

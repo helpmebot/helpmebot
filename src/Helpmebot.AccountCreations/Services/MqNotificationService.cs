@@ -2,6 +2,7 @@ namespace Helpmebot.AccountCreations.Services
 {
     using System.Text;
     using Castle.Core.Logging;
+    using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.AccountCreations.Services.Interfaces;
     using Helpmebot.Configuration;
     using RabbitMQ.Client;

@@ -21,5 +21,9 @@
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="mono_crash.2530d91524.0.json" />
+    </ItemGroup>
+
 
 </Project>

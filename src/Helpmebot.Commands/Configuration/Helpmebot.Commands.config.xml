@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <components>
-        <component type="AfcCategoryConfiguration">
+        <component type="Helpmebot.Commands.Configuration.AfcCategoryConfiguration, Helpmebot.Commands">
             <parameters>
                 <inReviewCategories>
                     <dictionary>

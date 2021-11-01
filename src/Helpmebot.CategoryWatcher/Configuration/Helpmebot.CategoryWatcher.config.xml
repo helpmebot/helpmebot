@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <components>
+        <!-- Category monitoring -->
+        <component type="Helpmebot.CategoryWatcher.Configuration.CategoryWatcherConfiguration, Helpmebot.CategoryWatcher">
+            <parameters>
+                <enabled>false</enabled>
+                <updateFrequency>60</updateFrequency>
+                <crossoverTimeout>30</crossoverTimeout>
+            </parameters>
+        </component>
+    </components>
+</configuration>

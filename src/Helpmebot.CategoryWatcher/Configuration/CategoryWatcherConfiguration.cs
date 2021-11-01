@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.Configuration
+﻿namespace Helpmebot.CategoryWatcher.Configuration
 {
     public class CategoryWatcherConfiguration
     {

@@ -27,6 +27,7 @@ namespace Helpmebot.AccountCreations.Services
     using System.Linq;
     using System.Timers;
     using Castle.Core.Logging;
+    using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.AccountCreations.Services.Interfaces;
     using Helpmebot.Background;
     using Helpmebot.Configuration;

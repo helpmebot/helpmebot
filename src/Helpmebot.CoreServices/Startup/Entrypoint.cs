@@ -37,6 +37,8 @@ namespace Helpmebot.CoreServices.Startup
             // import the configuration
             container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
             
+            moduleLoader.InstallModuleConfiguration(container);
+            
             // post-configuration, pre-initialisation actions
             TransportLayerSecurityConfigurationProvider.ConfigureCertificateValidation(container);
             
