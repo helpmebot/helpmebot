@@ -2,29 +2,81 @@
 <build-type xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" uuid="ede7a01c-7457-4c7b-8e72-cc291485750a" xsi:noNamespaceSchemaLocation="https://www.jetbrains.com/teamcity/schemas/2021.1/project-config.xsd">
   <name>Helpmebot</name>
   <description />
-  <settings ref="DotNetProject">
+  <settings>
+    <options>
+      <option name="artifactRules" value="%pathPrefix%%primaryProjectName%/bin/Release/**" />
+      <option name="buildNumberPattern" value="%version%.%build.counter%" />
+      <option name="cleanBuild" value="true" />
+    </options>
     <disabled-settings>
       <setting-ref ref="BUILD_EXT_4" />
       <setting-ref ref="phabricator" />
     </disabled-settings>
     <parameters>
+      <param name="PHID" value="" />
+      <param name="extraParameters" value="" />
       <param name="nunitRunner" value="3.12.0" />
       <param name="pathPrefix" value="src/" />
+      <param name="primaryProjectName" value="%solutionName%" />
       <param name="solutionName" value="Helpmebot" />
+      <param name="system.Configuration" value="Release" />
+      <param name="testProjectName" value="%primaryProjectName%.Tests" />
       <param name="version" value="7.2" />
     </parameters>
-    <build-runners />
+    <build-runners>
+      <runner id="RUNNER_6" name="" type="jb.nuget.installer">
+        <parameters>
+          <param name="nuget.path" value="%teamcity.tool.NuGet.CommandLine.DEFAULT%" />
+          <param name="nuget.sources" value="https://nexus.scimonshouse.net/repository/nuget-group/" />
+          <param name="nuget.updatePackages.mode" value="sln" />
+          <param name="nuget.use.restore" value="restore" />
+          <param name="sln.path" value="%pathPrefix%%solutionName%.sln" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_1" name="MSBuild" type="simpleRunner">
+        <parameters>
+          <param name="command.executable" value="/usr/bin/msbuild" />
+          <param name="command.parameters" value="%pathPrefix%%solutionName%.sln /p:Configuration=Release %extraParameters%" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
+      <runner id="RUNNER_7" name="Run Tests" type="simpleRunner">
+        <parameters>
+          <param name="command.executable" value="mono" />
+          <param name="command.parameters" value="%pathPrefix%packages/NUnit.ConsoleRunner.%nunitRunner%/tools/nunit3-console.exe %pathPrefix%%testProjectName%/bin/Release/%testProjectName%.dll --teamcity" />
+          <param name="teamcity.step.mode" value="default" />
+        </parameters>
+      </runner>
+    </build-runners>
     <vcs-settings>
       <vcs-entry-ref root-id="Helpmebot_HMBGithub" />
     </vcs-settings>
     <requirements />
-    <build-triggers />
+    <build-triggers>
+      <build-trigger id="vcsTrigger" type="vcsTrigger">
+        <parameters>
+          <param name="groupCheckinsByCommitter" value="true" />
+          <param name="perCheckinTriggering" value="true" />
+          <param name="quietPeriodMode" value="DO_NOT_USE" />
+          <param name="watchChangesInDependencies" value="true" />
+        </parameters>
+      </build-trigger>
+    </build-triggers>
     <build-extensions>
       <extension id="phabricator" type="phabricator">
         <parameters>
           <param name="tcphab.conduitToken" value="api-ikmsmdgvnk5dqv47p47lvd4qhc2f" />
           <param name="tcphab.pathToArc" value="/opt/phabricator/arcanist/bin/arc" />
           <param name="tcphab.phabricatorUrl" value="https://phabricator.stwalkerster.co.uk/" />
+        </parameters>
+      </extension>
+      <extension id="JetBrains.AssemblyInfo" type="JetBrains.AssemblyInfo">
+        <parameters>
+          <param name="assembly-format" value="%version%.%build.counter%.0" />
+          <param name="file-format" value="%version%.%build.counter%" />
+          <param name="info-format" value="%version%.%build.counter%" />
+          <param name="patch-global-assembly-info" value="true" />
         </parameters>
       </extension>
     </build-extensions>
