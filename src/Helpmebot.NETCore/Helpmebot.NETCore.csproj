@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <Configurations>Debug;Release</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <AssemblyName>Helpmebot</AssemblyName>
+        <RootNamespace>Helpmebot</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>../Helpmebot/bin/Debug/</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>../Helpmebot/bin/Release/</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
+      <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+      <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+      <PackageReference Include="DnsClient" Version="1.5.0" />
+      <PackageReference Include="FluentNHibernate" Version="3.1.0" />
+      <PackageReference Include="IPNetwork2" Version="2.5.362" />
+      <PackageReference Include="MaxMind.Db" Version="3.0.0" />
+      <PackageReference Include="MaxMind.GeoIP2" Version="4.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="5.0.4" />
+      <PackageReference Include="MySql.Data" Version="8.0.27" />
+      <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
+      <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.0.86" />
+      <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
+      <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
+      <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj" />
+    </ItemGroup>
+
+</Project>
