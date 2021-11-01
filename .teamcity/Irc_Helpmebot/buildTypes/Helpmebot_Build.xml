@@ -43,7 +43,7 @@
       <runner id="RUNNER_7" name="Run Tests" type="simpleRunner">
         <parameters>
           <param name="command.executable" value="mono" />
-          <param name="command.parameters" value="%pathPrefix%packages/NUnit.ConsoleRunner.%nunitRunner%/tools/nunit3-console.exe %pathPrefix%%testProjectName%/bin/Release/%testProjectName%.dll --teamcity" />
+          <param name="command.parameters" value="src/packages/NUnit.ConsoleRunner.%nunitRunner%/tools/nunit3-console.exe src/Helpmebot.Tests/bin/Release/Helpmebot.Tests.dll --teamcity" />
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
