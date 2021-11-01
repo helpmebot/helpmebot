@@ -36,7 +36,7 @@
       <runner id="RUNNER_1" name="MSBuild" type="simpleRunner">
         <parameters>
           <param name="command.executable" value="/usr/bin/msbuild" />
-          <param name="command.parameters" value="%pathPrefix%%solutionName%.sln /p:Configuration=Release %extraParameters%" />
+          <param name="command.parameters" value="src/Helpmebot.sln /p:Configuration=Release" />
           <param name="teamcity.step.mode" value="default" />
         </parameters>
       </runner>
