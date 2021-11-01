@@ -6,7 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{59D5FBFC-4C79-43B7-AA86-7A2642B097AA}"
 	ProjectSection(SolutionItems) = preProject
 		GlobalAssemblyInfo.cs = GlobalAssemblyInfo.cs
-		Helpmebot.sln.DotSettings = Helpmebot.sln.DotSettings
 		..\README.md = ..\README.md
 		Settings.StyleCop = Settings.StyleCop
 		..\.teamcity\Irc_Helpmebot\buildTypes\Helpmebot_Build.xml = ..\.teamcity\Irc_Helpmebot\buildTypes\Helpmebot_Build.xml
