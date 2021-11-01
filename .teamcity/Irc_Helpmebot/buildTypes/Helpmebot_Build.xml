@@ -12,7 +12,6 @@
       <setting-ref ref="BUILD_EXT_4" />
     </disabled-settings>
     <parameters>
-      <param name="PHID" value="" />
       <param name="nunitRunner" value="3.12.0" />
       <param name="primaryProjectName" value="%solutionName%" />
       <param name="solutionName" value="Helpmebot" />
