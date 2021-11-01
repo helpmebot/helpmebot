@@ -8,20 +8,20 @@
             <parameters>
                 <authToServices>true</authToServices>
                 <ssl>true</ssl>
-                <hostname>chat.freenode.net</hostname>
-                <port>7000</port>
+                <hostname>irc.libera.chat</hostname>
+                <port>6697</port>
                 <nickname></nickname>
                 <realName></realName>
                 <username></username>
                 <serverPassword></serverPassword>
                 <servicesUsername></servicesUsername>
                 <servicesPassword></servicesPassword>
-                <clientName>Freenode</clientName>
+                <clientName>Libera.Chat</clientName>
             </parameters>
         </component>
 
         <!-- Other configuration -->
-        <component type="BotConfiguration">
+        <component type="Helpmebot.Configuration.BotConfiguration, Helpmebot.Configuration">
             <parameters>
                 <commandTrigger>!</commandTrigger>
                 <userAgent>Helpmebot (+https://helpmebot.org.uk)</userAgent>
@@ -36,7 +36,7 @@
             </parameters>
         </component>
 
-        <component type="DatabaseConfiguration">
+        <component type="Helpmebot.Configuration.DatabaseConfiguration, Helpmebot.Configuration">
             <parameters>
                 <hostname></hostname>
                 <!--<port>3306</port>-->
@@ -48,7 +48,7 @@
         </component>
 
         <!-- configuration for mode monitoring service -->
-        <component type="ModeMonitorConfiguration">
+        <component type="Helpmebot.Configuration.ModeMonitorConfiguration, Helpmebot.Configuration">
             <parameters>
                 <channelMap>
                     <dictionary>
@@ -59,7 +59,7 @@
         </component>
 
         <!-- Configuration for the Join Message service / Welcomer -->
-        <component type="JoinMessageServiceConfiguration">
+        <component type="Helpmebot.Configuration.JoinMessageServiceConfiguration, Helpmebot.Configuration">
             <parameters>
                 <rateLimitDuration>10</rateLimitDuration>
                 <rateLimitMax>1</rateLimitMax>
@@ -67,7 +67,7 @@
         </component>
 
         <!-- Category monitoring -->
-        <component type="CategoryWatcherConfiguration">
+        <component type="Helpmebot.Configuration.CategoryWatcherConfiguration, Helpmebot.Configuration">
             <parameters>
                 <enabled>false</enabled>
                 <updateFrequency>60</updateFrequency>
@@ -76,7 +76,7 @@
         </component>
 
         <!-- Override commands in specific channels -->
-        <component type="CommandOverrideConfiguration">
+        <component type="Helpmebot.Configuration.CommandOverrideConfiguration, Helpmebot.Configuration">
             <parameters>
                 <overrideMap>
                     <list>
@@ -87,7 +87,7 @@
         </component>
 
         <!-- Configuration for wiki to write help data to -->
-        <component type="MediaWikiDocumentationConfiguration">
+        <component type="Helpmebot.Configuration.MediaWikiDocumentationConfiguration, Helpmebot.Configuration">
             <parameters>
                 <documentationPrefix>CmdAutogen:Command/</documentationPrefix>
                 <humanDocumentationPrefix>Command:</humanDocumentationPrefix>
@@ -95,14 +95,14 @@
         </component>
 
         <!-- Cross-channel notification configuration -->
-        <component type="CrossChannelServiceConfiguration">
+        <component type="Helpmebot.Configuration.CrossChannelServiceConfiguration, Helpmebot.Configuration">
             <parameters>
                 <rateLimitMax>2</rateLimitMax>
                 <rateLimitDuration>5</rateLimitDuration>
             </parameters>
         </component>
 
-        <component type="HelpeeManagementConfiguration">
+        <component type="Helpmebot.Configuration.HelpeeManagementConfiguration, Helpmebot.Configuration">
             <parameters>
                 <targetChannel/>
                 <monitorChannel/>
@@ -114,7 +114,7 @@
             </parameters>
         </component>
 
-        <component type="NotificationReceiverConfiguration">
+        <component type="Helpmebot.Configuration.NotificationReceiverConfiguration, Helpmebot.Configuration">
             <parameters>
                 <enable>false</enable>
                 <pollingInterval>5</pollingInterval>
@@ -126,7 +126,7 @@
             </parameters>
         </component>
 
-        <component type="RabbitMqConfiguration">
+        <component type="Helpmebot.Configuration.RabbitMqConfiguration, Helpmebot.Configuration">
             <parameters>
                 <enabled>false</enabled>
                 <notificationQueue>notification</notificationQueue>
@@ -134,7 +134,9 @@
         </component>
 
         <!-- Swappable components -->
-        <component service="IUrlShorteningService" type="IsGdUrlShorteningService" />
-        <component service="IGeolocationService" type="MaxMindGeolocationService" />
+        <component service="Helpmebot.CoreServices.Services.Interfaces.IUrlShorteningService, Helpmebot.CoreServices"
+                   type="Helpmebot.CoreServices.Services.UrlShortening.IsGdUrlShorteningService, Helpmebot.CoreServices" />
+        <component service="Helpmebot.CoreServices.Services.Interfaces.IGeolocationService, Helpmebot.CoreServices"
+                   type="Helpmebot.CoreServices.Services.Geolocation.MaxMindGeolocationService, Helpmebot.CoreServices" />
     </components>
 </configuration>

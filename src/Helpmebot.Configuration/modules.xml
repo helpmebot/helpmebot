@@ -2,7 +2,7 @@
 <configuration>
     <components>
         <!-- Loadable modules -->
-        <component type="ModuleLoader">
+        <component type="Helpmebot.Configuration.ModuleLoader, Helpmebot.Configuration">
             <parameters>
                 <moduleList>
                     <list>
