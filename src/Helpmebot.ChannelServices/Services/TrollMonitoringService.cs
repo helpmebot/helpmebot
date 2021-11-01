@@ -44,12 +44,12 @@ namespace Helpmebot.ChannelServices.Services
         #if DEBUG
             private string targetChannel = "##stwalkerster-development2";
             private string publicAlertChannel = "##stwalkerster-development";
-            private string[] privateAlertTargets = {"stw"};
+            private string[] privateAlertTargets = {"stwalkerster"};
             private string banTracker = "##stwalkerster-development3";
         #else
             private string targetChannel = "#wikipedia-en-help";
             private string publicAlertChannel = "#wikipedia-en-helpers";
-            private string[] privateAlertTargets = {"stwalkerster", "stw", "Waggie"};
+            private string[] privateAlertTargets = {"stwalkerster", "Waggie"};
             private string banTracker = "litharge";
         #endif        
 
@@ -352,9 +352,19 @@ namespace Helpmebot.ChannelServices.Services
 
         private void SendIrcPrivateAlert(string message)
         {
-            foreach (var target in privateAlertTargets)
+            foreach (var target in this.privateAlertTargets)
             {
-                this.client.SendMessage(target, message);    
+                if (target.StartsWith("#"))
+                {
+                    this.client.SendMessage(target, message);
+                }
+                else
+                {
+                    foreach (var ircUserKvp in this.client.UserCache.Where(x => x.Value.Account == target))
+                    {
+                        this.client.SendMessage(ircUserKvp.Value.Nickname, message);
+                    }
+                }
             }
         }
 
