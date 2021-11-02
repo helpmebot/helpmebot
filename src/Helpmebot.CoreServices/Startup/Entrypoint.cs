@@ -3,7 +3,6 @@ namespace Helpmebot.CoreServices.Startup
     using System;
     using System.IO;
     using Castle.Windsor;
-    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 

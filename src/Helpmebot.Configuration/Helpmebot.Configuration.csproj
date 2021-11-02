@@ -14,7 +14,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MySql.Data" Version="6.9.11" />
         <PackageReference Include="Castle.Windsor" Version="4.1.1" />
     </ItemGroup>
 

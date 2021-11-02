@@ -27,6 +27,7 @@ namespace Helpmebot.CoreServices.Facilities
     using Helpmebot.Configuration;
     using Helpmebot.Persistence;
     using Helpmebot.Persistence.Interfaces;
+    using MySql.Data.MySqlClient;
     using NHibernate;
     using NHibernate.Cfg;
 
@@ -90,8 +91,20 @@ namespace Helpmebot.CoreServices.Facilities
         /// </returns>
         private IPersistenceConfigurer SetupDatabase()
         {
-            return MySQLConfiguration.Standard.ConnectionString(
-                this.Kernel.Resolve<DatabaseConfiguration>().ConnectionString);
+            var databaseConfiguration = this.Kernel.Resolve<DatabaseConfiguration>();
+            var connectionString = new MySqlConnectionStringBuilder
+            {
+                Database = databaseConfiguration.Schema,
+                Password = databaseConfiguration.Password,
+                Server = databaseConfiguration.Hostname,
+                UserID = databaseConfiguration.Username,
+                Port = (uint) databaseConfiguration.Port,
+                CharacterSet = databaseConfiguration.CharSet,
+                ConvertZeroDateTime = true,
+                AllowZeroDateTime = true
+            };
+            
+            return MySQLConfiguration.Standard.ConnectionString(connectionString.ToString());
         }
     }
 }

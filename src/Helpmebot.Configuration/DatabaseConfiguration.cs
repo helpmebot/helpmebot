@@ -1,7 +1,6 @@
 ﻿namespace Helpmebot.Configuration
 {
     using System;
-    using MySql.Data.MySqlClient;
 
     public class DatabaseConfiguration
     {
@@ -42,25 +41,5 @@
         public string Password { get; private set; }
         public string Schema { get; private set; }
         public string CharSet { get; private set; }
-
-        public string ConnectionString
-        {
-            get
-            {
-                var connectionString = new MySqlConnectionStringBuilder
-                {
-                    Database = this.Schema,
-                    Password = this.Password,
-                    Server = this.Hostname,
-                    UserID = this.Username,
-                    Port = (uint) this.Port,
-                    CharacterSet = this.CharSet,
-                    ConvertZeroDateTime = true,
-                    AllowZeroDateTime = true
-                };
-
-                return connectionString.ConnectionString;
-            }
-        }
     }
 }
