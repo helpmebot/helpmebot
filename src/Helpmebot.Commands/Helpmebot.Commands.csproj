@@ -26,7 +26,7 @@
         <PackageReference Include="DnsClient" Version="1.5.0" />
         <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
         <PackageReference Include="NHibernate" Version="4.1.2.4000" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="15.0.84" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.0.86" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
     </ItemGroup>
 

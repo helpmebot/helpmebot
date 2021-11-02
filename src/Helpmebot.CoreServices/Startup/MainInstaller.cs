@@ -14,10 +14,15 @@
     using Helpmebot.CoreServices.Facilities;
     using Helpmebot.CoreServices.Services.AccessControl;
     using Helpmebot.TypedFactories;
+    using Microsoft.Extensions.Logging;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
+    using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.CommandLib.TypedFactories;
     using Stwalkerster.Bot.MediaWikiLib.Services;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
+    using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
     using IrcClient = Stwalkerster.IrcClient.IrcClient;
@@ -29,6 +34,8 @@
             var botConfiguration = container.Resolve<BotConfiguration>();
             botConfiguration.Log4NetConfiguration = botConfiguration.Log4NetConfiguration ?? "logger.config";
             
+            var loggerFactory = new LoggerFactory().AddLog4Net(botConfiguration.Log4NetConfiguration);
+
             container.AddFacility<LoggingFacility>(
                 f => f.LogUsing<Log4netFactory>().WithConfig(botConfiguration.Log4NetConfiguration));
             container.AddFacility<PersistenceFacility>();
@@ -40,13 +47,13 @@
                 (IConversionManager) container.Kernel.GetSubSystem(SubSystemConstants.ConversionManagerKey);
             conversionManager.Add(new CommandOverrideMapEntryConverter());
 
-            // Chainload other installers.
-            container.Install(
-                new Stwalkerster.IrcClient.Installer(),
-                new Stwalkerster.Bot.CommandLib.Startup.Installer()
-            );
-
             container.Register(
+                // CommandParser
+                Component.For<ILogger<CommandParser>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandParser>),
+                Classes.FromAssemblyContaining<CommandBase>().BasedOn<ICommand>().LifestyleTransient(),
+                Component.For<ICommandTypedFactory>().AsFactory(),
+                Classes.FromAssemblyContaining<CommandParser>().InSameNamespaceAs<CommandParser>().WithServiceAllInterfaces(),
+                
                 // Legacy stuff
                 Component.For<IFlagService>().ImplementedBy<AccessControlAuthorisationService>(),
 
@@ -65,6 +72,9 @@
                 Component.For<IWebServiceClient>().ImplementedBy<WebServiceClient>(),
 
                 // IRC client
+                Component.For<ILoggerFactory>().Instance(loggerFactory),
+                Component.For<ILogger<SupportHelper>>().UsingFactoryMethod(loggerFactory.CreateLogger<SupportHelper>),
+                Component.For<ISupportHelper>().ImplementedBy<SupportHelper>(),
                 Component.For<IIrcClient>().ImplementedBy<IrcClient>().Start()
             );
         }
