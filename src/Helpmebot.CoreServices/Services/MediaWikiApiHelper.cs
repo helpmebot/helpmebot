@@ -23,6 +23,13 @@ namespace Helpmebot.CoreServices.Services
             var mwConfig = new MediaWikiConfiguration(site.Api, this.config.UserAgent, site.Username, site.Password);
 
             return this.factory.Create<IMediaWikiApi>(mwConfig);
+        }        
+        
+        public IMediaWikiApi GetApi(string apiUrl, string username, string password)
+        {
+            var mwConfig = new MediaWikiConfiguration(apiUrl, this.config.UserAgent, username, password);
+
+            return this.factory.Create<IMediaWikiApi>(mwConfig);
         }
 
         public void Release(IMediaWikiApi api)

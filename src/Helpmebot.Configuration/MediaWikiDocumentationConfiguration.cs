@@ -2,33 +2,12 @@ namespace Helpmebot.Configuration
 {
     public class MediaWikiDocumentationConfiguration
     {
-        private readonly int siteId;
-        private readonly string documentationPrefix;
-        private readonly string humanDocumentationPrefix;
+        public string DocumentationPrefix { get; set; }
 
-        public MediaWikiDocumentationConfiguration(
-            int siteId,
-            string documentationPrefix,
-            string humanDocumentationPrefix)
-        {
-            this.siteId = siteId;
-            this.documentationPrefix = documentationPrefix;
-            this.humanDocumentationPrefix = humanDocumentationPrefix;
-        }
+        public string HumanDocumentationPrefix { get; set; }
 
-        public string DocumentationPrefix
-        {
-            get { return this.documentationPrefix; }
-        }
-
-        public string HumanDocumentationPrefix
-        {
-            get { return this.humanDocumentationPrefix; }
-        }
-
-        public int SiteId
-        {
-            get { return this.siteId; }
-        }
+        public string MediaWikiApiEndpoint { get; set; }
+        public string MediaWikiApiUsername { get; set; }
+        public string MediaWikiApiPassword { get; set; }
     }
 }

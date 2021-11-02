@@ -9,5 +9,7 @@ namespace Helpmebot.Configuration
         public IrcConfiguration Irc { get; set; }
         
         public List<ModuleConfiguration> Modules { get; set; }
+        
+        public MediaWikiDocumentationConfiguration Documentation { get; set; }
     }
 }

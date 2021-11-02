@@ -62,3 +62,18 @@ modules:
     castleFile: Configuration/Helpmebot.AccountCreations.config.xml
   - assembly: Helpmebot.Commands.dll
     castleFile: Configuration/Helpmebot.Commands.config.xml
+
+########################################################################################################
+# Documentation generation
+#
+# Helpmebot is capable of writing it's own documentation to a MediaWiki site using the !synchelp command.
+documentation:
+  # Location for the auto-generated documentation to be written to. For helpmebot.org.uk, this is a separate namespace
+  # only writable by the bot to avoid any accidental overwriting of human-contributed documentation.
+  documentationPrefix: "CmdAutogen:Command/"
+  # Location for human additions to the automated documentation to be read from.
+  humanDocumentationPrefix: "Command:"
+  # Location of and credentials for the MediaWiki instance to write the documentation to. 
+  mediaWikiApiEndpoint: https://helpmebot.org.uk/w/api.php
+  mediaWikiApiUsername:
+  mediaWikiApiPassword:

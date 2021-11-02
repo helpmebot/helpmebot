@@ -45,7 +45,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
         [Help("", "Synchronises the help pages on the documentation wiki")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            this.helpSyncService.DoSync(this.User, this.databaseSession);
+            this.helpSyncService.DoSync(this.User);
             yield return new CommandResponse
             {
                 Message = "Sync complete."

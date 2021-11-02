@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <components>
-        
         <!-- Override commands in specific channels -->
         <component type="Helpmebot.Configuration.CommandOverrideConfiguration, Helpmebot.Configuration">
             <parameters>
@@ -10,14 +9,6 @@
                         <!-- <item keyword="help" channel="#channel" type="NullCommand" />-->
                     </list>
                 </overrideMap>
-            </parameters>
-        </component>
-
-        <!-- Configuration for wiki to write help data to -->
-        <component type="Helpmebot.Configuration.MediaWikiDocumentationConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <documentationPrefix>CmdAutogen:Command/</documentationPrefix>
-                <humanDocumentationPrefix>Command:</humanDocumentationPrefix>
             </parameters>
         </component>
         

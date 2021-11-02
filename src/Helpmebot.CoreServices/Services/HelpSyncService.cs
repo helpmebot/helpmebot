@@ -10,9 +10,6 @@ namespace Helpmebot.CoreServices.Services
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
-    using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -36,13 +33,12 @@ namespace Helpmebot.CoreServices.Services
             this.docConfig = docConfig;
         }
 
-        public void DoSync(IUser forUser, ISession databaseSession)
+        public void DoSync(IUser forUser)
         {
-            var mediaWikiSite = databaseSession.CreateCriteria<MediaWikiSite>()
-                .Add(Restrictions.Eq("Id", this.docConfig.SiteId))
-                .UniqueResult<MediaWikiSite>();
-
-            var botService = this.apiHelper.GetApi(mediaWikiSite);
+            var botService = this.apiHelper.GetApi(
+                this.docConfig.MediaWikiApiEndpoint,
+                this.docConfig.MediaWikiApiUsername,
+                this.docConfig.MediaWikiApiPassword);
 
             botService.Login();
 

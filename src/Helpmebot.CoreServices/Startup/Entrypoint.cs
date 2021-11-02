@@ -41,7 +41,8 @@ namespace Helpmebot.CoreServices.Startup
             container.Register(
                 Component.For<IIrcConfiguration>().Instance(globalConfiguration.Irc.ToConfiguration()),
                 Component.For<BotConfiguration>().Instance(globalConfiguration.General),
-                Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database)
+                Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),
+                Component.For<MediaWikiDocumentationConfiguration>().Instance(globalConfiguration.Documentation)
             );
             
             // import the configuration
