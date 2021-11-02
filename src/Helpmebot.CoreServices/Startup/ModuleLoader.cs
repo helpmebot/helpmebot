@@ -29,14 +29,7 @@ namespace Helpmebot.CoreServices.Startup
                 this.loadedAssemblies.Add(assembly);
             }
         }
-
-        public void InstallModuleCastleFiles(IWindsorContainer container)
-        {
-            foreach (var module in this.moduleList.Where(x => !string.IsNullOrWhiteSpace(x.CastleFile)))
-            {
-                container.Install(Configuration.FromXmlFile(module.CastleFile));
-            }
-        }
+        
         public void InstallModuleConfiguration(IWindsorContainer container)
         {
             foreach (var module in this.moduleList.Where(x => x.Configuration != null))

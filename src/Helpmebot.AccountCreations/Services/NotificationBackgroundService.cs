@@ -30,13 +30,13 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.AccountCreations.Services.Interfaces;
     using Helpmebot.Background;
-    using Helpmebot.Configuration;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
     using NHibernate.Util;
     using Prometheus;
     using Stwalkerster.IrcClient.Interfaces;
+    using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
     /// <summary>
     /// The notification service.
@@ -64,12 +64,12 @@ namespace Helpmebot.AccountCreations.Services
             IIrcClient ircClient,
             ILogger logger,
             ISession session,
-            NotificationReceiverConfiguration configuration)
-            : base(logger, configuration.PollingInterval * 1000, configuration.Enable)
+            ModuleConfiguration configuration)
+            : base(logger, configuration.Notifications.PollingInterval * 1000, configuration.Notifications.Enabled)
         {
             this.ircClient = ircClient;
             this.session = session;
-            this.configuration = configuration;
+            this.configuration = configuration.Notifications;
         }
 
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -98,6 +98,7 @@ namespace Helpmebot.AccountCreations.Services
                     list.ForEach(
                         x =>
                         {
+                            this.session.Refresh(x);
                             x.Handled = true;
                             this.session.Update(x);
                         });

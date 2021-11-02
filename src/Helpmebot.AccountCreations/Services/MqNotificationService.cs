@@ -8,6 +8,7 @@ namespace Helpmebot.AccountCreations.Services
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
     using Stwalkerster.IrcClient.Interfaces;
+    using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
     public class MqNotificationService : IMqNotificationService
     {
@@ -20,9 +21,9 @@ namespace Helpmebot.AccountCreations.Services
         private EventingBasicConsumer consumer;
         private readonly RabbitMqConfiguration configuration;
 
-        public MqNotificationService(RabbitMqConfiguration configuration, ILogger logger, BotConfiguration botConfiguration, IIrcClient client)
+        public MqNotificationService(ModuleConfiguration configuration, ILogger logger, BotConfiguration botConfiguration, IIrcClient client)
         {
-            this.configuration = configuration;
+            this.configuration = configuration.MqConfiguration;
             this.logger = logger;
             this.client = client;
             this.userAgent = botConfiguration.UserAgent;

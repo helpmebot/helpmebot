@@ -5,12 +5,10 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Collections.Specialized;
     using System.IO;
     using Castle.Core.Logging;
-    using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -18,6 +16,7 @@ namespace Helpmebot.AccountCreations.Commands
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
+    using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
     [CommandInvocation("accdeploy")]
     [CommandFlag(Flags.Acc)]
@@ -27,7 +26,7 @@ namespace Helpmebot.AccountCreations.Commands
         private readonly IMessageService messageService;
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
-        private readonly DeploymentConfiguration deploymentConfiguration;
+        private readonly string deploymentPassword;
 
         public AccDeployCommand(
             string commandSource,
@@ -40,7 +39,7 @@ namespace Helpmebot.AccountCreations.Commands
             IMessageService messageService,
             BotConfiguration botConfiguration,
             IWebServiceClient webServiceClient,
-            DeploymentConfiguration deploymentConfiguration) : base(
+            ModuleConfiguration deploymentConfiguration) : base(
             commandSource,
             user,
             arguments,
@@ -52,14 +51,14 @@ namespace Helpmebot.AccountCreations.Commands
             this.messageService = messageService;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
-            this.deploymentConfiguration = deploymentConfiguration;
+            this.deploymentPassword = deploymentConfiguration.DeploymentPassword;
         }
 
         [RequiredArguments(1)]
         [Help("<branch>", "Deploys the specified branch to the ACC sandbox environment")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var apiDeployPassword = this.deploymentConfiguration.DeploymentPassword;
+            var apiDeployPassword = this.deploymentPassword;
             if (apiDeployPassword == null)
             {
                 yield return new CommandResponse

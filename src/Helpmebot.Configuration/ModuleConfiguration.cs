@@ -5,7 +5,6 @@ namespace Helpmebot.Configuration
     public class ModuleConfiguration
     {
         public string Assembly { get; set; }
-        public string CastleFile { get; set; }
         public List<ConfigurationFile> Configuration { get; set; }
 
         public class ConfigurationFile

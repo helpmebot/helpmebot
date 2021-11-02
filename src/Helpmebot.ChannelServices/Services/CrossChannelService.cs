@@ -8,7 +8,6 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
@@ -20,7 +19,7 @@ namespace Helpmebot.ChannelServices.Services
     public class CrossChannelService : CommandParserProviderServiceBase<CrossChannel>, ICrossChannelService
     {
         private readonly ISession databaseSession;
-        private readonly CrossChannelServiceConfiguration config;
+        private readonly RateLimitConfiguration config;
         private readonly object sessionLock = new object();
         
         private static readonly Dictionary<string, RateLimitCacheEntry> RateLimitCache =
@@ -30,11 +29,11 @@ namespace Helpmebot.ChannelServices.Services
             ISession databaseSession,
             ILogger logger,
             ICommandParser commandParser,
-            CrossChannelServiceConfiguration config)
+            ModuleConfiguration config)
             : base(commandParser, logger)
         {
             this.databaseSession = databaseSession;
-            this.config = config;
+            this.config = config.CrossChannelRateLimits;
         }
 
         public void Configure(Channel frontend, Channel backend, ISession localSession)

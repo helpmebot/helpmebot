@@ -1,18 +1,12 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Helpmebot.ChannelServices.Configuration
 {
     using System.Collections.Generic;
 
     public class HelpeeManagementConfiguration
     {
-        public string TargetChannel { get; }
-        public string MonitorChannel { get; }
-        public List<string> IgnoredNicknames { get; }
-
-        public HelpeeManagementConfiguration(string targetChannel, string monitorChannel, List<string> ignoredNicknames)
-        {
-            this.TargetChannel = targetChannel;
-            this.MonitorChannel = monitorChannel;
-            this.IgnoredNicknames = ignoredNicknames;
-        }
+        public string TargetChannel { get; set; }
+        public string MonitorChannel { get; set; }
+        public List<string> IgnoredNicknames { get; set; }
     }
 }

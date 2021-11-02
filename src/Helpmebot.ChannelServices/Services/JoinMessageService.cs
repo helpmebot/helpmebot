@@ -40,6 +40,7 @@ namespace Helpmebot.ChannelServices.Services
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
     using Cache = System.Collections.Generic.Dictionary<string, Model.RateLimitCacheEntry>;
+    using ModuleConfiguration = Helpmebot.ChannelServices.Configuration.ModuleConfiguration;
 
     public class JoinMessageService : IJoinMessageService
     {
@@ -55,7 +56,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly ILogger logger;
         private readonly IMessageService messageService;
         private readonly ISession session;
-        private readonly JoinMessageServiceConfiguration configuration;
+        private readonly RateLimitConfiguration configuration;
         private readonly IGeolocationService geolocationService;
         private readonly IIrcClient client;
         private readonly IBlockMonitoringService blockMonitoringService;
@@ -67,7 +68,7 @@ namespace Helpmebot.ChannelServices.Services
             ILogger logger,
             IMessageService messageService,
             ISession session,
-            JoinMessageServiceConfiguration configuration,
+            ModuleConfiguration configuration,
             IGeolocationService geolocationService,
             IIrcClient client,
             IBlockMonitoringService blockMonitoringService)
@@ -75,7 +76,7 @@ namespace Helpmebot.ChannelServices.Services
             this.logger = logger;
             this.messageService = messageService;
             this.session = session;
-            this.configuration = configuration;
+            this.configuration = configuration.JoinMessageRateLimits;
             this.geolocationService = geolocationService;
             this.client = client;
             this.blockMonitoringService = blockMonitoringService;

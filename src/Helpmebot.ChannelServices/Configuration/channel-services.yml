@@ -1,0 +1,23 @@
+---
+# rate limits for cross-channel messages (eg !helper)
+crossChannelRateLimits:
+  rateLimitMax: 2
+  rateLimitDuration: 5
+
+# Rate limits of join ("welcome") messages
+joinMessageRateLimits:
+  rateLimitMax: 1
+  rateLimitDuration: 10
+
+# Helpee Management service. Keeps track of idle/present status
+helpeeManagement:
+  targetChannel: "##helpmebot-help"
+  monitorChannel: "##helpmebot-helpers"
+  ignoredNicknames:
+    - ChanServ
+
+# Mapping of mode monitoring channel maps.
+# For example, to monitor changes in #a and report to #b:
+# modeMonitorChannelMap:
+#   "#a": "#b"
+modeMonitorChannelMap: {}

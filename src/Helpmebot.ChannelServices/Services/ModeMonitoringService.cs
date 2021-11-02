@@ -9,7 +9,6 @@
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Model.ModeMonitoring;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
@@ -31,11 +30,11 @@
         /// </summary>
         private readonly Regex noChanopsPattern;
 
-        public ModeMonitoringService(IIrcClient ircClient, ILogger logger, ModeMonitorConfiguration modeMonitorConfiguration)
+        public ModeMonitoringService(IIrcClient ircClient, ILogger logger, ModuleConfiguration moduleConfiguration)
         {
             this.ircClient = ircClient;
             this.logger = logger;
-            this.watchedChannels = modeMonitorConfiguration.ChannelMap;
+            this.watchedChannels = moduleConfiguration.ModeMonitorChannelMap;
 
             if (!this.watchedChannels.Any())
             {

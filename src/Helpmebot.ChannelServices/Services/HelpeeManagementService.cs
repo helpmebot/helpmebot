@@ -5,13 +5,12 @@ namespace Helpmebot.ChannelServices.Services
     using System.Collections.ObjectModel;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Prometheus;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model;
+    using ModuleConfiguration = Helpmebot.ChannelServices.Configuration.ModuleConfiguration;
 
     public class HelpeeManagementService : IHelpeeManagementService
     {
@@ -49,14 +48,14 @@ namespace Helpmebot.ChannelServices.Services
         private readonly object lockToken = new object();
         
 
-        public HelpeeManagementService(IIrcClient client, ILogger logger, HelpeeManagementConfiguration configuration)
+        public HelpeeManagementService(IIrcClient client, ILogger logger, ModuleConfiguration configuration)
         {
             this.client = client;
             this.logger = logger;
             
-            this.targetChannel = configuration.TargetChannel;
-            this.monitoringChannel = configuration.MonitorChannel;
-            this.ignoreList = configuration.IgnoredNicknames;
+            this.targetChannel = configuration.HelpeeManagement.TargetChannel;
+            this.monitoringChannel = configuration.HelpeeManagement.MonitorChannel;
+            this.ignoreList = configuration.HelpeeManagement.IgnoredNicknames;
         }
 
         public IDictionary<IrcUser, DateTime> Helpees

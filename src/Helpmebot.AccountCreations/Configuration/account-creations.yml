@@ -1,0 +1,16 @@
+---
+deploymentPassword:
+
+notifications:
+  enabled: false
+  pollingInterval: 5
+  notificationTargets: {}
+  
+mqConfiguration:
+  enabled: false
+  notificationQueue: notification
+  hostname: localhost
+  port: 5672
+  virtualHost: /
+  username: guest
+  password: guest

@@ -53,8 +53,10 @@ database:
 # This is a list of additional modules which can be loaded into the bot for additional functionality.
 modules:
   - assembly: Helpmebot.ChannelServices.dll
-    castleFile: Configuration/Helpmebot.ChannelServices.config.xml
-    
+    configuration:
+      - file: Configuration/channel-services.yml
+        type: Helpmebot.CategoryWatcher.Configuration.ModuleConfiguration, Helpmebot.ChannelServices
+        
   - assembly: Helpmebot.Brain.dll
 
   - assembly: Helpmebot.CategoryWatcher.dll
@@ -63,7 +65,9 @@ modules:
         type: Helpmebot.CategoryWatcher.Configuration.CategoryWatcherConfiguration, Helpmebot.CategoryWatcher
         
   - assembly: Helpmebot.AccountCreations.dll
-    castleFile: Configuration/Helpmebot.AccountCreations.config.xml
+    configuration:
+      - file: Configuration/account-creations.yml
+        type: Helpmebot.AccountCreations.Configuration.ModuleConfiguration, Helpmebot.AccountCreations
     
   - assembly: Helpmebot.Commands.dll
     configuration:

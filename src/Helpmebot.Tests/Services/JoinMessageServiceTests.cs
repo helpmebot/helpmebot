@@ -101,7 +101,7 @@ namespace Helpmebot.Tests.Services
                 this.Logger.Object,
                 this.messageService.Object,
                 this.session.Object,
-                new JoinMessageServiceConfiguration(1, 10),
+                new ModuleConfiguration{JoinMessageRateLimits = new RateLimitConfiguration{RateLimitMax = 1, RateLimitDuration = 10}},
                 this.geolocService.Object,
                 this.ircClient.Object,
                 this.blockMonitoringService.Object);
