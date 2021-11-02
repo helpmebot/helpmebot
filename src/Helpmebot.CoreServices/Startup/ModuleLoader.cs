@@ -2,6 +2,7 @@ namespace Helpmebot.CoreServices.Startup
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
@@ -11,19 +12,19 @@ namespace Helpmebot.CoreServices.Startup
 
     public class ModuleLoader
     {
-        private readonly IList<string> moduleList;
+        private readonly ModuleConfiguration moduleList;
         private readonly List<Assembly> loadedAssemblies = new List<Assembly>();
         
-        public ModuleLoader(IList<string> moduleList)
+        public ModuleLoader(ModuleConfiguration moduleList)
         {
             this.moduleList = moduleList;
         }
 
-        public void LoadModules()
+        public void LoadModuleAssemblies()
         {
-            foreach (var module in this.moduleList)
+            foreach (var module in this.moduleList.Modules)
             {
-                var assembly = Assembly.LoadFile(Path.GetFullPath(module));
+                var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
                 this.loadedAssemblies.Add(assembly);
             }
         }
@@ -32,9 +33,9 @@ namespace Helpmebot.CoreServices.Startup
         {
             var botConfiguration = container.Resolve<BotConfiguration>();
 
-            foreach (var module in this.moduleList)
+            foreach (var module in this.moduleList.Modules.Where(x => !string.IsNullOrWhiteSpace(x.CastleFile)))
             {
-                var configFileName = Path.GetFileName(module).Replace(".dll", ".config.xml");
+                var configFileName = module.CastleFile;
                 var configPath = "Configuration" + Path.DirectorySeparatorChar + configFileName;
                 if (!string.IsNullOrWhiteSpace(botConfiguration.ModuleConfigurationPath))
                 {

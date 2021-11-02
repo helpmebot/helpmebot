@@ -1,8 +1,10 @@
 namespace Helpmebot.CoreServices.Startup
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using Castle.Windsor;
+    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
@@ -27,11 +29,13 @@ namespace Helpmebot.CoreServices.Startup
             }
             
             // setup the container
-            var container = new WindsorContainer("modules.xml");
+            var container = new WindsorContainer();
 
             // Load other module assemblies, and add them to the relevant installation queues
-            var moduleLoader = container.Resolve<ModuleLoader>();
-            moduleLoader.LoadModules();
+            var moduleConfiguration = ConfigurationReader.ReadConfiguration<ModuleConfiguration>("Configuration/modules.yml");
+            var moduleLoader = new ModuleLoader(moduleConfiguration);
+            
+            moduleLoader.LoadModuleAssemblies();
             
             // import the configuration
             container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));

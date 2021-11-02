@@ -22,10 +22,4 @@
     <ItemGroup>
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="modules.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
 </Project>

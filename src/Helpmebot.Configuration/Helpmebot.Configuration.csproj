@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+        <PackageReference Include="YamlDotNet" Version="11.2.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +27,9 @@
     <ItemGroup>
       <None Update="logger.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Configuration\modules.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 
