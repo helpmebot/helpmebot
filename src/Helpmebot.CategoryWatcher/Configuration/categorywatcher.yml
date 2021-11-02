@@ -1,0 +1,4 @@
+---
+enabled: false
+updateFrequency: 60
+crossoverTimeout: 30

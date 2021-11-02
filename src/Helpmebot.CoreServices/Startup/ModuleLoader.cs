@@ -32,8 +32,6 @@ namespace Helpmebot.CoreServices.Startup
 
         public void InstallModuleCastleFiles(IWindsorContainer container)
         {
-            var botConfiguration = container.Resolve<BotConfiguration>();
-
             foreach (var module in this.moduleList.Where(x => !string.IsNullOrWhiteSpace(x.CastleFile)))
             {
                 container.Install(Configuration.FromXmlFile(module.CastleFile));

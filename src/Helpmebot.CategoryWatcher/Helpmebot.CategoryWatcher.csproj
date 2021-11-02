@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Configuration\Helpmebot.CategoryWatcher.config.xml">
+      <None Update="Configuration\categorywatcher.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
