@@ -8,7 +8,6 @@
 general:
   commandTrigger: "!"
   userAgent: Helpmebot (+https://helpmebot.org.uk)
-  httpTimeout: 5000
   debugChannel: "##helpmebot"
   # disableCertificateValidation: false
   # ipInfoDbApiKey:
