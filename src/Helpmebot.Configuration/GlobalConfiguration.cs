@@ -11,5 +11,6 @@ namespace Helpmebot.Configuration
         public List<ModuleConfiguration> Modules { get; set; }
         
         public MediaWikiDocumentationConfiguration Documentation { get; set; }
+        public WikimediaUrlShortnerConfiguration WikimediaShortener { get; set; }
     }
 }

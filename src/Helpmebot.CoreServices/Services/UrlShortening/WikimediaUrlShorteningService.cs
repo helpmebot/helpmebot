@@ -26,22 +26,19 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
             IMediaWikiApiTypedFactory apiTypedFactory,
             BotConfiguration configuration,
             IUrlShorteningService secondaryShortener,
-            List<string> allowedDomains,
-            string mediaWikiApiEndpoint,
-            string mediaWikiApiUsername,
-            string mediaWikiApiPassword)
+            WikimediaUrlShortnerConfiguration shortenerConfiguration)
             : base(logger, shortUrlCacheService)
         {
             this.logger = logger;
             this.apiTypedFactory = apiTypedFactory;
             this.secondaryShortener = (UrlShorteningServiceBase) secondaryShortener;
-            this.allowedDomains = allowedDomains.Select(x => new Regex(x)).ToList();
+            this.allowedDomains = shortenerConfiguration.AllowedDomains.Select(x => new Regex(x)).ToList();
 
             this.mediaWikiConfig = new MediaWikiConfiguration(
-                mediaWikiApiEndpoint,
+                shortenerConfiguration.MediaWikiApiEndpoint,
                 configuration.UserAgent,
-                mediaWikiApiUsername,
-                mediaWikiApiPassword);
+                shortenerConfiguration.MediaWikiApiUsername,
+                shortenerConfiguration.MediaWikiApiPassword);
         }
 
         protected internal override string GetShortUrl(string longUrl)
