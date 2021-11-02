@@ -12,5 +12,7 @@ namespace Helpmebot.Configuration
         
         public MediaWikiDocumentationConfiguration Documentation { get; set; }
         public WikimediaUrlShortnerConfiguration WikimediaShortener { get; set; }
+        
+        public CommandOverrideConfiguration CommandOverrides { get; set; }
     }
 }

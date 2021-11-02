@@ -32,7 +32,7 @@ namespace Helpmebot.Configuration.Startup
                 
             var typeObj = conversionManager.PerformConversion<Type>(typeStr);
 
-            return new CommandOverrideConfiguration.OverrideMapEntry(keyword, channel, typeObj);
+            return new CommandOverrideConfiguration.OverrideMapEntry{ Keyword = keyword, Channel = channel, CommandType = typeObj, Type = typeStr };
         }
     }
 }

@@ -102,7 +102,7 @@ namespace Helpmebot.CoreServices.Startup
             foreach (var mapEntry in this.commandOverrideConfiguration.OverrideMap)
             {
                 this.commandParser.UnregisterCommand(mapEntry.Keyword, mapEntry.Channel);
-                this.commandParser.RegisterCommand(mapEntry.Keyword, mapEntry.Type, mapEntry.Channel);
+                this.commandParser.RegisterCommand(mapEntry.Keyword, mapEntry.CommandType, mapEntry.Channel);
             }
 
             using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))

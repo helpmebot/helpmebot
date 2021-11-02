@@ -2,6 +2,8 @@ namespace Helpmebot.CoreServices.Startup
 {
     using System;
     using System.IO;
+    using Castle.MicroKernel;
+    using Castle.MicroKernel.SubSystems.Conversion;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
@@ -16,7 +18,7 @@ namespace Helpmebot.CoreServices.Startup
         public static void MainEntrypoint(string[] args)
         {
             // get the path to the configuration file
-            string configurationFile = "configuration.xml";
+            string configurationFile = "Configuration/configuration.yml";
 
             if (args.Length >= 1)
             {
@@ -35,10 +37,14 @@ namespace Helpmebot.CoreServices.Startup
             var container = new WindsorContainer();
 
             // Load other module assemblies, and add them to the relevant installation queues
-            var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile.Replace(".xml", ".yml"));
+            var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile);
             var moduleLoader = new ModuleLoader(globalConfiguration.Modules);
             
             moduleLoader.LoadModuleAssemblies();
+
+            new CommandOverrideMapEntryInflater(
+                (IConversionManager)container.Kernel.GetSubSystem(SubSystemConstants.ConversionManagerKey))
+                .Inflate(globalConfiguration.CommandOverrides);
             
             container.Register(
                 Component.For<ModuleLoader>().Instance(moduleLoader),
@@ -46,14 +52,12 @@ namespace Helpmebot.CoreServices.Startup
                 Component.For<BotConfiguration>().Instance(globalConfiguration.General),
                 Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),
                 Component.For<MediaWikiDocumentationConfiguration>().Instance(globalConfiguration.Documentation),
-                Component.For<WikimediaUrlShortnerConfiguration>().Instance(globalConfiguration.WikimediaShortener)
+                Component.For<WikimediaUrlShortnerConfiguration>().Instance(globalConfiguration.WikimediaShortener),
+                Component.For<CommandOverrideConfiguration>().Instance(globalConfiguration.CommandOverrides)
             );
 
             SetupGeolocation(globalConfiguration, container);
             SetupUrlShortener(globalConfiguration, container);
-            
-            // import the configuration
-            container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
             
             moduleLoader.InstallModuleConfiguration(container);
             

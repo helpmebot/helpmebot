@@ -110,3 +110,17 @@ wikimediaShortener:
     - ^.*\.wikimedia\.org$
     - ^.*\.wikidata\.org$
     - ^.*\.mediawiki\.org$
+
+########################################################################################################
+# Command overrides
+# 
+# This allows you to override a specific command keyword for a specific channel. A good example is to completely disable
+# a command in a channel.
+# 
+# For example, to disable the "!help" command in #mychannel, you would do the following:
+#     overrideMap:
+#       - keyword: help
+#         channel: "#channel"
+#         type: "NullCommand"
+commandOverrides:
+  overrideMap: {}
