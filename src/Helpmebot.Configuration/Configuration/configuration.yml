@@ -61,7 +61,9 @@ modules:
   - assembly: Helpmebot.AccountCreations.dll
     castleFile: Configuration/Helpmebot.AccountCreations.config.xml
   - assembly: Helpmebot.Commands.dll
-    castleFile: Configuration/Helpmebot.Commands.config.xml
+    configuration:
+      - file: Configuration/afc-data.yml
+        type: Helpmebot.Commands.Configuration.AfcCategoryConfiguration, Helpmebot.Commands
 
 ########################################################################################################
 # Documentation generation

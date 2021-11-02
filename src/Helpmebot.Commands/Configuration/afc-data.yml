@@ -1,0 +1,120 @@
+---
+rejectedCategories:
+  "Category:Rejected AfC submissions":
+  "Category:AfC submissions rejected as non-notable": as being not sufficiently notable for inclusion in Wikipedia
+  "Category:AfC submissions rejected as unencyclopedic": as being contrary to the purpose of Wikipedia
+  
+declinedCategories:
+    "Category:AfC submissions declined as an advertisement": as an advertisement
+    "Category:AfC submissions declined as all plot": as all plot
+    "Category:AfC submissions declined as already existing": as already existing
+    "Category:AfC submissions declined as blank": as blank
+    "Category:AfC submissions declined as BLP violations": as BLP violations
+    "Category:AfC submissions declined as copyright violations": as copyright violations
+    "Category:AfC submissions declined with a custom reason": with a custom reason
+    "Category:AfC submissions declined as a dictionary definition": as a dictionary definition
+    "Category:AfC submissions declined as a duplicate": as a duplicate
+    "Category:AfC submissions declined as an essay": as an essay
+    "Category:AfC submissions declined as a non-notable film": as a non-notable film
+    "Category:AfC submissions declined as jokes": as jokes
+    "Category:AfC submissions declined as lacking context": as lacking context
+    "Category:AfC submissions declined as lacking reliable third-party sources": as lacking reliable third-party sources
+    "Category:AfC submissions declined as needing footnotes": as needing footnotes
+    "Category:AfC submissions declined as needing to be merged": as needing to be merged
+    "Category:AfC submissions declined as a neologism": as a neologism
+    "Category:AfC submissions declined as a news report on a single event": as a news report on a single event
+    "Category:AfC submissions declined as non-notable": as non-notable
+    "Category:AfC submissions declined as a non-notable academic topic": as a non-notable academic topic
+    "Category:AfC submissions declined as a non-notable athletic topic": as a non-notable athletic topic
+    "Category:AfC submissions declined as a non-notable biography": as a non-notable biography
+    "Category:AfC submissions declined as a non-notable musical topic": as a non-notable musical topic
+    "Category:AfC submissions declined as a non-notable organization": as a non-notable organization
+    "Category:AfC submissions declined as non-notable web content": as non-notable web content
+    "Category:AfC submissions declined as not in English": as not in English
+    "Category:AfC submissions declined as not suitable for Wikipedia": as not suitable for Wikipedia
+    "Category:AfC submissions declined as not written in a neutral point of view": as not written in a neutral point of view
+    "Category:AfC submissions declined as being previously deleted": as being previously deleted
+    "Category:AfC submissions declined as a redirect": as a redirect
+    "Category:AfC submissions declined as a test": as a test
+    "Category:AfC submissions declined as being vandalism or attack pages": as being vandalism or attack pages
+  
+speedyDeletionCategories:
+    "Category:Candidates for speedy deletion":
+    "Category:Candidates for speedy deletion as nonsense pages": as a nonsense page (G1)
+    "Category:Candidates for speedy deletion as test pages": as a test page (G2)
+    "Category:Candidates for speedy deletion as hoaxes": as a hoax (G3)
+    "Category:Candidates for speedy deletion as vandalism": as vandalism (G3)
+    "Category:Candidates for speedy deletion as pages previously deleted via deletion discussion": as previously deleted (G4)
+    "Category:Candidates for speedy deletion as having been created by blocked or banned users": as having been created by a banned user (G5)
+    "Category:Candidates for uncontroversial speedy deletion": as an uncontroversial speedy deletion (G6)
+    "Category:Candidates for speedy deletion by user": per user request (G7/U1)
+    "Category:Candidates for speedy deletion as broken redirects": as a broken redirect (G8)
+    "Category:Candidates for speedy deletion as dependent on a non-existent page": as dependent on a non-existent page (G8)
+    # G9: office actions
+    "Category:Candidates for speedy deletion as attack pages": as an attack page (G10)
+    "Category:Candidates for speedy deletion as spam": as spam (G11)
+    "Category:Candidates for speedy deletion as copyright violations": as a copyright violations (G12/F9)
+    "Category:Candidates for speedy deletion as abandoned drafts or AfC submissions": as an abandoned draft (G13)
+    "Category:G13 eligible AfC submissions": as a G13 eligible AfC submission (G13)
+    "Category:Candidates for speedy deletion as unnecessary disambiguation pages": as an unnecessary disambiguation page (G14)
+  
+  
+    "Category:Candidates for speedy deletion as lacking context": as lacking context (A1)
+    "Category:Candidates for speedy deletion as existing on foreign Wikimedia projects": as existing on foreign Wikimedia projects (A2)
+    "Category:Candidates for speedy deletion as empty articles": as an empty article (A3)
+    # A4 doesn't exist
+    "Category:Candidates for speedy deletion as transwikied": as transwikied (A5)
+    # A6 doesn't exist
+    "Category:Candidates for speedy deletion as importance or significance not asserted": as importance or significance not asserted (A7/A9)
+    # A8 doesn't exist
+    # A9 covered by A7
+    "Category:Candidates for speedy deletion as duplicate articles": as a duplicate article (A10)
+    "Category:Candidates for speedy deletion as obviously invented": as obviously invented (A11)
+  
+    # R1 doesn't exist
+    "Category:Candidates for speedy deletion as inappropriate cross-namespace redirects": as a cross-namespace redirect (R2)
+    "Category:Candidates for speedy deletion as implausible redirects": as an implausible redirect (R3)
+    "Category:Candidates for speedy deletion as file redirects shadowing Wikimedia Commons files": as a file redirect shadowing a Commons file (R4)
+  
+    "Category:Candidates for speedy deletion as redundant files": as a redundant file (F1)
+    "Category:Candidates for speedy deletion as missing files": as a missing file (F2)
+    "Category:Candidates for speedy deletion as files with unacceptable licenses": as a file with an unacceptable license (F3)
+    # F4 is dated cats
+    "Category:Candidates for speedy deletion as orphaned non-free use files": as an orphaned non-free use file (F5)
+    "Category:Non-free files with orphaned versions more than 7 days old": as a Non-free file with orphaned versions (F5)
+    "Category:Non-free files with orphaned versions more than 7 days old needing human review": as a Non-free file with orphaned versions (F5)
+    # F6 is dated cats
+    "Category:Candidates for speedy deletion as files with clearly invalid fair-use claims": as a file with an invalid fair-use claim (F7)
+    # F8 is nowcommons
+    # F9 covered by G12
+    "Category:Candidates for speedy deletion as useless non-media files": as a useless non-media file (F10)
+  
+    "Category:Candidates for speedy deletion as empty categories": as an empty category (C1)
+  
+    # u1 covered by g7
+    "Category:Candidates for speedy deletion as userpage or subpage of a nonexistent user": as a page for a nonexistent user (U2)
+    "Category:Candidates for speedy deletion as non-free galleries in userspace": as a non-free gallery in userspace (U3)
+    # u4 doesn't exist
+    "Category:Candidates for speedy deletion as blatant NOTWEBHOST violations": as a NOTWEBHOST violation (U5)
+  
+    # t1 doesn't exist
+    "Category:Candidates for speedy deletion as templates that blatantly misrepresent policy": as a template that misrepresents policy (T2)
+    "Category:Templates for speedy deletion with incorrect formatting": as a duplicate template (T3)
+    "Category:Candidates for speedy deletion as unused redundant templates": as a duplicate template (T3)
+  
+    # p1 is portal under any article criteria
+    "Category:Candidates for speedy deletion as empty portals": as an empty portal (P2)
+  
+    "Category:Candidates for speedy deletion as pages created by the content translation tool prior to 27 July 2016": as a page created by the content translation tool (X2)
+  
+inReviewCategories:
+  "Category:Pending AfC submissions being reviewed now":
+    
+draftCategories:
+  "Category:Draft AfC submissions":
+    
+pendingCategories:
+  "Category:Pending AfC submissions":
+    
+inArticleSpaceCategories:
+  "Category:Pending AfC submissions in article space":

@@ -1,5 +1,6 @@
 namespace Helpmebot.CoreServices.Startup
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -38,8 +39,20 @@ namespace Helpmebot.CoreServices.Startup
                 container.Install(Configuration.FromXmlFile(module.CastleFile));
             }
         }
+        public void InstallModuleConfiguration(IWindsorContainer container)
+        {
+            foreach (var module in this.moduleList.Where(x => x.Configuration != null))
+            {
+                foreach (var file in module.Configuration)
+                {
+                    var target = Type.GetType(file.Type);
+                    var config = ConfigurationReader.ReadConfiguration(file.File, target);
+                    container.Register(Component.For(target).Instance(config));
+                }
+            }
+        }
         
-        public void InstallModules(IWindsorContainer container)
+        public void InstallModuleServices(IWindsorContainer container)
         {
             foreach (var assembly in this.loadedAssemblies)
             {

@@ -31,9 +31,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Configuration\Helpmebot.Commands.config.xml">
+      <None Update="Configuration\afc-data.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+      </None>
     </ItemGroup>
 
 </Project>

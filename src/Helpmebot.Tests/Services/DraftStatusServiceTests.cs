@@ -18,14 +18,14 @@ namespace Helpmebot.Tests.Services
 
         public override void LocalSetup()
         {
-            this.catConfig = new AfcCategoryConfiguration(
-                new Dictionary<string, string>
+            this.catConfig = new AfcCategoryConfiguration{
+                RejectedCategories = new Dictionary<string, string>
                 {
                     {"Category:Rejected AfC submissions",null},
                     {"Category:AfC submissions rejected as non-notable",""},
                     {"Category:AfC submissions rejected as unencyclopedic",""},
                 },
-                new Dictionary<string, string>
+                DeclinedCategories = new Dictionary<string, string>
                 {
                     {"Category:AfC submissions declined as a non-notable organization", ""},
                     {"Category:AfC submissions declined as non-notable", ""},
@@ -33,12 +33,12 @@ namespace Helpmebot.Tests.Services
                     {"Category:AfC submissions declined as lacking reliable third-party sources", ""},
                     {"Category:AfC submissions declined as an advertisement", ""},
                 },
-                new Dictionary<string, string> {{"Category:Pending AfC submissions being reviewed now", null}},
-                new Dictionary<string, string> {{"Category:Draft AfC submissions", null}},
-                new Dictionary<string, string> {{"Category:Pending AfC submissions", null}},
-                new Dictionary<string, string> {{"Category:Pending AfC submissions in article space", null}},
-                new Dictionary<string, string> {{"Category:Candidates for speedy deletion", null}}
-            );
+                InReviewCategories = new Dictionary<string, string> {{"Category:Pending AfC submissions being reviewed now", null}},
+                DraftCategories = new Dictionary<string, string> {{"Category:Draft AfC submissions", null}},
+                PendingCategories = new Dictionary<string, string> {{"Category:Pending AfC submissions", null}},
+                InArticleSpaceCategories = new Dictionary<string, string> {{"Category:Pending AfC submissions in article space", null}},
+                SpeedyDeletionCategories = new Dictionary<string, string> {{"Category:Candidates for speedy deletion", null}}
+            };
             
             this.mediaWikiApi = new Mock<IMediaWikiApi>();
         }

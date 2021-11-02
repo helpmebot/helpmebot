@@ -49,13 +49,14 @@ namespace Helpmebot.CoreServices.Startup
             container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
             
             moduleLoader.InstallModuleCastleFiles(container);
+            moduleLoader.InstallModuleConfiguration(container);
             
             // post-configuration, pre-initialisation actions
             TransportLayerSecurityConfigurationProvider.ConfigureCertificateValidation(globalConfiguration.General.DisableCertificateValidation);
             
             // install into the container
             container.Install(new MainInstaller());
-            moduleLoader.InstallModules(container);
+            moduleLoader.InstallModuleServices(container);
             container.Release(moduleLoader);
 
             var application = container.Resolve<IApplication>();
