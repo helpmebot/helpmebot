@@ -22,8 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="mono_crash.2530d91524.0.json" />
+      <Content Include="modules.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
-
-
 </Project>

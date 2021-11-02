@@ -14,7 +14,7 @@
     <parameters>
       <param name="nunitRunner" value="3.12.0" />
       <param name="system.Configuration" value="Release" />
-      <param name="version" value="7.2" />
+      <param name="version" value="7.3" />
     </parameters>
     <build-runners>
       <runner id="RUNNER_6" name="" type="jb.nuget.installer">

@@ -1,12 +1,13 @@
-namespace Helpmebot.Configuration
+namespace Helpmebot.CoreServices.Startup
 {
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
-    using System.Windows.Input;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using Castle.Windsor.Installer;
+    using Helpmebot.Configuration;
+    using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
 
     public class ModuleLoader
     {
