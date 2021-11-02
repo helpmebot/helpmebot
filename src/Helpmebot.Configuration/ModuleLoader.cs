@@ -3,6 +3,8 @@ namespace Helpmebot.Configuration
     using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
+    using System.Windows.Input;
+    using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using Castle.Windsor.Installer;
 
@@ -31,10 +33,16 @@ namespace Helpmebot.Configuration
 
             foreach (var module in this.moduleList)
             {
-                var configPath = Path.GetFileName(module).Replace(".dll", ".config.xml");
+                var configFileName = Path.GetFileName(module).Replace(".dll", ".config.xml");
+                var configPath = "Configuration" + Path.DirectorySeparatorChar + configFileName;
                 if (!string.IsNullOrWhiteSpace(botConfiguration.ModuleConfigurationPath))
                 {
-                    configPath = botConfiguration.ModuleConfigurationPath + Path.DirectorySeparatorChar + configPath;
+                    var customConfigPath = botConfiguration.ModuleConfigurationPath + Path.DirectorySeparatorChar + configFileName;
+
+                    if (File.Exists(customConfigPath))
+                    {
+                        configPath = customConfigPath;
+                    }
                 }
                 
                 container.Install(Configuration.FromXmlFile(configPath));
@@ -45,7 +53,12 @@ namespace Helpmebot.Configuration
         {
             foreach (var assembly in this.loadedAssemblies)
             {
-                container.Install(FromAssembly.Instance(assembly));
+                var ns = assembly.FullName.Split(',')[0];
+                
+                container.Register(
+                    Classes.FromAssembly(assembly).BasedOn<ICommand>().LifestyleTransient(),            
+                    Classes.FromAssembly(assembly).InNamespace(ns + ".Services").WithServiceAllInterfaces()
+                );
             }
         }
     }
