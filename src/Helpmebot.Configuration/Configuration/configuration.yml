@@ -1,0 +1,64 @@
+---
+# Helpmebot main configuration file.
+# 
+# All settings are listed here, any optional settings are commented out with their default value.
+########################################################################################################
+# General miscellaneous bot settings
+# 
+general:
+  commandTrigger: "!"
+  userAgent: Helpmebot (+https://helpmebot.org.uk)
+  httpTimeout: 5000
+  debugChannel: "##helpmebot"
+  # disableCertificateValidation: false
+  # ipInfoDbApiKey:
+  # maxMindDatabasePath:
+  # prometheusMetricsPort:
+  # log4NetConfiguration:
+
+########################################################################################################
+# IRC connection configuration
+# 
+irc:
+  clientName: LiberaChat
+  hostname: irc.libera.chat
+  port: 6697
+  ssl: true
+  authToServices: false
+  nickname:
+  # realName: (nickname)
+  # username: (nickname)
+  # serverPassword:
+  # servicesUsername:
+  # servicesPassword:
+  # restartOnHeavyLag: true
+  # reclaimNickFromServices: true
+  # pingInterval: 15
+  # missedPingLimit: 3
+
+########################################################################################################
+# Database configuration
+# 
+database:
+  hostname:
+  username:
+  password:
+  schema:
+  # port: 3306
+  # charset: utf8mb4
+
+
+########################################################################################################
+# Modules
+#
+# This is a list of additional modules which can be loaded into the bot for additional functionality.
+modules:
+  - assembly: Helpmebot.ChannelServices.dll
+    castleFile: Configuration/Helpmebot.ChannelServices.config.xml
+  - assembly: Helpmebot.Brain.dll
+  - assembly: Helpmebot.CategoryWatcher.dll
+    castleFile: Configuration/Helpmebot.CategoryWatcher.config.xml
+  - assembly: Helpmebot.AccountCreations.dll
+    castleFile: Configuration/Helpmebot.AccountCreations.config.xml
+  - assembly: Helpmebot.Commands.dll
+    castleFile: Configuration/Helpmebot.Commands.config.xml

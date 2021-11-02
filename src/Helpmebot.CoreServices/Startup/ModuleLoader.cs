@@ -12,42 +12,30 @@ namespace Helpmebot.CoreServices.Startup
 
     public class ModuleLoader
     {
-        private readonly ModuleConfiguration moduleList;
+        private readonly List<ModuleConfiguration> moduleList;
         private readonly List<Assembly> loadedAssemblies = new List<Assembly>();
         
-        public ModuleLoader(ModuleConfiguration moduleList)
+        public ModuleLoader(List<ModuleConfiguration> moduleList)
         {
             this.moduleList = moduleList;
         }
 
         public void LoadModuleAssemblies()
         {
-            foreach (var module in this.moduleList.Modules)
+            foreach (var module in this.moduleList)
             {
                 var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
                 this.loadedAssemblies.Add(assembly);
             }
         }
 
-        public void InstallModuleConfiguration(IWindsorContainer container)
+        public void InstallModuleCastleFiles(IWindsorContainer container)
         {
             var botConfiguration = container.Resolve<BotConfiguration>();
 
-            foreach (var module in this.moduleList.Modules.Where(x => !string.IsNullOrWhiteSpace(x.CastleFile)))
+            foreach (var module in this.moduleList.Where(x => !string.IsNullOrWhiteSpace(x.CastleFile)))
             {
-                var configFileName = module.CastleFile;
-                var configPath = "Configuration" + Path.DirectorySeparatorChar + configFileName;
-                if (!string.IsNullOrWhiteSpace(botConfiguration.ModuleConfigurationPath))
-                {
-                    var customConfigPath = botConfiguration.ModuleConfigurationPath + Path.DirectorySeparatorChar + configFileName;
-
-                    if (File.Exists(customConfigPath))
-                    {
-                        configPath = customConfigPath;
-                    }
-                }
-                
-                container.Install(Configuration.FromXmlFile(configPath));
+                container.Install(Configuration.FromXmlFile(module.CastleFile));
             }
         }
         

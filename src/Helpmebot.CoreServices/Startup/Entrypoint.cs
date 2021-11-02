@@ -1,12 +1,13 @@
 namespace Helpmebot.CoreServices.Startup
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.IrcClient.Interfaces;
+    using Component = Castle.MicroKernel.Registration.Component;
 
     public class Entrypoint
     {
@@ -32,18 +33,24 @@ namespace Helpmebot.CoreServices.Startup
             var container = new WindsorContainer();
 
             // Load other module assemblies, and add them to the relevant installation queues
-            var moduleConfiguration = ConfigurationReader.ReadConfiguration<ModuleConfiguration>("Configuration/modules.yml");
-            var moduleLoader = new ModuleLoader(moduleConfiguration);
+            var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile.Replace(".xml", ".yml"));
+            var moduleLoader = new ModuleLoader(globalConfiguration.Modules);
             
             moduleLoader.LoadModuleAssemblies();
+            
+            container.Register(
+                Component.For<IIrcConfiguration>().Instance(globalConfiguration.Irc.ToConfiguration()),
+                Component.For<BotConfiguration>().Instance(globalConfiguration.General),
+                Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database)
+            );
             
             // import the configuration
             container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
             
-            moduleLoader.InstallModuleConfiguration(container);
+            moduleLoader.InstallModuleCastleFiles(container);
             
             // post-configuration, pre-initialisation actions
-            TransportLayerSecurityConfigurationProvider.ConfigureCertificateValidation(container);
+            TransportLayerSecurityConfigurationProvider.ConfigureCertificateValidation(globalConfiguration.General.DisableCertificateValidation);
             
             // install into the container
             container.Install(new MainInstaller());

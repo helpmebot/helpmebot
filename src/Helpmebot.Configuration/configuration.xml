@@ -1,51 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration>
     <components>
-
-        <!-- IRC configuration -->
-        <component service="Stwalkerster.IrcClient.Interfaces.IIrcConfiguration, Stwalkerster.IrcClient"
-                   type="Stwalkerster.IrcClient.IrcConfiguration, Stwalkerster.IrcClient">
-            <parameters>
-                <authToServices>true</authToServices>
-                <ssl>true</ssl>
-                <hostname>irc.libera.chat</hostname>
-                <port>6697</port>
-                <nickname></nickname>
-                <realName></realName>
-                <username></username>
-                <serverPassword></serverPassword>
-                <servicesUsername></servicesUsername>
-                <servicesPassword></servicesPassword>
-                <clientName>Libera.Chat</clientName>
-            </parameters>
-        </component>
-
-        <!-- Other configuration -->
-        <component type="Helpmebot.Configuration.BotConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <commandTrigger>!</commandTrigger>
-                <userAgent>Helpmebot (+https://helpmebot.org.uk)</userAgent>
-                <httpTimeout>5000</httpTimeout>
-                <debugChannel></debugChannel>
-                <enableNotificationService>false</enableNotificationService>
-                <moduleConfigurationPath>Configuration</moduleConfigurationPath>
-                <!--<ipInfoDbApiKey></ipInfoDbApiKey>-->
-                <!--<maxMindDatabasePath></maxMindDatabasePath>-->
-                <!--<disableCertificateValidation>false</disableCertificateValidation>-->
-                <!--<log4netConfiguration>logger.config</log4netConfiguration>-->
-            </parameters>
-        </component>
-
-        <component type="Helpmebot.Configuration.DatabaseConfiguration, Helpmebot.Configuration">
-            <parameters>
-                <hostname></hostname>
-                <!--<port>3306</port>-->
-                <username></username>
-                <password></password>
-                <schema></schema>
-                <!--<charset></charset>-->
-            </parameters>
-        </component>
         
         <!-- Override commands in specific channels -->
         <component type="Helpmebot.Configuration.CommandOverrideConfiguration, Helpmebot.Configuration">

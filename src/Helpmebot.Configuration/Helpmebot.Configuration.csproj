@@ -28,7 +28,7 @@
       <None Update="logger.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="Configuration\modules.yml">
+      <None Update="Configuration\configuration.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
