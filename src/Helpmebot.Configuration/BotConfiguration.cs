@@ -13,5 +13,8 @@ namespace Helpmebot.Configuration
         public string MaxMindDatabasePath { get; set; }
         public int? PrometheusMetricsPort { get; set; }
         public string Log4NetConfiguration { get; set; }
+        
+        public string UrlShortener { get; set; }
+        public string SecondaryUrlShortener { get; set; }
     }
 }

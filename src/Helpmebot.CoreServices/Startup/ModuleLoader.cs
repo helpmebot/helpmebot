@@ -7,30 +7,29 @@ namespace Helpmebot.CoreServices.Startup
     using System.Reflection;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
-    using Castle.Windsor.Installer;
     using Helpmebot.Configuration;
     using Stwalkerster.Bot.CommandLib.Commands.Interfaces;
 
     public class ModuleLoader
     {
         private readonly List<ModuleConfiguration> moduleList;
-        private readonly List<Assembly> loadedAssemblies = new List<Assembly>();
-        
+        public List<Assembly> LoadedAssemblies { get; } = new List<Assembly>();
+
         public ModuleLoader(List<ModuleConfiguration> moduleList)
         {
             this.moduleList = moduleList;
         }
 
-        public void LoadModuleAssemblies()
+        internal void LoadModuleAssemblies()
         {
             foreach (var module in this.moduleList)
             {
                 var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
-                this.loadedAssemblies.Add(assembly);
+                this.LoadedAssemblies.Add(assembly);
             }
         }
         
-        public void InstallModuleConfiguration(IWindsorContainer container)
+        internal void InstallModuleConfiguration(IWindsorContainer container)
         {
             foreach (var module in this.moduleList.Where(x => x.Configuration != null))
             {
@@ -43,9 +42,9 @@ namespace Helpmebot.CoreServices.Startup
             }
         }
         
-        public void InstallModuleServices(IWindsorContainer container)
+        internal void InstallModuleServices(IWindsorContainer container)
         {
-            foreach (var assembly in this.loadedAssemblies)
+            foreach (var assembly in this.LoadedAssemblies)
             {
                 var ns = assembly.FullName.Split(',')[0];
                 

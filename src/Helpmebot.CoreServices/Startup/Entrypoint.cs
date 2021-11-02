@@ -2,7 +2,6 @@ namespace Helpmebot.CoreServices.Startup
 {
     using System;
     using System.IO;
-    using System.Runtime.CompilerServices;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
@@ -42,6 +41,7 @@ namespace Helpmebot.CoreServices.Startup
             moduleLoader.LoadModuleAssemblies();
             
             container.Register(
+                Component.For<ModuleLoader>().Instance(moduleLoader),
                 Component.For<IIrcConfiguration>().Instance(globalConfiguration.Irc.ToConfiguration()),
                 Component.For<BotConfiguration>().Instance(globalConfiguration.General),
                 Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),
@@ -50,6 +50,7 @@ namespace Helpmebot.CoreServices.Startup
             );
 
             SetupGeolocation(globalConfiguration, container);
+            SetupUrlShortener(globalConfiguration, container);
             
             // import the configuration
             container.Install(Castle.Windsor.Installer.Configuration.FromXmlFile(configurationFile));
@@ -69,6 +70,19 @@ namespace Helpmebot.CoreServices.Startup
 
             container.Release(application);
             container.Dispose();
+        }
+
+        private static void SetupUrlShortener(GlobalConfiguration globalConfiguration, WindsorContainer container)
+        {
+            var primary = Type.GetType(globalConfiguration.General.UrlShortener);
+            var secondary = globalConfiguration.General.SecondaryUrlShortener != null
+                ? Type.GetType(globalConfiguration.General.SecondaryUrlShortener)
+                : null;
+
+            container.Register(
+                Component.For<IUrlShorteningService>().ImplementedBy(primary),
+                Component.For<IUrlShorteningService>().ImplementedBy(secondary).Named("secondaryShortener")
+            );
         }
 
         private static void SetupGeolocation(GlobalConfiguration globalConfiguration, WindsorContainer container)

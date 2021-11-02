@@ -11,9 +11,5 @@
                 </overrideMap>
             </parameters>
         </component>
-        
-        <!-- Swappable components -->
-        <component service="Helpmebot.CoreServices.Services.Interfaces.IUrlShorteningService, Helpmebot.CoreServices"
-                   type="Helpmebot.CoreServices.Services.UrlShortening.IsGdUrlShorteningService, Helpmebot.CoreServices" />
     </components>
 </configuration>

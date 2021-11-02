@@ -14,7 +14,9 @@ general:
   # maxMindDatabasePath:
   # prometheusMetricsPort:
   # log4NetConfiguration:
-
+  urlShortener: Helpmebot.CoreServices.Services.UrlShortening.IsGdUrlShorteningService, Helpmebot.CoreServices
+  # secondaryUrlShortener:
+  
 ########################################################################################################
 # IRC connection configuration
 # 
