@@ -42,9 +42,7 @@ namespace Helpmebot.CoreServices.Startup
             
             moduleLoader.LoadModuleAssemblies();
 
-            new CommandOverrideMapEntryInflater(
-                (IConversionManager)container.Kernel.GetSubSystem(SubSystemConstants.ConversionManagerKey))
-                .Inflate(globalConfiguration.CommandOverrides);
+            new CommandOverrideMapEntryInflater().Inflate(globalConfiguration.CommandOverrides);
             
             container.Register(
                 Component.For<ModuleLoader>().Instance(moduleLoader),
