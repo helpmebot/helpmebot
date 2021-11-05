@@ -1,12 +1,14 @@
-namespace Helpmebot.Commands.Commands.Diagnostics
+namespace Helpmebot.CoreServices.Commands
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Linq;
     using System.Reflection;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
+    using Helpmebot.CoreServices.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -23,6 +25,8 @@ namespace Helpmebot.Commands.Commands.Diagnostics
     [HelpCategory("Diagnostics")]
     public class VersionCommand : CommandBase
     {
+        private readonly ModuleLoader moduleLoader;
+
         public VersionCommand(
             string commandSource,
             IUser user,
@@ -30,7 +34,8 @@ namespace Helpmebot.Commands.Commands.Diagnostics
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(
+            IIrcClient client,
+            ModuleLoader moduleLoader) : base(
             commandSource,
             user,
             arguments,
@@ -39,9 +44,11 @@ namespace Helpmebot.Commands.Commands.Diagnostics
             configurationProvider,
             client)
         {
+            this.moduleLoader = moduleLoader;
         }
 
-        [Help("", "Provides the current version of the bot and the key libraries")]
+        [Help("[--modules]", "Provides the current version of the bot and the key libraries")]
+            
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mainAssembly = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot"));
@@ -64,10 +71,18 @@ namespace Helpmebot.Commands.Commands.Diagnostics
                 Environment.OSVersion
             );
 
-            yield return new CommandResponse
+            yield return new CommandResponse { Message = message };
+
+            if (this.Arguments.Contains("--modules"))
             {
-                Message = message
-            };
+                foreach (var moduleVersion in
+                    this.moduleLoader.LoadedAssemblies
+                        .Select(assembly => $"{assembly.GetName().Name} (v{this.GetFileVersion(assembly)})")
+                        .Select(x => new CommandResponse { Message = x }))
+                {
+                    yield return moduleVersion;
+                }
+            }
         }
 
         private string GetFileVersion(Assembly assembly)

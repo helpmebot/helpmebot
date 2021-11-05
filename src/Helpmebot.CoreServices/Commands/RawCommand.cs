@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.Commands.Diagnostics
+namespace Helpmebot.CoreServices.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
