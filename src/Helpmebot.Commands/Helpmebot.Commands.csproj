@@ -14,7 +14,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj" />
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
         <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj" />
     </ItemGroup>

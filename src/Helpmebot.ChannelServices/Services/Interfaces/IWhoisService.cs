@@ -1,4 +1,4 @@
-namespace Helpmebot.Commands.Services.Interfaces
+namespace Helpmebot.ChannelServices.Services.Interfaces
 {
     using System.Net;
 

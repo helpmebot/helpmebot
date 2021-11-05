@@ -1,10 +1,10 @@
-namespace Helpmebot.Commands.Commands.Information
+namespace Helpmebot.ChannelServices.Commands.Information
 {
     using System.Collections.Generic;
     using System.Net;
     using Castle.Core.Logging;
-    using Helpmebot.Commands.ExtensionMethods;
-    using Helpmebot.Commands.Services.Interfaces;
+    using Helpmebot.ChannelServices.ExtensionMethods;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;

@@ -1,12 +1,10 @@
-namespace Helpmebot.Commands.ExtensionMethods
+namespace Helpmebot.ChannelServices.ExtensionMethods
 {
     using System.Net;
     using System.Text.RegularExpressions;
-    using Helpmebot.ChannelServices.ExtensionMethods;
-    using NHibernate.Util;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.IrcClient.Model;
-    using Helpmebot.CoreServices.ExtensionMethods;
 
     public static class CommandBaseExtensions
     {

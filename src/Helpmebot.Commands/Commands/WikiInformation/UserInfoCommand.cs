@@ -6,13 +6,11 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Net;
     using System.Web;
     using Castle.Core.Logging;
-    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Exceptions;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

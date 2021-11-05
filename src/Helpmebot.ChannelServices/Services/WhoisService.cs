@@ -1,10 +1,10 @@
-namespace Helpmebot.Commands.Services
+namespace Helpmebot.ChannelServices.Services
 {
     using System.Collections.Specialized;
     using System.IO;
     using System.Linq;
     using System.Net;
-    using Helpmebot.Commands.Services.Interfaces;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.Configuration;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
