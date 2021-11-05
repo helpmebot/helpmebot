@@ -1,5 +1,6 @@
 namespace Helpmebot.CoreServices.Startup
 {
+    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -11,19 +12,43 @@ namespace Helpmebot.CoreServices.Startup
 
     public class ModuleLoader
     {
-        private readonly List<ModuleConfiguration> moduleList;
+        private readonly List<LoadableModuleConfiguration> moduleList;
         public List<Assembly> LoadedAssemblies { get; } = new List<Assembly>();
 
-        public ModuleLoader(List<ModuleConfiguration> moduleList)
+        public ModuleLoader(List<LoadableModuleConfiguration> moduleList)
         {
             this.moduleList = moduleList;
         }
 
         internal void LoadModuleAssemblies()
         {
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(x => x.GetName()).ToList();
+
+            var filesFound = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll")
+                .ToDictionary(x => AssemblyName.GetAssemblyName(x).FullName);
+
             foreach (var module in this.moduleList)
             {
                 var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
+                foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
+                {
+                    if (allAssemblies.Contains(referencedAssembly))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        Assembly.Load(referencedAssembly);
+                    }
+                    catch (FileNotFoundException ex) when (filesFound.ContainsKey(referencedAssembly.FullName))
+                    {
+                        Assembly.LoadFile(filesFound[referencedAssembly.FullName]);
+                    }
+
+                    allAssemblies.Add(referencedAssembly);
+                }
+                
                 this.LoadedAssemblies.Add(assembly);
             }
         }

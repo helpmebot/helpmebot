@@ -8,7 +8,7 @@ namespace Helpmebot.Configuration
         public DatabaseConfiguration Database { get; set; }
         public IrcConfiguration Irc { get; set; }
         
-        public List<ModuleConfiguration> Modules { get; set; }
+        public List<LoadableModuleConfiguration> Modules { get; set; }
         
         public MediaWikiDocumentationConfiguration Documentation { get; set; }
         public WikimediaUrlShortnerConfiguration WikimediaShortener { get; set; }

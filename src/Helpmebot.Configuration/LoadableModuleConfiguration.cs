@@ -1,8 +1,10 @@
 namespace Helpmebot.Configuration
 {
     using System.Collections.Generic;
-    
-    public class ModuleConfiguration
+    using System.Diagnostics;
+
+    [DebuggerDisplay("{Assembly}")]
+    public class LoadableModuleConfiguration
     {
         public string Assembly { get; set; }
         public List<ConfigurationFile> Configuration { get; set; }
