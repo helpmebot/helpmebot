@@ -3,14 +3,11 @@
     using Castle.Facilities.Logging;
     using Castle.Facilities.Startable;
     using Castle.Facilities.TypedFactory;
-    using Castle.MicroKernel;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
-    using Castle.MicroKernel.SubSystems.Conversion;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Helpmebot.Configuration;
-    using Helpmebot.Configuration.Startup;
     using Helpmebot.CoreServices.Facilities;
     using Helpmebot.CoreServices.Services.AccessControl;
     using Helpmebot.TypedFactories;
@@ -41,11 +38,6 @@
             container.AddFacility<PersistenceFacility>();
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
             container.AddFacility<TypedFactoryFacility>();
-
-            // Configuration converters
-            var conversionManager =
-                (IConversionManager) container.Kernel.GetSubSystem(SubSystemConstants.ConversionManagerKey);
-            conversionManager.Add(new CommandOverrideMapEntryConverter());
 
             container.Register(
                 // CommandParser

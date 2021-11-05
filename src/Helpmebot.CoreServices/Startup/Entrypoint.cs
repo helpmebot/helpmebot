@@ -2,8 +2,6 @@ namespace Helpmebot.CoreServices.Startup
 {
     using System;
     using System.IO;
-    using Castle.MicroKernel;
-    using Castle.MicroKernel.SubSystems.Conversion;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
