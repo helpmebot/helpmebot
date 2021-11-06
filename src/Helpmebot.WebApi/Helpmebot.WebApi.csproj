@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <OutputPath>../Helpmebot/bin/Debug/</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputPath>../Helpmebot/bin/Release/</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj"/>
+        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Castle.Core" Version="4.4.1"/>
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1"/>
+        <PackageReference Include="NetMQ" Version="4.0.1.6"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Configuration\webapi.yml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

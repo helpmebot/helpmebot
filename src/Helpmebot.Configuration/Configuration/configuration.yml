@@ -75,6 +75,11 @@ modules:
     configuration:
       - file: Configuration/afc-data.yml
         type: Helpmebot.Commands.Configuration.AfcCategoryConfiguration, Helpmebot.Commands
+        
+  - assembly: Helpmebot.WebApi.dll
+    configuration:
+      - file: Configuration/webapi.yml
+        type: WebApiConfiguration, Helpmebot.WebApi
 
 ########################################################################################################
 # Documentation generation

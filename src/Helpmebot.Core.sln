@@ -25,6 +25,8 @@ ProjectSection(SolutionItems) = preProject
 	global.json = global.json
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.WebApi", "Helpmebot.WebApi\Helpmebot.WebApi.csproj", "{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{8FB7708B-7411-4064-A999-5DB9F80D0F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FB7708B-7411-4064-A999-5DB9F80D0F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FB7708B-7411-4064-A999-5DB9F80D0F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{94222F2D-D046-486B-9AF6-9DC9795D573E} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
@@ -70,5 +76,6 @@ Global
 		{FB1F30DB-32AC-4C26-9816-18B7836645E4} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
 		{553B34F9-ACCA-4FDC-A999-38F2885302A1} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
 		{8FB7708B-7411-4064-A999-5DB9F80D0F73} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
+		{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
 	EndGlobalSection
 EndGlobal
