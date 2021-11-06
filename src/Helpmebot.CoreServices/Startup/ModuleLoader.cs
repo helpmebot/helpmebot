@@ -32,7 +32,7 @@ namespace Helpmebot.CoreServices.Startup
                 var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
                 foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                 {
-                    if (allAssemblies.Contains(referencedAssembly))
+                    if (allAssemblies.Any(x => x.FullName == referencedAssembly.FullName))
                     {
                         continue;
                     }
