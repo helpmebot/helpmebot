@@ -14,14 +14,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj"/>
-        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj"/>
+        <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
+        <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="4.4.1"/>
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1"/>
-        <PackageReference Include="NetMQ" Version="4.0.1.6"/>
+        <PackageReference Include="Castle.Core" Version="4.4.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="NetMQ" Version="4.0.1.6" />
+        <PackageReference Include="System.Text.Json" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>

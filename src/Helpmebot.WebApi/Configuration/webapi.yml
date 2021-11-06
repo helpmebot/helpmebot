@@ -1,2 +1,3 @@
 ---
 bindAddress: tcp://localhost:5656
+systemToken: 123456abcdef

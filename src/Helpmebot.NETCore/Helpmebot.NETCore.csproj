@@ -36,6 +36,8 @@
       <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.0.86" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.42" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+      <PackageReference Include="System.Text.Json" Version="5.0.2" />
+      <PackageReference Include="System.Reflection.DispatchProxy" Version="4.4.0" />
     </ItemGroup>
 
     <ItemGroup>
