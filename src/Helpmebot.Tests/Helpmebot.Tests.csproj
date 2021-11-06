@@ -203,9 +203,9 @@
       <Project>{bbf8fdd2-e673-488f-b379-a41e2fa4a087}</Project>
       <Name>Helpmebot.CoreServices</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Helpmebot\Helpmebot.csproj">
+    <ProjectReference Include="..\Helpmebot.NETFramework\Helpmebot.NETFramework.csproj">
       <Project>{b9ddf39f-2c6c-4c0f-9da4-10c934dd24bd}</Project>
-      <Name>Helpmebot</Name>
+      <Name>Helpmebot.NETFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
