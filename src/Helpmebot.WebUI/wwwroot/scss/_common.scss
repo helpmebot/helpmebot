@@ -1,0 +1,159 @@
+$fa-font-path:         "../webfonts/fontawesome-5.15.4";
+
+// Configuration
+@import "./bootstrap-5.1.1/functions";
+@import "./bootstrap-5.1.1/variables";
+@import "./bootstrap-5.1.1/mixins";
+@import "./bootstrap-5.1.1/utilities";
+
+$utilities: map-merge(
+  $utilities,
+  (
+    "width": map-merge(
+      map-get($utilities, "width"),
+      (
+        values: map-merge(
+          map-get(map-get($utilities, "width"), "values"),
+          (0: 0),
+        ),
+      ),
+    ),
+  )
+);
+
+
+// Layout & components
+@import "./bootstrap-5.1.1/root";
+@import "./bootstrap-5.1.1/reboot";
+@import "./bootstrap-5.1.1/type";
+@import "./bootstrap-5.1.1/images";
+@import "./bootstrap-5.1.1/containers";
+@import "./bootstrap-5.1.1/grid";
+@import "./bootstrap-5.1.1/tables";
+@import "./bootstrap-5.1.1/forms";
+@import "./bootstrap-5.1.1/buttons";
+@import "./bootstrap-5.1.1/transitions";
+@import "./bootstrap-5.1.1/dropdown";
+@import "./bootstrap-5.1.1/button-group";
+@import "./bootstrap-5.1.1/nav";
+@import "./bootstrap-5.1.1/navbar";
+@import "./bootstrap-5.1.1/card";
+@import "./bootstrap-5.1.1/accordion";
+@import "./bootstrap-5.1.1/breadcrumb";
+@import "./bootstrap-5.1.1/pagination";
+@import "./bootstrap-5.1.1/badge";
+@import "./bootstrap-5.1.1/alert";
+@import "./bootstrap-5.1.1/progress";
+@import "./bootstrap-5.1.1/list-group";
+@import "./bootstrap-5.1.1/close";
+@import "./bootstrap-5.1.1/toasts";
+@import "./bootstrap-5.1.1/modal";
+@import "./bootstrap-5.1.1/tooltip";
+@import "./bootstrap-5.1.1/popover";
+@import "./bootstrap-5.1.1/carousel";
+@import "./bootstrap-5.1.1/spinners";
+@import "./bootstrap-5.1.1/offcanvas";
+@import "./bootstrap-5.1.1/placeholders";
+
+// Helpers
+@import "./bootstrap-5.1.1/helpers";
+
+// Utilities
+@import "./bootstrap-5.1.1/utilities/api";
+@import "./fontawesome-5.15.4/fontawesome";
+@import "./fontawesome-5.15.4/brands";
+@import "./fontawesome-5.15.4/solid";
+@import "./fontawesome-5.15.4/regular";
+
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: -webkit-fill-available;
+  // position: relative;
+}
+
+main {
+  display: flex;
+  flex-wrap: nowrap;
+  height: 100vh;
+  height: -webkit-fill-available;
+  max-height: 100vh;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.b-example-divider {
+  flex-shrink: 0;
+  width: 0.2rem;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, .1);
+  border: solid rgba(0, 0, 0, .15);
+  border-width: 1px 0;
+  box-shadow: inset 0 .2em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+}
+
+.scrollarea {
+  overflow-y: auto;
+}
+
+@media(max-width: 767px){
+  .sidebar .dropdown-toggle::after{
+    border:none;
+  }
+}
+
+.sidebar {
+  ul.nav li a.nav-link {
+    padding: 0.5rem 0.5rem;
+  }
+}
+
+@media(min-width: 768px) {
+  .sidebar {
+    min-width: 16rem;
+
+    ul.nav li a.nav-link {
+      padding: 0.5rem 1rem;
+      
+      i {
+        min-width: 20px;
+        text-align: center;
+      }
+    }
+  }
+
+  .b-example-divider {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+  }
+}
+
+@media(min-width: 992px) {
+  .sidebar {
+    min-width: 18rem;
+  }
+}
+
+footer.footer small {
+  font-size: 0.75em;
+}
+
+input.form-control.no-spinner {
+  &[type=number] {
+    -moz-appearance: textfield;
+  }
+  
+  &::-webkit-outer-spin-button, &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

@@ -1,0 +1,16 @@
+@model LoginRequest
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Login</h1>
+    <form asp-controller="Authentication" asp-action="Login" method="post">
+        <p>Please message @ViewBag.BotStatus.Nickname on IRC with the below:</p>
+        <p><code class="user-select-all">/msg @ViewBag.BotStatus.Nickname weblogin @Model.LoginToken</code></p>
+        <p>When prompted by @ViewBag.BotStatus.Nickname, click the button below to log in:</p>
+        <input asp-for="LoginToken" value="@Model.LoginToken" type="hidden"/>
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </form>
+    
+</div>

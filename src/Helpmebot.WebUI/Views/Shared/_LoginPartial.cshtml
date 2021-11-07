@@ -1,0 +1,42 @@
+@using Microsoft.AspNetCore.Identity
+@using Helpmebot.WebUI.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+ 
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="d-flex">
+        <div class="d-md-none dropdown flex-grow-1">
+            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user fs-5 mx-auto mb-2"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                <li>
+                    <form class="form-inline" asp-controller="Authentication" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="dropdown-item btn btn-link"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        <div class="d-none d-md-block flex-grow-1 my-auto">
+            <div class="d-flex align-items-center text-white text-decoration-none">
+                <i class="fas fa-user fs-5 mx-md-2 "></i>
+                <strong>@User.Identity.Name</strong>
+            </div>
+        </div>
+        <form class="d-none d-md-block form-inline" asp-controller="Authentication" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="dropdown-item btn btn-link px-2 text-white" title="Sign out"><i class="fas fa-sign-out-alt"></i><span class="visually-hidden">Sign out</span></button>
+        </form>
+    </div>
+}
+else
+{
+    <ul class="nav nav-pills flex-column mb-0">
+        <li>
+            <a class="nav-link text-white" asp-controller="Authentication" asp-action="Login">
+                <i class="fas fa-sign-in-alt me-0 me-md-2"></i>
+                <span class="d-none d-md-inline">Login</span>
+            </a>
+        </li>
+    </ul>
+}

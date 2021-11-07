@@ -44,3 +44,5 @@ src/*.iml
 #nuget
 packages/
 !packages/repositories.config
+
+/src/Helpmebot.WebUI/wwwroot/scss/base.css

@@ -1,0 +1,32 @@
+﻿{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:2384",
+      "sslPort": 44396
+    }
+  },
+  "profiles": {
+    "Helpmebot.WebUI": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Watch": {
+      "commandName": "Executable",
+      "executablePath": "dotnet",
+      "workingDirectory": "$(ProjectDir)",
+      "commandLineArgs": "watch run",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:5001/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
