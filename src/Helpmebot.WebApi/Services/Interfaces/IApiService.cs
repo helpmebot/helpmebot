@@ -5,5 +5,9 @@ namespace Helpmebot.WebApi.Services.Interfaces
     public interface IApiService
     {
         BotStatus GetBotStatus();
+        
+        string GetLoginToken();
+        
+        TokenResponse GetAuthToken(string loginToken);
     }
 }
