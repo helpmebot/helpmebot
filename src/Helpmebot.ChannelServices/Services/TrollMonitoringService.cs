@@ -253,7 +253,7 @@ namespace Helpmebot.ChannelServices.Services
                         }
 
                         Thread.Sleep(1000);
-                        ircClient.SendMessage(this.banTracker, $"1h Applied automatically by bot following match expression hit.");
+                        ircClient.SendMessage(this.banTracker, $"2w Applied automatically by bot following match expression hit: LTA (skiyomi).");
                     },
                     true);
                 
