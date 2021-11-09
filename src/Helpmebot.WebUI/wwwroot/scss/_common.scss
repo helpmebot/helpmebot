@@ -1,5 +1,7 @@
 $fa-font-path:         "../webfonts/fontawesome-5.15.4";
 
+@import "variables";
+
 // Configuration
 @import "./bootstrap-5.1.1/functions";
 @import "./bootstrap-5.1.1/variables";
@@ -20,7 +22,6 @@ $utilities: map-merge(
     ),
   )
 );
-
 
 // Layout & components
 @import "./bootstrap-5.1.1/root";
@@ -86,7 +87,7 @@ main {
   overflow-y: hidden;
 }
 
-.b-example-divider {
+.divider {
   flex-shrink: 0;
   width: 0.2rem;
   height: 100vh;
@@ -126,7 +127,7 @@ main {
     }
   }
 
-  .b-example-divider {
+  .divider {
     flex-shrink: 0;
     width: 1.5rem;
     height: 100vh;
@@ -156,4 +157,12 @@ input.form-control.no-spinner {
     -webkit-appearance: none;
     margin: 0;
   }
+}
+
+.text-primary {
+  color: lighten($primary, 10%) !important;
+}
+
+a.page-link:hover {
+  color: $white;
 }
