@@ -12,7 +12,8 @@ namespace Helpmebot.WebUI.Services.Api
             return new BotStatus
             {
                 ChannelCount = 123, Commands = new List<string> { "potato", "helpme", "carrot", "myflags", "link" },
-                Nickname = "FakeBot", IrcServer = "fake.irc.server", IrcServerPort = 6667
+                Nickname = "Helpmebot_", IrcServer = "irc.libera.chat", IrcServerPort = 6667, VisibleUserCount = 9999,
+                PingTime = 130, TotalMessages = 10232
             };
         }
 
