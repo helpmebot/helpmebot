@@ -1,4 +1,4 @@
-namespace Helpmebot.WebUI.Services
+namespace Helpmebot.WebUI.Services.Api
 {
     using System;
     using System.Reflection;

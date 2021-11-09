@@ -14,6 +14,7 @@ namespace Helpmebot.WebUI
     using Helpmebot.WebApi.Services.Interfaces;
     using Helpmebot.WebUI.Models;
     using Helpmebot.WebUI.Services;
+    using Helpmebot.WebUI.Services.Api;
     using Microsoft.AspNetCore.Identity;
 
     public class Startup
@@ -42,7 +43,7 @@ namespace Helpmebot.WebUI
 
             services.AddControllersWithViews();
 
-            services.AddSingleton<IApiService, ApiFrontendService>();
+            services.AddSingleton<IApiService, FakeApiService>();
             services.AddSingleton<IApiFrontendTransportService, ApiFrontendTransportService>();
 
             services.AddIdentity<User,Role>()
