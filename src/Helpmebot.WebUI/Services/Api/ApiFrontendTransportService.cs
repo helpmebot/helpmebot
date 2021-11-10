@@ -6,15 +6,22 @@ namespace Helpmebot.WebUI.Services.Api
     using System.Text.Json;
     using Helpmebot.CoreServices.Startup;
     using Helpmebot.WebApi.TransportModels;
+    using Helpmebot.WebUI.Models;
     using NetMQ;
     using NetMQ.Sockets;
 
     public class ApiFrontendTransportService : IApiFrontendTransportService
     {
-        private string connectPath = "tcp://localhost:5656";
-        private string systemToken = "123456abcdef";       
+        private readonly string connectPath;
+        private readonly string systemToken;       
         private readonly string apiVersion = "0.1-alpha";
 
+        public ApiFrontendTransportService(SiteConfiguration configuration)
+        {
+            this.systemToken = configuration.SystemApiToken;
+            this.connectPath = configuration.ApiPath;
+        }
+        
         public TResponse RemoteProcedureCall<TParam, TResponse>(MethodBase method, TParam parameter)
         {
             using var socket = new RequestSocket();

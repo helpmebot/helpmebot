@@ -21,7 +21,7 @@ namespace Helpmebot.WebUI
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -29,6 +29,9 @@ namespace Helpmebot.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var siteConfig = this.Configuration.GetSection("SiteConfig").Get<SiteConfiguration>();
+            services.AddSingleton(siteConfig);
+            
             services.AddDistributedMemoryCache();
 
             services.AddSession(options =>
@@ -43,7 +46,15 @@ namespace Helpmebot.WebUI
 
             services.AddControllersWithViews();
 
-            services.AddSingleton<IApiService, FakeApiService>();
+            if (siteConfig.ApiPath.StartsWith("fake://"))
+            {
+                services.AddSingleton<IApiService, FakeApiService>();
+            }
+            else
+            {
+                services.AddSingleton<IApiService, ApiFrontendService>();
+            }
+
             services.AddSingleton<IApiFrontendTransportService, ApiFrontendTransportService>();
 
             services.AddIdentity<User,Role>()
