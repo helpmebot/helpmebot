@@ -5,7 +5,7 @@
  
 @if (SignInManager.IsSignedIn(User))
 {
-    <div class="d-flex">
+    <div class="d-flex ps-3 py-1">
         <div class="d-md-none dropdown flex-grow-1">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-user fs-5 mx-auto mb-2"></i>
@@ -20,7 +20,6 @@
         </div>
         <div class="d-none d-md-block flex-grow-1 my-auto">
             <div class="d-flex align-items-center text-white text-decoration-none">
-                <i class="fas fa-user fs-5 mx-md-2 "></i>
                 <strong>@User.Identity.Name</strong>
             </div>
         </div>

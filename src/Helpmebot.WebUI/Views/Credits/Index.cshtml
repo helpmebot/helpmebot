@@ -1,0 +1,28 @@
+@model Dictionary<string, uint>
+@{
+    ViewBag.Title = "Credits";
+}
+
+<div class="container">
+    <div class="row border-bottom mb-4">
+        <div class="col"><h1>Credits</h1></div>        
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                We would like to thank the following people for their contributions to Helpmebot's development.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ul class="list-unstyled">
+                @foreach (var kvp in Model)
+                {
+                    <li><strong class="fs-5">@kvp.Key</strong> <span class="ms-3 text-muted">(@kvp.Value.ToString("N0") @if(kvp.Value > 1){@("commits")} else {@("commit")})</span></li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+

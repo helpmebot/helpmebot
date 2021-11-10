@@ -9,41 +9,41 @@
         </div>
     </div>
     
-    <div class="row"><div class="col">
+    <div class="row my-lg-5"><div class="col">
         <p class="fs-5">While the primary user interface of Helpmebot is on IRC, this web application provides a simpler interface to view and manage certain bot functionality.</p>
     </div></div>
     
-    <div class="row">
+    <div class="row hmb-stats">
         <div class="col-lg-4 px-0 pe-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-info text-dark bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">Joined @ViewBag.BotStatus.ChannelCount channels on @ViewBag.BotStatus.IrcServer</p>
+            <div class="p-3 bg-info text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+                <i class="fas fa-comment me-3"></i><span>Joined <strong>@ViewBag.BotStatus.ChannelCount</strong> channels on @ViewBag.BotStatus.IrcServer</span>
             </div>
         </div>
         <div class="col-lg-4 px-0 px-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-success text-light bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">@ViewBag.BotStatus.Commands.Count registered commands</p>
+            <div class="p-3 bg-success text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+                <i class="fas fa-terminal me-3"></i><span><strong>@ViewBag.BotStatus.Commands.Count</strong> registered commands</span>
             </div>
         </div>
         <div class="col-lg-4 px-0 ps-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-warning text-dark bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">Online since @ViewBag.BotStatus.StartupTime.ToString("u")</p>
+            <div class="p-3 bg-warning text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+                <i class="fas fa-clock me-3"></i><span>Online since <strong class="text-nowrap">@ViewBag.BotStatus.StartupTime.ToString("u")</strong></span>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-4 px-0 pe-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-secondary text-light bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">@ViewBag.BotStatus.VisibleUserCount visible users</p>
+            <div class="p-3 bg-secondary text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+                <i class="fas fa-user me-3"></i><span><strong>@ViewBag.BotStatus.VisibleUserCount</strong> users currently visible</span>
             </div>
         </div>
         <div class="col-lg-4 px-0 px-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-danger text-dark bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">@(ViewBag.BotStatus.PingTime)ms latency to IRC server</p>
+            <div class="p-3 bg-danger text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+               <i class="fas fa-stopwatch me-3"></i><span><strong>@(ViewBag.BotStatus.PingTime)ms</strong> latency to IRC server</span>
             </div>
         </div>
         <div class="col-lg-4 px-0 ps-lg-2 d-table-cell mb-3">
-            <div class="p-3 bg-primary text-light bg-gradient rounded-3 h-100">
-                <p class="fs-4 mb-0">@(ViewBag.BotStatus.TotalMessages) messages received since startup</p>
+            <div class="p-3 bg-primary text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
+                <i class="fas fa-comments me-3"></i><span><strong>@(ViewBag.BotStatus.TotalMessages)</strong> messages received since last startup</span>
             </div>
         </div>
     </div>

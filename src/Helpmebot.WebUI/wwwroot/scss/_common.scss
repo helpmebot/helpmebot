@@ -110,6 +110,10 @@ main {
 .sidebar {
   ul.nav li a.nav-link {
     padding: 0.5rem 0.5rem;
+    
+    &:not(.disabled) {
+      color: white;
+    }
   }
 }
 
@@ -120,6 +124,7 @@ main {
     ul.nav li a.nav-link {
       padding: 0.5rem 1rem;
       
+      // Icons
       i {
         min-width: 20px;
         text-align: center;
@@ -165,4 +170,9 @@ input.form-control.no-spinner {
 
 a.page-link:hover {
   color: $white;
+}
+
+.hmb-stats > i.fas {
+  min-width: 20px;
+  text-align: center;
 }
