@@ -20,6 +20,7 @@
 
 namespace Helpmebot.Brain.Services.Interfaces
 {
+    using System.Collections.Generic;
     using Castle.Core;
     using Helpmebot.Model;
 
@@ -61,5 +62,7 @@ namespace Helpmebot.Brain.Services.Interfaces
         /// An object representing the keyword
         /// </returns>
         Keyword Get(string name);
+
+        IEnumerable<Keyword> GetAll();
     }
 }

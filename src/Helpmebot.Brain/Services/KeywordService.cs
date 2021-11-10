@@ -119,6 +119,14 @@ namespace Helpmebot.Brain.Services
             return existing.FirstOrDefault();
         }
 
+        public IEnumerable<Keyword> GetAll()
+        {
+            lock (this.sessionLock)
+            {
+                return this.session.CreateCriteria<Keyword>().List<Keyword>();
+            }
+        }
+
         protected override IList<Keyword> ItemsToRegister()
         {
             IList<Keyword> keywords;

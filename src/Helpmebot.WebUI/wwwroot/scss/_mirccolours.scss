@@ -1,0 +1,18 @@
+$mirc-colours: (
+        white: $white,
+        black: $black,
+        blue: darken($blue, 25%),
+        green: rgb(0,147,0),
+        light-red: $red,
+        brown: darken($orange, 20%),
+        purple: $purple,
+        orange: $orange,
+        yellow: $yellow,
+        light-green: darken(rgb(0,255,0), 5%),
+        cyan: rgb(0,147,147),
+        light-cyan: darken(rgb(0,255,255), 5%),
+        light-blue: $blue,
+        pink: $pink,
+        grey: $gray-600,
+        light-grey: $gray-500
+)

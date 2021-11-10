@@ -1,0 +1,71 @@
+@model List<ExtendedBrainItem>
+
+@{
+    ViewData["Title"] = "Brain";
+}
+
+@section Scripts 
+{
+    <script type="text/javascript" src="@Url.Content("js/brain.js")" ></script>
+}
+
+<div class="container-fluid">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Brain</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                Helpmebot's brain - a repository of stored responses to command triggers which can be created and destroyed instantly.
+                This page lists all the currently-known stored responses.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <input type="text" id="search" onkeyup="brainSearch()" class="form-control mb-3" placeholder="Search...">
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th>Trigger</th>
+                    <th>Response</th>
+                </tr>
+                </thead>
+                <tbody id="searchTarget">
+                @foreach (var entry in Model)
+                {
+                    <tr>
+                        <th>
+                            @entry.Keyword
+                            @if (entry.IsAction)
+                            {
+                                <br /><span class="badge bg-info text-dark">Action</span>
+                            }
+                            @if (entry.HasFormatting.GetValueOrDefault(true))
+                            {
+                                <br /><span class="badge bg-warning text-dark">Formatted</span>
+                            }
+                        </th>
+                        <td>@if (entry.HasFormatting.GetValueOrDefault(true))
+                            {
+                                @Html.Raw(entry.HtmlFormatted)
+                            }
+                            else
+                            {
+                                @entry.Response
+                            }</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
