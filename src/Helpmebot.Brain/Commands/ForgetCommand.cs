@@ -2,6 +2,7 @@ namespace Helpmebot.Brain.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
@@ -14,6 +15,7 @@ namespace Helpmebot.Brain.Commands
 
     [CommandFlag(Flags.Brain)]
     [CommandInvocation("forget")]
+    [HelpCategory("Brain")]
     public class ForgetCommand : CommandBase
     {
         private readonly IKeywordService keywordService;

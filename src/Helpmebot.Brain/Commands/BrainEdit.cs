@@ -3,7 +3,9 @@ namespace Helpmebot.Brain.Commands
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
+    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -17,6 +19,8 @@ namespace Helpmebot.Brain.Commands
     [CommandFlag(Flags.Brain)]
     [CommandInvocation("brainedit")]
     [CommandInvocation("editbrain")]
+    [HelpSummary("Edits an existing brain entry by applying a sed-style expression to a message.")]
+    [HelpCategory("Brain")]
     public class BrainEdit : CommandBase
     {
         private readonly IKeywordService keywordService;
