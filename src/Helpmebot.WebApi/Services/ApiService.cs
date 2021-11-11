@@ -72,5 +72,10 @@ namespace Helpmebot.WebApi.Services
                 .Select(x => new BrainItem { IsAction = x.Action, Keyword = x.Name, Response = x.Response })
                 .ToList();
         }
+
+        public void InvalidateToken(string authTokenHandle)
+        {
+            this.loginTokenService.InvalidateToken(authTokenHandle);
+        }
     }
 }

@@ -10,6 +10,7 @@ using Helpmebot.WebUI.Models;
 namespace Helpmebot.WebUI.Controllers
 {
     using Helpmebot.WebApi.Services.Interfaces;
+    using Microsoft.AspNetCore.Diagnostics;
 
     public class HomeController : ControllerBase
     {
@@ -23,12 +24,6 @@ namespace Helpmebot.WebUI.Controllers
         public IActionResult Index()
         {
             return View();
-        }
-        
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -132,6 +132,19 @@ namespace Helpmebot.WebApi.Services
             }
         }
 
+        public void InvalidateToken(string authTokenHandle)
+        {
+            lock (this.authTokenStore)
+            {
+                if (!this.authTokenStore.ContainsKey(authTokenHandle))
+                {
+                    return;
+                }
+
+                this.authTokenStore.Remove(authTokenHandle);
+            }
+        }
+
         private void PurgeExpiredTokens()
         {
             var removalCount = 0;

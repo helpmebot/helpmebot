@@ -10,6 +10,7 @@ namespace Helpmebot.WebUI.Controllers
         {
         }
 
+        [HttpGet("/credits")]
         public IActionResult Index()
         {
             return this.View(Credits.Authors);

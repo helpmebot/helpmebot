@@ -41,8 +41,8 @@ namespace Helpmebot.WebUI
                 options.Cookie.IsEssential = true;
             });
 
-            services.AddTransient<IUserStore<User>, UserStore>();
-            services.AddTransient<IRoleStore<Role>, RoleStore>();
+            services.AddSingleton<IUserStore<User>, UserStore>();
+            services.AddSingleton<IRoleStore<Role>, RoleStore>();
 
             services.AddControllersWithViews();
 
@@ -85,7 +85,7 @@ namespace Helpmebot.WebUI
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }

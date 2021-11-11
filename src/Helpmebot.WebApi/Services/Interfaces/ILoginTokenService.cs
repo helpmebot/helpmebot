@@ -44,5 +44,7 @@ namespace Helpmebot.WebApi.Services.Interfaces
         
         
         bool IsValidToken(string authToken);
+
+        void InvalidateToken(string authTokenHandle);
     }
 }

@@ -1,5 +1,6 @@
 namespace Helpmebot.WebUI.Services
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using Helpmebot.WebUI.Models;
@@ -7,12 +8,39 @@ namespace Helpmebot.WebUI.Services
 
     public class UserStore : IUserStore<User>
     {
+        private Dictionary<string, User> sessions = new();
+        
+        public void LoginUser(User user)
+        {
+            lock (this.sessions)
+            {
+                if (this.sessions.ContainsKey(user.Account))
+                {
+                    this.sessions.Remove(user.Account);
+                }
+                
+                this.sessions.Add(user.Account, user);
+            }
+        }
+        
+        public void LogoutUser(User user)
+        {
+            lock (this.sessions)
+            {
+                if (this.sessions.ContainsKey(user.Account))
+                {
+                    this.sessions.Remove(user.Account);
+                }
+            }
+        }
+        
         public void Dispose()
         {
         }
 
         public Task<string> GetUserIdAsync(User user, CancellationToken cancellationToken)
         {
+            this.LoginUser(user);
             return Task.FromResult(user.Account);
         }
 
@@ -53,12 +81,28 @@ namespace Helpmebot.WebUI.Services
 
         public Task<User> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            lock (this.sessions)
+            {
+                if (this.sessions.ContainsKey(userId))
+                {
+                    return Task.FromResult(this.sessions[userId]);
+                }
+            }
+
+            return Task.FromResult<User>(null);
         }
 
         public Task<User> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            lock (this.sessions)
+            {
+                if (this.sessions.ContainsKey(normalizedUserName))
+                {
+                    return Task.FromResult(this.sessions[normalizedUserName]);
+                }
+            }
+
+            return Task.FromResult<User>(null);        
         }
     }
 }

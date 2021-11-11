@@ -1,6 +1,7 @@
 namespace Helpmebot.WebUI.Services.Api
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using System.Text;
     using System.Text.Json;
@@ -45,22 +46,31 @@ namespace Helpmebot.WebUI.Services.Api
                     .SendMoreFrameEmpty()
                     .SendFrameEmpty();
             }
+
+            var frames = new List<string>();
+
+            if (socket.TryReceiveMultipartStrings(new TimeSpan(0,0,3), Encoding.UTF8, ref frames))
+            {
+
+                if (frames[0] != RpcStatus.OK)
+                {
+                    throw new Exception($"RPC call failed: {frames[0]}");
+                }
+
+                if (typeof(TResponse) != TypeResolver.GetType(frames[1]))
+                {
+                    throw new Exception($"RPC call failed: type mismatch");
+                }
+
+                socket.Disconnect(this.connectPath);
+
+                return JsonSerializer.Deserialize<TResponse>(frames[2]);
+            }
+            else
+            {
+                throw new TimeoutException();
+            }
             
-            var frames = socket.ReceiveMultipartStrings(Encoding.UTF8, 3);
-
-            if (frames[0] != RpcStatus.OK)
-            {
-                throw new Exception($"RPC call failed: {frames[0]}");
-            }
-
-            if (typeof(TResponse) != TypeResolver.GetType(frames[1]))
-            {
-                throw new Exception($"RPC call failed: type mismatch");
-            }
-
-            socket.Disconnect(this.connectPath);
-
-            return JsonSerializer.Deserialize<TResponse>(frames[2]);
         }
     }
 }

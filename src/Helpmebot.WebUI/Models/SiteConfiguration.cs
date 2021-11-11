@@ -6,5 +6,6 @@ namespace Helpmebot.WebUI.Models
         public string ApiPath { get; set; }
         
         public bool ShowCssBreakpoints { get; set; }
+        public bool AllowLogin { get; set; }
     }
 }

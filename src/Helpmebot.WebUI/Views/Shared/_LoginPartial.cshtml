@@ -2,9 +2,11 @@
 @using Helpmebot.WebUI.Models
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
+@inject SiteConfiguration config
  
 @if (SignInManager.IsSignedIn(User))
 {
+    <hr>
     <div class="d-flex ps-3 py-1">
         <div class="d-md-none dropdown flex-grow-1">
             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -30,12 +32,16 @@
 }
 else
 {
-    <ul class="nav nav-pills flex-column mb-0">
-        <li>
-            <a class="nav-link text-white" asp-controller="Authentication" asp-action="Login">
-                <i class="fas fa-sign-in-alt me-0 me-md-2"></i>
-                <span class="d-none d-md-inline">Login</span>
-            </a>
-        </li>
-    </ul>
+    @if (config.AllowLogin)
+    {
+        <hr>
+        <ul class="nav nav-pills flex-column mb-0">
+            <li>
+                <a class="nav-link text-white @if (ViewContext.RouteData.Values["controller"].ToString() == "Authentication"){@(" active")}" asp-controller="Authentication" asp-action="Login">
+                    <i class="fas fa-sign-in-alt me-0 me-md-2"></i>
+                    <span class="d-none d-md-inline">Login</span>
+                </a>
+            </li>
+        </ul>
+    }
 }

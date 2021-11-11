@@ -22,6 +22,10 @@ namespace Helpmebot.WebUI.Services.Api
             return "123token456";
         }
 
+        public void InvalidateToken(string _)
+        {
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };
