@@ -193,6 +193,14 @@ namespace Helpmebot.CoreServices.Services
                 return null;
             }
 
+            string helpSummary = null;
+            var helpSummaryAttribute =
+                commandClass.GetCustomAttributes(typeof(HelpSummaryAttribute), false);
+            if (helpSummaryAttribute.Length == 1)
+            {
+                helpSummary = ((HelpSummaryAttribute)helpSummaryAttribute.First()).Description;
+            }
+
             var canonName = canonicalName =
                 ((CommandInvocationAttribute) commandInvocationAttribute.First()).CommandName;
             aliases = commandInvocationAttribute.Select(x => ((CommandInvocationAttribute) x).CommandName)
@@ -225,6 +233,11 @@ namespace Helpmebot.CoreServices.Services
                 pageBuilder.AppendFormat("* Also invokable as: {0}", string.Join(", ", aliases)).AppendLine();
             }
 
+            if (!string.IsNullOrWhiteSpace(helpSummary))
+            {
+                pageBuilder.AppendFormat(helpSummary).AppendLine();
+            }
+            
             pageBuilder.AppendLine().AppendLine(";Syntax").AppendLine();
 
             foreach (var info in methodInfos)
