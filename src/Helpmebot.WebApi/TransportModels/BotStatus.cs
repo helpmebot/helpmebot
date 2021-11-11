@@ -17,5 +17,7 @@ namespace Helpmebot.WebApi.TransportModels
         public int TotalMessages { get; set; }
         public string Trigger { get; set; }
         public DateTime StartupTime { get; set; }
+        
+        public string BotVersion { get; set; }
     }
 }

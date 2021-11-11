@@ -1,3 +1,4 @@
+@using System.Reflection
 @inject SiteConfiguration configuration
 <!DOCTYPE html>
 <html lang="en">
@@ -66,8 +67,8 @@
         <footer class="footer text-muted mt-auto">
             <div class="border-top pt-2">
                 <p class="mb-0">
-                    <small class="me-2"><strong>Helpmebot Web Management Console</strong> version vX.Y.Z</small>
-                    
+                    @await RenderSectionAsync("FooterBotVersion", required: false)
+                    <small class="me-2"><strong>Helpmebot Web Management Console</strong> v@(Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</small>
                 </p>
                 <p class="mb-2">
                     @await RenderSectionAsync("FooterStatus", required: false)

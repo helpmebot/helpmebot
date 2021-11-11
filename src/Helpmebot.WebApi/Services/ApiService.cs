@@ -3,6 +3,7 @@ namespace Helpmebot.WebApi.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using Castle.Core.Logging;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.Configuration;
@@ -35,6 +36,8 @@ namespace Helpmebot.WebApi.Services
         
         public BotStatus GetBotStatus()
         {
+            var botVersion = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot")).GetName().Version;
+            
             return new BotStatus
             {
                 ChannelCount = this.client.Channels.Count,
@@ -46,7 +49,8 @@ namespace Helpmebot.WebApi.Services
                 PingTime = this.client.Latency,
                 StartupTime = Launcher.StartupTime,
                 TotalMessages = this.client.PrivmsgReceived,
-                VisibleUserCount = this.client.UserCache.Count
+                VisibleUserCount = this.client.UserCache.Count,
+                BotVersion = $"{botVersion.Major}.{botVersion.Minor}.{botVersion.Build}"
             };
         }
 

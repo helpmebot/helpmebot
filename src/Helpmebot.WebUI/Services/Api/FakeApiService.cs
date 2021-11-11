@@ -13,7 +13,7 @@ namespace Helpmebot.WebUI.Services.Api
             {
                 ChannelCount = 123, Commands = new List<string> { "potato", "helpme", "carrot", "myflags", "link" },
                 Nickname = "Helpmebot_", IrcServer = "irc.libera.chat", IrcServerPort = 6667, VisibleUserCount = 9999,
-                PingTime = 130, TotalMessages = 10232
+                PingTime = 130, TotalMessages = 10232, BotVersion = "1.2.30"
             };
         }
 
