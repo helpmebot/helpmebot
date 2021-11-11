@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject SiteConfiguration configuration
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -10,7 +11,7 @@
 
 <main>
     <div class="d-flex flex-column flex-shrink-0 p-2 p-md-3 text-white bg-dark sidebar border-primary border-end">
-        @if (true)
+        @if (configuration.ShowCssBreakpoints)
         {
             <span class="badge d-none d-xxl-inline-block bg-danger mb-3">breakpoint: xxl</span>
             <span class="badge d-none d-xl-inline-block d-xxl-none bg-warning mb-3">breakpoint: xl</span>
