@@ -51,6 +51,9 @@ namespace Helpmebot.Brain.Services
             {
                 using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
+                    // force to lowercase
+                    name = name.ToLower();
+                    
                     var deleteList = this.session.CreateCriteria<Keyword>()
                         .Add(Restrictions.Eq("Name", name))
                         .List<Keyword>();
@@ -81,6 +84,9 @@ namespace Helpmebot.Brain.Services
 
                 try
                 {
+                    // force to lowercase
+                    name = name.ToLower();
+                    
                     var existing =
                         this.session.CreateCriteria<Keyword>()
                             .Add(Restrictions.Eq("Name", name))
@@ -113,6 +119,9 @@ namespace Helpmebot.Brain.Services
             IList<Keyword> existing;
             lock (this.sessionLock)
             {
+                // force to lowercase
+                name = name.ToLower();
+                
                 existing = this.session.CreateCriteria<Keyword>().Add(Restrictions.Eq("Name", name)).List<Keyword>();
             }
 
