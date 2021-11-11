@@ -6,6 +6,7 @@ namespace Helpmebot.WebApi.Services
     using Castle.Core.Logging;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Startup;
     using Helpmebot.WebApi.Services.Interfaces;
     using Helpmebot.WebApi.TransportModels;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -41,7 +42,11 @@ namespace Helpmebot.WebApi.Services
                 Nickname = this.client.Nickname,
                 Trigger = this.botConfiguration.CommandTrigger,
                 IrcServer = this.ircConfiguration.Hostname,
-                IrcServerPort = this.ircConfiguration.Port
+                IrcServerPort = this.ircConfiguration.Port,
+                PingTime = this.client.Latency,
+                StartupTime = Launcher.StartupTime,
+                TotalMessages = this.client.PrivmsgReceived,
+                VisibleUserCount = this.client.UserCache.Count
             };
         }
 

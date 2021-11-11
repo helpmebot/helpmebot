@@ -38,7 +38,7 @@
         </div>
         <div class="col-lg-4 px-0 px-lg-2 d-table-cell mb-3">
             <div class="p-3 bg-danger text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-               <i class="fas fa-stopwatch me-3"></i><span><strong>@(ViewBag.BotStatus.PingTime)ms</strong> latency to IRC server</span>
+               <i class="fas fa-stopwatch me-3"></i><span><strong>@(Math.Round(ViewBag.BotStatus.PingTime * 1000, 0))ms</strong> latency to IRC server</span>
             </div>
         </div>
         <div class="col-lg-4 px-0 ps-lg-2 d-table-cell mb-3">

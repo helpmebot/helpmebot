@@ -12,7 +12,7 @@ namespace Helpmebot.WebApi.TransportModels
         public int ChannelCount { get; set; }
         public int VisibleUserCount { get; set; }
         
-        public int PingTime { get; set; }
+        public double PingTime { get; set; }
 
         public int TotalMessages { get; set; }
         public string Trigger { get; set; }
