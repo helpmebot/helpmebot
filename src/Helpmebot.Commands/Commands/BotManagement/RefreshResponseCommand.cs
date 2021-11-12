@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
@@ -13,6 +14,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("refresh")]
+    [HelpCategory("Diagnostics")]
     [CommandFlag(Flags.BotManagement)]
     public class RefreshResponseCommand : CommandBase
     {
