@@ -14,5 +14,7 @@ namespace Helpmebot.WebApi.Services.Interfaces
         List<BrainItem> GetBrainItems();
 
         void InvalidateToken(string authTokenHandle);
+
+        List<CommandInfo> GetRegisteredCommands();
     }
 }
