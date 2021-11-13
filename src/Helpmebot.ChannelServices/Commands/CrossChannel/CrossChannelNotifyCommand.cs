@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -14,7 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flag.Standard)]
+    [CommandFlag(Flags.Standard)]
     public class CrossChannelNotifyCommand : CommandBase
     {
         private readonly ICrossChannelService crossChannelService;

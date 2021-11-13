@@ -8,11 +8,11 @@ namespace Helpmebot.CoreServices.Commands
     using System.Reflection;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services;
@@ -21,7 +21,7 @@ namespace Helpmebot.CoreServices.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("version")]
-    [CommandFlag(Flag.Standard)]
+    [CommandFlag(Flags.Standard)]
     [HelpCategory("Diagnostics")]
     public class VersionCommand : CommandBase
     {

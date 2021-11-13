@@ -4,16 +4,16 @@ namespace Helpmebot.Commands.Commands.Diagnostics
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
+    using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Extensions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flag.Owner)]
+    [CommandFlag(Flags.Owner)]
     [CommandInvocation("rawctcp")]
     [HelpCategory("Diagnostics")]
     public class RawCtcpCommand : CommandBase
