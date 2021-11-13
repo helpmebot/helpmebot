@@ -15,36 +15,35 @@
     </div></div>
     
     <div class="row hmb-stats">
-        <div class="col-lg-4 px-0 pe-lg-2 d-table-cell mb-3">
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-info text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-                <i class="fas fa-comment me-3"></i><span>Joined <strong>@ViewBag.BotStatus.ChannelCount</strong> channels on @ViewBag.BotStatus.IrcServer</span>
+                <i class="fas fa-comment me-3"></i><span>Joined <strong>@ViewBag.BotStatus.ChannelCount.ToString("N0")</strong> channels on @ViewBag.BotStatus.IrcServer</span>
             </div>
         </div>
-        <div class="col-lg-4 px-0 px-lg-2 d-table-cell mb-3">
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-success text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-                <i class="fas fa-terminal me-3"></i><span><strong>@ViewBag.BotStatus.Commands.Count</strong> registered commands</span>
+                <i class="fas fa-terminal me-3"></i><span><strong>@ViewBag.BotStatus.Commands.Count.ToString("N0")</strong> registered commands</span>
             </div>
         </div>
-        <div class="col-lg-4 px-0 ps-lg-2 d-table-cell mb-3">
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-warning text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-                <i class="fas fa-clock me-3"></i><span>Online since <strong class="text-nowrap">@ViewBag.BotStatus.StartupTime.ToString("u")</strong></span>
+                <i class="fas fa-clock me-3"></i><span>Connected since <strong class="text-nowrap">@ViewBag.BotStatus.StartupTime.ToString("u")</strong></span>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-4 px-0 pe-lg-2 d-table-cell mb-3">
+        
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-secondary text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-                <i class="fas fa-user me-3"></i><span><strong>@ViewBag.BotStatus.VisibleUserCount</strong> users currently visible</span>
+                <i class="fas fa-user me-3"></i><span><strong>@ViewBag.BotStatus.VisibleUserCount.ToString("N0")</strong> users currently visible</span>
             </div>
         </div>
-        <div class="col-lg-4 px-0 px-lg-2 d-table-cell mb-3">
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-danger text-dark rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-               <i class="fas fa-stopwatch me-3"></i><span><strong>@(Math.Round(ViewBag.BotStatus.PingTime * 1000, 0))ms</strong> latency to IRC server</span>
+               <i class="fas fa-stopwatch me-3"></i><span><strong>@(Math.Round(ViewBag.BotStatus.PingTime * 1000, 0).ToString("N0"))ms</strong> latency to IRC server</span>
             </div>
         </div>
-        <div class="col-lg-4 px-0 ps-lg-2 d-table-cell mb-3">
+        <div class="col-lg-6 col-xl-4 d-table-cell mb-4">
             <div class="p-3 bg-primary text-light rounded-3 h-100 fs-4 mb-0 d-flex align-items-center">
-                <i class="fas fa-comments me-3"></i><span><strong>@(ViewBag.BotStatus.TotalMessages)</strong> messages received since last startup</span>
+                <i class="fas fa-comments me-3"></i><span><strong>@(ViewBag.BotStatus.TotalMessages.ToString("N0"))</strong> messages received since last startup</span>
             </div>
         </div>
     </div>
