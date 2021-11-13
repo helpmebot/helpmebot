@@ -32,6 +32,11 @@ namespace Helpmebot.WebUI.Services.Api
             this.transportService.RemoteProcedureCall<string, object>(MethodBase.GetCurrentMethod(), authTokenHandle);
         }
 
+        public List<CommandInfo> GetRegisteredCommands()
+        {
+            return this.transportService.RemoteProcedureCall<object, List<CommandInfo>>(MethodBase.GetCurrentMethod(), null);
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return this.transportService.RemoteProcedureCall<string, TokenResponse>(MethodBase.GetCurrentMethod(), loginToken);

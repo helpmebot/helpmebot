@@ -26,6 +26,11 @@ namespace Helpmebot.WebUI.Services.Api
         {
         }
 
+        public List<CommandInfo> GetRegisteredCommands()
+        {
+            return new List<CommandInfo>();
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };
