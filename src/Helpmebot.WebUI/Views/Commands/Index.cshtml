@@ -1,0 +1,76 @@
+@model Dictionary<string, List<Helpmebot.WebApi.TransportModels.CommandInfo>>
+@{
+    ViewData["Title"] = "Commands";
+}
+
+@section Scripts 
+{
+    <script type="text/javascript" src="@Url.Content("js/commands.js")" asp-append-version="true" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+}
+
+<div class="container-fluid">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Commands</h1>
+        </div>
+    </div>
+    @* Intro *@
+    <div class="row">
+        <div class="col">
+            <p>
+                This page lists all the commands the Helpmebot currently recognises.
+            </p>
+        </div>
+    </div>
+    @* Search *@
+    <div class="row">
+        <div class="col">
+            <input type="text" id="search" onkeyup="commandSearch()" class="form-control mb-3" placeholder="Search...">
+        </div>
+    </div>
+    @* TOC *@
+    <div class="row">
+        <div class="col">
+            <table class="table" id="tocTable">
+                @foreach (var group in Model.OrderBy(x => CommandGroup.GetGroup(x.Key).Priority))
+                {
+                    <tr>
+                        <th class="align-top ps-0 commandlist-toc-group" data-hmb-group="@group.Key">
+                            <a href="#group-@group.Key" class="text-reset">@CommandGroup.GetGroup(group.Key).Name</a>
+                        </th>
+                        <td>
+                            <ul class="list-inline mb-0">
+                                @foreach (var cmi in group.Value.OrderBy(x => x.CanonicalName))
+                                {
+                                    <li data-hmb-command="@cmi.CanonicalName" class="commandlist-toc-item list-inline-item"><a href="#command-@cmi.CanonicalName" class="font-monospace">@cmi.CanonicalName</a></li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    
+    @* command groups *@ 
+    <div id="commandHelpItems">
+    @foreach (var group in Model.OrderBy(x => CommandGroup.GetGroup(x.Key).Priority))
+    {
+        @* group header *@
+        <div class="row hmb-group-header" id="group-@group.Key" data-hmb-group="@group.Key">
+            <div class="col">
+                <h3>@CommandGroup.GetGroup(group.Key).Name</h3>
+                <p>@CommandGroup.GetGroup(group.Key).Description</p>
+            </div>
+        </div>
+        
+        <div class="row hmb-masonry-reflow" data-masonry='{"percentPosition": true }'>
+            @foreach (var cmi in group.Value.OrderBy(x => x.CanonicalName))
+            {
+                <partial name="CommandInfo" model="cmi"/>
+            }
+        </div>
+    }
+    </div>
+</div>

@@ -5,6 +5,12 @@
     </a>
 </li>
 <li>
+     <a asp-controller="Commands" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Commands"){@(" active")}">
+         <i class="fas fa-terminal me-0 me-md-2"></i>
+         <span class="d-none d-md-inline">Commands</span>
+     </a>
+ </li>
+<li>
     <a asp-controller="Brain" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Brain"){@(" active")}">
         <i class="fas fa-brain me-0 me-md-2"></i>
         <span class="d-none d-md-inline">Brain</span>

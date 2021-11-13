@@ -206,3 +206,9 @@ a.page-link:hover {
 .irc-underline {
   @extend .text-decoration-underline;
 }
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+  color: $text-muted;
+}

@@ -1,0 +1,14 @@
+@model Helpmebot.WebApi.TransportModels.CommandInfo.CommandFlag
+
+@if (Model.GlobalOnly)
+{
+    <span class="badge bg-warning text-dark" data-bs-toggle="tooltip" data-bs-html="true" title="<p>@FlagHelpHelper.GetHelpForFlag(Model.Flag)</p><p class=&quot;mb-0&quot;>This flag must be granted globally across all channels</p>">
+        <i class="fas fa-globe-europe"></i>&nbsp;@Model.Flag
+    </span>
+}
+else
+{
+    <span class="badge bg-secondary text-light" data-bs-toggle="tooltip" title="@FlagHelpHelper.GetHelpForFlag(Model.Flag)">
+        <i class="fas fa-flag"></i>&nbsp;@Model.Flag
+    </span>    
+}
