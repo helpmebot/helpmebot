@@ -20,8 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\webfonts" />
       <Folder Include="wwwroot\lib\bootstrap" />
+      <Folder Include="wwwroot\webfonts\cascadiacode-2110.31" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,12 @@
 $fa-font-path:         "../webfonts/fontawesome-5.15.4";
 
+@font-face {
+  font-family: "Cascadia Mono";
+  font-style: normal;
+  font-weight: normal;
+  src: url('../webfonts/cascadiacode-2110.31/CascadiaMono.woff2') format('woff2')
+}
+
 @import "variables";
 @import "mirccolours";
 
