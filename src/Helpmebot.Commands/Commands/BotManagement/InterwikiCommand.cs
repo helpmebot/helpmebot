@@ -1,9 +1,13 @@
 namespace Helpmebot.Commands.Commands.BotManagement
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Attributes;
+    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -20,6 +24,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     public class InterwikiCommand : CommandBase
     {
         private readonly ISession session;
+        private readonly IMediaWikiApiHelper apiHelper;
 
         public InterwikiCommand(
             string commandSource,
@@ -29,7 +34,8 @@ namespace Helpmebot.Commands.Commands.BotManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession session) : base(
+            ISession session,
+            IMediaWikiApiHelper apiHelper) : base(
             commandSource,
             user,
             arguments,
@@ -39,6 +45,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
             client)
         {
             this.session = session;
+            this.apiHelper = apiHelper;
         }
         
         [Help("<interwiki> <url>", "Adds or updates the specified interwiki entry")]
@@ -94,10 +101,89 @@ namespace Helpmebot.Commands.Commands.BotManagement
         
         [Help("", "Imports all interwiki prefixes from the active MediaWiki site. Any new entries will be automatically added; any updated or deleted entries will be held for review.")]
         [SubcommandInvocation("import")]
-        [Undocumented]
         protected IEnumerable<CommandResponse> Import()
         {
-            yield break;
+            this.Logger.Debug("Fetching existing prefixes");
+            var allPrefixes = this.session.QueryOver<InterwikiPrefix>().List().ToDictionary(x => x.Prefix);
+            
+            this.Logger.Debug("Marking existing as absent");
+            foreach (var prefix in allPrefixes)
+            {
+                prefix.Value.AbsentFromLastImport = true;
+            }
+            
+            this.Logger.Debug("Downloading latest map");
+            var mediaWikiSiteObject = this.session.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
+            var prefixesToImport = mediaWikiApi.GetInterwikiPrefixes().ToList();
+            
+            int deletedIw = 0, createdIw = 0, updatedIw = 0, upToDateIw = 0;
+            
+            this.Logger.Debug("Iterating import");
+            int i = 0;
+            foreach (var prefix in prefixesToImport)
+            {
+                this.Logger.DebugFormat(
+                    "  processed {0} of {1} - {2}%",
+                    i,
+                    prefixesToImport.Count,
+                    i / prefixesToImport.Count * 100);
+                i++;
+                
+                if (allPrefixes.ContainsKey(prefix.Prefix))
+                {
+                    allPrefixes[prefix.Prefix].AbsentFromLastImport = false;
+                    
+                    // present, are we up-to-date?
+                    if (allPrefixes[prefix.Prefix].Url == prefix.Url)
+                    {
+                        // yes
+                        upToDateIw++;
+                        continue;
+                    }
+
+                    var existingImport = this.session.QueryOver<InterwikiPrefix>().Where(x => x.ImportedAs == prefix.Prefix).SingleOrDefault();
+                    if (existingImport == null)
+                    {
+                        existingImport = new InterwikiPrefix();
+                    }
+
+                    existingImport.Prefix = prefix.Prefix + "-import";
+                    existingImport.ImportedAs = prefix.Prefix;
+                    existingImport.Url = prefix.Url;
+                    existingImport.AbsentFromLastImport = false;
+                    this.session.SaveOrUpdate(existingImport);
+                    updatedIw++;
+                }
+                else
+                {
+                    this.session.Save(
+                        new InterwikiPrefix
+                        {
+                            Prefix = prefix.Prefix, Url = prefix.Url,
+                            AbsentFromLastImport = false, CreatedSinceLast = true
+                        });
+                    createdIw++;
+                }
+            }
+            
+            this.Logger.Debug("Saving absent prefixes");
+            foreach (var prefix in allPrefixes.Where(x => x.Value.AbsentFromLastImport))
+            {
+                deletedIw++;
+                this.session.Update(prefix.Value);
+            }
+            
+            this.Logger.Debug("Flushing session");
+            this.session.Flush();
+
+            return new[]
+            {
+                new CommandResponse
+                {
+                    Message = $"Import complete. {upToDateIw} up-to-date, {createdIw} created, {updatedIw} updated for review, {deletedIw} deleted for review."
+                }
+            };
         }
         
         [Help("<imported name>", "Accepts a held imported entry as correct")]
@@ -131,17 +217,18 @@ namespace Helpmebot.Commands.Commands.BotManagement
             return new[] { new CommandResponse { Message = "Accepted interwiki entry." } };
         }
         
-        [Help("", "Removes any markers for interwikis missing from the last import.")]
+        [Help("", "Removes any markers for interwikis created or missing from the last import.")]
         [SubcommandInvocation("forgetmissing")]
         protected IEnumerable<CommandResponse> ForgetMissing()
         {
             var absentMarked = this.session.QueryOver<InterwikiPrefix>()
-                .Where(x => x.AbsentFromLastImport == true)
+                .Where(x => x.AbsentFromLastImport || x.CreatedSinceLast)
                 .List();
 
             foreach (var prefix in absentMarked)
             {
                 prefix.AbsentFromLastImport = false;
+                prefix.CreatedSinceLast = false;
                 this.session.Update(prefix);
             }
             this.session.Flush();

@@ -29,13 +29,13 @@
                 <tbody>
                 @foreach (var entry in Model)
                 {
-                    <tr class="@if(!string.IsNullOrEmpty(entry.ImportedAs)){@("table-warning")} @if(entry.AbsentFromLastImport){@("table-danger")}">
+                    <tr class="@if(!string.IsNullOrEmpty(entry.ImportedAs)){@("table-warning")} @if(entry.AbsentFromLastImport){@("table-danger")} @if(entry.CreatedSinceLast){@("table-success")}">
                         <td>
                             @if (!string.IsNullOrEmpty(entry.ImportedAs))
                             {
                                 <span class="font-monospace">@entry.ImportedAs</span>
                                 <br />
-                                <span class="text-muted">Imported as <span class="font-monospace">@entry.Prefix</span></span>
+                                <span class="text-warning">Imported as <span class="font-monospace">@entry.Prefix</span></span>
                             }
                             else
                             {
@@ -44,7 +44,12 @@
                             @if (entry.AbsentFromLastImport)
                             {
                                 <br />
-                                <span class="text-muted">Missing in last import</span>
+                                <span class="text-danger">Missing in last import</span>
+                            }
+                            @if (entry.CreatedSinceLast)
+                            {
+                                <br />
+                                <span class="text-success">Created in last import</span>
                             }
                         </td>
                         <td class="">@entry.Url</td>

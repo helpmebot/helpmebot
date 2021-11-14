@@ -39,6 +39,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.ImportedAs, "importedas");
             this.Map(x => x.Url, "url");
             this.Map(x => x.AbsentFromLastImport, "absentfromlast");
+            this.Map(x => x.CreatedSinceLast, "createdsincelast");
         }
 
         #endregion

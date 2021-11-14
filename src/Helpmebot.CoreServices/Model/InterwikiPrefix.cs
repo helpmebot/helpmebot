@@ -28,5 +28,6 @@ namespace Helpmebot.Model
         public virtual string ImportedAs { get; set; }
 
         public virtual bool AbsentFromLastImport { get; set; }
+        public virtual bool CreatedSinceLast { get; set; }
     }
 }
