@@ -21,6 +21,8 @@ namespace Helpmebot.WebUI.Controllers
             this.logger = logger;
         }
 
+        [HttpGet("/home")]
+        [HttpGet("/")]
         public IActionResult Index()
         {
             return View();
