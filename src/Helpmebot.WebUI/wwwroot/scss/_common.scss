@@ -153,7 +153,7 @@ main {
 
   .divider {
     flex-shrink: 0;
-    width: 1.5rem;
+    width: 0.75rem;
     height: 100vh;
     background-color: rgba(0, 0, 0, .1);
     border: solid rgba(0, 0, 0, .15);
@@ -165,6 +165,10 @@ main {
 @media(min-width: 992px) {
   .sidebar {
     min-width: 18rem;
+  }
+
+  .divider {
+    width: 1.5rem;
   }
 }
 
