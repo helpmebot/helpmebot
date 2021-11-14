@@ -52,6 +52,13 @@
                             {
                                 <p class="mb-0">@ViewBag.BotStatus.Trigger@sc.CanonicalName @s</p>
                             }
+                            @foreach (var scAlias in sc.Aliases)
+                            {
+                                @foreach (var s in sc.Syntax)
+                                {
+                                    <p class="mb-0 ms-1 small text-muted">@ViewBag.BotStatus.Trigger@scAlias @s</p>
+                                }
+                            }
                         </dt>
                         <dd class="ms-4 mb-0">
                             @foreach (var s in sc.HelpText)

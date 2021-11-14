@@ -168,9 +168,17 @@ namespace Helpmebot.WebApi.Services
                     {
                         continue;
                     }
+
+                    var undocumented = info.GetCustomAttributes(typeof(UndocumentedAttribute), false);
+                    if (undocumented.Length > 0)
+                    {
+                        continue;
+                    }
                     
-                    var invokAttr = info.GetAttribute<SubcommandInvocationAttribute>();
-                    if (invokAttr == null && info.Name != "Execute")
+                    var invocations = info.GetCustomAttributes(typeof(SubcommandInvocationAttribute), false)
+                        .Cast<SubcommandInvocationAttribute>()
+                        .ToList();
+                    if (invocations.Count == 0 && info.Name != "Execute")
                     {
                         continue;
                     }
@@ -182,9 +190,16 @@ namespace Helpmebot.WebApi.Services
                     }
                     
                     subcommandInfo.CanonicalName = commandInfo.CanonicalName;
+                    subcommandInfo.Aliases = new List<string>();
+                    
                     if (info.Name != "Execute")
                     {
-                        subcommandInfo.CanonicalName += " " + invokAttr.CommandName;
+                        subcommandInfo.CanonicalName += " " + invocations.FirstOrDefault()?.CommandName;
+                        
+                        foreach (var invoke in invocations.Skip(1))
+                        {
+                            subcommandInfo.Aliases.Add(commandInfo.CanonicalName + " " + invoke.CommandName);
+                        }
                     }
                     
                     subcommandInfo.Syntax = helpAttr.HelpMessage.Syntax.ToList();
