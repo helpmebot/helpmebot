@@ -11,10 +11,14 @@ namespace Helpmebot.WebApi.TransportModels
         public InterwikiPrefix(Model.InterwikiPrefix prefix)
         {
             this.Prefix = prefix.Prefix;
-            this.Url = Encoding.UTF8.GetString(prefix.Url);
+            this.Url = prefix.Url;
+            this.ImportedAs = prefix.ImportedAs;
+            this.AbsentFromLastImport = prefix.AbsentFromLastImport;
         }
         
         public string Prefix { get; set; }
         public string Url { get; set; }
+        public string ImportedAs { get; set; }
+        public bool AbsentFromLastImport { get;set;}
     }
 }

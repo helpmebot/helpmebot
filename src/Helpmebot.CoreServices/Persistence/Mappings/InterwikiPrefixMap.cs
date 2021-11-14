@@ -33,11 +33,12 @@ namespace Helpmebot.Persistence.Mappings
         /// </summary>
         public InterwikiPrefixMap()
         {
-            this.Table("interwiki");
-            this.Id(x => x.Prefix, "iw_prefix");
-            this.Map(x => x.Url, "iw_url");
-            this.Map(x => x.IsLocal, "iw_local");
-            this.Map(x => x.AllowTransclusion, "iw_trans");
+            this.Table("interwikiprefix");
+            this.Id(x => x.Id, "id");
+            this.Map(x => x.Prefix, "prefix").Unique();
+            this.Map(x => x.ImportedAs, "importedas");
+            this.Map(x => x.Url, "url");
+            this.Map(x => x.AbsentFromLastImport, "absentfromlast");
         }
 
         #endregion

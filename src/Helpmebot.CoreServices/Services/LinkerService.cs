@@ -62,12 +62,12 @@ namespace Helpmebot.CoreServices.Services
         {
             var iwprefix = link.Split(':')[0];
 
-            var prefix = this.databaseSession
-                .CreateCriteria<InterwikiPrefix>()
-                .Add(Restrictions.Eq("Prefix", iwprefix))
-                .UniqueResult<InterwikiPrefix>();
+            var prefix = this.databaseSession.QueryOver<InterwikiPrefix>()
+                .Where(x => x.Prefix == iwprefix && x.ImportedAs == null)
+                .List()
+                .FirstOrDefault();
             
-            var url = prefix == null ? string.Empty : Encoding.UTF8.GetString(prefix.Url);
+            var url = prefix == null ? string.Empty : prefix.Url;
 
             var source = link;
             

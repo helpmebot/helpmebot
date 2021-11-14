@@ -18,33 +18,15 @@ namespace Helpmebot.Model
 {
     using Helpmebot.Persistence.Interfaces;
 
-    /// <summary>
-    ///     The inter-wiki link prefix.
-    /// </summary>
     public class InterwikiPrefix : IDatabaseEntity
     {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether scary transclusion is allowed.
-        /// </summary>
-        public virtual bool AllowTransclusion { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether is local.
-        /// </summary>
-        public virtual bool IsLocal { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the prefix.
-        /// </summary>
+        public virtual int Id { get; set; }
         public virtual string Prefix { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the url.
-        /// </summary>
-        public virtual byte[] Url { get; set; }
+        public virtual string Url { get; set; }
+        
+        public virtual string ImportedAs { get; set; }
 
-        #endregion
+        public virtual bool AbsentFromLastImport { get; set; }
     }
 }
