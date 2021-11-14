@@ -4,6 +4,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -250,7 +251,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             var result = new HashSet<string>(original);
             var addMode = true;
 
-            var validFlags = Flag.GetValidFlags();
+            var validFlags = Flags.GetValidFlags();
 
             var newChanges = "";
 

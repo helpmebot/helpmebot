@@ -1,5 +1,8 @@
 namespace Helpmebot.CoreServices.Model
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
     using Helpmebot.CoreServices.Attributes;
 
     public class Flags
@@ -45,5 +48,16 @@ namespace Helpmebot.CoreServices.Model
 
         [FlagHelp("Standard commands", "Commands anyone can use")]
         public const string Standard = "S";
+        
+        public static ISet<string> GetValidFlags()
+        {
+            var fieldInfos = typeof(Flags)
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(string));
+
+            var enumerable = fieldInfos.Select(x => (string)x.GetRawConstantValue()).ToList();
+
+            return new HashSet<string>(enumerable);
+        }
     }
 }
