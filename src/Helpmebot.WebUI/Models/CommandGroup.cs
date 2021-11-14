@@ -8,7 +8,7 @@ namespace Helpmebot.WebUI.Models
         {
             {"Default", new CommandGroup("Default", "Standard commands", "", priority: 5)},
             {"Diagnostics", new CommandGroup("Diagnostics", "Diagnostic commands", "Bot diagnostics and debugging tools", priority: 50)},
-            {"Fun", new CommandGroup("Fun", "Fun commands", "Non-serious commands for non-serious channels", priority: 40)},
+            {"Fun", new CommandGroup("Fun", "Fun commands", "Non-serious commands for non-serious channels. Fun commands can be disabled per-channel using !curl, so these might not be available for use in all channels.", priority: 40)},
             {"Brain", new CommandGroup("Brain", "Brain commands", "Commands used to manage the bot's stored responses")},
             {"ACC", new CommandGroup("ACC", "ACC commands", "Commands used for Wikipedia's ACC process")},
         };
