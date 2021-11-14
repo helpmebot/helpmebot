@@ -1,3 +1,4 @@
+@using Markdig
 @model Helpmebot.WebApi.TransportModels.CommandInfo
 <div class="col-xxl-6 mb-4 command-help-object" data-hmb-command="@Model.CanonicalName" data-hmb-group="@Model.HelpCategory" id="command-@Model.CanonicalName">
     <div class="card">
@@ -41,7 +42,7 @@
 
         @if (Model.Subcommands.Any())
         {
-            <div class="card-body">
+            <div class="card-body border-bottom">
                 <h6 class="card-subtitle mb-2">Syntax</h6>
                 <dl class="mb-0">
                     @foreach (var sc in Model.Subcommands)
@@ -52,7 +53,7 @@
                                 <p class="mb-0">@ViewBag.BotStatus.Trigger@sc.CanonicalName @s</p>
                             }
                         </dt>
-                        <dd class="ms-4">
+                        <dd class="ms-4 mb-0">
                             @foreach (var s in sc.HelpText)
                             {
                                 <p class="mb-0">@s</p>
@@ -60,9 +61,14 @@
                             @if (sc.Flags.Any())
                             {
                                 <p class="mb-0 mt-2">
-                                    Requires flag:
-                                    @foreach (var f in sc.Flags)
+                                    Requires
+                                    @for (var index = 0; index < sc.Flags.Count; index++)
                                     {
+                                        var f = sc.Flags[index];
+                                        @if (index > 0)
+                                        {
+                                            @(" or ")
+                                        }
                                         <partial name="Flag" model="f"/>
                                     }
                                 </p>
@@ -72,5 +78,15 @@
                 </dl>
             </div>
         }
+        @if (!string.IsNullOrWhiteSpace(Model.ExtendedHelp))
+        {
+            <div class="card-body border-bottom">
+                @Html.Raw(Markdown.ToHtml(Model.ExtendedHelp, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))
+            </div>
+        }
+        <div class="card-footer py-1 d-flex flex-row">
+            <div class="small-2 text-muted fw-bold text-nowrap me-1">CLR Type:</div>
+            <div class="text-truncate-left text-muted font-monospace small-2">@Model.Type</div>
+        </div>
     </div>
 </div>

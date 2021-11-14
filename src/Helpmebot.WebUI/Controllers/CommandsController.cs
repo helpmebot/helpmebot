@@ -27,7 +27,7 @@ namespace Helpmebot.WebUI.Controllers
                 
                 groups[command.HelpCategory].Add(command);
             }
-
+            
             return View(groups);
         }
     }

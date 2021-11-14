@@ -212,3 +212,17 @@ a.disabled {
   cursor: default;
   color: $text-muted;
 }
+
+.text-truncate-left {
+  @extend .text-truncate;
+  direction: rtl;
+  text-align: left;
+}
+
+.small {
+  @extend small;
+}
+.small-2 {
+  @extend .small;
+  font-size: .75em;
+}
