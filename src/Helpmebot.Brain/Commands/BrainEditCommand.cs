@@ -21,12 +21,12 @@ namespace Helpmebot.Brain.Commands
     [CommandInvocation("editbrain")]
     [HelpSummary("Edits an existing brain entry by applying a sed-style expression to a message.")]
     [HelpCategory("Brain")]
-    public class BrainEdit : CommandBase
+    public class BrainEditCommand : CommandBase
     {
         private readonly IKeywordService keywordService;
         private readonly ISedExpressionService sedExpressionService;
 
-        public BrainEdit(
+        public BrainEditCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -56,6 +56,7 @@ namespace Helpmebot.Brain.Commands
             "For backreferences in the search pattern, use the \\1 format. For backreferences in the replacement pattern, use $1 format."
         })]
         [SubcommandInvocation("test")]
+        [SubcommandInvocation("dryrun")]
         protected IEnumerable<CommandResponse> Test()
         {
             var keyword = this.DoReplacement(out var result);
