@@ -33,7 +33,7 @@
                 <ul class="mb-0 list-inline">
                     @foreach (var alias in Model.Aliases)
                     {
-                        <li class="list-inline-item font-monospace">@ViewBag.BotStatus.Trigger@alias</li>
+                        <li class="list-inline-item font-monospace fw-light">@ViewBag.BotStatus.Trigger@alias</li>
                     }
                 </ul>
              
@@ -47,7 +47,7 @@
                 <dl class="mb-0">
                     @foreach (var sc in Model.Subcommands)
                     {
-                        <dt class="font-monospace fw-normal">
+                        <dt class="font-monospace fw-light">
                             @foreach (var s in sc.Syntax)
                             {
                                 <p class="mb-0">@ViewBag.BotStatus.Trigger@sc.CanonicalName @s</p>
@@ -56,11 +56,11 @@
                             {
                                 @foreach (var s in sc.Syntax)
                                 {
-                                    <p class="mb-0 ms-1 small text-muted">@ViewBag.BotStatus.Trigger@scAlias @s</p>
+                                    <p class="mb-0 text-muted" title="This alternative is an alias">@ViewBag.BotStatus.Trigger@scAlias @s</p>
                                 }
                             }
                         </dt>
-                        <dd class="ms-4 mb-0">
+                        <dd class="ms-4">
                             @foreach (var s in sc.HelpText)
                             {
                                 <p class="mb-0">@s</p>

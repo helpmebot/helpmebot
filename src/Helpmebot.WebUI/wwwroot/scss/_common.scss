@@ -3,8 +3,9 @@ $fa-font-path:         "../webfonts/fontawesome-5.15.4";
 @font-face {
   font-family: "Cascadia Mono";
   font-style: normal;
-  font-weight: normal;
-  src: url('../webfonts/cascadiacode-2110.31/CascadiaMono.woff2') format('woff2')
+  font-weight: 300 700;
+  src: url('../webfonts/cascadiacode-2110.31/CascadiaMono.woff2') format('woff2');
+  font-synthesis: none;
 }
 
 @import "variables";
@@ -236,3 +237,7 @@ div.card.card-highlightable {
     }
   }
 }
+//
+//.font-monospace.fw-normal {
+//  font-weight: 200 !important;
+//}

@@ -43,7 +43,7 @@
                             <ul class="list-inline mb-0">
                                 @foreach (var cmi in group.Value.OrderBy(x => x.CanonicalName))
                                 {
-                                    <li data-hmb-command="@cmi.CanonicalName" class="commandlist-toc-item list-inline-item"><a href="#command-@cmi.CanonicalName" class="font-monospace">@cmi.CanonicalName</a></li>
+                                    <li data-hmb-command="@cmi.CanonicalName" class="commandlist-toc-item list-inline-item"><a href="#command-@cmi.CanonicalName" class="font-monospace fw-light">@cmi.CanonicalName</a></li>
                                 }
                             </ul>
                         </td>
