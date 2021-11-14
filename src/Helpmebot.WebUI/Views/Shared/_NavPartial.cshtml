@@ -16,10 +16,15 @@
         <span class="d-none d-md-inline">Brain</span>
     </a>
 </li>
-
 <li>
     <a asp-controller="Flags" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Flags"){@(" active")}">
         <i class="fas fa-flag me-0 me-md-2"></i>
         <span class="d-none d-md-inline">Flags</span>
+    </a>
+</li>
+<li>
+    <a asp-controller="Access" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Access"){@(" active")}">
+        <i class="fas fa-shield-alt me-0 me-md-2"></i>
+        <span class="d-none d-md-inline">Access control</span>
     </a>
 </li>

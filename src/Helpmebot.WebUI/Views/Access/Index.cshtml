@@ -1,0 +1,55 @@
+@model Helpmebot.WebApi.TransportModels.AccessControlList;
+@{
+    ViewData["Title"] = "Access Control";
+}
+
+<div class="container">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Access control</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                Helpmebot's access control system relies on a system of <a asp-controller="Flags" asp-action="FlagGroups">flag groups</a>
+                to which <a asp-controller="Flags" asp-action="Index">flags</a> are assigned.
+            </p>
+            <p>
+                This page lists the flag groups as they apply to IRC user masks.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Mask</th>
+                    <th>Account</th>
+                    <th>Groups</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var entry in Model.Users)
+                {
+                    <tr>
+                        <td class="font-monospace">@entry.IrcMask</td>
+                        <td class="font-monospace">@entry.AccountName</td>
+                        <td>
+                            <ul class="list-inline mb-0">
+                                @foreach (var group in entry.FlagGroups)
+                                {
+                                    <li class="list-inline-item">
+                                        <a asp-controller="Flags" asp-action="FlagGroups" asp-fragment="flaggroup-@group" class="badge bg-primary text-light text-decoration-none fs-6">@group</a>
+                                    </li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
