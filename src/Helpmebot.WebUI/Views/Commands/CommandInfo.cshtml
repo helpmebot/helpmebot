@@ -1,7 +1,7 @@
 @using Markdig
 @model Helpmebot.WebApi.TransportModels.CommandInfo
-<div class="col-xxl-6 mb-4 command-help-object" data-hmb-command="@Model.CanonicalName" data-hmb-group="@Model.HelpCategory" id="command-@Model.CanonicalName">
-    <div class="card">
+<div class="col-xxl-6 mb-4 command-help-object" data-hmb-command="@Model.CanonicalName" data-hmb-group="@Model.HelpCategory">
+    <div class="card card-highlightable" id="command-@Model.CanonicalName">
         <div class="card-header d-flex flex-row align-items-center justify-content-between">
             <h4 class="font-monospace my-1">@ViewBag.BotStatus.Trigger@Model.CanonicalName</h4>
             @if (Model.Flags.Any())
