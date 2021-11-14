@@ -1,5 +1,6 @@
 namespace Helpmebot.WebUI.Services.Api
 {
+    using System;
     using System.Collections.Generic;
     using Helpmebot.WebApi.Services.Interfaces;
     using Helpmebot.WebApi.TransportModels;
@@ -29,6 +30,20 @@ namespace Helpmebot.WebUI.Services.Api
         public List<CommandInfo> GetRegisteredCommands()
         {
             return new List<CommandInfo>();
+        }
+
+        public Dictionary<string, Tuple<string, string>> GetFlagHelp()
+        {
+            return new Dictionary<string, Tuple<string, string>>();
+        }
+
+        public List<FlagGroup> GetFlagGroups()
+        {
+            return new List<FlagGroup>
+            {
+                new FlagGroup{Name = "tet", Flags = "potato", Mode = "+", LastModified = DateTime.Now},
+                new FlagGroup{Name = "sdfs", Flags = "potaeefto", Mode = "-", LastModified = DateTime.Now},
+            };
         }
 
         public TokenResponse GetAuthToken(string loginToken)

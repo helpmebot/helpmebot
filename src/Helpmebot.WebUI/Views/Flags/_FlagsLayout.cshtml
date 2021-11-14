@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Flags";
+    Layout = "_Layout";
+}
+<div class="container">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Flags and flag groups</h1>
+        </div>
+    </div>
+    @* Intro *@
+    <div class="row">
+        <div class="col">
+            <p>Helpmebot now uses a flag-based access control system, and as such the commands that can be accessed are determined by which flags you have available to you.</p>
+            <p>Bear in mind that these flags can be granted to a hostmask, NickServ account, channel mode, or channel, and as such your "voiced" or "opped" status, or even the channel you are in might change the flags you have available to you at that time.</p>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col">
+            <ul class="nav nav-tabs justify-content-center">
+              <li class="nav-item">
+                  <a class="nav-link @if (ViewContext.RouteData.Values["action"].ToString() == "Index"){@("active")}" asp-action="Index">
+                      Defined flags
+                  </a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link @if (ViewContext.RouteData.Values["action"].ToString() == "FlagGroups"){@("active")}" asp-action="FlagGroups">
+                      Defined flag groups
+                  </a>
+              </li>
+            </ul>
+        </div>
+    </div>
+    
+    @RenderBody()
+</div>

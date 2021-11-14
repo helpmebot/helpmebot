@@ -1,0 +1,61 @@
+@model List<Helpmebot.WebApi.TransportModels.FlagGroup>
+@{
+    ViewData["Title"] = "Flags";
+    ViewData["Tab"] = "Index";
+    Layout = "_FlagsLayout";
+}
+
+<div class="row">
+    <div class="col">
+        <p>The currently defined flag groups are listed below.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Flags</th>
+                <th>Mode</th>
+                <th>Last modified</th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var fg in Model)
+                {
+                    <tr id="flaggroup-@fg.Name">
+                        <th class="text-nowrap">@fg.Name</th>
+                        <td>
+                            @foreach (var flag in fg.Flags)
+                            {
+                                if (flag == '*')
+                                {
+                                    <span class="me-2 badge bg-warning text-dark">All flags</span>    
+                                }
+                                else
+                                {
+                                    <a asp-action="Index" asp-fragment="flag-@flag" class="font-monospace me-2 badge bg-info text-dark text-decoration-none"  data-bs-toggle="tooltip" title="@FlagHelpHelper.GetHelpForFlag("" + flag)">@flag</a>    
+                                }
+                                
+                            }
+                        </td>
+                        <td>
+                            
+                            @if (fg.Mode == "+")
+                            {
+                                <span class="badge bg-success" title="This flag group grants the listed flags">Granting</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger" title="This flag group revokes the listed flags">Revoking</span>
+                            }
+                        </td>
+                        <td>@fg.LastModified.ToString("u")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

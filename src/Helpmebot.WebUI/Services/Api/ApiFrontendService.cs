@@ -1,5 +1,6 @@
 namespace Helpmebot.WebUI.Services.Api
 {
+    using System;
     using System.Collections.Generic;
     using System.Reflection;
     using Helpmebot.WebApi.Services.Interfaces;
@@ -37,6 +38,16 @@ namespace Helpmebot.WebUI.Services.Api
             return this.transportService.RemoteProcedureCall<object, List<CommandInfo>>(MethodBase.GetCurrentMethod(), null);
         }
 
+        public Dictionary<string, Tuple<string, string>> GetFlagHelp()
+        {
+            return this.transportService.RemoteProcedureCall<object, Dictionary<string, Tuple<string, string>>>(MethodBase.GetCurrentMethod(), null);
+        }
+
+        public List<FlagGroup> GetFlagGroups()
+        {
+            return this.transportService.RemoteProcedureCall<object, List<FlagGroup>>(MethodBase.GetCurrentMethod(), null);
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return this.transportService.RemoteProcedureCall<string, TokenResponse>(MethodBase.GetCurrentMethod(), loginToken);
@@ -44,11 +55,7 @@ namespace Helpmebot.WebUI.Services.Api
 
         public List<BrainItem> GetBrainItems()
         {
-            this.logger.LogDebug("Beginning BrainItems RPC");
-            var rpcResult = this.transportService.RemoteProcedureCall<object, List<BrainItem>>(MethodBase.GetCurrentMethod(), null);
-            this.logger.LogDebug("Done BrainItems RPC");
-            return rpcResult;
-            
+            return this.transportService.RemoteProcedureCall<object, List<BrainItem>>(MethodBase.GetCurrentMethod(), null);
         }
     }
 }

@@ -11,9 +11,11 @@ namespace Helpmebot.WebApi.Services
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Attributes;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Startup;
     using Helpmebot.WebApi.Services.Interfaces;
     using Helpmebot.WebApi.TransportModels;
+    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
@@ -26,8 +28,16 @@ namespace Helpmebot.WebApi.Services
         private readonly BotConfiguration botConfiguration;
         private readonly IIrcConfiguration ircConfiguration;
         private readonly ILoginTokenService loginTokenService;
+        private readonly ISession databaseSession;
 
-        public ApiService(ILogger logger, IIrcClient client, ICommandParser commandParser, BotConfiguration botConfiguration, IIrcConfiguration ircConfiguration, ILoginTokenService loginTokenService)
+        public ApiService(
+            ILogger logger,
+            IIrcClient client,
+            ICommandParser commandParser,
+            BotConfiguration botConfiguration,
+            IIrcConfiguration ircConfiguration,
+            ILoginTokenService loginTokenService,
+            ISession databaseSession)
         {
             this.logger = logger;
             this.client = client;
@@ -35,8 +45,9 @@ namespace Helpmebot.WebApi.Services
             this.botConfiguration = botConfiguration;
             this.ircConfiguration = ircConfiguration;
             this.loginTokenService = loginTokenService;
+            this.databaseSession = databaseSession;
         }
-        
+
         public IKeywordService BrainKeywordService { get; set; }
         
         public BotStatus GetBotStatus()
@@ -188,6 +199,29 @@ namespace Helpmebot.WebApi.Services
             }
 
             return commandList;
+        }
+
+        public Dictionary<string, Tuple<string, string>> GetFlagHelp()
+        {
+            var data = new Dictionary<string, Tuple<string, string>>();
+            foreach (var fieldInfo in typeof(Flags).GetFields().Where(x => x.IsLiteral && x.FieldType == typeof(string)))
+            {
+                var flagHelpAttr = fieldInfo.GetCustomAttributes(typeof(FlagHelpAttribute), false).Cast<FlagHelpAttribute>().FirstOrDefault();
+                var rawConstantValue = fieldInfo.GetRawConstantValue();
+                if (flagHelpAttr == null)
+                {
+                    continue;
+                }
+            
+                data.Add((string)rawConstantValue, new Tuple<string,string>(flagHelpAttr.QuickHelpText, flagHelpAttr.DetailedHelp));
+            }
+
+            return data;
+        }
+
+        public List<FlagGroup> GetFlagGroups()
+        {
+            return this.databaseSession.QueryOver<Model.FlagGroup>().List().Select(x => new FlagGroup(x)).ToList();
         }
     }
 }
