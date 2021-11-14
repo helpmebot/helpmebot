@@ -1,0 +1,44 @@
+@using Markdig
+@model Dictionary<string, (string, string)>
+@{
+    ViewData["Title"] = "Flags";
+}
+
+<div class="container" xmlns="http://www.w3.org/1999/html">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Flags</h1>
+        </div>
+    </div>
+    @* Intro *@
+    <div class="row">
+        <div class="col">
+            <p>Helpmebot now uses a flag-based access control system, and as such the commands that can be accessed are determined by which flags you have available to you.</p>
+            <p>Bear in mind that these flags can be granted to a hostmask, NickServ account, channel mode, or channel, and as such your "voiced" or "opped" status, or even the channel you are in might change the flags you have available to you at that time.</p>
+            <p>The currently defined flags are listed below</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Summary</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (var kvp in Model)
+                    {
+                        <tr id="flag-@kvp.Key">
+                            <th class="font-monospace fs-5"><span class="badge bg-info text-dark">@kvp.Key</span></th>
+                            <td class="text-nowrap">@kvp.Value.Item1</td>
+                            <td>@Html.Raw(Markdown.ToHtml(kvp.Value.Item2, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
