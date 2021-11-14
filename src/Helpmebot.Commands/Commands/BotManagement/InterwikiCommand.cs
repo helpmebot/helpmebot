@@ -200,6 +200,11 @@ namespace Helpmebot.Commands.Commands.BotManagement
                 .Where(x => x.Prefix == imported.ImportedAs)
                 .SingleOrDefault();
 
+            if (imported == null)
+            {            
+                return new[] { new CommandResponse { Message = "Could not find imported interwiki entry to accept" } };
+            }
+
             if (existing == null)
             {
                 imported.Prefix = imported.ImportedAs;
