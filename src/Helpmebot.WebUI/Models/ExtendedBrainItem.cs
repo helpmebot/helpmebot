@@ -16,26 +16,6 @@ namespace Helpmebot.WebUI.Models
 
         public void Parse()
         {
-            var colourLookup = new Dictionary<int, string>
-            {
-                { 0, "white" },
-                { 1, "black" },
-                { 2, "blue" },
-                { 3, "green" },
-                { 4, "light-red" },
-                { 5, "brown" },
-                { 6, "purple" },
-                { 7, "orange" },
-                { 8, "yellow" },
-                { 9, "light-green" },
-                { 10, "cyan" },
-                { 11, "light-cyan" },
-                { 12, "light-blue" },
-                { 13, "pink" },
-                { 14, "grey" },
-                { 15, "light-grey" },
-            };
-            
             var builder = new StringBuilder();
 
             const char BoldMarker = (char)0x02;
@@ -58,6 +38,8 @@ namespace Helpmebot.WebUI.Models
             
             const char ClearMarker = (char)0x0f;
 
+            var messageChars = HttpUtility.HtmlEncode(this.Response).ToCharArray();
+            
             void CloseTag()
             {
                 if (boldActive || italicActive || underlineActive || strikethroughActive || monospaceActive || !string.IsNullOrWhiteSpace(colorsActive))
@@ -106,16 +88,28 @@ namespace Helpmebot.WebUI.Models
                     builder.Append("\">");
                 }
             }
-            bool IsDigit(char c)
+            bool IsDigit(int index)
             {
+                if (messageChars.Length <= index)
+                {
+                    return false;
+                }
+                
+                var c = messageChars[index];
                 return c is >= '0' and <= '9';
             }
-            bool IsComma(char c)
+            bool IsComma(int index)
             {
+                if (messageChars.Length <= index)
+                {
+                    return false;
+                }
+
+                var c = messageChars[index];
                 return c == ',';
             }
 
-            var messageChars = HttpUtility.HtmlEncode(this.Response).ToCharArray();
+            
             for (var i = 0; i < messageChars.Length; i++)
             {
                 switch (messageChars[i])
@@ -153,7 +147,7 @@ namespace Helpmebot.WebUI.Models
                     case ColourMarker:
                         this.HasFormatting = true;
                         CloseTag();
-                        if (!IsDigit(messageChars[i + 1]) && !IsComma(messageChars[i + 1]))
+                        if (!IsDigit(i + 1) && !IsComma(i + 1))
                         {
                             colorsActive = null;
                             OpenTag();
@@ -162,53 +156,37 @@ namespace Helpmebot.WebUI.Models
 
                         string foreground = "", background = "";
                         
-                        if (IsDigit(messageChars[i + 1]))
+                        if (IsDigit(i + 1))
                         {
-                            if (IsDigit(messageChars[i + 2]))
+                            if (IsDigit(i + 2))
                             {
                                 // two-digit colour
-                                if (colourLookup.TryGetValue((messageChars[i + 1] - '0') * 10 + (messageChars[i + 2] - '0'), out var fgKey))
-                                {
-                                    foreground = "irc-fg-" + fgKey;
-                                }
-
+                                foreground = "irc-fg-" + ((messageChars[i + 1] - '0') * 10 + (messageChars[i + 2] - '0'));
                                 i += 2;
                             }
                             else
                             {
-                                // two-digit colour
-                                if (colourLookup.TryGetValue((messageChars[i + 1] - '0'), out var fgKey))
-                                {
-                                    foreground = "irc-fg-" + fgKey;
-                                }
-
+                                // one-digit colour
+                                foreground = "irc-fg-0" + (messageChars[i + 1] - '0');
                                 i++;
                             }
                         }
 
-                        if (IsComma(messageChars[i + 1]))
+                        if (IsComma(i + 1))
                         {
                             // bump the comma;
                             i++;
                             
-                            if (IsDigit(messageChars[i + 2]))
+                            if (IsDigit(i + 2))
                             {
                                 // two-digit colour
-                                if (colourLookup.TryGetValue((messageChars[i + 1] - '0') * 10 + (messageChars[i + 2] - '0'), out var bgKey))
-                                {
-                                    background = "irc-bg-" + bgKey;
-                                }
-
+                                background = "irc-bg-" + ((messageChars[i + 1] - '0') * 10 + (messageChars[i + 2] - '0'));
                                 i += 2;
                             }
                             else
                             {
-                                // two-digit colour
-                                if (colourLookup.TryGetValue((messageChars[i + 1] - '0'), out var bgKey))
-                                {
-                                    background = "irc-bg-" + bgKey;
-                                }
-
+                                // one-digit colour
+                                background = "irc-bg-0" + (messageChars[i + 1] - '0');
                                 i++;
                             }
                         }
