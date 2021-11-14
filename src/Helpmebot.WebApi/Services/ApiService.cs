@@ -2,6 +2,7 @@ namespace Helpmebot.WebApi.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using Castle.Core.Internal;
@@ -135,10 +136,15 @@ namespace Helpmebot.WebApi.Services
                     .Select(x => new CommandInfo.CommandFlag { Flag = x.Flag, GlobalOnly = x.GlobalOnly })
                     .ToList();
 
+                commandInfo.Type = commandClass.FullName;
 
                 var methodInfos = commandClass.GetMethods(
                     BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
 
+                if (File.Exists($"Documentation/{commandClass.FullName}.md"))
+                {
+                    commandInfo.ExtendedHelp = File.ReadAllText($"Documentation/{commandClass.FullName}.md");
+                }
                 
                 foreach (var info in methodInfos)
                 {

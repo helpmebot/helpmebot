@@ -5,11 +5,15 @@ namespace Helpmebot.WebApi.TransportModels
     public class CommandInfo
     {
         public string CanonicalName { get; set; }
+        
+        public string Type { get; set; }
         public List<string> Aliases { get; set; }
         public List<CommandFlag> Flags { get; set; } = new List<CommandFlag>();
         public string HelpCategory { get; set; }
         public string HelpSummary { get; set; }
         public List<SubcommandInfo> Subcommands { get; set; } = new List<SubcommandInfo>();
+        
+        public string ExtendedHelp { get; set; }
 
         public class SubcommandInfo
         {
