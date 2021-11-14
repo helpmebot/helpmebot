@@ -16,6 +16,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
 
     [CommandFlag(Flags.Standard)]
     [CommandInvocation("link")]
+    [CommandInvocation("l")]
     public class LinkCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
