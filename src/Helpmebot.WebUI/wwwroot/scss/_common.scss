@@ -84,6 +84,7 @@ $utilities: map-merge(
 @import "./fontawesome-5.15.4/solid";
 @import "./fontawesome-5.15.4/regular";
 
+@import "ircformatting";
 
 body {
   min-height: 100vh;
@@ -193,26 +194,6 @@ a.page-link:hover {
 .hmb-stats > i.fas {
   min-width: 20px;
   text-align: center;
-}
-
-.irc-bold {
-  @extend .fw-bold;
-}
-
-.irc-italic {
-  @extend .fst-italic;
-}
-
-.irc-underline {
-  @extend .text-decoration-underline;
-}
-
-.irc-strikethrough {
-  @extend .text-decoration-line-through
-}
-
-.irc-monospace {
-  @extend .font-monospace
 }
 
 a.disabled {

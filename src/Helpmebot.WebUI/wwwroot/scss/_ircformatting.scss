@@ -1,0 +1,24 @@
+.irc-bold {
+  @extend .fw-bold;
+}
+
+.irc-italic {
+  @extend .fst-italic;
+}
+
+.irc-underline {
+  @extend .text-decoration-underline;
+}
+
+.irc-strikethrough {
+  @extend .text-decoration-line-through
+}
+
+.irc-monospace {
+  @extend .font-monospace
+}
+
+.irc-spoiler:hover {
+  background-color: $body-bg !important;
+  color: $body-color !important;
+}

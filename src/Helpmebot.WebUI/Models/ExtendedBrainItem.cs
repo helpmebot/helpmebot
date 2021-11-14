@@ -215,6 +215,14 @@ namespace Helpmebot.WebUI.Models
 
                         colorsActive = (foreground + " " + background).Trim();
                         
+                        if (!string.IsNullOrEmpty(foreground) && !string.IsNullOrEmpty(background))
+                        {
+                            if (background.Replace("bg", "fg") == foreground)
+                            {
+                                colorsActive += " " + "irc-spoiler";
+                            }
+                        }
+                        
                         OpenTag();
                         break;
                     case ClearMarker:
