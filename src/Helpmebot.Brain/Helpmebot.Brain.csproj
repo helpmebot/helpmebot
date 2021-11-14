@@ -25,4 +25,10 @@
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.1.87" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Documentation\Helpmebot.Brain.Commands.LearnCommand.md">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

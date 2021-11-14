@@ -33,5 +33,8 @@
       <None Update="Configuration\channel-services.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Documentation\Helpmebot.ChannelServices.Commands.Configuration.WelcomerConfigurationCommand.md">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
