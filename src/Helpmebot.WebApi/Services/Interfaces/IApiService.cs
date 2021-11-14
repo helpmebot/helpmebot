@@ -21,5 +21,7 @@ namespace Helpmebot.WebApi.Services.Interfaces
         Dictionary<string, Tuple<string, string>> GetFlagHelp();
 
         List<FlagGroup> GetFlagGroups();
+
+        AccessControlList GetAccessControlList();
     }
 }

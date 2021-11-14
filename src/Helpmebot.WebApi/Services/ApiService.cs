@@ -13,12 +13,14 @@ namespace Helpmebot.WebApi.Services
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Startup;
+    using Helpmebot.Model;
     using Helpmebot.WebApi.Services.Interfaces;
     using Helpmebot.WebApi.TransportModels;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
+    using FlagGroup = Helpmebot.WebApi.TransportModels.FlagGroup;
 
     public class ApiService : IApiService
     {
@@ -222,6 +224,21 @@ namespace Helpmebot.WebApi.Services
         public List<FlagGroup> GetFlagGroups()
         {
             return this.databaseSession.QueryOver<Model.FlagGroup>().List().Select(x => new FlagGroup(x)).ToList();
+        }
+
+        public AccessControlList GetAccessControlList()
+        {
+            var userAclDict = this.databaseSession.QueryOver<User>()
+                .List()
+                .Select(
+                    x => new UserAccessControlEntry
+                    {
+                        AccountName = x.Account, IrcMask = x.Mask,
+                        FlagGroups = x.AppliedFlagGroups.Select(fg => fg.Name).ToList()
+                    })
+                .ToList();
+
+            return new AccessControlList { Users = userAclDict };
         }
     }
 }
