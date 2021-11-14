@@ -31,7 +31,7 @@ namespace Helpmebot.WebApi.Services
         private readonly BotConfiguration botConfiguration;
         private readonly IIrcConfiguration ircConfiguration;
         private readonly ILoginTokenService loginTokenService;
-        private readonly ISession databaseSession;
+        private readonly ISessionFactory sessionFactory;
 
         public ApiService(
             ILogger logger,
@@ -40,7 +40,7 @@ namespace Helpmebot.WebApi.Services
             BotConfiguration botConfiguration,
             IIrcConfiguration ircConfiguration,
             ILoginTokenService loginTokenService,
-            ISession databaseSession)
+            ISessionFactory sessionFactory)
         {
             this.logger = logger;
             this.client = client;
@@ -48,7 +48,7 @@ namespace Helpmebot.WebApi.Services
             this.botConfiguration = botConfiguration;
             this.ircConfiguration = ircConfiguration;
             this.loginTokenService = loginTokenService;
-            this.databaseSession = databaseSession;
+            this.sessionFactory = sessionFactory;
         }
 
         public IKeywordService BrainKeywordService { get; set; }
@@ -239,12 +239,17 @@ namespace Helpmebot.WebApi.Services
 
         public List<FlagGroup> GetFlagGroups()
         {
-            return this.databaseSession.QueryOver<Model.FlagGroup>().List().Select(x => new FlagGroup(x)).ToList();
+            var session = this.sessionFactory.OpenSession();
+            var flagGroups = session.QueryOver<Model.FlagGroup>().List().Select(x => new FlagGroup(x)).ToList();
+            
+            session.Close();
+            return flagGroups;
         }
 
         public AccessControlList GetAccessControlList()
         {
-            var userAclDict = this.databaseSession.QueryOver<User>()
+            var session = this.sessionFactory.OpenSession();
+            var userAclDict = session.QueryOver<User>()
                 .List()
                 .Select(
                     x => new UserAccessControlEntry
@@ -253,16 +258,19 @@ namespace Helpmebot.WebApi.Services
                         FlagGroups = x.AppliedFlagGroups.Select(fg => fg.Name).ToList()
                     })
                 .ToList();
-
+            session.Close(); 
+            
             return new AccessControlList { Users = userAclDict };
         }
 
         public List<InterwikiPrefix> GetInterwikiList()
         {
-            var interwikiList = this.databaseSession.QueryOver<Model.InterwikiPrefix>()
+            var session = this.sessionFactory.OpenSession();
+            var interwikiList = session.QueryOver<Model.InterwikiPrefix>()
                 .List()
                 .Select(x => new InterwikiPrefix(x))
                 .ToList();
+            session.Close();
             
             return interwikiList;
         }

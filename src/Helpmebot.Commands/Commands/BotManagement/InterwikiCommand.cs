@@ -110,6 +110,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
             foreach (var prefix in allPrefixes)
             {
                 prefix.Value.AbsentFromLastImport = true;
+                prefix.Value.CreatedSinceLast = false;
             }
             
             this.Logger.Debug("Downloading latest map");
