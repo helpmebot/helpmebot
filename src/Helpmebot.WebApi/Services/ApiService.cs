@@ -21,6 +21,7 @@ namespace Helpmebot.WebApi.Services
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using FlagGroup = Helpmebot.WebApi.TransportModels.FlagGroup;
+    using InterwikiPrefix = Helpmebot.WebApi.TransportModels.InterwikiPrefix;
 
     public class ApiService : IApiService
     {
@@ -239,6 +240,16 @@ namespace Helpmebot.WebApi.Services
                 .ToList();
 
             return new AccessControlList { Users = userAclDict };
+        }
+
+        public List<InterwikiPrefix> GetInterwikiList()
+        {
+            var interwikiList = this.databaseSession.QueryOver<Model.InterwikiPrefix>()
+                .List()
+                .Select(x => new InterwikiPrefix(x))
+                .ToList();
+            
+            return interwikiList;
         }
     }
 }

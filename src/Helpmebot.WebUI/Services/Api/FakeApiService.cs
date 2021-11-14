@@ -60,6 +60,11 @@ namespace Helpmebot.WebUI.Services.Api
             };
         }
 
+        public List<InterwikiPrefix> GetInterwikiList()
+        {
+            return new List<InterwikiPrefix>();
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };

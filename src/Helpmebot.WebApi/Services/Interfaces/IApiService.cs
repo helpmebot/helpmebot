@@ -23,5 +23,7 @@ namespace Helpmebot.WebApi.Services.Interfaces
         List<FlagGroup> GetFlagGroups();
 
         AccessControlList GetAccessControlList();
+        
+        List<InterwikiPrefix> GetInterwikiList();
     }
 }
