@@ -207,6 +207,14 @@ a.page-link:hover {
   @extend .text-decoration-underline;
 }
 
+.irc-strikethrough {
+  @extend .text-decoration-line-through
+}
+
+.irc-monospace {
+  @extend .font-monospace
+}
+
 a.disabled {
   pointer-events: none;
   cursor: default;

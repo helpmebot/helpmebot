@@ -47,6 +47,12 @@ namespace Helpmebot.WebUI.Models
             const char UnderlineMarker = (char)0x1f;
             var underlineActive = false;
             
+            const char StrikethroughMarker = (char)0x1e;
+            var strikethroughActive = false;
+            
+            const char MonospaceMarker = (char)0x11;
+            var monospaceActive = false;
+            
             const char ColourMarker = (char)0x03;
             string colorsActive = null;
             
@@ -54,14 +60,14 @@ namespace Helpmebot.WebUI.Models
 
             void CloseTag()
             {
-                if (boldActive || italicActive || underlineActive || !string.IsNullOrWhiteSpace(colorsActive))
+                if (boldActive || italicActive || underlineActive || strikethroughActive || monospaceActive || !string.IsNullOrWhiteSpace(colorsActive))
                 {
                     builder.Append("</span>");
                 }
             }
             void OpenTag()
             {
-                if (boldActive || italicActive || underlineActive || !string.IsNullOrWhiteSpace(colorsActive))
+                if (boldActive || italicActive || underlineActive || strikethroughActive || monospaceActive || !string.IsNullOrWhiteSpace(colorsActive))
                 {
                     var classes = new List<string>(4);
 
@@ -78,6 +84,16 @@ namespace Helpmebot.WebUI.Models
                     if (underlineActive)
                     {
                         classes.Add("irc-underline");
+                    }
+
+                    if (strikethroughActive)
+                    {
+                        classes.Add("irc-strikethrough");
+                    }
+
+                    if (monospaceActive)
+                    {
+                        classes.Add("irc-monospace");
                     }
 
                     if (!string.IsNullOrWhiteSpace(colorsActive))
@@ -120,6 +136,18 @@ namespace Helpmebot.WebUI.Models
                         this.HasFormatting = true;
                         CloseTag();
                         underlineActive = !underlineActive;
+                        OpenTag();
+                        break;
+                    case StrikethroughMarker:
+                        this.HasFormatting = true;
+                        CloseTag();
+                        strikethroughActive = !strikethroughActive;
+                        OpenTag();
+                        break;
+                    case MonospaceMarker:
+                        this.HasFormatting = true;
+                        CloseTag();
+                        monospaceActive = !monospaceActive;
                         OpenTag();
                         break;
                     case ColourMarker:
@@ -195,6 +223,8 @@ namespace Helpmebot.WebUI.Models
                         boldActive = false;
                         italicActive = false;
                         underlineActive = false;
+                        strikethroughActive = false;
+                        monospaceActive = false;
                         colorsActive = null;
                         break;
                     default:
