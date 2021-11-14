@@ -237,12 +237,9 @@ div.card.card-highlightable {
   &:target {
     @extend .border-info;
     
-    div.card-body {
-      @extend .border-info;
-    }
-    
     div.card-header {
       @extend .text-info;
+      @extend .border-info;
     }
   }
 }

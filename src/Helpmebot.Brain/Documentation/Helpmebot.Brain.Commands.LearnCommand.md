@@ -1,4 +1,4 @@
-#### Available variables
+###### Available variables
 You may use the following variables in your message:
 * Numbered variables such as `{0}`, `{1}`, and `{2}` may be used to reflect the input passed to Helpmebot with the command.
 * Numbered variables can also be used like `{1*}` to display everything from parameter `{1}` to the end of the input. Note that numbered variables start at 0 so `{1}` would be the second word.

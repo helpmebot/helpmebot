@@ -19,10 +19,17 @@
                 </p>
             }
         </div>
+        @if (!string.IsNullOrWhiteSpace(Model.HelpSummary))
+        {
+            <div class="card-body border-bottom">
+            <h6 class="card-subtitle text-muted mb-2">Synopsis</h6>
+                <p class="mb-0">@Model.HelpSummary</p>
+            </div>
+        }
         @if (Model.Aliases.Any())
         {
             <div class="card-body border-bottom">
-                <h6 class="mb-2 card-subtitle">Aliases:</h6>
+                <h6 class="mb-2 text-muted card-subtitle">Aliases:</h6>
                 <ul class="mb-0 list-inline">
                     @foreach (var alias in Model.Aliases)
                     {
@@ -32,18 +39,11 @@
              
             </div>
         }
-        @if (!string.IsNullOrWhiteSpace(Model.HelpSummary))
-        {
-            <div class="card-body border-bottom">
-            <h6 class="card-subtitle text-muted mb-2">Synopsis</h6>
-                <p class="mb-0">@Model.HelpSummary</p>
-            </div>
-        }
 
         @if (Model.Subcommands.Any())
         {
             <div class="card-body border-bottom">
-                <h6 class="card-subtitle mb-2">Syntax</h6>
+                <h6 class="card-subtitle text-muted mb-2">Syntax</h6>
                 <dl class="mb-0">
                     @foreach (var sc in Model.Subcommands)
                     {
