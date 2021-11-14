@@ -19,7 +19,7 @@
     </div>
     <div class="row">
         <div class="col">
-            <table class="table">
+            <table class="table table-striped table-hover">
                 <thead>
                 <tr>
                     <th>Prefix</th>
@@ -29,8 +29,24 @@
                 <tbody>
                 @foreach (var entry in Model)
                 {
-                    <tr>
-                        <td class="font-monospace">@entry.Prefix</td>
+                    <tr class="@if(!string.IsNullOrEmpty(entry.ImportedAs)){@("table-warning")} @if(entry.AbsentFromLastImport){@("table-danger")}">
+                        <td>
+                            @if (!string.IsNullOrEmpty(entry.ImportedAs))
+                            {
+                                <span class="font-monospace">@entry.ImportedAs</span>
+                                <br />
+                                <span class="text-muted">Imported as <span class="font-monospace">@entry.Prefix</span></span>
+                            }
+                            else
+                            {
+                                <span class="font-monospace">@entry.Prefix</span>
+                            }
+                            @if (entry.AbsentFromLastImport)
+                            {
+                                <br />
+                                <span class="text-muted">Missing in last import</span>
+                            }
+                        </td>
                         <td class="">@entry.Url</td>
                     </tr>
                 }
