@@ -1,0 +1,41 @@
+@model List<Helpmebot.WebApi.TransportModels.InterwikiPrefix>;
+@{
+    ViewData["Title"] = "Interwiki prefixes";
+}
+
+<div class="container">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Interwiki prefixes</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                This is an overview of the interwiki table, which defines the prefix shortcuts used to link to different wikis and other external sites.
+                This list is used by the <a asp-controller="Commands" asp-fragment="command-link">@(ViewBag.BotStatus.Trigger)link</a> command, amongst others.
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Prefix</th>
+                    <th>Target URL</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var entry in Model)
+                {
+                    <tr>
+                        <td class="font-monospace">@entry.Prefix</td>
+                        <td class="">@entry.Url</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

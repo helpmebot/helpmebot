@@ -28,3 +28,9 @@
         <span class="d-none d-md-inline">Access control</span>
     </a>
 </li>
+<li>
+    <a asp-controller="Interwiki" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Interwiki"){@(" active")}">
+        <i class="fas fa-external-link-alt me-0 me-md-2"></i>
+        <span class="d-none d-md-inline">Interwiki prefixes</span>
+    </a>
+</li>
