@@ -63,6 +63,9 @@ namespace Helpmebot.Commands.Commands.FunCommands
                 channel.HedgehogMode = false;
                 this.session.SaveOrUpdate(channel);
 
+                txn.Commit();
+                this.session.Flush();
+                
                 return new[]
                 {
                     new CommandResponse
