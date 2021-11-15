@@ -1,4 +1,4 @@
-namespace Helpmebot.CoreServices.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Messages.Interfaces
 {
     using System.Collections.Generic;
 

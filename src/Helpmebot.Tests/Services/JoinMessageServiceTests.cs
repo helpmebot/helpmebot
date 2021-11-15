@@ -25,6 +25,7 @@ namespace Helpmebot.Tests.Services
     using Helpmebot.ChannelServices.Services;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using Moq;
 

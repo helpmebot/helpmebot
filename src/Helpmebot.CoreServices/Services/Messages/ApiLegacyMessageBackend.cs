@@ -1,4 +1,4 @@
-namespace Helpmebot.CoreServices.Services
+namespace Helpmebot.CoreServices.Services.Messages
 {
     using System;
     using System.Collections.Generic;
@@ -6,6 +6,7 @@ namespace Helpmebot.CoreServices.Services
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
 
     public class ApiLegacyMessageBackend : ILegacyMessageBackend
     {

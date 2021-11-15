@@ -9,6 +9,7 @@
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using Prometheus;

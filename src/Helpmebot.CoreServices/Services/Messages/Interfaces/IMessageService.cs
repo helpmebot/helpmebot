@@ -18,7 +18,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.CoreServices.Services.Interfaces
+namespace Helpmebot.CoreServices.Services.Messages.Interfaces
 {
     using System.Collections.Generic;
 
@@ -43,37 +43,6 @@ namespace Helpmebot.CoreServices.Services.Interfaces
         /// The message
         /// </returns>
         string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments);
-
-        /// <summary>
-        /// The retrieve not enough parameters.
-        /// </summary>
-        /// <param name="context">
-        /// The context for retrieving a message.
-        /// </param>
-        /// <param name="command">
-        /// The command.
-        /// </param>
-        /// <param name="expected">
-        /// The expected.
-        /// </param>
-        /// <param name="actual">
-        /// The actual.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        string NotEnoughParameters(object context, string command, int expected, int actual);
-
-        /// <summary>
-        /// The done.
-        /// </summary>
-        /// <param name="context">
-        /// The context for retrieving a message.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        string Done(object context);
 
         /// <summary>
         /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the

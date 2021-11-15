@@ -56,6 +56,7 @@
                 Classes.FromAssemblyContaining<MainInstaller>().BasedOn<ICommand>().LifestyleTransient(),
                 Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Services").WithService.AllInterfaces(),
                 Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Services.AccessControl").WithService.AllInterfaces(),
+                Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Services.Messages").WithService.AllInterfaces(),
                 Classes.FromAssemblyContaining<MainInstaller>().InNamespace("Helpmebot.CoreServices.Background").WithService.AllInterfaces(),
 
                 // MediaWiki API stuff

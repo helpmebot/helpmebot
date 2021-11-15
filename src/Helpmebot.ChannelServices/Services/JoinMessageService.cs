@@ -32,6 +32,7 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using Prometheus;

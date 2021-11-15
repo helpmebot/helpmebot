@@ -1,10 +1,10 @@
-namespace Helpmebot.CoreServices.Services
+namespace Helpmebot.CoreServices.Services.Messages
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;

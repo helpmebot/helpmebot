@@ -15,15 +15,13 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Helpmebot.CoreServices.Services
+namespace Helpmebot.CoreServices.Services.Messages
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.IrcClient.Extensions;
 
     public class MessageService : IMessageService
@@ -39,22 +37,6 @@ namespace Helpmebot.CoreServices.Services
             this.log = log;
             this.legacyMessageBackend = legacyMessageBackend;
             this.random = new Random();
-        }
-
-        public string Done(object context)
-        {
-            return this.RetrieveMessage(Messages.Done, context, null);
-        }
-
-        public string NotEnoughParameters(object context, string command, int expected, int actual)
-        {
-            var arguments = new[]
-                                {
-                                    command, expected.ToString(CultureInfo.InvariantCulture), 
-                                    actual.ToString(CultureInfo.InvariantCulture)
-                                };
-
-            return this.RetrieveMessage(Messages.NotEnoughParameters, context, arguments);
         }
 
         public string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments)

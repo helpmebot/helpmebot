@@ -8,6 +8,8 @@ namespace Helpmebot.CoreServices.Startup
     using Helpmebot.CoreServices.Services;
     using Helpmebot.CoreServices.Services.Geolocation;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Component = Castle.MicroKernel.Registration.Component;
