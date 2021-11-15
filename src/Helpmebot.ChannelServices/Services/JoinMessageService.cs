@@ -29,9 +29,9 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.ChannelServices.Configuration;
     using Helpmebot.ChannelServices.Model;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Services.Messages;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
@@ -56,6 +56,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
         private readonly IMessageService messageService;
+        private readonly IResponder responder;
         private readonly ISession session;
         private readonly RateLimitConfiguration configuration;
         private readonly IGeolocationService geolocationService;
@@ -68,6 +69,7 @@ namespace Helpmebot.ChannelServices.Services
         public JoinMessageService(
             ILogger logger,
             IMessageService messageService,
+            IResponder responder,
             ISession session,
             ModuleConfiguration configuration,
             IGeolocationService geolocationService,
@@ -76,6 +78,7 @@ namespace Helpmebot.ChannelServices.Services
         {
             this.logger = logger;
             this.messageService = messageService;
+            this.responder = responder;
             this.session = session;
             this.configuration = configuration.JoinMessageRateLimits;
             this.geolocationService = geolocationService;
@@ -192,14 +195,15 @@ namespace Helpmebot.ChannelServices.Services
 
                 if (welcomeOverride.Message != null)
                 {
-                    var welcomeMessage = this.messageService.RetrieveAllMessagesForKey(
+                    var welcomeMessage = this.responder.Respond(
                         welcomeOverride.Message,
+                        Context.Channel,
                         channel,
                         new[] {networkUser.Nickname, channel});
 
                     foreach (var message in welcomeMessage)
                     {
-                        client.SendMessage(channel, message);
+                        client.SendMessage(channel, message.CompileMessage());
                     }
                 }
             } 

@@ -5,7 +5,6 @@ namespace Helpmebot.CoreServices.Startup
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
-    using Helpmebot.CoreServices.Services;
     using Helpmebot.CoreServices.Services.Geolocation;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages;
@@ -58,7 +57,14 @@ namespace Helpmebot.CoreServices.Startup
             SetupGeolocation(globalConfiguration, container);
             SetupUrlShortener(globalConfiguration, container);
 
+            // transitional service registrations
             container.Register(Component.For<ILegacyMessageBackend>().ImplementedBy<ApiLegacyMessageBackend>());
+            container.Register(Component.For<IMessageService>().ImplementedBy<MessageServiceShim>());
+            
+            container.Register(
+                Component.For<IMessageRepository, DatabaseMessageRepository>().ImplementedBy<DatabaseMessageRepository>(),
+                Component.For<IMessageRepository, WikiMessageRepository>().ImplementedBy<WikiMessageRepository>().Named("wikiMessageRepository"),
+                Component.For<IMessageRepository, FileMessageRepository>().ImplementedBy<FileMessageRepository>().Named("fileMessageRepository"));
             
             moduleLoader.InstallModuleConfiguration(container);
             
