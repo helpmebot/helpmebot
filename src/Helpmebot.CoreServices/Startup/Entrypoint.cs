@@ -5,6 +5,7 @@ namespace Helpmebot.CoreServices.Startup
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
+    using Helpmebot.CoreServices.Services;
     using Helpmebot.CoreServices.Services.Geolocation;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -54,6 +55,8 @@ namespace Helpmebot.CoreServices.Startup
 
             SetupGeolocation(globalConfiguration, container);
             SetupUrlShortener(globalConfiguration, container);
+
+            container.Register(Component.For<ILegacyMessageBackend>().ImplementedBy<ApiLegacyMessageBackend>());
             
             moduleLoader.InstallModuleConfiguration(container);
             

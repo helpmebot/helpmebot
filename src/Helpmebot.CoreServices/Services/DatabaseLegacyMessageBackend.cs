@@ -3,6 +3,7 @@ namespace Helpmebot.CoreServices.Services
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
@@ -11,14 +12,17 @@ namespace Helpmebot.CoreServices.Services
     public class DatabaseLegacyMessageBackend :ILegacyMessageBackend
     {
         private readonly ISession localSession;
+        private readonly ILogger logger;
 
-        public DatabaseLegacyMessageBackend(ISession localSession)
+        public DatabaseLegacyMessageBackend(ISession localSession, ILogger logger)
         {
             this.localSession = localSession;
+            this.logger = logger;
         }
         
         public IEnumerable<string> GetRawMessages(string legacyKey)
         {
+            this.logger.Debug($"Getting messages from database for {legacyKey}");
             Response response;
             lock (this.localSession)
             {
