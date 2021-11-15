@@ -21,13 +21,9 @@ namespace Helpmebot.CoreServices.Services
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using System.Text;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
-    using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Extensions;
 
     public class MessageService : IMessageService
@@ -35,13 +31,13 @@ namespace Helpmebot.CoreServices.Services
         private readonly Random random;
         private readonly object randomLock = new object();
 
-        private readonly ISession localSession;
         private readonly ILogger log;
+        private readonly ILegacyMessageBackend legacyMessageBackend;
 
-        public MessageService(ISession localSession, ILogger log)
+        public MessageService(ILogger log, ILegacyMessageBackend legacyMessageBackend)
         {
-            this.localSession = localSession;
             this.log = log;
+            this.legacyMessageBackend = legacyMessageBackend;
             this.random = new Random();
         }
 
@@ -143,14 +139,7 @@ namespace Helpmebot.CoreServices.Services
         
         public void RefreshResponseRepository()
         {
-            lock (this.localSession)
-            {
-                var all = this.localSession.CreateCriteria<Response>().List<Response>();
-                foreach (var model in all)
-                {
-                    this.localSession.Refresh(model);
-                }
-            }
+            this.legacyMessageBackend.RefreshResponseRepository();
         }
 
         /// <summary>
@@ -192,22 +181,7 @@ namespace Helpmebot.CoreServices.Services
         /// </returns>
         private IEnumerable<string> GetRawMessageFromDatabase(string messageKey)
         {
-            Response response;
-            lock (this.localSession)
-            {
-                response = this.localSession.CreateCriteria<Response>()
-                    .Add(Restrictions.Eq("Name", Encoding.UTF8.GetBytes(messageKey)))
-                    .UniqueResult<Response>();
-            }
-            
-            if (response != null)
-            {
-                // extract the byte array from the dataset
-                string text = Encoding.UTF8.GetString(response.Text);
-                return text.Split('\n').ToList();
-            }
-
-            return new List<string>();
+            return this.legacyMessageBackend.GetRawMessages(messageKey);
         }
 
         private string RetrieveMessage(string messageKey, string contextPath, IEnumerable<string> arguments)
