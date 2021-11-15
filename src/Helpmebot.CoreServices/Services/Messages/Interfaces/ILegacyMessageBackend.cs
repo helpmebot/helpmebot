@@ -5,6 +5,5 @@ namespace Helpmebot.CoreServices.Services.Messages.Interfaces
     public interface ILegacyMessageBackend
     {
         IEnumerable<string> GetRawMessages(string legacyKey);
-        void RefreshResponseRepository();
     }
 }

@@ -34,10 +34,5 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             return commandResponses.First().CompileMessage();
         }
-
-        public void RefreshResponseRepository()
-        {
-            // no-op
-        }
     }
 }

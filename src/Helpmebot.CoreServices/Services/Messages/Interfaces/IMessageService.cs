@@ -43,11 +43,5 @@ namespace Helpmebot.CoreServices.Services.Messages.Interfaces
         /// The message
         /// </returns>
         string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments);
-
-        /// <summary>
-        /// Refreshes the <see cref="Helpmebot.Repositories.ResponseRepository">ResponseRepository</see> from the
-        /// database.
-        /// </summary>
-        void RefreshResponseRepository();
     }
 }

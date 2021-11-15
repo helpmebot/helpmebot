@@ -51,20 +51,14 @@ namespace Helpmebot.CoreServices.Startup
                 Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),
                 Component.For<MediaWikiDocumentationConfiguration>().Instance(globalConfiguration.Documentation),
                 Component.For<WikimediaUrlShortnerConfiguration>().Instance(globalConfiguration.WikimediaShortener),
-                Component.For<CommandOverrideConfiguration>().Instance(globalConfiguration.CommandOverrides)
+                Component.For<CommandOverrideConfiguration>().Instance(globalConfiguration.CommandOverrides),
+                Component.For<IMessageRepository, DatabaseMessageRepository>().ImplementedBy<DatabaseMessageRepository>(),
+                Component.For<IMessageRepository, WikiMessageRepository>().ImplementedBy<WikiMessageRepository>().Named("wikiMessageRepository"),
+                Component.For<IMessageRepository, FileMessageRepository>().ImplementedBy<FileMessageRepository>().Named("fileMessageRepository")
             );
 
             SetupGeolocation(globalConfiguration, container);
             SetupUrlShortener(globalConfiguration, container);
-
-            // transitional service registrations
-            container.Register(Component.For<ILegacyMessageBackend>().ImplementedBy<ApiLegacyMessageBackend>());
-            container.Register(Component.For<IMessageService>().ImplementedBy<MessageServiceShim>());
-            
-            container.Register(
-                Component.For<IMessageRepository, DatabaseMessageRepository>().ImplementedBy<DatabaseMessageRepository>(),
-                Component.For<IMessageRepository, WikiMessageRepository>().ImplementedBy<WikiMessageRepository>().Named("wikiMessageRepository"),
-                Component.For<IMessageRepository, FileMessageRepository>().ImplementedBy<FileMessageRepository>().Named("fileMessageRepository"));
             
             moduleLoader.InstallModuleConfiguration(container);
             

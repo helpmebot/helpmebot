@@ -53,10 +53,5 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             return messages;
         }
-
-        public void RefreshResponseRepository()
-        {
-            // no-op
-        }
     }
 }
