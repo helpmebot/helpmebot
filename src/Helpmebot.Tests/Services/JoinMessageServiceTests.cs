@@ -76,6 +76,8 @@ namespace Helpmebot.Tests.Services
 
         private Mock<IGeolocationService> geolocService;
 
+        private Mock<IResponder> responderMock;
+
         /// <summary>
         /// The setup.
         /// </summary>
@@ -95,12 +97,14 @@ namespace Helpmebot.Tests.Services
         {
             this.ircClient = new Mock<IIrcClient>();
             this.geolocService = new Mock<IGeolocationService>();
+            this.responderMock = new Mock<IResponder>();
 
             this.blockMonitoringService = new Mock<IBlockMonitoringService>();
             
             this.joinMessageService = new Mock<JoinMessageService>(
                 this.Logger.Object,
                 this.messageService.Object,
+                this.responderMock.Object,
                 this.session.Object,
                 new ModuleConfiguration{JoinMessageRateLimits = new RateLimitConfiguration{RateLimitMax = 1, RateLimitDuration = 10}},
                 this.geolocService.Object,
