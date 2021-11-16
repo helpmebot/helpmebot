@@ -1,0 +1,23 @@
+---
+accountcreations.no-such-user: &accountcreations.no-such-user
+  - - There is no such user '{0}'.
+accountcreations.command.count: &accountcreations.command.count
+  - - "{0} ({1}) has closed {2} requests as 'Created', {3} of them today."
+accountcreations.command.count.admin: &accountcreations.command.count.admin
+  - - "{0} ({1}) has closed {2} requests as 'Created', {3} of them today. Suspended: {0}, Promoted: {1}, Approved: {2}, Demoted: {3}, Declined: {4}, Renamed: {5}, Messages edited: {6}, Preferences edited: {7}"
+accountcreations.command.deploy.disabled:
+  - - Deployment disabled in configuration
+accountcreations.command.deploy.inprogress: &accountcreations.command.deploy.inprogress
+  - - Deploying to the sandbox...
+accountcreations.command.stats: &accountcreations.command.stats
+  - - "{0} ({1}) was last active {2}. They currently have automatic welcoming of users {3}. Their on-wiki username is [[User:{4}]]."
+accountcreations.command.status: &accountcreations.command.status
+  - - "Open requests: {0}, Flagged user requests: {1}, Checkuser requests: {2}, On Hold: {3}, ProxyCheck: {4}, Steward: {5}, Hospital: {6}, JobQueue: {7}, Banned: {8}, Site users: {10}, Site admins: {9}, Awaiting approval: {11}"
+
+# Legacy messages
+noSuchUser: *accountcreations.no-such-user
+CmdAccCount: *accountcreations.command.count
+CmdAccCountAdmin: *accountcreations.command.count.admin
+DeployInProgress: *accountcreations.command.deploy.inprogress
+CmdAccStats: *accountcreations.command.stats
+CmdAccStatus: *accountcreations.command.status

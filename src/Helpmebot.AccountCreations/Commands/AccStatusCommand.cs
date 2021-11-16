@@ -9,9 +9,7 @@ namespace Helpmebot.AccountCreations.Commands
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -25,7 +23,7 @@ namespace Helpmebot.AccountCreations.Commands
     [HelpCategory("ACC")]
     public class AccStatusCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
         private readonly IWebServiceClient webServiceClient;
         private readonly BotConfiguration botConfiguration;
 
@@ -37,7 +35,7 @@ namespace Helpmebot.AccountCreations.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService,
+            IResponder responder,
             IWebServiceClient webServiceClient,
             BotConfiguration botConfiguration) : base(
             commandSource,
@@ -48,7 +46,7 @@ namespace Helpmebot.AccountCreations.Commands
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
             this.webServiceClient = webServiceClient;
             this.botConfiguration = botConfiguration;
         }
@@ -96,8 +94,7 @@ namespace Helpmebot.AccountCreations.Commands
                 nav.SelectSingleNode("//status/@usernew").Value
             };
 
-            var message = this.messageService.RetrieveMessage("CmdAccStatus", this.CommandSource, messageParams);
-            return new[] {new CommandResponse {Message = message}};
+            return this.responder.Respond("accountcreations.command.status", this.CommandSource, messageParams);
         }
     }
 }

@@ -10,9 +10,7 @@ namespace Helpmebot.AccountCreations.Commands
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -26,7 +24,7 @@ namespace Helpmebot.AccountCreations.Commands
     [HelpCategory("ACC")]
     public class AccStatsCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
         private readonly IWebServiceClient webServiceClient;
         private readonly BotConfiguration botConfiguration;
 
@@ -38,7 +36,7 @@ namespace Helpmebot.AccountCreations.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService,
+            IResponder responder,
             IWebServiceClient webServiceClient,
             BotConfiguration botConfiguration) : base(
             commandSource,
@@ -49,7 +47,7 @@ namespace Helpmebot.AccountCreations.Commands
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
             this.webServiceClient = webServiceClient;
             this.botConfiguration = botConfiguration;
         }
@@ -96,8 +94,7 @@ namespace Helpmebot.AccountCreations.Commands
             var isMissing = nav.SelectSingleNode("//user/@missing") != null;
             if (isMissing)
             {
-                var msg = this.messageService.RetrieveMessage("noSuchUser", this.CommandSource, new[] {username});
-                return new[] {new CommandResponse {Message = msg}};
+                return this.responder.Respond("accountcreations.no-such-user", this.CommandSource, username);
             }
 
             string[] messageParams =
@@ -105,14 +102,11 @@ namespace Helpmebot.AccountCreations.Commands
                 username, // username
                 nav.SelectSingleNode("//user/@status").Value, // accesslevel
                 nav.SelectSingleNode("//user/@lastactive").Value,
-                nav.SelectSingleNode("//user/@welcome_template").Value == string.Empty
-                    ? "disabled"
-                    : "enabled",
+                nav.SelectSingleNode("//user/@welcome_template").Value == string.Empty ? "disabled" : "enabled",
                 nav.SelectSingleNode("//user/@onwikiname").Value
             };
 
-            var message = this.messageService.RetrieveMessage("CmdAccStats", this.CommandSource, messageParams);
-            return new[] {new CommandResponse {Message = message}};
+            return this.responder.Respond("accountcreations.command.stats", this.CommandSource, messageParams);
         }
     }
 }

@@ -10,9 +10,7 @@ namespace Helpmebot.AccountCreations.Commands
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -26,7 +24,7 @@ namespace Helpmebot.AccountCreations.Commands
     [HelpCategory("ACC")]
     public class AccCountCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
         private readonly IWebServiceClient webServiceClient;
         private readonly BotConfiguration botConfiguration;
 
@@ -38,7 +36,7 @@ namespace Helpmebot.AccountCreations.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService,
+            IResponder responder,
             IWebServiceClient webServiceClient,
             BotConfiguration botConfiguration) : base(
             commandSource,
@@ -49,7 +47,7 @@ namespace Helpmebot.AccountCreations.Commands
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
             this.webServiceClient = webServiceClient;
             this.botConfiguration = botConfiguration;
         }
@@ -97,8 +95,10 @@ namespace Helpmebot.AccountCreations.Commands
             var isMissing = nav.SelectSingleNode("//user/@missing") != null;
             if (isMissing)
             {
-                var msg = this.messageService.RetrieveMessage("noSuchUser", this.CommandSource, new[] {username});
-                return new[] {new CommandResponse {Message = msg}};
+                return this.responder.Respond(
+                    "accountcreations.no-such-user",
+                    this.CommandSource,
+                    username);
             }
 
             var userLevelNode = nav.SelectSingleNode("//user/@level");
@@ -112,26 +112,29 @@ namespace Helpmebot.AccountCreations.Commands
                 string.Empty
             };
 
+            var messageKey = "accountcreations.command.count";
+
             if (userLevelNode.Value == "Admin")
             {
-                messageParams[4] = this.messageService.RetrieveMessage(
-                    "CmdAccCountAdmin",
-                    this.CommandSource,
-                    new[]
-                    {
-                        nav.SelectSingleNode("//user/@suspended").Value,
-                        nav.SelectSingleNode("//user/@promoted").Value,
-                        nav.SelectSingleNode("//user/@approved").Value,
-                        nav.SelectSingleNode("//user/@demoted").Value,
-                        nav.SelectSingleNode("//user/@declined").Value,
-                        nav.SelectSingleNode("//user/@renamed").Value,
-                        nav.SelectSingleNode("//user/@edited").Value,
-                        nav.SelectSingleNode("//user/@prefchange").Value
-                    });
+                messageKey = "accountcreations.command.count.admin";
+                messageParams = new[]
+                {
+                    username, // username
+                    userLevelNode.Value,
+                    nav.SelectSingleNode("//user/@created").Value,
+                    nav.SelectSingleNode("//user/@today").Value,
+                    nav.SelectSingleNode("//user/@suspended").Value,
+                    nav.SelectSingleNode("//user/@promoted").Value,
+                    nav.SelectSingleNode("//user/@approved").Value,
+                    nav.SelectSingleNode("//user/@demoted").Value,
+                    nav.SelectSingleNode("//user/@declined").Value,
+                    nav.SelectSingleNode("//user/@renamed").Value,
+                    nav.SelectSingleNode("//user/@edited").Value,
+                    nav.SelectSingleNode("//user/@prefchange").Value
+                };
             }
 
-            var message = this.messageService.RetrieveMessage("CmdAccCount", this.CommandSource, messageParams);
-            return new[] {new CommandResponse {Message = message}};
+            return this.responder.Respond(messageKey, this.CommandSource, messageParams);
         }
     }
 }

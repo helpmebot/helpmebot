@@ -8,7 +8,6 @@ namespace Helpmebot.AccountCreations.Commands
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -24,7 +23,7 @@ namespace Helpmebot.AccountCreations.Commands
     [HelpCategory("ACC")]
     public class AccDeployCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
         private readonly BotConfiguration botConfiguration;
         private readonly IWebServiceClient webServiceClient;
         private readonly string deploymentPassword;
@@ -37,7 +36,7 @@ namespace Helpmebot.AccountCreations.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService,
+            IResponder responder,
             BotConfiguration botConfiguration,
             IWebServiceClient webServiceClient,
             ModuleConfiguration deploymentConfiguration) : base(
@@ -49,7 +48,7 @@ namespace Helpmebot.AccountCreations.Commands
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
             this.botConfiguration = botConfiguration;
             this.webServiceClient = webServiceClient;
             this.deploymentPassword = deploymentConfiguration.DeploymentPassword;
@@ -62,23 +61,23 @@ namespace Helpmebot.AccountCreations.Commands
             var apiDeployPassword = this.deploymentPassword;
             if (apiDeployPassword == null)
             {
-                yield return new CommandResponse
-                {
-                    Message = "Deployment disabled in configuration",
-                    Destination = CommandResponseDestination.PrivateMessage,
-                    Type = CommandResponseType.Notice
-                };
-
-                yield break;
+                return this.responder.Respond(
+                    "accountcreations.command.deploy.disabled",
+                    this.CommandSource,
+                    destination: CommandResponseDestination.PrivateMessage,
+                    type: CommandResponseType.Notice);
             }
 
             var args = this.Arguments;
 
             // note: using client.sendmessage for immediacy
-            var deployInProgressMessage =
-                this.messageService.RetrieveMessage("DeployInProgress", this.CommandSource, null);
-            this.Client.SendMessage(this.CommandSource, deployInProgressMessage);
-
+            foreach (var response in this.responder.Respond(
+                "accountcreations.command.deploy.inprogress",
+                this.CommandSource))
+            {
+                this.Client.SendMessage(this.CommandSource, response.CompileMessage());
+            }
+            
             var revision = string.Join(" ", args);
             var key = this.EncodeMD5(this.EncodeMD5(revision) + apiDeployPassword);
 
@@ -100,6 +99,8 @@ namespace Helpmebot.AccountCreations.Commands
                     this.Client.SendMessage(this.CommandSource, r.ReadLine());
                 }
             }
+
+            return null;
         }
 
         private string EncodeMD5(string s)
