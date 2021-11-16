@@ -16,7 +16,8 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         public List<List<string>> Get(string key, string contextType, string context)
         {
-            throw new NotImplementedException();
+            // FIXME: implement:
+            return null;
         }
 
         public void Remove(string key, string contextType, string context)

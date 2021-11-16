@@ -9,7 +9,8 @@ namespace Helpmebot.CoreServices.Services.Messages
         
         public override List<List<string>> Get(string key, string contextType, string context)
         {
-            throw new NotImplementedException();
+            // FIXME: implement:
+            return null;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             var messageSets = this.FindMessage(messageKey, contextType, context);
 
-            if (messageSets == null)
+            if (messageSets == null || messageSets.Count == 0)
             {
                 yield break;
             }
@@ -120,7 +120,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                 }
             }
             
-            foreach (var repo in this.messageRepositories.Where(x => !x.SupportsContext))
+            foreach (var repo in this.messageRepositories)
             {
                 this.logger.TraceFormat("Searching: {0}", repo.GetType());
                 

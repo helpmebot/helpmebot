@@ -41,7 +41,7 @@ namespace Helpmebot.CoreServices.Services.Messages
             var results = this.legacyMessageBackend.GetRawMessages(string.Concat(key, contextData)).ToList();
             if (!results.Any())
             {
-                results = this.legacyMessageBackend.GetRawMessages(key).ToList();
+                return null;
             }
 
             return results.Select(x => new List<string> { x }).ToList();
