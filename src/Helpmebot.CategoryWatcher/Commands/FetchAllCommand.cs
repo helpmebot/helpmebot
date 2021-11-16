@@ -1,11 +1,13 @@
 namespace Helpmebot.CategoryWatcher.Commands
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NDesk.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -21,6 +23,7 @@ namespace Helpmebot.CategoryWatcher.Commands
     {
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
         private readonly ISession databaseSession;
+        private readonly IResponder responder;
 
         public FetchAllCommand(
             string commandSource,
@@ -31,7 +34,8 @@ namespace Helpmebot.CategoryWatcher.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ICategoryWatcherBackgroundService categoryWatcherService,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -42,6 +46,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         {
             this.categoryWatcherService = categoryWatcherService;
             this.databaseSession = databaseSession;
+            this.responder = responder;
         }
 
         [Help(
@@ -63,8 +68,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             var channelObject = this.databaseSession.GetChannelObject(this.CommandSource);
             if (channelObject == null && !allKeywords)
             {
-                yield return new CommandResponse
-                    {Message = "This command must be run in-channel, or with the --all flag"};
+                return this.responder.Respond("catwatcher.command.fetchall.must-run-in-channel", this.CommandSource);
             }
 
             List<string> validKeywords;
@@ -81,6 +85,8 @@ namespace Helpmebot.CategoryWatcher.Commands
             {
                 this.categoryWatcherService.ForceUpdate(flag, channelObject);
             }
+
+            return Array.Empty<CommandResponse>();
         }
     }
 }
