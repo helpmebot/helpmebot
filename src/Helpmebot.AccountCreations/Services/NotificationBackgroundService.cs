@@ -33,7 +33,6 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
-    using NHibernate.Util;
     using Prometheus;
     using Stwalkerster.IrcClient.Interfaces;
     using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
@@ -94,14 +93,13 @@ namespace Helpmebot.AccountCreations.Services
                 try
                 {
                     list = this.session.CreateCriteria<Notification>().Add(Restrictions.Eq(nameof(Notification.Handled), false)).List<Notification>();
-                    
-                    list.ForEach(
-                        x =>
-                        {
-                            this.session.Refresh(x);
-                            x.Handled = true;
-                            this.session.Update(x);
-                        });
+
+                    foreach (var item in list)
+                    {
+                        this.session.Refresh(item);
+                        item.Handled = true;
+                        this.session.Update(item);
+                    }
                     
                     transaction.Commit();
                 }
