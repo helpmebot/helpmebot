@@ -1,3 +1,7 @@
 ---
 format: 1
-dataset: {}
+dataset:
+  webapi.command.weblogin.approved:
+    - - Login approved, please return to the web UI and click the 'Continue' button.
+  webapi.command.weblogin.denied:
+    - - Login failed.

@@ -4,6 +4,7 @@ namespace Helpmebot.WebApi.Commands
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.WebApi.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -18,6 +19,7 @@ namespace Helpmebot.WebApi.Commands
     public class WebLoginCommand : CommandBase
     {
         private readonly ILoginTokenService loginTokenService;
+        private readonly IResponder responder;
 
         public WebLoginCommand(
             string commandSource,
@@ -27,7 +29,8 @@ namespace Helpmebot.WebApi.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ILoginTokenService loginTokenService) : base(
+            ILoginTokenService loginTokenService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -37,6 +40,7 @@ namespace Helpmebot.WebApi.Commands
             client)
         {
             this.loginTokenService = loginTokenService;
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -52,12 +56,10 @@ namespace Helpmebot.WebApi.Commands
 
             if (approved)
             {
-                yield return new CommandResponse { Message = "Login approved, please return to the web UI and click the 'Continue' button." };
+                return this.responder.Respond("webapi.command.weblogin.approved", this.CommandSource);
             }
-            else
-            {
-                yield return new CommandResponse { Message = "Login failed." };
-            }
+
+            return this.responder.Respond("webapi.command.weblogin.denied", this.CommandSource);
         }
     }
 }
