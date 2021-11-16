@@ -7,6 +7,7 @@ namespace Helpmebot.Brain.Commands
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -21,6 +22,7 @@ namespace Helpmebot.Brain.Commands
     public class LearnCommand : CommandBase
     {
         private readonly IKeywordService keywordService;
+        private readonly IResponder responder;
 
         public LearnCommand(
             string commandSource,
@@ -30,7 +32,8 @@ namespace Helpmebot.Brain.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IKeywordService keywordService) : base(
+            IKeywordService keywordService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -40,12 +43,15 @@ namespace Helpmebot.Brain.Commands
             client)
         {
             this.keywordService = keywordService;
+            this.responder = responder;
         }
 
         [RequiredArguments(2)]
-        [Help(new[]{"<keyword> <message>", "@action <keyword> <message>"}, 
+        [Help(new[]{"<keyword> <message>", "--action <keyword> <message>"}, 
             new[]{"Creates a new learnt command invoked by <keyword> to respond with the provided message",
-                "Optionally sends message as a CTCP ACTION (aka a /me command) if @action is provided before the first parameter."})]
+                "Optionally sends message as a CTCP ACTION (aka a /me command) if --action is provided before the first parameter.",
+                "@action is accepted in place of --action for backwards compatibility."
+            })]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var action = false;
@@ -53,7 +59,7 @@ namespace Helpmebot.Brain.Commands
 
             if (args.Count >= 3)
             {
-                if (args[0] == "@action")
+                if (args[0] == "@action" || args[0] == "--action")
                 {
                     action = true;
                     args.PopFromFront();
@@ -62,13 +68,7 @@ namespace Helpmebot.Brain.Commands
 
             var keywordName = args.PopFromFront();
             this.keywordService.Create(keywordName, string.Join(" ", Enumerable.ToArray(args)), action);
-  
-            yield return new CommandResponse
-            {
-                Message = "New command created",
-                Type = CommandResponseType.Notice,
-                Destination = CommandResponseDestination.PrivateMessage
-            };
+            return this.responder.Respond("brain.command.learn", this.CommandSource, keywordName);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Helpmebot.Brain.Commands
     using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,6 +19,7 @@ namespace Helpmebot.Brain.Commands
     public class ForgetCommand : CommandBase
     {
         private readonly IKeywordService keywordService;
+        private readonly IResponder responder;
 
         public ForgetCommand(
             string commandSource,
@@ -28,7 +29,8 @@ namespace Helpmebot.Brain.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IKeywordService keywordService) : base(
+            IKeywordService keywordService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -38,6 +40,7 @@ namespace Helpmebot.Brain.Commands
             client)
         {
             this.keywordService = keywordService;
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -49,12 +52,7 @@ namespace Helpmebot.Brain.Commands
                 this.keywordService.Delete(argument);
             }
             
-            yield return new CommandResponse
-            {
-                Message = "Command removed",
-                Type = CommandResponseType.Notice,
-                Destination = CommandResponseDestination.PrivateMessage
-            };
+            return this.responder.Respond("brain.command.forget", this.CommandSource);
         }
     }
 }

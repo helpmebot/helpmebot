@@ -1,3 +1,11 @@
 ---
 format: 1
-dataset: {}
+dataset:
+  brain.command.learn:
+    - - New command created.
+  brain.command.forget:
+    - - Command removed.
+  brain.command.edit.proposal:
+    - - "Proposed change to {0}:"
+  brain.command.edit.completed:
+    - - Edited {0}.

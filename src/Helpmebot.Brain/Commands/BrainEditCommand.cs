@@ -7,6 +7,7 @@ namespace Helpmebot.Brain.Commands
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -25,6 +26,7 @@ namespace Helpmebot.Brain.Commands
     {
         private readonly IKeywordService keywordService;
         private readonly ISedExpressionService sedExpressionService;
+        private readonly IResponder responder;
 
         public BrainEditCommand(
             string commandSource,
@@ -35,7 +37,8 @@ namespace Helpmebot.Brain.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IKeywordService keywordService,
-            ISedExpressionService sedExpressionService) : base(
+            ISedExpressionService sedExpressionService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -46,6 +49,7 @@ namespace Helpmebot.Brain.Commands
         {
             this.keywordService = keywordService;
             this.sedExpressionService = sedExpressionService;
+            this.responder = responder;
         }
 
         [RequiredArguments(2)]
@@ -61,23 +65,24 @@ namespace Helpmebot.Brain.Commands
         {
             var keyword = this.DoReplacement(out var result);
 
-            return new[]
+            var responses = this.responder.Respond(
+                    "brain.command.edit.proposal",
+                    this.CommandSource,
+                    new[] { keyword.Name },
+                    destination: CommandResponseDestination.PrivateMessage,
+                    type: CommandResponseType.Notice,
+                    ignoreRedirection: true)
+                .ToList();
+            
+            responses.Add(new CommandResponse
             {
-                new CommandResponse
-                {
-                    IgnoreRedirection = true,
-                    Type = CommandResponseType.Notice,
-                    Destination = CommandResponseDestination.PrivateMessage,
-                    Message = $"Proposed change to {keyword.Name}:"
-                },
-                new CommandResponse
-                {
-                    IgnoreRedirection = true,
-                    Destination = CommandResponseDestination.PrivateMessage,
-                    Message = result,
-                    ClientToClientProtocol = keyword.Action ? "ACTION" : null
-                }
-            };
+                IgnoreRedirection = true,
+                Destination = CommandResponseDestination.PrivateMessage,
+                Message = result,
+                ClientToClientProtocol = keyword.Action ? "ACTION" : null
+            });
+            
+            return responses;
         }
         
         [RequiredArguments(2)]
@@ -90,18 +95,15 @@ namespace Helpmebot.Brain.Commands
             var action = keyword.Action;
 
             this.keywordService.Delete(keyword.Name);
-            this.keywordService.Create(trigger, result, action);            
-            
-            return new[]
-            {
-                new CommandResponse
-                {
-                    IgnoreRedirection = true,
-                    Destination = CommandResponseDestination.PrivateMessage,
-                    Type = CommandResponseType.Notice,
-                    Message = $"Edited {keyword.Name}."
-                }
-            };
+            this.keywordService.Create(trigger, result, action);
+
+            return this.responder.Respond(
+                "brain.command.edit.completed",
+                this.CommandSource,
+                new[] { keyword.Name },
+                destination: CommandResponseDestination.PrivateMessage,
+                type: CommandResponseType.Notice,
+                ignoreRedirection: true);
         }
 
         private Keyword DoReplacement(out string result)
