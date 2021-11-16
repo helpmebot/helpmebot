@@ -1,0 +1,18 @@
+---
+# Helpmebot default message file
+# ==============================
+# format - this should be an array of arrays.
+# message.key.single.response
+# - - response
+# message.key.two.options.pick.one
+# - - alternate response 1
+# - - alternate response 2
+# message.key.two.options.with.two.responses.each
+# - - alternate response 1 line 1
+#   - alternate response 1 line 2
+# - - alternate response 1 line 1
+#   - alternate response 1 line 2
+#
+# "core" messages should have the prefix "core.".
+# messages provided by the module should have a prefix unique to that module.
+#
