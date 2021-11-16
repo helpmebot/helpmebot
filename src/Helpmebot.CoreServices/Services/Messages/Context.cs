@@ -2,6 +2,13 @@ namespace Helpmebot.CoreServices.Services.Messages
 {
     public class Context
     {
-        public const string Channel = "channel";
+        public static readonly Context Channel = new Context("channel");
+        
+        public string ContextType { get; }
+        
+        private Context(string contextType)
+        {
+            this.ContextType = contextType;
+        }
     }
 }

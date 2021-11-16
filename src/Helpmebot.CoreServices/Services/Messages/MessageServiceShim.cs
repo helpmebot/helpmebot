@@ -22,9 +22,10 @@ namespace Helpmebot.CoreServices.Services.Messages
             var commandResponses = this.responder
                 .Respond(
                     messageKey,
-                    context == null ? null : "channel",
                     (string)context,
-                    arguments.ToArray())
+                    arguments.ToArray(),
+                    contextType: context == null ? null : Context.Channel
+                    )
                 .ToList();
 
             if (!commandResponses.Any())

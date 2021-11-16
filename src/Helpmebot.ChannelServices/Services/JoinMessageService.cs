@@ -197,7 +197,6 @@ namespace Helpmebot.ChannelServices.Services
                 {
                     var welcomeMessage = this.responder.Respond(
                         welcomeOverride.Message,
-                        Context.Channel,
                         channel,
                         new[] {networkUser.Nickname, channel});
 

@@ -33,8 +33,26 @@ namespace Helpmebot.CoreServices.Services.Messages
             };
         }
 
-        public IEnumerable<CommandResponse> Respond(string messageKey, string contextType, string context, params string[] arguments)
+        public IEnumerable<CommandResponse> Respond(string messageKey, string channel, string[] arguments)
         {
+            return this.Respond(messageKey, channel, arguments, contextType: Context.Channel);
+        }
+        
+        public IEnumerable<CommandResponse> Respond(
+            string messageKey, 
+            string context, 
+            string[] arguments, 
+            Context contextType,  
+            CommandResponseDestination destination = CommandResponseDestination.Default,
+            CommandResponseType type = CommandResponseType.Message,
+            bool ignoreRedirection = false,
+            IEnumerable<string> redirectionTarget = null)
+        {
+            if (context != null && contextType == null)
+            {
+                contextType = Context.Channel;
+            }
+            
             this.logger.DebugFormat("Response: {0} / ({2}) {1}", messageKey, context, contextType);
 
             int RandomNumber(List<List<string>> list)
@@ -48,27 +66,51 @@ namespace Helpmebot.CoreServices.Services.Messages
                 return i;
             }
 
-            var messageSets = this.FindMessage(messageKey, contextType, context);
+            var messageSets = this.FindMessage(messageKey, contextType.ContextType, context);
 
             if (messageSets == null || messageSets.Count == 0)
             {
                 yield break;
             }
 
+            List<string> redirectionTargetList = null;
+            if (redirectionTarget != null)
+            {
+                redirectionTargetList = redirectionTarget.ToList();
+            }
+            
             var chosenMessageSet = messageSets[RandomNumber(messageSets)];
             foreach (var message in chosenMessageSet)
             {
                 // ReSharper disable once CoVariantArrayConversion
-                var parsedString = string.Format(message, arguments);
-                
+                string parsedString = message;
+                if (arguments != null)
+                {
+                    parsedString = string.Format(message, arguments);
+                }
+
                 if (parsedString.StartsWith("#ACTION"))
                 {
                     parsedString = parsedString.Substring(8);
-                    yield return new CommandResponse { Message = parsedString, ClientToClientProtocol = "ACTION"};
+                    yield return new CommandResponse
+                    {
+                        Message = parsedString, 
+                        ClientToClientProtocol = "ACTION",
+                        IgnoreRedirection = true,
+                        Destination = destination,
+                        Type = type,
+                        RedirectionTarget = redirectionTargetList
+                    };
                 }
                 else
                 {
-                    yield return new CommandResponse { Message = parsedString };
+                    yield return new CommandResponse { 
+                        Message = parsedString,
+                        IgnoreRedirection = ignoreRedirection,
+                        Destination = destination,
+                        Type = type,
+                        RedirectionTarget = redirectionTargetList
+                    };
                 }
             }
         }
