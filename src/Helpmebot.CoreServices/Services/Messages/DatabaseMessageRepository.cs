@@ -35,6 +35,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                 .Where(x => x.MessageKey == key)
                 .And(x => contextType == null || x.ContextType == contextType)
                 .And(x => context == null || x.Context == context)
+                .And(x => x.Format == 1)
                 .SingleOrDefault();
 
             if (message == null)

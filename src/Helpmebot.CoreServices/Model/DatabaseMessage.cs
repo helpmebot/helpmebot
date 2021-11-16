@@ -9,6 +9,11 @@ namespace Helpmebot.CoreServices.Model
         public virtual string Context { get; set; }
         public virtual string MessageKey { get; set; }
         public virtual string Value { get; set; }
+        
+        /// <summary>
+        /// Value format; futureproofing 
+        /// </summary>
+        public virtual int Format { get; set; }
         public virtual DateTime LastUpdated { get; set; }
     }
 }

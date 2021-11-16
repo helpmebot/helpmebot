@@ -13,6 +13,7 @@
             this.Map(k => k.Context).Column("context");
             this.Map(k => k.MessageKey).Column("messagekey");
             this.Map(k => k.Value).Column("value");
+            this.Map(k => k.Format).Column("format");
             this.Map(k => k.LastUpdated).Column("lastupdated");
         }
     }
