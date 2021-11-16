@@ -70,6 +70,12 @@ namespace Helpmebot.Commands.Commands.FunCommands
             string[] messageparams = { this.CommandTarget };
             string response = this.MessageService.RetrieveMessage(message, this.CommandSource, messageparams);
 
+            if (response == null)
+            {
+                this.Logger.Error($"Message not found for key {message}");
+                yield break;
+            }
+            
             yield return new CommandResponse
             {
                 Message = response,
