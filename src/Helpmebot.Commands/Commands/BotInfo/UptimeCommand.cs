@@ -2,8 +2,8 @@ namespace Helpmebot.Commands.Commands.BotInfo
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -14,10 +14,11 @@ namespace Helpmebot.Commands.Commands.BotInfo
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("uptime")]
+    [HelpSummary("Returns the current uptime of the bot")]
     [CommandFlag(Flags.BotInfo)]
     public class UptimeCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
 
         public UptimeCommand(
             string commandSource,
@@ -27,7 +28,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService) : base(
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -36,23 +37,10 @@ namespace Helpmebot.Commands.Commands.BotInfo
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
         }
 
-        [Help("", "Returns the current uptime of the bot")]
-        protected override IEnumerable<CommandResponse> Execute()
-        {
-            var startupTime = Launcher.StartupTime;
-            
-            string[] messageParams =
-            {
-                startupTime.DayOfWeek.ToString(), 
-                startupTime.ToLongDateString(), 
-                startupTime.ToLongTimeString()
-            };
-
-            var message = this.messageService.RetrieveMessage("cmdUptimeUpSince", this.CommandSource, messageParams);
-            yield return new CommandResponse {Message = message};
-        }
+        protected override IEnumerable<CommandResponse> Execute() => 
+            this.responder.Respond("commands.command.uptime", this.CommandSource, Launcher.StartupTime);
     }
 }

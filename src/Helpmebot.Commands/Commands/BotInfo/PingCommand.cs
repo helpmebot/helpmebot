@@ -17,7 +17,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
     [CommandFlag(Flags.BotInfo)]
     public class PingCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
 
         public PingCommand(
             string commandSource,
@@ -27,7 +27,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService) : base(
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -36,7 +36,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
         }
 
         [Help("[username]", "Replies to a ping with a pong")]
@@ -48,15 +48,11 @@ namespace Helpmebot.Commands.Commands.BotInfo
             if (this.Arguments.Count == 0)
             {
                 name = this.User.Nickname;
-                message = this.messageService.RetrieveMessage("cmdPing", this.CommandSource, new[] { name });
+                return this.responder.Respond("commands.command.ping", this.CommandSource, name);
             }
-            else
-            {
-                name = string.Join(" ", this.Arguments);
-                message = this.messageService.RetrieveMessage("cmdPingUser", this.CommandSource, new[] { name });
-            }
-
-            yield return new CommandResponse {Message = message};
+            
+            name = string.Join(" ", this.Arguments);
+            return this.responder.Respond("commands.command.ping.user", this.CommandSource, name);
         }
     }
 }

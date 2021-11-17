@@ -7,7 +7,7 @@ namespace Helpmebot.Commands.Commands.Information
     using DnsClient;
     using DnsClient.Protocol;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -20,6 +20,7 @@ namespace Helpmebot.Commands.Commands.Information
     [CommandFlag(Flags.Info)]
     public class DnsResolveCommand : CommandBase
     {
+        private readonly IResponder responder;
         private readonly LookupClient dnsClient;
 
         public DnsResolveCommand(
@@ -29,7 +30,8 @@ namespace Helpmebot.Commands.Commands.Information
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(
+            IIrcClient client,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -38,6 +40,7 @@ namespace Helpmebot.Commands.Commands.Information
             configurationProvider,
             client)
         {
+            this.responder = responder;
             var options = new LookupClientOptions {UseCache = false, EnableAuditTrail = true};
             this.dnsClient = new LookupClient(options);
         }
@@ -63,27 +66,20 @@ namespace Helpmebot.Commands.Commands.Information
 
             if (ptrQueryResponse.HasError)
             {
-                yield return new CommandResponse
-                {
-                    Message = string.Format(
-                        "Could not look up hostname for IP {0}: {1}",
-                        address,
-                        ptrQueryResponse.ErrorMessage)
-                };
-                yield break;
+                return this.responder.Respond(
+                    "commands.command.resolve.ptr.error",
+                    this.CommandSource,
+                    new object[] { address, ptrQueryResponse.ErrorMessage });
             }
-
+            
             var domains = ptrQueryResponse.Answers.Select(x => (x as PtrRecord).PtrDomainName.ToString())
                 .Distinct()
                 .ToList();
 
-            yield return new CommandResponse
-            {
-                Message = string.Format(
-                    "{0} resolves to: {1}",
-                    address,
-                    string.Join(", ", domains))
-            };
+            return this.responder.Respond(
+                "commands.command.resolve.ptr",
+                this.CommandSource,
+                new object[] { address, string.Join(", ", domains) });
         }
 
         private IEnumerable<CommandResponse> HandleHost(string query)
@@ -115,31 +111,27 @@ namespace Helpmebot.Commands.Commands.Information
                         .Distinct());
             }
 
+            var canonical = string.Empty;
+            if (cnames.Any())
+            {
+                canonical = this.responder.GetMessagePart(
+                    "commands.command.resolve.canonical",
+                    this.CommandSource,
+                    new object[] { string.Join(", ", cnames) });
+            }
+            
             if (!ipAddresses.Any())
             {
-                var canonical = string.Empty;
-                if (cnames.Any())
-                {
-                    canonical = string.Format(" (canonical: {0})", string.Join(", ", cnames));
-                }
-
-                yield return new CommandResponse
-                {
-                    Message = string.Format("No IP addresses found for hostname {0}{1}.", query, canonical)
-                };
-                yield break;
+                return this.responder.Respond(
+                    "commands.command.resolve.host.none",
+                    this.CommandSource,
+                    new object[] { query, canonical });
             }
 
-            var ipMessage = string.Format(
-                "{0} {2}resolves to the following IP addresses: {1}",
-                query,
-                string.Join(", ", ipAddresses),
-                cnames.Count > 0
-                    ? string.Format("(canonical: {0}) ", string.Join(", ", cnames))
-                    : string.Empty
-            );
-
-            yield return new CommandResponse {Message = ipMessage};
+            return this.responder.Respond(
+                "commands.command.resolve.host",
+                this.CommandSource,
+                new object[] { query, string.Join(", ", ipAddresses), canonical });
         }
     }
 }

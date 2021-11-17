@@ -1,3 +1,73 @@
 ---
 format: 1
-dataset: {}
+dataset: 
+  commands.command.access.no-flag-group:
+    - - The specified flag group does not exist!
+  commands.command.flaggroup.list:
+    - - "Group {0}: {1}"
+  commands.command.flaggroup.created:
+    - - Flag group created.
+  commands.command.flaggroup.modifed:
+    - - Flag group modified.
+  commands.command.flaggroup.updated:
+    - - Flag group updated.
+  commands.command.flaggroup.deleted:
+    - - Flag group deleted.
+  commands.command.flaggroup.error:
+    - - "Error managing flag group: {0}"
+      
+  commands.command.ping: &commands.command.ping
+    - - Pong.
+  commands.command.ping.user: &commands.command.ping.user
+    - - "#ACTION pings {0} as it was told."
+    - - "#ACTION hopes to get a \"pong\" back from {0}"
+
+  commands.command.time: &commands.command.time
+    - - "{0:u}"
+  commands.command.uptime: &commands.command.uptime
+    - - "Bot has been up since {0:D} {0:T}"
+
+  commands.command.iw.created:
+    - - Created new interwiki entry.
+  commands.command.iw.updated:
+    - - Updated interwiki entry.
+  commands.command.iw.delete-not-found:
+    - - Nothing found to delete.
+  commands.command.iw.deleted:
+    - - Deleted interwiki entry.
+  commands.command.iw.imported:
+    - - Import complete. {0} up-to-date, {1} created, {2} updated for review, {3} deleted for review.
+  commands.command.iw.accept-not-found:
+    - - Could not find imported interwiki entry to accept.
+  commands.command.iw.accepted:
+    - - Accepted modifications to interwiki entry.
+      
+  commands.command.decode.invalid:
+    - - Oops! That's not a recognised input for this command! I'm looking for 8 hexadecimal characters which represent an IPv4 address.
+  commands.command.decode.dns:
+    - - Hex string '{0}' decodes to '{1}', which resolves to '{2}'.
+  commands.command.decode:
+    - - Hex string '{0}' decodes to '{1}'.
+      
+  commands.command.resolve.ptr.error:
+    - - "Could not look up hostname for IP {0}: {1}"
+  commands.command.resolve.ptr:
+    - - "{0} resolves to {1}."
+  commands.command.resolve.canonical:
+    - - " (canonical: {0})"
+  commands.command.resolve.host.none:
+    - - "No IP addresses found for hostname {0}{1}."
+  commands.command.resolve.host:
+    - - "{0} {2}resolves to the following IP addresses: {1}"
+
+  commands.command.google: &commands.command.google
+    - - "This help channel is for assistance with editing Wikipedia. Your question might be answered by Google. Try: https://www.google.com/search?q={0}"
+
+
+  # Legacy commands
+  cmdPing: *commands.command.ping
+  cmdPingUser: *commands.command.ping.user
+  cmdTime: *commands.command.time
+  cmdUptimeUpSince: *commands.command.uptime
+  google-response: *commands.command.google
+  

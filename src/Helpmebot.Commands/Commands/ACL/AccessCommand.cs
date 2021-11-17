@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.Commands.ACL
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.AccessControl;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
@@ -23,6 +24,7 @@ namespace Helpmebot.Commands.Commands.ACL
     {
         private readonly IAccessControlManagementService accessControlManagementService;
         private readonly ISession session;
+        private readonly IResponder responder;
 
         public AccessCommand(
             string commandSource,
@@ -33,7 +35,8 @@ namespace Helpmebot.Commands.Commands.ACL
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IAccessControlManagementService accessControlManagementService,
-            ISession session) : base(
+            ISession session,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +47,7 @@ namespace Helpmebot.Commands.Commands.ACL
         {
             this.accessControlManagementService = accessControlManagementService;
             this.session = session;
+            this.responder = responder;
         }
 
         
@@ -65,7 +69,7 @@ namespace Helpmebot.Commands.Commands.ACL
 
                 if (flagGroup == null)
                 {
-                    return new[] {new CommandResponse {Message = "The specified flag group does not exist!"}};
+                    return this.responder.Respond("commands.command.access.no-flag-group", this.CommandSource);
                 }
 
                 this.accessControlManagementService.GrantFlagGroupGlobally(user, flagGroup, this.session);
@@ -73,7 +77,7 @@ namespace Helpmebot.Commands.Commands.ACL
                 
                 ((AccessControlAuthorisationService) this.FlagService).Refresh(user);
                 
-                return new[] {new CommandResponse {Message = "Done"}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             finally
             {
@@ -101,14 +105,14 @@ namespace Helpmebot.Commands.Commands.ACL
 
                 if (flagGroup == null)
                 {
-                    return new[] {new CommandResponse {Message = "The specified flag group does not exist!"}};
+                    return this.responder.Respond("commands.command.access.no-flag-group", this.CommandSource);
                 }
 
                 this.accessControlManagementService.RevokeFlagGroupGlobally(user, flagGroup, this.session);
                 
                 tx.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done"}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             finally
             {

@@ -7,6 +7,7 @@ namespace Helpmebot.Commands.Commands.Information
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -18,6 +19,8 @@ namespace Helpmebot.Commands.Commands.Information
     [CommandFlag(Flags.Protected)]
     public class DecodeCommand : CommandBase
     {
+        private readonly IResponder responder;
+
         public DecodeCommand(
             string commandSource,
             IUser user,
@@ -25,7 +28,8 @@ namespace Helpmebot.Commands.Commands.Information
             ILogger logger,
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
-            IIrcClient client) : base(
+            IIrcClient client,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -34,6 +38,7 @@ namespace Helpmebot.Commands.Commands.Information
             configurationProvider,
             client)
         {
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -46,11 +51,7 @@ namespace Helpmebot.Commands.Commands.Information
 
             if (!validHexIp.Match(input).Success)
             {
-                yield return new CommandResponse
-                {
-                    Message =
-                        "Oops! That's not a recognised input for this command! I'm looking for 8 hexadecimal characters which represent an IPv4 address."
-                }; 
+                return this.responder.Respond("commands.command.decode.invalid", this.CommandSource);
             }
 
             var ipAddress = input.GetIpAddressFromHex();
@@ -64,16 +65,16 @@ namespace Helpmebot.Commands.Commands.Information
             {
             }
             
-            var resolves = "";
+            var key = "commands.command.decode";
             if (hostname != string.Empty)
             {
-                resolves = string.Format(", which resolves to '{0}'", hostname);
+                key = "commands.command.decode.dns";
             }
-
-            yield return new CommandResponse
+            
+            return this.responder.Respond(key, this.CommandSource, new object[]
             {
-                Message = string.Format("Hex string '{0}' decodes to '{1}'{2}.", input, ipAddress, resolves)
-            };
+                input, ipAddress, hostname
+            });
         }
     }
 }

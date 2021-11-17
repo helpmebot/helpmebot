@@ -2,9 +2,11 @@ namespace Helpmebot.Commands.Commands.ACL
 {
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using NHibernate;
@@ -23,6 +25,7 @@ namespace Helpmebot.Commands.Commands.ACL
     {
         private readonly IAccessControlManagementService aclManagementService;
         private readonly ISession session;
+        private readonly IResponder responder;
 
         public FlagGroupCommand(
             string commandSource,
@@ -33,7 +36,8 @@ namespace Helpmebot.Commands.Commands.ACL
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IAccessControlManagementService aclManagementService,
-            ISession session) : base(
+            ISession session,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +48,7 @@ namespace Helpmebot.Commands.Commands.ACL
         {
             this.aclManagementService = aclManagementService;
             this.session = session;
+            this.responder = responder;
         }
 
         protected override IEnumerable<CommandResponse> Execute()
@@ -59,12 +64,10 @@ namespace Helpmebot.Commands.Commands.ACL
             var flagGroups = this.session.CreateCriteria<FlagGroup>().List<FlagGroup>();
             foreach (var flagGroup in flagGroups)
             {
-                yield return new CommandResponse
-                {
-                    Message = string.Format("Group {0}: {1}", flagGroup.Name, flagGroup.Flags),
-                    Type = CommandResponseType.Notice,
-                    Destination = CommandResponseDestination.PrivateMessage
-                };
+                yield return this.responder.Respond(
+                    "commands.command.flaggroup.list",
+                    this.CommandSource,
+                    new object[] { flagGroup.Name, flagGroup.Flags }).First();
             }
         }
 
@@ -81,12 +84,12 @@ namespace Helpmebot.Commands.Commands.ACL
             {
                 this.aclManagementService.CreateFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 tx.Commit();
-                return new[] {new CommandResponse {Message = "Flag group created."}};
+                return this.responder.Respond("commands.command.flaggroup.created", this.CommandSource);
+                
             }
             catch (AclException ex)
             {
-                return new[]
-                    {new CommandResponse {Message = string.Format("Error creating flag group: {0}", ex.Message)}};
+                return this.responder.Respond("commands.command.flaggroup.error", this.CommandSource, ex.Message);
             }
             finally
             {
@@ -109,12 +112,11 @@ namespace Helpmebot.Commands.Commands.ACL
             {
                 this.aclManagementService.ModifyFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 tx.Commit();
-                return new[] {new CommandResponse {Message = "Flag group modified."}};
+                return this.responder.Respond("commands.command.flaggroup.modified", this.CommandSource);
             }
             catch (AclException ex)
             {
-                return new[]
-                    {new CommandResponse {Message = string.Format("Error modifying flag group: {0}", ex.Message)}};
+                return this.responder.Respond("commands.command.flaggroup.error", this.CommandSource, ex.Message);
             }
             finally
             {
@@ -137,12 +139,11 @@ namespace Helpmebot.Commands.Commands.ACL
             {
                 this.aclManagementService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
                 tx.Commit();
-                return new[] {new CommandResponse {Message = "Flag group updated."}};
+                return this.responder.Respond("commands.command.flaggroup.updated", this.CommandSource);
             }
             catch (AclException ex)
             {
-                return new[]
-                    {new CommandResponse {Message = string.Format("Error updating flag group: {0}", ex.Message)}};
+                return this.responder.Respond("commands.command.flaggroup.error", this.CommandSource, ex.Message);
             }
             finally
             {
@@ -166,12 +167,11 @@ namespace Helpmebot.Commands.Commands.ACL
             {
                 this.aclManagementService.DeleteFlagGroup(this.Arguments[0], this.session);
                 tx.Commit();
-                return new[] {new CommandResponse {Message = "Flag group deleted."}};
+                return this.responder.Respond("commands.command.flaggroup.deleted", this.CommandSource);
             }
             catch (AclException ex)
             {
-                return new[]
-                    {new CommandResponse {Message = string.Format("Error deleting flag group: {0}", ex.Message)}};
+                return this.responder.Respond("commands.command.flaggroup.error", this.CommandSource, ex.Message);
             }
             finally
             {

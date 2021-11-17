@@ -8,6 +8,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -25,6 +26,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     {
         private readonly ISession session;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public InterwikiCommand(
             string commandSource,
@@ -35,7 +37,8 @@ namespace Helpmebot.Commands.Commands.BotManagement
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession session,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -46,6 +49,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
         {
             this.session = session;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
         
         [Help("<interwiki> <url>", "Adds or updates the specified interwiki entry")]
@@ -60,19 +64,20 @@ namespace Helpmebot.Commands.Commands.BotManagement
                 .Where(x => x.Prefix == this.Arguments[0])
                 .SingleOrDefault();
 
-            var response = new CommandResponse { Message = "Updated interwiki entry." }; 
+            var key = "commands.command.iw.updated";
             
             if (existing == null)
             {
                 existing = new InterwikiPrefix{Prefix = this.Arguments[0]};
-                response.Message = "Created new interwiki entry.";
+                key = "commands.command.iw.created";
             }
 
             existing.Url = this.Arguments[1];
 
             this.session.SaveOrUpdate(existing);
             this.session.Flush();
-            yield return response;
+
+            return this.responder.Respond(key, this.CommandSource);
         }
         
         [Help("<interwiki>", "Removes the specified interwiki entry")]
@@ -85,18 +90,15 @@ namespace Helpmebot.Commands.Commands.BotManagement
             var existing = this.session.QueryOver<InterwikiPrefix>()
                 .Where(x => x.Prefix == this.Arguments[0])
                 .SingleOrDefault();
-
-            var response = new CommandResponse { Message = "Deleted interwiki entry." }; 
             
             if (existing == null)
             {
-                response.Message = "Nothing found to delete.";
-                return new[] { response };
+                return this.responder.Respond("commands.command.iw.delete-not-found", this.CommandSource);
             }
 
             this.session.Delete(existing);
             this.session.Flush();
-            return new[] { response };
+            return this.responder.Respond("commands.command.iw.deleted", this.CommandSource);
         }
         
         [Help("", "Imports all interwiki prefixes from the active MediaWiki site. Any new entries will be automatically added; any updated or deleted entries will be held for review.")]
@@ -178,13 +180,13 @@ namespace Helpmebot.Commands.Commands.BotManagement
             this.Logger.Debug("Flushing session");
             this.session.Flush();
 
-            return new[]
-            {
-                new CommandResponse
+            return this.responder.Respond(
+                "commands.command.iw.imported",
+                this.CommandSource,
+                new object[]
                 {
-                    Message = $"Import complete. {upToDateIw} up-to-date, {createdIw} created, {updatedIw} updated for review, {deletedIw} deleted for review."
-                }
-            };
+                    upToDateIw, createdIw, updatedIw, deletedIw
+                });
         }
         
         [Help("<imported name>", "Accepts a held imported entry as correct")]
@@ -202,7 +204,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
 
             if (imported == null)
             {            
-                return new[] { new CommandResponse { Message = "Could not find imported interwiki entry to accept" } };
+                return this.responder.Respond("commands.command.iw.accept-not-found", this.CommandSource);
             }
 
             if (existing == null)
@@ -220,7 +222,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
             
             this.session.Flush();
             
-            return new[] { new CommandResponse { Message = "Accepted interwiki entry." } };
+            return this.responder.Respond("commands.command.iw.accepted", this.CommandSource);
         }
         
         [Help("", "Removes any markers for interwikis created or missing from the last import.")]
@@ -239,7 +241,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
             }
             this.session.Flush();
             
-            return new[] { new CommandResponse { Message = "Done." } };
+            return this.responder.Respond("common.done", this.CommandSource);
         }
     }
 }

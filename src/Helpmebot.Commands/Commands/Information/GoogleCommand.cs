@@ -4,9 +4,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Web;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -18,7 +16,7 @@ namespace Helpmebot.Commands.Commands.Information
     [CommandFlag(Flags.Info)]
     public class GoogleCommand : CommandBase
     {
-        private readonly IMessageService messageService;
+        private readonly IResponder responder;
 
         public GoogleCommand(
             string commandSource,
@@ -28,7 +26,7 @@ namespace Helpmebot.Commands.Commands.Information
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IMessageService messageService
+            IResponder responder
             ) : base(
             commandSource,
             user,
@@ -38,7 +36,7 @@ namespace Helpmebot.Commands.Commands.Information
             configurationProvider,
             client)
         {
-            this.messageService = messageService;
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -46,15 +44,7 @@ namespace Helpmebot.Commands.Commands.Information
         protected override IEnumerable<CommandResponse> Execute()
         {
             var arguments = HttpUtility.UrlEncode(string.Join(" ", this.Arguments));
-            var response = this.messageService.RetrieveMessage(
-                "google-response",
-                this.CommandSource,
-                new[] {arguments});
-
-            yield return new CommandResponse
-            {
-                Message = response
-            };
+            return this.responder.Respond("commands.command.google", this.CommandSource, arguments);
         }
     }
 }
