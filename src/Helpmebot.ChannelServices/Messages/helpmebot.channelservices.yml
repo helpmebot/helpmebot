@@ -1,3 +1,48 @@
 ---
 format: 1
-dataset: {}
+dataset:
+  channelservices.command.part.requested-by: &channelservices.command.part.requested-by
+    - - Requested by {0}
+
+  channelservices.command.idlehelpees.user.since:
+    - - {0} (idle {1:d\d\ hh\:mm\:ss})
+  channelservices.command.idlehelpees.user.always:
+    - - {0} (idle since bot startup)
+  channelservices.command.idlehelpees:
+    - - "Helpees: {0} | Last 3 active helpers: {1}"
+  channelservices.command.idlehelpees.remove:
+    - - "Proposing removal of: {0}"
+  channelservices.command.idlehelpees.kick:
+    - - Idle; if you still need assistance editing Wikipedia, please re-join the channel
+  channelservices.command.track.not-found:
+    - - {0} not found on tracked channel
+  channelservices.command.track:
+    - - Score of {0} set to {1}.
+      
+  channelservices.command.autolink.enabled:
+    - - Autolinking enabled in this channel.
+  channelservices.command.autolink.disabled:
+    - - Autolinking disabled in this channel.
+
+  channelservices.command.silence.enabled:
+    - - Silent mode enabled in this channel.
+  channelservices.command.silence.disabled:
+    - - Silent mode disabled in this channel.
+      
+  channelservices.command.welcomer.not-welcoming:
+    - - Not welcoming in {0}.
+  channelservices.command.welcomer.list:
+    - - "Welcoming these masks to {0}: {1}"
+  channelservices.command.welcomer.override-not-found:
+    - - Unable to find welcomer override configuration with alias {0}
+
+  channelservices.command.ipinfo.no-ip:
+    - - Unable to find IP address to query
+  channelservices.command.ipinfo.no-whois:
+    - - "Whois failed for {0}; Location: {1}"
+  channelservices.command.ipinfo:
+    - - "Whois for {0} gives organisation {1}; Location: {2}"
+
+  # Legacy messages
+  RequestedBy: *channelservices.command.part.requested-by
+  

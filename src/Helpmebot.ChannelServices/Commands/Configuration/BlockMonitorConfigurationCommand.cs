@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -21,6 +22,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     {
         private readonly IBlockMonitoringService blockMonitoringService;
         private readonly ISession databaseSession;
+        private readonly IResponder responder;
 
         public BlockMonitorConfigurationCommand(
             string commandSource,
@@ -31,7 +33,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IBlockMonitoringService blockMonitoringService,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -42,6 +45,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             this.blockMonitoringService = blockMonitoringService;
             this.databaseSession = databaseSession;
+            this.responder = responder;
         }
 
         [SubcommandInvocation("add")]
@@ -50,7 +54,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             this.blockMonitoringService.AddMap(this.Arguments.First(), this.CommandSource, this.databaseSession);
 
-            yield return new CommandResponse {Message = "Done"};
+            return this.responder.Respond("common.done", this.CommandSource);
         }
 
         [SubcommandInvocation("del")]
@@ -61,7 +65,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             this.blockMonitoringService.DeleteMap(this.Arguments.First(), this.CommandSource, this.databaseSession);
 
-            yield return new CommandResponse {Message = "Done"};
+            return this.responder.Respond("common.done", this.CommandSource);
         }
     }
 }

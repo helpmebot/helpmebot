@@ -21,8 +21,12 @@
 #   - - alternate response 1 line 1
 #     - alternate response 1 line 2
 #
-# "core" messages should have the prefix "core.".
+# "core" messages should have the prefix "common.".
 # messages provided by the module should have a prefix unique to that module.
 #
 format: 1
-dataset: {}
+dataset:
+  common.done:
+    - - Done.
+  common.channel-not-found:
+    - - Channel {0} not found in configuration. Please make sure you are running this command in a channel, and that channel is properly configured in the bot.

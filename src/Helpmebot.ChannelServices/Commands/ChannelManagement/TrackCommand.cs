@@ -6,6 +6,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -18,6 +19,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     public class TrackCommand : CommandBase
     {
         private readonly ITrollMonitoringService trollMonitoringService;
+        private readonly IResponder responder;
 
         public TrackCommand(
             string commandSource,
@@ -27,7 +29,8 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ITrollMonitoringService trollMonitoringService) : base(
+            ITrollMonitoringService trollMonitoringService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -37,6 +40,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             client)
         {
             this.trollMonitoringService = trollMonitoringService;
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -51,10 +55,10 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
                 if (user == null)
                 {
-                    return new[] { new CommandResponse { Message = $"{nickname} not found on tracked channel." } };
+                    return this.responder.Respond("channelservices.command.track.not-found", this.CommandSource, nickname);
                 }
                 
-                return new[] { new CommandResponse { Message = $"Score of {user} set to {score}." } };
+                return this.responder.Respond("channelservices.command.track", this.CommandSource, new object[]{ user, score });
             }
             catch (Exception ex)
             {

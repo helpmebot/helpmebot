@@ -6,6 +6,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Startup;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -21,6 +22,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     {
         private readonly IHelpeeManagementService helpeeManagementService;
         private readonly IModeMonitoringService modeMonitoringService;
+        private readonly IResponder responder;
 
         public IdleRemoveCommand(
             string commandSource,
@@ -31,11 +33,13 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IHelpeeManagementService helpeeManagementService,
-            IModeMonitoringService modeMonitoringService)
+            IModeMonitoringService modeMonitoringService,
+            IResponder responder)
             : base(commandSource, user, arguments, logger, flagService, configurationProvider, client)
         {
             this.helpeeManagementService = helpeeManagementService;
             this.modeMonitoringService = modeMonitoringService;
+            this.responder = responder;
         }
 
         [Help("[nickname...]", "Produces a list of who will be removed from the channel by the remove command")]
@@ -46,7 +50,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
             var helpees = string.Join(", ", removableHelpees);
 
-            yield return new CommandResponse {Message = $"Proposing removal of: {helpees}"};
+            return this.responder.Respond("channelservices.command.idlehelpees.remove", this.CommandSource, helpees);
         }
 
         [Help("[nickname...]", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
@@ -56,7 +60,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             var removableHelpees = this.GetRemovableHelpees();
             
             var channel = "#wikipedia-en-help";
-            var removeMessage = "Idle; if you still need assistance editing Wikipedia, please re-join the channel";
+            var removeMessage = this.responder.GetMessagePart("channelservices.command.idlehelpees.kick", this.CommandSource);
 
             this.modeMonitoringService.PerformAsOperator(
                 channel,

@@ -5,9 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -25,6 +23,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
         private readonly ISession session;
         private readonly IChannelManagementService channelManagementService;
         private readonly IMessageService messageService;
+        private readonly IResponder responder;
 
         public PartChannelCommand(
             string commandSource,
@@ -36,7 +35,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             IIrcClient client,
             ISession session,
             IChannelManagementService channelManagementService,
-            IMessageService messageService) : base(
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -47,7 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
         {
             this.session = session;
             this.channelManagementService = channelManagementService;
-            this.messageService = messageService;
+            this.responder = responder;
         }
 
         [Help(new[]{"","<channel>"}, new[]{"Leaves the current channel", "Leaves the specified channel"})]
@@ -65,10 +64,10 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
                 throw new CommandErrorException(channel + " is not a valid channel");
             }
 
-            var partMessage = this.messageService.RetrieveMessage(
-                Messages.RequestedBy,
+            var partMessage = this.responder.GetMessagePart(
+                "channelservices.command.part.requested-by",
                 this.CommandSource,
-                new[] {this.User.ToString()});
+                this.User.ToString());
             
             this.channelManagementService.PartChannel(channel, this.session, partMessage);
                 

@@ -5,7 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.ExtensionMethods;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -21,6 +21,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     public class SilenceCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IResponder responder;
 
         public SilenceCommand(
             string commandSource,
@@ -30,7 +31,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -40,6 +42,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             client)
         {
             this.databaseSession = databaseSession;
+            this.responder = responder;
         }
 
         [SubcommandInvocation("enable")]
@@ -52,15 +55,14 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                 if (channel == null)
                 {
-                    throw new CommandErrorException(
-                        "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
 
                 channel.Silenced = true;
                 this.databaseSession.Save(channel);
                 txn.Commit();
 
-                yield return new CommandResponse {Message = "Silent mode enabled in this channel."};
+                return this.responder.Respond("channelservices.command.silence.enabled", this.CommandSource);
             }
         }
 
@@ -74,15 +76,14 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                 if (channel == null)
                 {
-                    throw new CommandErrorException(
-                        "Current channel not found in configuration. Please make sure you are running this in a channel.");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
 
                 channel.Silenced = false;
                 this.databaseSession.Save(channel);
                 txn.Commit();
 
-                yield return new CommandResponse {Message = "Silent mode disabled in this channel."};
+                return this.responder.Respond("channelservices.command.silence.disabled", this.CommandSource);
             }
         }
     }

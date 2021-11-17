@@ -8,7 +8,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.ExtensionMethods;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NDesk.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -23,6 +23,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     [CommandFlag(Flags.Configuration, true)]
     public class CrossChannelConfigCommand : CommandBase
     {
+        private readonly IResponder responder;
         private readonly ICrossChannelService crossChannelService;
         private readonly ISession databaseSession;
 
@@ -35,7 +36,8 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ICrossChannelService crossChannelService,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             configurationProvider,
             client)
         {
+            this.responder = responder;
             this.crossChannelService = crossChannelService;
             this.databaseSession = databaseSession;
         }
@@ -62,19 +65,19 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
                 if (backend == null)
                 {
-                    throw new Exception("Cannot find configuration for the current channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
                 if (frontend == null)
                 {
-                    throw new Exception("Cannot find configuration for the specified channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.Arguments.First()));
                 }
 
                 this.crossChannelService.Configure(frontend, backend, this.databaseSession);
                 
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch(Exception ex)
             {
@@ -95,14 +98,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
                 if (backend == null)
                 {
-                    throw new Exception("Cannot find configuration for the current channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
                 this.crossChannelService.Deconfigure(backend, this.databaseSession);
                 
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch(Exception ex)
             {
@@ -137,14 +140,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
                 if (backend == null)
                 {
-                    throw new Exception("Cannot find configuration for the current channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
                 this.crossChannelService.NotificationStatus(backend, status.Value, this.databaseSession);
                 
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch(Exception ex)
             {
@@ -166,14 +169,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
                 if (backend == null)
                 {
-                    throw new Exception("Cannot find configuration for the current channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
                 this.crossChannelService.NotificationKeyword(backend, this.Arguments.First(), this.databaseSession);
                 
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch(Exception ex)
             {
@@ -195,7 +198,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
                 if (backend == null)
                 {
-                    throw new Exception("Cannot find configuration for the current channel!");
+                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
 
                 this.crossChannelService.NotificationMessage(
@@ -205,7 +208,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                 
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch(Exception ex)
             {

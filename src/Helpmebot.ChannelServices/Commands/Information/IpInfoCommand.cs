@@ -7,6 +7,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -23,6 +24,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
     {
         private readonly IWhoisService whoisService;
         private readonly IGeolocationService geolocationService;
+        private readonly IResponder responder;
 
         public IpInfoCommand(
             string commandSource,
@@ -33,7 +35,8 @@ namespace Helpmebot.ChannelServices.Commands.Information
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IWhoisService whoisService,
-            IGeolocationService geolocationService) : base(
+            IGeolocationService geolocationService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +47,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
         {
             this.whoisService = whoisService;
             this.geolocationService = geolocationService;
+            this.responder = responder;
         }
         
         [RequiredArguments(1)]
@@ -57,7 +61,8 @@ namespace Helpmebot.ChannelServices.Commands.Information
               var ip = this.GetIPAddress();
               if (ip == null)
               {
-                  throw new CommandInvocationException("Unable to find IP address to query");
+                  throw new CommandInvocationException(
+                      this.responder.GetMessagePart("channelservices.command.ipinfo.no-ip", this.CommandSource));
               }
 
               var orgName = this.whoisService.GetOrganisationName(ip);
@@ -65,11 +70,15 @@ namespace Helpmebot.ChannelServices.Commands.Information
 
               if (orgName == null)
               {
-                  return new[] { new CommandResponse { Message = $"Whois failed for {ip}; Location: {location}" } };
+                  return this.responder.Respond(
+                      "channelservices.command.ipinfo.no-whois",
+                      this.CommandSource,
+                      new object[] { ip, location });
               }
               else
               {
-                  return new[] { new CommandResponse { Message = $"Whois for {ip} gives organisation {orgName}; Location: {location}" } };
+                  return this.responder.Respond("channelservices.command.ipinfo", this.CommandSource,
+                      new object[] { ip, orgName, location });
               }
             }
             catch (WebException e)

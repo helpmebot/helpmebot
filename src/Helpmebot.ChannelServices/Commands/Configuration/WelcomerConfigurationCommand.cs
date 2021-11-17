@@ -5,7 +5,9 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NDesk.Options;
     using NHibernate;
@@ -19,9 +21,11 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     [CommandInvocation("welcomer")]
     [CommandFlag(Flags.LocalConfiguration)]
     [CommandFlag(Flags.Configuration, true)]
+    [HelpSummary("Manages the on-join welcome message")]
     public class WelcomerConfigurationCommand : CommandBase
     {
         private readonly ISession databaseSession;
+        private readonly IResponder responder;
 
         public WelcomerConfigurationCommand(
             string commandSource,
@@ -31,7 +35,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession) : base(
+            ISession databaseSession,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -41,6 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             client)
         {
             this.databaseSession = databaseSession;
+            this.responder = responder;
         }
 
         [SubcommandInvocation("list")]
@@ -52,17 +58,11 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
             if (welcomeForChannel.Count == 0)
             {
-                yield return new CommandResponse {Message = string.Format("Not welcoming in {0}", this.CommandSource)};
-                yield break;
+                return this.responder.Respond("channelservices.command.welcomer.not-welcoming", this.CommandSource, this.CommandSource);
             }
-            
-            yield return new CommandResponse
-            {
-                Message = string.Format(
-                    "Welcoming these masks to {0}: {1}",
-                    this.CommandSource,
-                    string.Join(" ; ", welcomeForChannel.Select(x => x.ToString())))
-            };
+
+            var welcomeEntries = string.Join(" ; ", welcomeForChannel.Select(x => x.ToString()));
+            return this.responder.Respond("channelservices.command.welcomer.list", this.CommandSource, welcomeEntries);
         }
 
         [SubcommandInvocation("add")]
@@ -94,7 +94,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 this.databaseSession.Save(welcomeUser);
                 this.databaseSession.Transaction.Commit();
                 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch (Exception e)
             {
@@ -124,7 +124,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             
             try
             {
-                this.Logger.Debug("Getting list of welcomeusers ready for deletion!");
+                this.Logger.Trace("Getting list of welcomeusers ready for deletion!");
 
                 var implode = string.Join(" ", extra);
 
@@ -140,17 +140,17 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                                  && x.Channel == this.CommandSource)
                         .List();
 
-                this.Logger.Debug("Got list of WelcomeUsers, proceeding to Delete...");
+                this.Logger.Trace("Got list of WelcomeUsers, proceeding to Delete...");
 
                 foreach (var welcomeUser in welcomeUsers)
                 {
                     this.databaseSession.Delete(welcomeUser);
                 }
 
-                this.Logger.Debug("All done, cleaning up and sending message to IRC");
+                this.Logger.Trace("All done, cleaning up and sending message to IRC");
 
                 this.databaseSession.Transaction.Commit();
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch (Exception e)
             {
@@ -191,13 +191,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                     if (welcomerOverride == null)
                     {
-                        return new[]
-                        {
-                            new CommandResponse
-                            {
-                                Message = $"Unable to find welcomer override configuration with alias {this.Arguments[0]}"
-                            }
-                        };
+                        return this.responder.Respond("channelservices.command.welcomer.override-not-found", this.CommandSource, this.Arguments[0]);
                     }
 
                     flagName = welcomerOverride.ActiveFlag;
@@ -211,7 +205,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
                 this.databaseSession.Transaction.Commit();
 
-                return new[] {new CommandResponse {Message = "Done."}};
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             catch (Exception e)
             {

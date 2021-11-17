@@ -6,7 +6,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -20,6 +20,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     public class IdleHelpeesCommand :CommandBase
     {
         private readonly IHelpeeManagementService helpeeManagementService;
+        private readonly IResponder responder;
 
         public IdleHelpeesCommand(
             string commandSource,
@@ -29,10 +30,12 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            IHelpeeManagementService helpeeManagementService)
+            IHelpeeManagementService helpeeManagementService,
+            IResponder responder)
             : base(commandSource, user, arguments, logger, flagService, configurationProvider, client)
         {
             this.helpeeManagementService = helpeeManagementService;
+            this.responder = responder;
         }
 
         [Help("", "Returns a list of helpees and their in-channel idle time, including the last-active helpers")]
@@ -44,9 +47,12 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                     {
                         if (x.Value == DateTime.MinValue)
                         {
-                            return $"{x.Key.Nickname} (idle since bot startup)";
+                            return this.responder.GetMessagePart("channelservices.command.idlehelpees.user.always", this.CommandSource, x.Key.Nickname);
                         }
-                        return $"{x.Key.Nickname} (idle {DateTime.UtcNow - x.Value:d\\d\\ hh\\:mm\\:ss})";
+
+                        var arguments = new object[] { x.Key.Nickname, DateTime.UtcNow - x.Value };
+                        return this.responder.GetMessagePart("channelservices.command.idlehelpees.user.since", this.CommandSource, arguments);
+                        
                     })
                 .Aggregate(string.Empty, (cur, next) => cur + "; " + next);
 
@@ -55,14 +61,16 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 .OrderByDescending(x => x.Value)
                 .Where(x => x.Value != DateTime.MinValue)
                 .Take(3)
-                .Select(x => $"{x.Key.Nickname.Insert(1, "\u200B")} (idle {DateTime.UtcNow - x.Value:d\\d\\ hh\\:mm\\:ss})")
+                .Select(x => this.responder.GetMessagePart("channelservices.command.idlehelpees.user.since", this.CommandSource, new object[] {x.Key.Nickname.Insert(1, "\u200B"), DateTime.UtcNow - x.Value}))
                 .Aggregate(string.Empty, (cur, next) => cur + "; " + next);
 
             helpees = helpees.TrimStart(' ', ';');
             lastActiveHelpers = lastActiveHelpers.TrimStart(' ', ';');
-            
-            yield return new CommandResponse
-                {Message = $"Helpees: {helpees} | Last 3 active helpers: {lastActiveHelpers}"};
+
+            return this.responder.Respond(
+                "channelservices.command.idlehelpees",
+                this.CommandSource,
+                new object[] { helpees, lastActiveHelpers });
         }
     }
 }
