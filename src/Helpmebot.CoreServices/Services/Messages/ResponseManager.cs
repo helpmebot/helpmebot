@@ -33,21 +33,81 @@ namespace Helpmebot.CoreServices.Services.Messages
             };
         }
 
-        public IEnumerable<CommandResponse> Respond(string messageKey, string channel, string[] arguments)
+        public IEnumerable<CommandResponse> Respond(string messageKey, string channel, object argument)
         {
-            return this.Respond(messageKey, channel, arguments, contextType: Context.Channel);
+            return this.Respond(messageKey, channel, new[] { argument }, contextType: Context.Channel);
         }
-        
+
         public IEnumerable<CommandResponse> Respond(
-            string messageKey, 
-            string context, 
-            string[] arguments, 
-            Context contextType,  
+            string messageKey,
+            string context,
+            object[] arguments,
+            Context contextType = null,
             CommandResponseDestination destination = CommandResponseDestination.Default,
             CommandResponseType type = CommandResponseType.Message,
             bool ignoreRedirection = false,
             IEnumerable<string> redirectionTarget = null)
         {
+            List<string> redirectionTargetList = null;
+            if (redirectionTarget != null)
+            {
+                redirectionTargetList = redirectionTarget.ToList();
+            }
+
+            return this.GetMessagePartAlternates(messageKey, context, arguments, contextType, false).Select(
+                parsedString =>
+                {
+                    if (parsedString.StartsWith("#ACTION"))
+                    {
+                        return new CommandResponse
+                        {
+                            Message = parsedString.Substring("#ACTION ".Length),
+                            ClientToClientProtocol = "ACTION",
+                            IgnoreRedirection = true,
+                            Destination = destination,
+                            Type = type,
+                            RedirectionTarget = redirectionTargetList
+                        };
+                    }
+
+                    return new CommandResponse
+                    {
+                        Message = parsedString,
+                        IgnoreRedirection = ignoreRedirection,
+                        Destination = destination,
+                        Type = type,
+                        RedirectionTarget = redirectionTargetList
+                    };
+                });
+        }
+        
+        public string GetMessagePart(string messageKey, string context, object argument)
+        {
+            return this.GetMessagePart(messageKey, context, new[] { argument });
+        }
+
+        public string GetMessagePart(string messageKey, string context, object[] arguments = null, Context contextType = null)
+        {
+            return this.GetMessagePartAlternates(messageKey, context, arguments, contextType, true).First();
+        }
+        
+        private IEnumerable<string> GetMessagePartAlternates(string messageKey, 
+            string context, 
+            object[] arguments, 
+            Context contextType,
+            bool singleResult)
+        {
+            int RandomNumber(int count)
+            {
+                int i;
+                lock (this.random)
+                {
+                    i = this.random.Next(0, count);
+                }
+
+                return i;
+            }            
+            
             if (context != null && contextType == null)
             {
                 contextType = Context.Channel;
@@ -55,66 +115,41 @@ namespace Helpmebot.CoreServices.Services.Messages
             
             this.logger.DebugFormat("Response: {0} / ({2}) {1}", messageKey, context, contextType);
 
-            int RandomNumber(List<List<string>> list)
-            {
-                int i;
-                lock (this.random)
-                {
-                    i = this.random.Next(0, list.Count);
-                }
-
-                return i;
-            }
-
             var messageSets = this.FindMessage(messageKey, contextType.ContextType, context);
-
+            
             if (messageSets == null || messageSets.Count == 0)
             {
-                yield break;
-            }
-
-            List<string> redirectionTargetList = null;
-            if (redirectionTarget != null)
-            {
-                redirectionTargetList = redirectionTarget.ToList();
+                return Array.Empty<string>();
             }
             
-            var chosenMessageSet = messageSets[RandomNumber(messageSets)];
+            List<string> chosenMessageSet;
+            if (singleResult)
+            {
+                // first message from the first set.
+                chosenMessageSet = new List<string> { messageSets.First().First() };
+            }
+            else
+            {
+                chosenMessageSet = messageSets[RandomNumber(messageSets.Count)];
+            }
+            
+            var sendableMessages = new List<string>(chosenMessageSet.Count);
+            
             foreach (var message in chosenMessageSet)
             {
-                // ReSharper disable once CoVariantArrayConversion
-                string parsedString = message;
                 if (arguments != null)
                 {
-                    parsedString = string.Format(message, arguments);
-                }
-
-                if (parsedString.StartsWith("#ACTION"))
-                {
-                    parsedString = parsedString.Substring(8);
-                    yield return new CommandResponse
-                    {
-                        Message = parsedString, 
-                        ClientToClientProtocol = "ACTION",
-                        IgnoreRedirection = true,
-                        Destination = destination,
-                        Type = type,
-                        RedirectionTarget = redirectionTargetList
-                    };
+                    sendableMessages.Add(string.Format(message, arguments));
                 }
                 else
                 {
-                    yield return new CommandResponse { 
-                        Message = parsedString,
-                        IgnoreRedirection = ignoreRedirection,
-                        Destination = destination,
-                        Type = type,
-                        RedirectionTarget = redirectionTargetList
-                    };
+                    sendableMessages.Add(message);
                 }
             }
+
+            return sendableMessages;
         }
-        
+
         void IResponseManager.Set(string messageKey, string contextType, string context, List<List<string>> messageData)
         {
             this.PerformWrite(contextType, context, repo => repo.Set(messageKey, contextType, context, messageData));

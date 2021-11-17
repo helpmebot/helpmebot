@@ -76,7 +76,7 @@ namespace Helpmebot.AccountCreations.Commands
 
             var nav = new XPathDocument(httpResponseData).CreateNavigator();
 
-            string[] messageParams =
+            object[] messageParams =
             {
                 nav.SelectSingleNode("//status/@open").Value,
                 nav.SelectSingleNode("//status/@admin").Value,

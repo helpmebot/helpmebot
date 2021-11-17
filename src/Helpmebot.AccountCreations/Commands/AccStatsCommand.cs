@@ -97,7 +97,7 @@ namespace Helpmebot.AccountCreations.Commands
                 return this.responder.Respond("accountcreations.no-such-user", this.CommandSource, username);
             }
 
-            string[] messageParams =
+            object[] messageParams =
             {
                 username, // username
                 nav.SelectSingleNode("//user/@status").Value, // accesslevel

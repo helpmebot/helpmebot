@@ -68,7 +68,7 @@ namespace Helpmebot.Brain.Commands
             var responses = this.responder.Respond(
                     "brain.command.edit.proposal",
                     this.CommandSource,
-                    new[] { keyword.Name },
+                    new object[] { keyword.Name },
                     destination: CommandResponseDestination.PrivateMessage,
                     type: CommandResponseType.Notice,
                     ignoreRedirection: true)
@@ -100,7 +100,7 @@ namespace Helpmebot.Brain.Commands
             return this.responder.Respond(
                 "brain.command.edit.completed",
                 this.CommandSource,
-                new[] { keyword.Name },
+                new object[] { keyword.Name },
                 destination: CommandResponseDestination.PrivateMessage,
                 type: CommandResponseType.Notice,
                 ignoreRedirection: true);

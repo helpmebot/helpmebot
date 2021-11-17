@@ -103,7 +103,7 @@ namespace Helpmebot.AccountCreations.Commands
 
             var userLevelNode = nav.SelectSingleNode("//user/@level");
 
-            string[] messageParams =
+            object[] messageParams =
             {
                 username, // username
                 userLevelNode.Value,
@@ -117,7 +117,7 @@ namespace Helpmebot.AccountCreations.Commands
             if (userLevelNode.Value == "Admin")
             {
                 messageKey = "accountcreations.command.count.admin";
-                messageParams = new[]
+                messageParams = new object[]
                 {
                     username, // username
                     userLevelNode.Value,

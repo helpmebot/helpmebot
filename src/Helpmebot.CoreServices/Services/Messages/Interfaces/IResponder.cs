@@ -9,17 +9,20 @@ namespace Helpmebot.CoreServices.Services.Messages.Interfaces
         IEnumerable<CommandResponse> Respond(
             string messageKey,
             string context,
-            params string[] arguments);
+            object argument);
         
         IEnumerable<CommandResponse> Respond(
             string messageKey,
             string context,
-            string[] arguments = null,
+            object[] arguments = null,
             Context contextType = null,
             CommandResponseDestination destination = CommandResponseDestination.Default,
             CommandResponseType type = CommandResponseType.Message,
             bool ignoreRedirection = false,
             IEnumerable<string> redirectionTarget = null
             );
+
+        string GetMessagePart(string messageKey, string context, object argument);
+        string GetMessagePart(string messageKey, string context, object[] arguments = null, Context contextType = null);
     }
 }
