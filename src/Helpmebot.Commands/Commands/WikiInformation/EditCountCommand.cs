@@ -6,8 +6,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -24,6 +24,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         private readonly ISession databaseSession;
         private readonly IUrlShorteningService urlShorteningService;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public EditCountCommand(
             string commandSource,
@@ -35,7 +36,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IIrcClient client,
             ISession databaseSession,
             IUrlShorteningService urlShorteningService,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -47,6 +49,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.databaseSession = databaseSession;
             this.urlShorteningService = urlShorteningService;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("[username]", "Returns your edit count or the edit count for the specified user")]
@@ -69,28 +72,27 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             catch (MediawikiApiException e)
             {
                 this.Logger.WarnFormat(e, "Encountered error retrieving edit count from API for {0}", username);
-                return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+                return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally
             {
                 this.apiHelper.Release(mediaWikiApi);
             }
-            
-            var xToolsUrl = string.Format(
-                "https://tools.wmflabs.org/xtools-ec/index.php?user={0}&project=en.wikipedia.org",
+
+            var xToolsUrl = this.responder.GetMessagePart(
+                "commands.command.editcount.xtools",
+                this.CommandSource,
                 HttpUtility.UrlEncode(username));
 
             xToolsUrl = this.urlShorteningService.Shorten(xToolsUrl);
 
-            var message = "The edit count of [[User:{1}]] is {0}  (For more detailed information, see {2} )";
-
-            return new[]
-            {
-                new CommandResponse
+            return this.responder.Respond(
+                "commands.command.editcount",
+                this.CommandSource,
+                new object[]
                 {
-                    Message = string.Format(message, editCount, username, xToolsUrl)
-                }
-            };
+                    editCount, username, xToolsUrl
+                });
         }
     }
 }

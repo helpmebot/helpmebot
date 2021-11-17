@@ -1,18 +1,17 @@
 namespace Helpmebot.Commands.Commands.WikiInformation
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Exceptions;
-    using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -24,6 +23,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         private readonly IUrlShorteningService urlShorteningService;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly ILinkerService linkerService;
+        private readonly IResponder responder;
 
         public ContribsCommand(
             string commandSource,
@@ -36,7 +36,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             ISession databaseSession,
             IUrlShorteningService urlShorteningService,
             IMediaWikiApiHelper apiHelper,
-            ILinkerService linkerService) : base(
+            ILinkerService linkerService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -49,6 +50,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.urlShorteningService = urlShorteningService;
             this.apiHelper = apiHelper;
             this.linkerService = linkerService;
+            this.responder = responder;
         }
 
         [RequiredArguments(1)]
@@ -71,39 +73,37 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 exists = false;
             }
             
-            List<Contribution> contribs = mediaWikiApi.GetContributions(user, 1).ToList();
+            var contribs = mediaWikiApi.GetContributions(user, 1).ToList();
             
             var lastContrib = "";
             if (contribs.Any())
             {
                 var last = contribs.First();
-                lastContrib = string.Format(
-                    " The last contribution was to [[{0}]] at {1} ( {3} ), with the comment: {2}",
-                    last.Title,
-                    last.Timestamp,
-                    last.Comment,
-                    this.urlShorteningService.Shorten(
-                        this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Diff/" + last.RevId)));
+
+                lastContrib = this.responder.GetMessagePart(
+                    "commands.command.contribs.last",
+                    this.CommandSource,
+                    new object[]
+                    {
+                        last.Title,
+                        last.Timestamp,
+                        last.Comment,
+                        this.urlShorteningService.Shorten(
+                            this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Diff/" + last.RevId))
+                    });
             }
 
             if (!exists)
             {
-                lastContrib = " However, this user does not appear to exist on the local wiki.";
+                lastContrib = this.responder.GetMessagePart("commands.command.contribs.missing", this.CommandSource);
             }
-            
-            var messageBase = "The full list of contributions for [[User:{0}]] can be found at {1} .{2}";
-            
-            return new[]
+
+            return this.responder.Respond("commands.command.contribs", this.CommandSource, new object[]
             {
-                new CommandResponse
-                {
-                    Message = String.Format(
-                        messageBase,
-                        user,
-                        this.urlShorteningService.Shorten(contribsLink),
-                        lastContrib)
-                }
-            };
+                user,
+                this.urlShorteningService.Shorten(contribsLink),
+                lastContrib
+            });
         }
     }
 }

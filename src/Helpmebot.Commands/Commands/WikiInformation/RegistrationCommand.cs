@@ -7,6 +7,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
     using Helpmebot.Model;
     using NHibernate;
@@ -25,6 +26,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public RegistrationCommand(
             string commandSource,
@@ -35,7 +37,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -46,6 +49,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("<username>", "Returns the registration date and account age of the specified user")]
@@ -69,7 +73,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             catch (MediawikiApiException e)
             {
                 this.Logger.WarnFormat(e, "Encountered error retrieving registration date from API for {0}", username);
-                return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+                return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally
             {
@@ -78,21 +82,20 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
             if (!registrationDate.HasValue)
             {
-                return new[] {new CommandResponse {Message = "No registration date found for the specified user."}};
+                return this.responder.Respond("commands.command.registration.none", this.CommandSource, username);
             }
 
             int years;
             TimeSpan age;
             registrationDate.Value.CalculateDuration(out years, out age);
 
-            var message = "[[User:{0}]] registered on {1:u} ({2}y {3:d\\d\\ hh\\:mm\\:ss} ago)";
-            return new[]
-            {
-                new CommandResponse
+            return this.responder.Respond(
+                "commands.command.registration",
+                this.CommandSource,
+                new object[]
                 {
-                    Message = string.Format(message, username, registrationDate.Value, years, age)
-                }
-            };
+                    username, registrationDate.Value, years, age
+                });
         }
 
         

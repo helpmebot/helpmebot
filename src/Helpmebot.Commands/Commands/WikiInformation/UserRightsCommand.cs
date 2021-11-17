@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -23,6 +24,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public UserRightsCommand(
             string commandSource,
@@ -33,7 +35,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +47,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("[username]", "Returns the list of groups you or the specified user currently hold")]
@@ -68,29 +72,23 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 catch (MissingUserException e)
                 {
                     this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
-                    return new[] { new CommandResponse { Message = $"The user [[User:{username}]] does not appear to exist on-wiki." } };
+                    return this.responder.Respond("commands.command.userinfo.missing", this.CommandSource, username);
                 }
                 catch (MediawikiApiException e)
                 {
                     this.Logger.WarnFormat(e, "Encountered error retrieving rights from API for {0}", username);
-                    return new[] { new CommandResponse { Message = "Encountered error retrieving result from API" } };
+                    return this.responder.Respond("common.mw-api-error", this.CommandSource);
                 }
 
                 if (string.IsNullOrWhiteSpace(rights))
                 {
-                    return new[]
-                    {
-                        new CommandResponse {Message = string.Format("[[User:{0}]] has no rights assigned.", username)}
-                    };
+                    return this.responder.Respond("commands.command.userinfo.no-rights", this.CommandSource, username);
                 }
 
-                return new[]
-                {
-                    new CommandResponse
-                    {
-                        Message = string.Format("[[User:{0}]] has the following rights: {1}", username, rights)
-                    }
-                };
+                return this.responder.Respond(
+                    "commands.command.userinfo",
+                    this.CommandSource,
+                    new object[] { username, rights });
             }
             finally
             {

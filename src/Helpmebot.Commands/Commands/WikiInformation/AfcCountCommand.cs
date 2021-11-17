@@ -7,7 +7,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Newtonsoft.Json;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -25,6 +25,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IDraftStatusService draftStatusService;
+        private readonly IResponder responder;
 
         public AfcCountCommand(
             string commandSource,
@@ -36,7 +37,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IIrcClient client,
             ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
-            IDraftStatusService draftStatusService) : base(
+            IDraftStatusService draftStatusService,
+            IResponder responder
+            ) : base(
             commandSource,
             user,
             arguments,
@@ -48,6 +51,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
             this.draftStatusService = draftStatusService;
+            this.responder = responder;
         }
 
         [Help("", "Returns the number of AfC submissions awaiting review")]
@@ -58,24 +62,20 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             
             var categorySize = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
 
-            string ts;
-            var pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out ts);
+            var pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out _);
             
             this.apiHelper.Release(mediaWikiApi);
             
             var mapping = JsonConvert.DeserializeObject<Dictionary<int, string>>(pageContent);
             var item = mapping.Where(x => categorySize >= x.Key).Max(x => x.Key);
 
-            return new[]
-            {
-                new CommandResponse
+            return this.responder.Respond(
+                "commands.command.afccount",
+                this.CommandSource,
+                new object[]
                 {
-                    Message = string.Format(
-                        "There are {0} drafts pending review - {1}",
-                        categorySize,
-                        mapping[item])
-                }
-            };
+                    categorySize, mapping[item]
+                });
         }
     }
 }

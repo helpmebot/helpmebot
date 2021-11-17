@@ -30,3 +30,5 @@ dataset:
     - - Done.
   common.channel-not-found:
     - - Channel {0} not found in configuration. Please make sure you are running this command in a channel, and that channel is properly configured in the bot.
+  common.mw-api-error:
+    - - Encountered error retrieving result from API

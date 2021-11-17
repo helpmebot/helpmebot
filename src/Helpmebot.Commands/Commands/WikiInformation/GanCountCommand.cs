@@ -5,7 +5,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -20,6 +20,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     {
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public GanCountCommand(
             string commandSource,
@@ -30,7 +31,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -41,6 +43,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("", "Returns the number of GAN submissions awaiting review")]
@@ -51,14 +54,11 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             var categorySize = mediaWikiApi.GetCategorySize(categoryName);
             this.apiHelper.Release(mediaWikiApi);
-            
-            return new[]
-            {
-                new CommandResponse
-                {
-                    Message = string.Format("[[Category:{0}]] has {1} items", categoryName, categorySize)
-                }
-            };
+
+            return this.responder.Respond(
+                "commands.command.gancount",
+                this.CommandSource,
+                new object[] { categoryName, categorySize });
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -21,6 +22,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         private readonly ILinkerService linkerService;
         private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public PageInfoCommand(
             string commandSource,
@@ -32,7 +34,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IIrcClient client,
             ILinkerService linkerService,
             ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -44,6 +47,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.linkerService = linkerService;
             this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("<page title>", "Provides basic information on the provided page")]
@@ -61,60 +65,70 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
                 if (pageData.RedirectedFrom.Any())
                 {
-                    responses.Add(
-                        new CommandResponse
-                        {
-                            Message = string.Format("Redirected from: {0}", string.Join(", ", pageData.RedirectedFrom))
-                        });
+                    responses.AddRange(
+                        this.responder.Respond(
+                            "commands.command.pageinfo.redirect",
+                            this.CommandSource,
+                            string.Join(", ", pageData.RedirectedFrom)));
                 }
 
                 if (pageData.Missing)
                 {
-                    responses.Add(
-                        new CommandResponse
-                        {
-                            Message = string.Format("The page {0} does not exist.", pageData.Title)
-                        });
+                    responses.AddRange(
+                        this.responder.Respond(
+                            "commands.command.pageinfo.missing",
+                            this.CommandSource,
+                            pageData.Title));
                 }
                 else
                 {
                     if (pageData.Title == null)
                     {
-                        responses.Add(
-                            new CommandResponse
-                            {
-                                Message = "No page data was found, circular redirect?"
-                            });
+                        responses.AddRange(
+                            this.responder.Respond(
+                                "commands.command.pageinfo.circular",
+                                this.CommandSource));
                     }
                     else
                     {
-                        responses.Add(
-                            new CommandResponse
-                            {
-                                Message = string.Format(
-                                    "Page [[{0}]] was last edited by [[User:{1}]] at {2:u}. The edit summary was: {3}",
+
+                        responses.AddRange(
+                            this.responder.Respond(
+                                "commands.command.pageinfo.lastedit",
+                                this.CommandSource,
+                                new object[]
+                                {
                                     pageData.Title,
                                     pageData.LastRevUser,
                                     pageData.Touched,
-                                    pageData.LastRevComment)
-                            });
+                                    pageData.LastRevComment
+                                }));
                     }
                 }
 
                 foreach (var protection in pageData.Protection)
                 {
-                    responses.Add(
-                        new CommandResponse
-                        {
-                            Message = string.Format(
-                                "[[{0}]] is protected against {1} actions at the {3} level {2}.",
+                    string messageKey;
+                    if (protection.Expiry.HasValue)
+                    {
+                        messageKey = "commands.command.pageinfo.protection.indef";
+                    }
+                    else
+                    {
+                        messageKey = "commands.command.pageinfo.protection";
+                    }
+
+                    responses.AddRange(
+                        this.responder.Respond(
+                            messageKey,
+                            this.CommandSource,
+                            new object[]
+                            {
                                 pageData.Title,
                                 protection.Type,
-                                protection.Expiry.HasValue
-                                    ? string.Format("until {0:u}", protection.Expiry.Value)
-                                    : "forever",
-                                protection.Level)
-                        });
+                                protection.Expiry.GetValueOrDefault(),
+                                protection.Level
+                            }));
                 }
 
                 return responses;

@@ -63,7 +63,66 @@ dataset:
   commands.command.google: &commands.command.google
     - - "This help channel is for assistance with editing Wikipedia. Your question might be answered by Google. Try: https://www.google.com/search?q={0}"
 
+  commands.command.afccount:
+    - - There are {0} drafts pending review - {1}
+      
+  commands.command.catsize: &commands.command.catsize
+    - - "[[Category:{0}]] has {1} items"
+  commands.command.catsize.missing:
+    - - "[[Category:{0}]] does not exist"
 
+  commands.command.contribs:
+    - - "The full list of contributions for [[User:{0}]] can be found at {1} .{2}"
+  commands.command.contribs.last:
+    - - " The last contribution was to [[{0}]] at {1} ( {3} ), with the comment: {2}"
+  commands.command.contribs.missing:
+    - - " However, this user does not appear to exist on the local wiki."
+
+  commands.command.editcount.xtools:
+    - - https://tools.wmflabs.org/xtools-ec/index.php?user={0}&project=en.wikipedia.org
+  commands.command.editcount:
+    - - The edit count of [[User:{1}]] is {0}  (For more detailed information, see {2} )
+
+  commands.command.gancount: *commands.command.catsize
+
+  commands.command.maxlag:
+    - - The maximum replication lag is {0} second(s). (Parts of the wiki may appear to be {0} second(s) out-of-date).
+
+  commands.command.pageinfo.redirect:
+    - - "Redirected from: {0}"
+  commands.command.pageinfo.missing:
+    - - "The page {0} does not exist."
+  commands.command.pageinfo.circular:
+    - - "No page data was found, circular redirect?"
+  commands.command.pageinfo.lastedit:
+    - - "Page [[{0}]] was last edited by [[User:{1}]] at {2:u}. The edit summary was: {3}"
+  commands.command.pageinfo.protection:
+    - - "[[{0}]] is protected against {1} actions at the {3} level until {2:u}."
+  commands.command.pageinfo.protection.indef:
+    - - "[[{0}]] is protected against {1} actions at the {3} level forever."
+
+  commands.command.registration.none:
+    - - "No registration date found for the specified user."
+  commands.command.registration:
+    - - "[[User:{0}]] registered on {1:u} ({2}y {3:d\\d\\ hh\\:mm\\:ss} ago)"
+      
+  commands.command.userinfo.missing:
+    - - "The specified user does not exist."
+  commands.command.userinfo.blocked:
+    - - "| BLOCKED"
+  commands.command.userinfo.user:
+    - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\d\ h\h\ m\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}"
+  commands.command.userinfo.ip:
+    - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} {9}"
+
+  commands.command.userrights.missing:
+    - - "The user [[User:{username}]] does not appear to exist on-wiki."
+  commands.command.userrights.no-rights:
+    - - "[[User:{0}]] has no rights assigned."
+  commands.command.userrights:
+    - - "[[User:{0}]] has the following rights: {1}"
+  
+  
   # Legacy commands
   cmdPing: *commands.command.ping
   cmdPingUser: *commands.command.ping.user

@@ -10,6 +10,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -28,6 +29,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShortener;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         public UserInfoCommand(
             string commandSource,
@@ -40,7 +42,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             ISession databaseSession,
             ILinkerService linkerService,
             IUrlShorteningService urlShortener,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -53,6 +56,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.linkerService = linkerService;
             this.urlShortener = urlShortener;
             this.apiHelper = apiHelper;
+            this.responder = responder;
         }
 
         [Help("[username]", "Gives a batch of information on the specified user.")]
@@ -114,15 +118,15 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
                 var isBlocked = mediaWikiApi.GetBlockInformation(username).Any();
 
-                var format =
-                    "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}";
+                var format = "commands.command.userinfo.user";
                 if (isIp)
                 {
-                    format = "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} {9}";
+                    format = "commands.command.userinfo.ip";
                 }
 
-                message = string.Format(
-                    format,
+                var blocked = this.responder.GetMessagePart("commands.command.userinfo.blocked", this.CommandSource);
+                var parameters = new object[]
+                {
                     this.urlShortener.Shorten(userPage),
                     this.urlShortener.Shorten(userTalk),
                     this.urlShortener.Shorten(userContributions),
@@ -132,15 +136,18 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                     registrationDate.Value,
                     editRate,
                     editCount,
-                    isBlocked ? "| BLOCKED" : string.Empty,
+                    isBlocked ? blocked : string.Empty,
                     ageSpan,
-                    this.urlShortener.Shorten(centralAuth));
+                    this.urlShortener.Shorten(centralAuth)
+                };
+                
+                return this.responder.Respond(format, this.CommandSource, parameters);
             }
             catch (GeneralMediaWikiApiException ex) 
             {
                 if (ex.Message == "Missing user")
                 {
-                    return new[] {new CommandResponse {Message = "The specified user does not exist."}};
+                    return this.responder.Respond("commands.command.userinfo.missing", this.CommandSource, username);
                 }
 
                 throw;
@@ -148,14 +155,12 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             catch (MediawikiApiException ex)
             {
                 this.Logger.WarnFormat(ex, "Error retrieving user info from API for user {0}", username);
-                return new[] {new CommandResponse {Message = "Encountered error retrieving result from API"}};
+                return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally
             {
                 this.apiHelper.Release(mediaWikiApi);
             }
-
-            return new[] {new CommandResponse {Message = message}};
         }
     }
 }
