@@ -4,9 +4,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     using Castle.Core.Logging;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -35,7 +33,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         [Help(new[] {"", "<user>"}, "Gives a user a cup of coffee. Could be hot, could be cold/ice, could be spiked. Unfortunately, we sometimes run out and have to provide tea instead.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            return this.GetResponse("cmdCoffee");
+            return this.GetResponse("funcommands.command.coffee");
         }
     }
 }

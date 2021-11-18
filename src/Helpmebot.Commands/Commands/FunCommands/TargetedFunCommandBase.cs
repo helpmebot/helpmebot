@@ -68,20 +68,9 @@ namespace Helpmebot.Commands.Commands.FunCommands
 
         protected IEnumerable<CommandResponse> GetResponse(string message)
         {
-            string[] messageparams = { this.CommandTarget };
-            string response = this.MessageService.RetrieveMessage(message, this.CommandSource, messageparams);
+            object[] messageparams = { this.CommandTarget };
 
-            if (response == null)
-            {
-                this.Logger.Error($"Message not found for key {message}");
-                yield break;
-            }
-            
-            yield return new CommandResponse
-            {
-                Message = response,
-                IgnoreRedirection = true
-            };
+            return this.Responder.Respond(message, this.CommandSource, messageparams, ignoreRedirection: true);
         }
     }
 }

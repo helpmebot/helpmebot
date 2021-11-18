@@ -4,9 +4,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     using Castle.Core.Logging;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -35,7 +33,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         [Help(new[] {"", "<user>"}, "THWACK!")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            return this.GetResponse("CmdTrout");
+            return this.GetResponse("funcommands.command.trout");
         }
     }
 }
