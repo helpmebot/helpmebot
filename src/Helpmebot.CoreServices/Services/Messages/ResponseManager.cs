@@ -57,24 +57,31 @@ namespace Helpmebot.CoreServices.Services.Messages
             return this.GetMessagePartAlternates(messageKey, context, arguments, contextType, false).Select(
                 parsedString =>
                 {
-                    if (parsedString.StartsWith("#ACTION"))
+                    string ctcp = null;
+                    var msgIgnoreRedir = ignoreRedirection;
+                    var msgDest = destination;
+                    var msg = parsedString;
+                    
+                    if (msg.StartsWith("#ACTION"))
                     {
-                        return new CommandResponse
-                        {
-                            Message = parsedString.Substring("#ACTION ".Length),
-                            ClientToClientProtocol = "ACTION",
-                            IgnoreRedirection = true,
-                            Destination = destination,
-                            Type = type,
-                            RedirectionTarget = redirectionTargetList
-                        };
+                        ctcp = "ACTION";
+                        msgIgnoreRedir = true;
+                        msg = msg.Substring("#ACTION ".Length);
+                    }
+                    
+                    if (msg.StartsWith("#PRIVMSG"))
+                    {
+                        msgDest = CommandResponseDestination.PrivateMessage;
+                        msg = msg.Substring("#PRIVMSG ".Length);    
+                        msgIgnoreRedir = true;
                     }
 
                     return new CommandResponse
                     {
-                        Message = parsedString,
-                        IgnoreRedirection = ignoreRedirection,
-                        Destination = destination,
+                        Message = msg,
+                        ClientToClientProtocol = ctcp,
+                        IgnoreRedirection = msgIgnoreRedir,
+                        Destination = msgDest,
                         Type = type,
                         RedirectionTarget = redirectionTargetList
                     };

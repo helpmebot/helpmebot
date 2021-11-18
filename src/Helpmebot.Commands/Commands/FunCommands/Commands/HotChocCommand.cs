@@ -27,7 +27,8 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -36,7 +37,8 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             configurationProvider,
             client,
             databaseSession,
-            messageService)
+            messageService,
+            responder)
         {
         }
 

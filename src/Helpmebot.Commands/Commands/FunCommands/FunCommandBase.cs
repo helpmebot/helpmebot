@@ -4,7 +4,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.ExtensionMethods;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -16,6 +15,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
     [HelpCategory("Fun")]
     public abstract class FunCommandBase : CommandBase
     {
+        public IResponder Responder { get; }
         protected ISession DatabaseSession { get; private set; }
         protected IMessageService MessageService { get; private set; }
 
@@ -28,7 +28,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -37,6 +38,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
             configurationProvider,
             client)
         {
+            this.Responder = responder;
             this.DatabaseSession = databaseSession;
             this.MessageService = messageService;
         }
@@ -53,14 +55,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
             
             if (abort)
             {
-                return new[]
-                {
-                    new CommandResponse
-                    {
-                        Message = "Sorry, fun commands are currently disabled in this channel.",
-                        Destination = CommandResponseDestination.PrivateMessage
-                    }
-                };
+                return this.Responder.Respond("funcommands.disabled", this.CommandSource, channel?.Name);
             }
 
             return null;

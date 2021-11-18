@@ -28,7 +28,8 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -37,20 +38,15 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             configurationProvider,
             client,
             databaseSession,
-            messageService)
+            messageService,
+            responder)
         {
         }
 
         [Help("", "Produces a random Vortigaunt quote in the current channel.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            yield return new CommandResponse
-            {
-                Message = this.MessageService.RetrieveMessage(
-                    "Vortigaunt",
-                    this.CommandSource,
-                    new[] {this.User.Nickname})
-            };
+            return this.Responder.Respond("funcommands.command.vortigaunt", this.CommandSource, this.User.Nickname);
         }
     }
 }

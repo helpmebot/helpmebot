@@ -1,0 +1,89 @@
+---
+format: 1
+dataset:
+
+  funcommands.disabled:
+    - - "#PRIVMSG Sorry, fun commands are currently disabled in this channel."
+  funcommands.command.curl:
+    - - "#ACTION curls up in a ball"
+      - "#PRIVMSG All fun commands are now disabled in {0}"
+  funcommands.command.the-game: &funcommands.command.the-game
+    - - "You can learn about the game at http://enwp.org/The_Game_(mind_game)"
+    - - "#ACTION just lost the game."
+  funcommands.command.sayhi: &funcommands.command.sayhi
+    - - "Hi there {0}!"
+    - - "Hey {0}!"
+    - - "Hello {0}!"
+
+  funcommands.command.vortigaunt: &funcommands.command.vortigaunt
+    - - "All in one and one in all."
+    - - "All we have is yours."
+    - - "Calm yourself!"
+    - - "Comes a man? It is! The Freeman!"
+    - - "Communion of the Vortessence. And that other: a deeper mystery. No deeper than the void itself."
+    - - "Could you but see the eyes inside your own, the minds in your mind, you would see how much we share."
+    - - "Far distant eyes look out through yours."
+    - - "For a brief time you joined with us. You are one. Between the worlds."
+    - - "How many are there in you? Whose hopes and dreams do you encompass?"
+    - - "How often have we slipped our yoke, only to find it choking us again."
+    - - "If you are truly the Freeman, we salute you."
+    - - "Is this the Freeman we see before our eyes?"
+    - - "Let this war end in either total victory or our extinction. No further compromise shall we allow."
+    - - "No pit is complete without a Freeman coming out of it."
+    - - "Node and nexus, feed upon this life!"
+    - - "Our cause seems hopeless."
+    - - "Our life is worthless unless spent on freedom."
+    - - "Our purpose is mutual."
+    - - "Perhaps we will serve you better here."
+    - - "Something secret steers us both. We shall not name it."
+    - - "That sharp spur of hope has not dulled to this day. For once the lesser master lay defeated, we knew the greater must also fall in time."
+    - - "The Combine will pay in kind for their depravity."
+    - - "The way ahead is dark for the moment."
+    - - "There is more to the Freeman than meets the eye."
+    - - "There is no distance between us. No false veil of time or space may intervene."
+    - - "This is more than anyone can bear, but we will persevere."
+    - - "Undeserving of consciousness."
+    - - "Unity of purpose, the shattering of common shackles, a single road we tread."
+    - - "We are a tapestry woven of Vortessence. It is the same for you if only you would see it."
+    - - "We are still here."
+    - - "We are there still, in observance of your final stroke."
+    - - "We are you, Freeman. And you are us."
+    - - "We bear witness to the bright eternity of the Nihilanth's demise. You leap, you fall, we see you flash beyond the barriers."
+    - - "We call you sib, although your mind and meaning are a mystery to us."
+    - - "We cannot forget those whose cords you cut. Forgiveness is not ours to bestow."
+    - - "We cannot read the Freeman's optical buds."
+    - - "We dedicate ourselves to your purpose."
+    - - "We deem this company inviolable."
+    - - "We fear we have failed you."
+    - - "We have dreamed of this moment."
+    - - "We have endured these chafing bonds for eons, yet a single moment of further servitude seems intolerable!"
+    - - "We have lost all dear to us."
+    - - "We have survived darker times."
+    - - "We have survived worse across the ages."
+    - - "We know you."
+    - - "We never dreamed to meet you in corporeal form."
+    - - "We remember the Freeman. We are coterminous."
+    - - "We see you still in Black Mesa. Clearly we see you in the Nihilanth's chamber."
+    - - "We serve the same mystery."
+    - - "We take our stand beside you, here, upon this miserable rock."
+    - - "We will put aside Black Mesa... for now."
+    - - "What seems to you a sacrifice is merely, to us, an oscillation. We do not fear the interval of darkness."
+    - - "While our own lay scattered at your feet, you severed the vortal cord that bound the Nihilanth to life, and to us."
+    - - "With you beside us, a talisman of victory, the day of freedom draws nigh."
+    - - "You have brought us grief and jubilation beyond measure."
+    - - "You humans, always in the qualidity."
+    - - "You must remember us from Black Mesa."
+    - - "Your bright face obscures your darker mask."
+    - - "Your companionship is greatly belabored."
+    - - "Your mind is opaque."
+    - - "Your song we sing and shall sing for eternity. No matter the consequences of this struggle."
+
+  funcommands.command.whistle: &funcommands.command.whistle
+    - - "#ACTION whistles discreetly"
+
+
+
+  TheGame: *funcommands.command.the-game
+  CmdSayHi1: *funcommands.command.sayhi
+  Vortigaunt: *funcommands.command.vortigaunt
+  CmdWhistle: *funcommands.command.whistle

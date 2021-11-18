@@ -4,9 +4,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     using Castle.Core.Logging;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -27,7 +25,8 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService) : base(
+            IMessageService messageService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -36,20 +35,15 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
             configurationProvider,
             client,
             databaseSession,
-            messageService)
+            messageService,
+            responder)
         {
         }
 
         [Help("", "Plays a game")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            yield return new CommandResponse
-            {
-                Message = this.MessageService.RetrieveMessage(
-                    "TheGame",
-                    this.CommandSource,
-                    new[] {this.User.Nickname})
-            };
+            return this.Responder.Respond("funcommands.command.the-game", this.CommandSource, this.User.Nickname);
         }
     }
 }

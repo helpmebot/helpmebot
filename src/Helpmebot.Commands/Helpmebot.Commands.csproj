@@ -35,6 +35,9 @@
       <None Update="Messages\helpmebot.commands.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Messages\helpmebot.commands.fun.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

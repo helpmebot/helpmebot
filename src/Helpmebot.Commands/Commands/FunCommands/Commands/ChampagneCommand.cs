@@ -18,7 +18,17 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     [CommandFlag(Flags.Fun)]
     public class ChampagneCommand : TargetedFunCommandBase
     {
-        public ChampagneCommand(string commandSource, IUser user, IList<string> arguments, ILogger logger, IFlagService flagService, IConfigurationProvider configurationProvider, IIrcClient client, ISession databaseSession, IMessageService messageService) : base(commandSource, user, arguments, logger, flagService, configurationProvider, client, databaseSession, messageService)
+        public ChampagneCommand(
+            string commandSource,
+            IUser user,
+            IList<string> arguments,
+            ILogger logger,
+            IFlagService flagService,
+            IConfigurationProvider configurationProvider,
+            IIrcClient client,
+            ISession databaseSession,
+            IMessageService messageService,
+            IResponder responder) : base(commandSource, user, arguments, logger, flagService, configurationProvider, client, databaseSession, messageService, responder)
         {
         }
 
