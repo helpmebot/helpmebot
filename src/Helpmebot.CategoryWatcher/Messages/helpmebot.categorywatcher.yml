@@ -3,3 +3,14 @@ format: 1
 dataset:
   catwatcher.command.fetchall.must-run-in-channel:
     - - This command must be run in-channel, or with the --all flag
+      
+  catwatcher.item.default.singular:
+    - - page
+  catwatcher.item.default.plural:
+    - - pages
+  catwatcher.item.default.newitems:
+    - - "There are {0} new {1}: {2}"
+  catwatcher.item.default.hasitems:
+    - - "There are {0} {1}: {2}"
+  catwatcher.item.default.noitems:
+    - - There are no {0}.

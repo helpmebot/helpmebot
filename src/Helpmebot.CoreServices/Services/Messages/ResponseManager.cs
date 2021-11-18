@@ -95,7 +95,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         public string GetMessagePart(string messageKey, string context, object[] arguments = null, Context contextType = null)
         {
-            return this.GetMessagePartAlternates(messageKey, context, arguments, contextType, true).First();
+            return this.GetMessagePartAlternates(messageKey, context, arguments, contextType, true).FirstOrDefault();
         }
         
         private IEnumerable<string> GetMessagePartAlternates(string messageKey, 

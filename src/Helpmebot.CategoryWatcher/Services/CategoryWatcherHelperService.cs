@@ -2,12 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CategoryWatcher.Commands;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
-    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
@@ -27,10 +25,10 @@
         
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
-        private readonly IMessageService messageService;
         private readonly ISession session;
         private readonly ILogger logger;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IResponder responder;
 
         private readonly IList<WatchedCategory> watchedCategories;
         private readonly IList<string> ignoredPages;
@@ -38,18 +36,18 @@
         public CategoryWatcherHelperService(
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService,
-            IMessageService messageService,
             ISession session,
             ILogger logger,
             ICommandParser commandParser,
-            IMediaWikiApiHelper apiHelper)
+            IMediaWikiApiHelper apiHelper,
+            IResponder responder)
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
-            this.messageService = messageService;
             this.session = session;
             this.logger = logger;
             this.apiHelper = apiHelper;
+            this.responder = responder;
 
             lock (this.session)
             {
@@ -86,7 +84,17 @@
             bool describeEmptySet)
         {
             var destination = categoryChannel.Channel.Name;
+            var pluralString = this.responder.GetMessagePart(
+                $"catwatcher.item.{category.Keyword}.plural",
+                destination);
 
+            if (pluralString == null)
+            {
+                pluralString = this.responder.GetMessagePart(
+                    $"catwatcher.item.default.plural",
+                    destination);
+            }
+            
             if (items.Any())
             {
                 var textItems = new List<string>();
@@ -119,33 +127,46 @@
 
                     textItems.Add(string.Format("[[{0}]]{1}{2}", item.Title, urlData, waitTimeData));
                 }
-
-                string pluralString;
+                
                 if (items.Count == 1)
                 {
-                    pluralString = this.messageService.RetrieveMessage(
-                        category.Keyword + "Singular",
-                        destination,
-                        new[] {"keywordSingularDefault"});
-                }
-                else
-                {
-                    pluralString = this.messageService.RetrieveMessage(
-                        category.Keyword + "Plural",
-                        destination,
-                        new[] {"keywordPluralDefault"});
+                    pluralString = this.responder.GetMessagePart(
+                        $"catwatcher.item.{category.Keyword}.singular",
+                        destination);
+
+                    if (pluralString == null)
+                    {
+                        pluralString = this.responder.GetMessagePart(
+                            $"catwatcher.item.default.singular",
+                            destination);
+                    }
                 }
 
-                string[] messageParams =
+                object[] messageParams =
                 {
-                    items.Count.ToString(CultureInfo.InvariantCulture), pluralString,
+                    items.Count,
+                    pluralString,
                     string.Join(" , ", textItems)
                 };
 
-                return this.messageService.RetrieveMessage(
-                    category.Keyword + (isNew ? "New" : string.Empty) + "HasItems",
-                    destination,
-                    messageParams);
+                var keySuffix = "hasitems";
+                if (isNew)
+                {
+                    keySuffix = "newitems";
+                }
+                
+                var message = this.responder.GetMessagePart(
+                    $"catwatcher.item.{category.Keyword}.{keySuffix}",
+                    destination, messageParams);
+
+                if (message == null)
+                {
+                    message = this.responder.GetMessagePart(
+                        $"catwatcher.item.default.{keySuffix}",
+                        destination, messageParams);
+                }
+
+                return message;
             }
 
             if (!describeEmptySet)
@@ -153,14 +174,20 @@
                 return null;
             }
 
-            string[] mp =
+            var noitems = this.responder.GetMessagePart(
+                $"catwatcher.item.{category.Keyword}.noitems",
+                destination,
+                pluralString
+            );
+
+            if (noitems == null)
             {
-                this.messageService.RetrieveMessage(
-                    category.Keyword + "Plural",
-                    destination,
-                    new[] {"keywordPluralDefault"})
-            };
-            return this.messageService.RetrieveMessage(category.Keyword + "NoItems", destination, mp);
+                noitems = this.responder.GetMessagePart(
+                    $"catwatcher.item.default.noitems",
+                    destination, pluralString);
+            }
+
+            return noitems;
         }
 
         /// <summary>
