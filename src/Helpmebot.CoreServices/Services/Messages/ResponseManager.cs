@@ -28,8 +28,8 @@ namespace Helpmebot.CoreServices.Services.Messages
             this.messageRepositories = new List<IMessageRepository>
             {
                 databaseMessageRepository,
+                fileMessageRepository,
                 wikiMessageRepository,
-                fileMessageRepository
             };
         }
 
@@ -195,6 +195,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 
                     if (result != null)
                     {
+                        this.logger.TraceFormat("Found in {0} (context)", repo.GetType());
                         return result;
                     }
                 }
@@ -213,6 +214,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                     var result = repo.Get(messageKey, null, null);
                     if (result != null)
                     {
+                        this.logger.TraceFormat("Found in {0}", repo.GetType());
                         return result;
                     }
                 }

@@ -15,11 +15,3 @@ dataset:
     - - "{0} ({1}) was last active {2}. They currently have automatic welcoming of users {3}. Their on-wiki username is [[User:{4}]]."
   accountcreations.command.status: &accountcreations.command.status
     - - "Open requests: {0}, Flagged user requests: {1}, Checkuser requests: {2}, On Hold: {3}, ProxyCheck: {4}, Steward: {5}, Hospital: {6}, JobQueue: {7}, Banned: {8}, Site users: {10}, Site admins: {9}, Awaiting approval: {11}"
-  
-  # Legacy messages
-  noSuchUser: *accountcreations.no-such-user
-  CmdAccCount: *accountcreations.command.count
-  CmdAccCountAdmin: *accountcreations.command.count.admin
-  DeployInProgress: *accountcreations.command.deploy.inprogress
-  CmdAccStats: *accountcreations.command.stats
-  CmdAccStatus: *accountcreations.command.status

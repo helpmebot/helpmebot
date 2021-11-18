@@ -72,7 +72,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 catch (MissingUserException e)
                 {
                     this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
-                    return this.responder.Respond("commands.command.userinfo.missing", this.CommandSource, username);
+                    return this.responder.Respond("commands.command.userrights.missing", this.CommandSource, username);
                 }
                 catch (MediawikiApiException e)
                 {
@@ -82,11 +82,11 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
                 if (string.IsNullOrWhiteSpace(rights))
                 {
-                    return this.responder.Respond("commands.command.userinfo.no-rights", this.CommandSource, username);
+                    return this.responder.Respond("commands.command.userrights.no-rights", this.CommandSource, username);
                 }
 
                 return this.responder.Respond(
-                    "commands.command.userinfo",
+                    "commands.command.userrights",
                     this.CommandSource,
                     new object[] { username, rights });
             }

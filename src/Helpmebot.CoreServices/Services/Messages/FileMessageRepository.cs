@@ -4,6 +4,7 @@ namespace Helpmebot.CoreServices.Services.Messages
     using System.IO;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
+    using YamlDotNet.Core;
     using YamlDotNet.Serialization;
     using YamlDotNet.Serialization.NamingConventions;
 
@@ -19,22 +20,29 @@ namespace Helpmebot.CoreServices.Services.Messages
             
             foreach (var file in fileNames)
             {
-                var data = deserializer.Deserialize<FileMessageStore>(File.ReadAllText(file));
+                try
+                {
+                    var data = deserializer.Deserialize<FileMessageStore>(File.ReadAllText(file));
 
-                if (data == null)
-                {
-                    continue;
-                }
+                    if (data == null)
+                    {
+                        continue;
+                    }
 
-                if (data.Format != 1)
-                {
-                    logger.ErrorFormat("Unknown data format {0} in file {1}; skipping...", data.Format, file);
-                    continue;
+                    if (data.Format != 1)
+                    {
+                        logger.ErrorFormat("Unknown data format {0} in file {1}; skipping...", data.Format, file);
+                        continue;
+                    }
+
+                    foreach (var kvp in data.Dataset)
+                    {
+                        this.strings.Add(kvp.Key, kvp.Value);
+                    }
                 }
-                
-                foreach (var kvp in data.Dataset)
+                catch (YamlException ex)
                 {
-                    this.strings.Add(kvp.Key, kvp.Value);
+                    this.logger.ErrorFormat(ex, "Failed to load file {0} - {1}", file, ex.Message);
                 }
             }
         }

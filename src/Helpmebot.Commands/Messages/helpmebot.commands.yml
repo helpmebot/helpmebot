@@ -111,7 +111,7 @@ dataset:
   commands.command.userinfo.blocked:
     - - "| BLOCKED"
   commands.command.userinfo.user:
-    - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\d\ h\h\ m\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}"
+    - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} | CA: {11} | Groups: {4} | Age: {5}y {10:d\\d\\ h\\h\\ m\\m} | Reg: {6:u} | Count: {8} | Activity: {7:#####.###} {9}"
   commands.command.userinfo.ip:
     - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} {9}"
 
@@ -122,11 +122,4 @@ dataset:
   commands.command.userrights:
     - - "[[User:{0}]] has the following rights: {1}"
   
-  
-  # Legacy commands
-  cmdPing: *commands.command.ping
-  cmdPingUser: *commands.command.ping.user
-  cmdTime: *commands.command.time
-  cmdUptimeUpSince: *commands.command.uptime
-  google-response: *commands.command.google
   

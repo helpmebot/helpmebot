@@ -5,9 +5,9 @@ dataset:
     - - Requested by {0}
 
   channelservices.command.idlehelpees.user.since:
-    - - {0} (idle {1:d\d\ hh\:mm\:ss})
+    - - "{0} (idle {1:d\\d\\ hh\\:mm\\:ss})"
   channelservices.command.idlehelpees.user.always:
-    - - {0} (idle since bot startup)
+    - - "{0} (idle since bot startup)"
   channelservices.command.idlehelpees:
     - - "Helpees: {0} | Last 3 active helpers: {1}"
   channelservices.command.idlehelpees.remove:
@@ -15,7 +15,7 @@ dataset:
   channelservices.command.idlehelpees.kick:
     - - Idle; if you still need assistance editing Wikipedia, please re-join the channel
   channelservices.command.track.not-found:
-    - - {0} not found on tracked channel
+    - - "{0} not found on tracked channel"
   channelservices.command.track:
     - - Score of {0} set to {1}.
       
@@ -42,7 +42,3 @@ dataset:
     - - "Whois failed for {0}; Location: {1}"
   channelservices.command.ipinfo:
     - - "Whois for {0} gives organisation {1}; Location: {2}"
-
-  # Legacy messages
-  RequestedBy: *channelservices.command.part.requested-by
-  

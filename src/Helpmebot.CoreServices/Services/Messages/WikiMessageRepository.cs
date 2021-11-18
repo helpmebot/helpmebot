@@ -2,15 +2,18 @@ namespace Helpmebot.CoreServices.Services.Messages
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
 
     public class WikiMessageRepository : ReadOnlyMessageRepository
     {
         private readonly ILegacyMessageBackend legacyMessageBackend;
+        private readonly ILogger logger;
 
-        public WikiMessageRepository(ILegacyMessageBackend legacyMessageBackend)
+        public WikiMessageRepository(ILegacyMessageBackend legacyMessageBackend, ILogger logger)
         {
             this.legacyMessageBackend = legacyMessageBackend;
+            this.logger = logger;
         }
 
         public override bool SupportsContext => true;
@@ -43,6 +46,8 @@ namespace Helpmebot.CoreServices.Services.Messages
             {
                 return null;
             }
+
+            this.logger.WarnFormat("Using wiki message as fallback for key {0}", key);
 
             return results.Select(x => new List<string> { x }).ToList();
         }

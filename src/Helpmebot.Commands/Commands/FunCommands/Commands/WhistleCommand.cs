@@ -43,7 +43,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         [Help("", "Makes the bot whistle a tune")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            return this.Responder.Respond("funcommands.command.vortigaunt", this.CommandSource, this.User.Nickname);
+            return this.Responder.Respond("funcommands.command.whistle", this.CommandSource, this.User.Nickname);
         }
     }
 }
