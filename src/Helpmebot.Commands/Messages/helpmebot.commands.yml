@@ -16,15 +16,15 @@ dataset:
   commands.command.flaggroup.error:
     - - "Error managing flag group: {0}"
       
-  commands.command.ping: &commands.command.ping
+  commands.command.ping:
     - - Pong.
-  commands.command.ping.user: &commands.command.ping.user
+  commands.command.ping.user:
     - - "#ACTION pings {0} as it was told."
     - - "#ACTION hopes to get a \"pong\" back from {0}"
 
-  commands.command.time: &commands.command.time
+  commands.command.time:
     - - "{0:u}"
-  commands.command.uptime: &commands.command.uptime
+  commands.command.uptime:
     - - "Bot has been up since {0:D} {0:T}"
 
   commands.command.iw.created:
@@ -60,7 +60,7 @@ dataset:
   commands.command.resolve.host:
     - - "{0} {2}resolves to the following IP addresses: {1}"
 
-  commands.command.google: &commands.command.google
+  commands.command.google:
     - - "This help channel is for assistance with editing Wikipedia. Your question might be answered by Google. Try: https://www.google.com/search?q={0}"
 
   commands.command.afccount:

@@ -1,7 +1,7 @@
 ---
 format: 1
 dataset:
-  channelservices.command.part.requested-by: &channelservices.command.part.requested-by
+  channelservices.command.part.requested-by:
     - - Requested by {0}
 
   channelservices.command.idlehelpees.user.since:

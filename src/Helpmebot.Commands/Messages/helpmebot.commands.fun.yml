@@ -7,15 +7,15 @@ dataset:
   funcommands.command.curl:
     - - "#ACTION curls up in a ball"
       - "#PRIVMSG All fun commands are now disabled in {0}"
-  funcommands.command.the-game: &funcommands.command.the-game
+  funcommands.command.the-game:
     - - "You can learn about the game at http://enwp.org/The_Game_(mind_game)"
     - - "#ACTION just lost the game."
-  funcommands.command.sayhi: &funcommands.command.sayhi
+  funcommands.command.sayhi:
     - - "Hi there {0}!"
     - - "Hey {0}!"
     - - "Hello {0}!"
 
-  funcommands.command.vortigaunt: &funcommands.command.vortigaunt
+  funcommands.command.vortigaunt:
     - - "All in one and one in all."
     - - "All we have is yours."
     - - "Calm yourself!"
@@ -78,31 +78,31 @@ dataset:
     - - "Your mind is opaque."
     - - "Your song we sing and shall sing for eternity. No matter the consequences of this struggle."
 
-  funcommands.command.whistle: &funcommands.command.whistle
+  funcommands.command.whistle:
     - - "#ACTION whistles discreetly"
 
-  funcommands.command.beer: &funcommands.command.beer
+  funcommands.command.beer:
     - - "#ACTION gives some beer to {0}"
     - - "#ACTION pours an ice cold pint for {0} and waits for this to all blow over"
       
-  funcommands.command.champagne: &funcommands.command.champagne
+  funcommands.command.champagne:
     - - "#ACTION gives {0} a bottle of champagne."
     - - "#ACTION reminds {0} that champagne is expensive."
 
-  funcommands.command.charge: &funcommands.command.charge
+  funcommands.command.charge:
     - - "#ACTION is chargin mah lazer, aims and fires at {0}."
     - - "#ACTION shouts \"I BE FIRIN MAH LAZORS!\", aims and fires at {0}."
     - - "#ACTION shouts \"DOCTOR OCTAGONAPUS!\", and completely annihilates {0}."
 
-  funcommands.command.chillpill: &funcommands.command.chillpill
+  funcommands.command.chillpill:
     - - "#ACTION writes a prescription to {0} for a chill pill. Take as needed, unlimited refills."
 
-  funcommands.command.cluebat: &funcommands.command.cluebat
+  funcommands.command.cluebat:
     - - "#ACTION hits {0} several times with a cluebat."
     - - "#ACTION takes a cluebat to the back of {0}'s head."
     - - "#ACTION is too tired to beat {0} down with a cluebat today, ask again tomorrow."
 
-  funcommands.command.coffee: &funcommands.command.coffee
+  funcommands.command.coffee:
     - - "#ACTION pours {0} a nice hot cup of coffee."
     - - "#ACTION pours {0} a cool cup of ice coffee."
     - - "#ACTION was going to give {0} a cup of coffee with brandy in it but forgot it was out of brandy, so it decided to just put Irish Cream in instead. :D"
@@ -110,10 +110,10 @@ dataset:
     - - "#ACTION pours {0} a cool cup of ice coffee with cream and sugar."
     - - "#ACTION has run out of coffee and pours {0} a nice hot cup of tea instead."
 
-  funcommands.command.cookie: &funcommands.command.cookie:
+  funcommands.command.cookie:
     - - "#ACTION takes a cookie from the jar, then hands it to {0}."
 
-  funcommands.command.drink: &funcommands.command.drink
+  funcommands.command.drink:
     - - "#ACTION removes a drink from the cooler and hands it to {0}."
     - - "#ACTION gives {0} a stiff drink."
     - - "#ACTION buys a drink then gives it to {0}."
@@ -122,39 +122,39 @@ dataset:
     - - "#ACTION was going to give {0} Disaronno mixed with Sprite but changed its mind as it couldn't even do that to its worst enemy and gives {0} a beer instead."
     - - "#ACTION is not a bartender and suggests that {0} go get their own drink."
 
-  funcommands.command.electrocute: &funcommands.command.electrocute
+  funcommands.command.electrocute:
     - - "#ACTION electrocutes {0}."
     - - "#ACTION attaches {0} to two 15kA jump leads, and sends 250kV coursing through him."
     - - "#ACTION strikes {0} with lightning."
 
-  funcommands.command.exorcise: &funcommands.command.exorcise
+  funcommands.command.exorcise:
     - - "#ACTION purges the demons from {0}'s soul."
 
-  funcommands.command.hotchocolate: &funcommands.command.hotchocolate
+  funcommands.command.hotchocolate:
     - - "#ACTION pours a soothing hot chocolate for {0}"
 
-  funcommands.command.icecream: &funcommands.command.icecream
+  funcommands.command.icecream:
     - - "#ACTION gives {0} some magical ice cream that changes to their favourite flavour."
 
-  funcommands.command.kill: &funcommands.command.kill
+  funcommands.command.kill:
     - - "#ACTION drops an anvil on {0} and then buries the body somewhere."
 
-  funcommands.command.minnow: &funcommands.command.minnow
+  funcommands.command.minnow:
     - - "#ACTION takes a minnow and slaps {0} across the face with it."
     - - "#ACTION minnows {0}."
     - - "#ACTION grabs an extremely small trout from the bucket and slaps {0} with it."
 
-  funcommands.command.nuke: &funcommands.command.nuke
+  funcommands.command.nuke:
     - - "#ACTION nukes {0} with a clue-filled thermonuclear warhead."
     - - "#ACTION has become self-aware and is initiating Skynet.  Nuclear extermination of all humans is commencing. Primary objective \"{0}\"."
 
-  funcommands.command.pat: &funcommands.command.pat
+  funcommands.command.pat:
     - - "#ACTION pats {0}."
     - - "#ACTION pats {0} like a dog.  *W00F*"
     - - "#ACTION pats {0} like a cat.  *meow*"
     - - "#ACTION pats {0} on the back and praises them for a job well done."
 
-  funcommands.command.pie: &funcommands.command.pie
+  funcommands.command.pie:
     - - "#ACTION hits {0} in the face with a pie."
     - - "#ACTION throws a pie at {0}."
     - - "#ACTION makes a pie, and throws it at {0}."
@@ -162,27 +162,27 @@ dataset:
     - - "#ACTION goes crazy and starts throwing pies all across the room."
     - - "#ACTION has run out of pies and offers {0} a nice tasty piece of black forest cake instead."
 
-  funcommands.command.pillow: &funcommands.command.pillow
+  funcommands.command.pillow:
     - - "#ACTION places a pillow under {0}'s head."
     - - "#ACTION places a pillow between {0}'s head and the desk."
     - - "#ACTION smacks {0} upside the head with a big fluffy pillow!  *PILLOW FIGHT!!!!*"
     - - "#ACTION hits {0} in the face with a pillow"
 
-  funcommands.command.salmon: &funcommands.command.salmon
+  funcommands.command.salmon:
     - - "#ACTION slaps {0} with a smoked chinook salmon."
     - - "#ACTION smokes a chinook salmon to slap {0} with."
     - - "#ACTION goes to the river to catch a fresh chinook salmon, smokes it, and won't share it with {0}."
 
-  funcommands.command.sir: &funcommands.command.sir
+  funcommands.command.sir:
     - - "Calling {0} `sir` is like putting an elevator in an outhouse, it don't belong. - Roadhouse"
 
-  funcommands.command.soda: &funcommands.command.soda
+  funcommands.command.soda: 
     - - "#ACTION was going to give {0} some soda-pop but decided against it because that sugary sludge will rot their brain and teeth and cause them obesity!"
     - - "#ACTION grabs a can of Dr. Pepper, shakes it vigorously, and hands it to {0}."
     - - "#ACTION gives {0} a frosted glass of cold soda from the tap."
     - - "#ACTION chugs the Coca-Cola that it was suppose to give to {0} claiming it prevents rust."
 
-  funcommands.command.tea: &funcommands.command.tea
+  funcommands.command.tea:
     - - "#ACTION pours {0} a cup of tea."
     - - "#ACTION pours {0} a cup of green tea."
     - - "#ACTION pours {0} a cup of Chamomile tea."
@@ -197,7 +197,7 @@ dataset:
     - - "#ACTION pours {0} a cup of chai (tea)."
     - - "#ACTION makes a pot of Earl Grey, served with lemon for {0}."
 
-  funcommands.command.trout: &funcommands.command.trout
+  funcommands.command.trout:
     - - "#ACTION smacks {0} about a bit with a large trout"
     - - "#ACTION takes out a somewhat fresh trout from the fish supply, and smacks {0} with it."
     - - "#ACTION catches a fresh trout from the river, then slaps {0} with it a few times."
@@ -205,13 +205,13 @@ dataset:
     - - "#ACTION gets a special rainbow trout from the rainbow river, then smacks {0} with it."
     - - "#ACTION runs out of trout and slaps {0} with a tuna instead."
 
-  funcommands.command.whale: &funcommands.command.whale
+  funcommands.command.whale:
     - - "#ACTION throws a 3000 pound whale at {0}."
     - - "#ACTION slams {0} with a 10-tonne whale."
     - - "#ACTION fishes, catches a whale and throws it at {0}."
     - - "#ACTION pwns {0} with a whale."
 
-  funcommands.command.wine: &funcommands.command.wine
+  funcommands.command.wine:
     - - "#ACTION pours {0} a glass of Chardonnay"
     - - "#ACTION pours {0} a glass of Sauvignon blanc"
     - - "#ACTION pours {0} a glass of Shiraz"
