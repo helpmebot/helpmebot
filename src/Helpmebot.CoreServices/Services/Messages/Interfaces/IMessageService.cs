@@ -20,28 +20,13 @@
 
 namespace Helpmebot.CoreServices.Services.Messages.Interfaces
 {
-    using System.Collections.Generic;
+    using System;
 
     /// <summary>
     /// The MessageService interface.
     /// </summary>
+    [Obsolete]
     public interface IMessageService
     {
-        /// <summary>
-        /// Retrieve a message from a message source with context.
-        /// </summary>
-        /// <param name="messageKey">
-        /// The message key.
-        /// </param>
-        /// <param name="context">
-        /// The context for retrieving a message.
-        /// </param>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The message
-        /// </returns>
-        string RetrieveMessage(string messageKey, object context, IEnumerable<string> arguments);
     }
 }
