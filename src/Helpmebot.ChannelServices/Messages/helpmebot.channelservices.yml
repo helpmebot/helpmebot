@@ -42,3 +42,6 @@ dataset:
     - - "Whois failed for {0}; Location: {1}"
   channelservices.command.ipinfo:
     - - "Whois for {0} gives organisation {1}; Location: {2}"
+
+  channelservices.welcomer.welcome:
+    - - "Hi {0}! Welcome to the channel!"

@@ -31,7 +31,6 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
-    using Helpmebot.CoreServices.Services.Messages;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
@@ -55,7 +54,6 @@ namespace Helpmebot.ChannelServices.Services
 
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
-        private readonly IMessageService messageService;
         private readonly IResponder responder;
         private readonly ISession session;
         private readonly RateLimitConfiguration configuration;
@@ -68,7 +66,6 @@ namespace Helpmebot.ChannelServices.Services
 
         public JoinMessageService(
             ILogger logger,
-            IMessageService messageService,
             IResponder responder,
             ISession session,
             ModuleConfiguration configuration,
@@ -77,7 +74,6 @@ namespace Helpmebot.ChannelServices.Services
             IBlockMonitoringService blockMonitoringService)
         {
             this.logger = logger;
-            this.messageService = messageService;
             this.responder = responder;
             this.session = session;
             this.configuration = configuration.JoinMessageRateLimits;
@@ -211,10 +207,10 @@ namespace Helpmebot.ChannelServices.Services
                 // Either no override defined, or override not matching.
                 this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
 
-                var welcomeMessage = this.messageService.RetrieveMessage(
-                    "WelcomeMessage",
+                var welcomeMessage = this.responder.Respond(
+                    "channelservices.welcomer.welcome",
                     channel,
-                    new[] {networkUser.Nickname, channel});
+                    new object[] { networkUser.Nickname, channel });
                 
                 if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
                 {
@@ -242,7 +238,10 @@ namespace Helpmebot.ChannelServices.Services
                     }
                 }
 
-                client.SendMessage(channel, welcomeMessage);
+                foreach (var message in welcomeMessage)
+                {
+                    client.SendMessage(channel, message.CompileMessage());                    
+                }
             }
 
             WelcomerActivations.WithLabels(channel).Inc();

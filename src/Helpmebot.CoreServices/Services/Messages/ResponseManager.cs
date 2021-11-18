@@ -224,7 +224,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                 }
             }
 
-            this.logger.WarnFormat("Not found: {0}", messageKey);
+            this.logger.ErrorFormat("Message key not found: {0}", messageKey);
             return null;
         }
     }

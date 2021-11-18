@@ -62,7 +62,10 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             }
 
             var welcomeEntries = string.Join(" ; ", welcomeForChannel.Select(x => x.ToString()));
-            return this.responder.Respond("channelservices.command.welcomer.list", this.CommandSource, welcomeEntries);
+            return this.responder.Respond(
+                "channelservices.command.welcomer.list",
+                this.CommandSource,
+                new object[] { this.CommandSource, welcomeEntries });
         }
 
         [SubcommandInvocation("add")]

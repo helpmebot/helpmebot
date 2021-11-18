@@ -47,7 +47,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                 return null;
             }
 
-            this.logger.WarnFormat("Using wiki message as fallback for key {0}", key);
+            this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
 
             return results.Select(x => new List<string> { x }).ToList();
         }
