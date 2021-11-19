@@ -1,6 +1,6 @@
 namespace Helpmebot.CoreServices.Model
 {
-    public class DatabaseMessageKey
+    internal class DatabaseMessageKey
     {
         public string ContextType { get; }
         public string Context { get; }

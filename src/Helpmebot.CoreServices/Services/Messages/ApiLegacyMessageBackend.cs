@@ -63,7 +63,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             try
             {
-                return mediaWikiApi.PrefixSearch("Message:");
+                return mediaWikiApi.PrefixSearch("", 206).Select(x => x.Substring("Message:".Length));
             }
             finally
             {

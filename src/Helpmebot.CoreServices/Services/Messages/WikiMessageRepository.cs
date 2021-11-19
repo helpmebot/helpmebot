@@ -3,12 +3,21 @@ namespace Helpmebot.CoreServices.Services.Messages
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
 
     public class WikiMessageRepository : ReadOnlyMessageRepository
     {
+        private class WikiMessage
+        {
+            public DatabaseMessageKey Key { get; set; }
+            public List<List<string>> Values { get; set; }
+        }
+
         private readonly ILegacyMessageBackend legacyMessageBackend;
         private readonly ILogger logger;
+        private readonly Dictionary<DatabaseMessageKey, WikiMessage> cache =
+            new Dictionary<DatabaseMessageKey, WikiMessage>();
 
         public WikiMessageRepository(ILegacyMessageBackend legacyMessageBackend, ILogger logger)
         {
@@ -21,36 +30,66 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         public override List<List<string>> Get(string key, string contextType, string context)
         {
-            var contextData = string.Empty;
-            if (!string.IsNullOrEmpty(context))
-            {
-                contextData = $"/{context}";
+            var objectKey = new DatabaseMessageKey(contextType, context, key);
+            WikiMessage messageObject = null;
+            bool inCache = false;
 
-                contextData = contextData.Replace("#", string.Empty) // will cause issues
-                    .Replace("|", string.Empty) // link syntax
-                    .Replace("[", string.Empty) // link syntax
-                    .Replace("]", string.Empty) // link syntax
-                    .Replace("{", string.Empty) // link syntax
-                    .Replace("}", string.Empty) // link syntax
-                    .Replace("<", string.Empty) // html issues
-                    .Replace(">", string.Empty); // html issues
+            lock (this.cache)
+            {
+                if (this.cache.ContainsKey(objectKey))
+                {
+                    messageObject = this.cache[objectKey];
+                    inCache = true;
+                }
             }
 
-            // normalise message name to account for old messages
-            if (key.Substring(0, 1).ToUpper() != key.Substring(0, 1))
+            if (!inCache)
             {
-                key = key.Substring(0, 1).ToUpper() + key.Substring(1);
+                var contextData = string.Empty;
+                if (!string.IsNullOrEmpty(context))
+                {
+                    contextData = $"/{context}";
+
+                    contextData = contextData.Replace("#", string.Empty) // will cause issues
+                        .Replace("|", string.Empty) // link syntax
+                        .Replace("[", string.Empty) // link syntax
+                        .Replace("]", string.Empty) // link syntax
+                        .Replace("{", string.Empty) // link syntax
+                        .Replace("}", string.Empty) // link syntax
+                        .Replace("<", string.Empty) // html issues
+                        .Replace(">", string.Empty); // html issues
+                }
+
+                // normalise message name to account for old messages
+                if (key.Substring(0, 1).ToUpper() != key.Substring(0, 1))
+                {
+                    key = key.Substring(0, 1).ToUpper() + key.Substring(1);
+                }
+
+                var results = this.legacyMessageBackend.GetRawMessages(string.Concat(key, contextData)).ToList();
+
+                if (results.Any())
+                {
+                    this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
+                    messageObject = new WikiMessage
+                        { Key = objectKey, Values = results.Select(x => new List<string> { x }).ToList() };
+                }
+
+                lock (this.cache)
+                {
+                    if (!this.cache.ContainsKey(objectKey))
+                    {
+                        this.cache.Add(objectKey, messageObject);
+                    }
+                }
             }
 
-            var results = this.legacyMessageBackend.GetRawMessages(string.Concat(key, contextData)).ToList();
-            if (!results.Any())
+            if (messageObject == null)
             {
                 return null;
             }
 
-            this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
-
-            return results.Select(x => new List<string> { x }).ToList();
+            return messageObject.Values;
         }
 
         public override IEnumerable<string> GetAllKeys()
