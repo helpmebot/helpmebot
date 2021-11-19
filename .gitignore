@@ -32,17 +32,8 @@ _ReSharper.*
 #Stylecop build job stuff
 StyleCopViolations.xml
 
-#ignore configfile
-.hmbot
-database.config
-mediawiki.xml
-
 #idea
 src/.idea/*
 src/*.iml
-
-#nuget
-packages/
-!packages/repositories.config
 
 /src/Helpmebot.WebUI/wwwroot/scss/base.css
