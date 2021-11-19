@@ -1,5 +1,6 @@
 namespace Helpmebot.CoreServices.Services.Messages
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
@@ -70,7 +71,11 @@ namespace Helpmebot.CoreServices.Services.Messages
 
                 if (results.Any())
                 {
-                    this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
+                    if (!Environment.StackTrace.Contains("Helpmebot.WebApi.Services.ApiService"))
+                    {
+                        this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
+                    }
+                    
                     messageObject = new WikiMessage
                         { Key = objectKey, Values = results.Select(x => new List<string> { x }).ToList() };
                 }
