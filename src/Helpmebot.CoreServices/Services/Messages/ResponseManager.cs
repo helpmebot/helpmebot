@@ -2,6 +2,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -30,6 +31,16 @@ namespace Helpmebot.CoreServices.Services.Messages
                 fileMessageRepository,
                 wikiMessageRepository,
             };
+            
+            this.logger.Info("Precaching responses...");
+            var sw = Stopwatch.StartNew();
+            foreach (var key in this.messageRepositories.SelectMany(x => x.GetAllKeys()).Distinct())
+            {
+                this.FindMessage(key, null, null);
+            }
+            sw.Stop();
+            this.logger.InfoFormat("Done precaching responses; elapsed {0}ms", sw.ElapsedMilliseconds);
+
         }
 
         public IEnumerable<CommandResponse> Respond(string messageKey, string channel, object argument)

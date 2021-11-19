@@ -71,7 +71,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 
                 if (results.Any())
                 {
-                    if (!Environment.StackTrace.Contains("Helpmebot.WebApi.Services.ApiService"))
+                    if (!(Environment.StackTrace.Contains("Helpmebot.WebApi.Services.ApiService") || Environment.StackTrace.Contains("Helpmebot.CoreServices.Services.Messages.ResponseManager..ctor")))
                     {
                         this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
                     }
