@@ -10,5 +10,10 @@ namespace Helpmebot.CoreServices.Services.Messages
         {
             this.ContextType = contextType;
         }
+
+        public override string ToString()
+        {
+            return $"ContextType: {this.ContextType}";
+        }
     }
 }
