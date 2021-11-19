@@ -2,6 +2,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Configuration;
     using YamlDotNet.Core;
@@ -48,6 +49,7 @@ namespace Helpmebot.CoreServices.Services.Messages
         }
         
         public override bool SupportsContext => false;
+        public override string RepositoryType => "file";
         
         public override List<List<string>> Get(string key, string contextType, string context)
         {
@@ -57,6 +59,11 @@ namespace Helpmebot.CoreServices.Services.Messages
             }
 
             return null;
+        }
+
+        public override IEnumerable<string> GetAllKeys()
+        {
+            return this.strings.Keys.ToList();
         }
     }
 }

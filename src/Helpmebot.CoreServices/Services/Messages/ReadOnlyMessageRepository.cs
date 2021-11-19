@@ -8,7 +8,8 @@ namespace Helpmebot.CoreServices.Services.Messages
     {
         public bool SupportsWrite => false;
         public abstract bool SupportsContext { get; }
-        
+        public abstract string RepositoryType { get; }
+
         public abstract List<List<string>> Get(string key, string contextType, string context);
 
         public void Set(string key, string contextType, string context, List<List<string>> value)
@@ -20,5 +21,7 @@ namespace Helpmebot.CoreServices.Services.Messages
         {
             throw new ReadOnlyException();
         }
+
+        public abstract IEnumerable<string> GetAllKeys();
     }
 }

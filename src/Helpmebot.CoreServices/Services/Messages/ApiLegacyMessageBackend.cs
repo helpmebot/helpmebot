@@ -53,5 +53,22 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             return messages;
         }
+
+        public IEnumerable<string> GetAllKeys()
+        {
+            var mediaWikiApi = this.apiHelper.GetApi(
+                this.config.MediaWikiApiEndpoint,
+                this.config.MediaWikiApiUsername,
+                this.config.MediaWikiApiPassword);
+
+            try
+            {
+                return mediaWikiApi.PrefixSearch("Message:");
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);    
+            }
+        }
     }
 }

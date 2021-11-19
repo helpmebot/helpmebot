@@ -17,6 +17,7 @@ namespace Helpmebot.CoreServices.Services.Messages
         }
 
         public override bool SupportsContext => true;
+        public override string RepositoryType => "wiki";
 
         public override List<List<string>> Get(string key, string contextType, string context)
         {
@@ -50,6 +51,11 @@ namespace Helpmebot.CoreServices.Services.Messages
             this.logger.ErrorFormat("Using wiki message as fallback for key {0}", key);
 
             return results.Select(x => new List<string> { x }).ToList();
+        }
+
+        public override IEnumerable<string> GetAllKeys()
+        {
+            return this.legacyMessageBackend.GetAllKeys();
         }
     }
 }

@@ -121,7 +121,7 @@ namespace Helpmebot.CoreServices.Services.Messages
             
             this.logger.DebugFormat("Response: {0} / ({2}) {1}", messageKey, context, contextType);
 
-            var messageSets = this.FindMessage(messageKey, contextType.ContextType, context);
+            (var messageSets, _) = this.FindMessage(messageKey, contextType.ContextType, context);
             
             if (messageSets == null || messageSets.Count == 0)
             {
@@ -161,16 +161,22 @@ namespace Helpmebot.CoreServices.Services.Messages
             this.PerformWrite(contextType, context, repo => repo.Set(messageKey, contextType, context, messageData));
         }
         
-        List<List<string>> IResponseManager.Get(string messageKey, string contextType, string context)
+        (List<List<string>>, string) IResponseManager.Get(string messageKey, string contextType, string context)
         {
-            return this.FindMessage(messageKey, contextType, context);
+            (var messages, var repository) = this.FindMessage(messageKey, contextType, context);
+            return (messages, repository.RepositoryType);
         }
         
         void IResponseManager.Remove(string messageKey, string contextType, string context)
         {
             this.PerformWrite(contextType, context, repo => repo.Remove(messageKey, contextType, context));
         }
-        
+
+        List<string> IResponseManager.GetAllKeys()
+        {
+            return this.messageRepositories.SelectMany(x => x.GetAllKeys()).Distinct().ToList();
+        }
+
         private void PerformWrite(string contextType, string context, Action<IMessageRepository> action)
         {
             if (contextType == null && context == null)
@@ -182,7 +188,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                 action(this.messageRepositories.FirstOrDefault(x => x.SupportsContext && x.SupportsWrite));
             }
         }
-        private List<List<string>> FindMessage(string messageKey, string contextType, string context)
+        private (List<List<string>>, IMessageRepository) FindMessage(string messageKey, string contextType, string context)
         {
             foreach (var repo in this.messageRepositories.Where(x => x.SupportsContext))
             {
@@ -195,7 +201,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                     if (result != null)
                     {
                         this.logger.TraceFormat("Found in {0} (context)", repo.GetType());
-                        return result;
+                        return (result, repo);
                     }
                 }
                 catch (Exception ex)
@@ -214,7 +220,7 @@ namespace Helpmebot.CoreServices.Services.Messages
                     if (result != null)
                     {
                         this.logger.TraceFormat("Found in {0}", repo.GetType());
-                        return result;
+                        return (result, repo);
                     }
                 }
                 catch (Exception ex)
@@ -224,7 +230,7 @@ namespace Helpmebot.CoreServices.Services.Messages
             }
 
             this.logger.ErrorFormat("Message key not found: {0}", messageKey);
-            return null;
+            return (null, null);
         }
     }
 }

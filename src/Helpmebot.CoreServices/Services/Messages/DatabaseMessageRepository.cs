@@ -2,6 +2,7 @@ namespace Helpmebot.CoreServices.Services.Messages
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.Json;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
@@ -24,7 +25,8 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         public bool SupportsWrite => true;
         public bool SupportsContext => true;
-        
+        public string RepositoryType => "database";
+
         public void Set(string key, string contextType, string context, List<List<string>> value)
         {
             var databaseMessageKey = new DatabaseMessageKey(contextType, context, key);
@@ -110,6 +112,15 @@ namespace Helpmebot.CoreServices.Services.Messages
             }
 
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> GetAllKeys()
+        {
+            var selectList = this.databaseSession.QueryOver<DatabaseMessage>()
+                .List()
+                .Select(x => x.MessageKey);
+
+            return selectList;
         }
     }
 }

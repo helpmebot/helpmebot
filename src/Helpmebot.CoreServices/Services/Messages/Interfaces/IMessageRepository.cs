@@ -6,9 +6,12 @@ namespace Helpmebot.CoreServices.Services.Messages.Interfaces
     {
         bool SupportsWrite { get; }
         bool SupportsContext { get; }
+        string RepositoryType { get; }
 
         void Set(string key, string contextType, string context, List<List<string>> value);
         List<List<string>> Get(string key, string contextType, string context);
         void Remove(string key, string contextType, string context);
+
+        IEnumerable<string> GetAllKeys();
     }
 }
