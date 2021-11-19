@@ -206,11 +206,6 @@ namespace Helpmebot.ChannelServices.Services
             {
                 // Either no override defined, or override not matching.
                 this.logger.InfoFormat("Welcoming {0} into {1}...", networkUser, channel);
-
-                var welcomeMessage = this.responder.Respond(
-                    "channelservices.welcomer.welcome",
-                    channel,
-                    new object[] { networkUser.Nickname, channel });
                 
                 if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
                 {
@@ -237,6 +232,11 @@ namespace Helpmebot.ChannelServices.Services
                             $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {modeTarget}  )");
                     }
                 }
+
+                var welcomeMessage = this.responder.Respond(
+                    "channelservices.welcomer.welcome",
+                    channel,
+                    new object[] { networkUser.Nickname, channel });
 
                 foreach (var message in welcomeMessage)
                 {

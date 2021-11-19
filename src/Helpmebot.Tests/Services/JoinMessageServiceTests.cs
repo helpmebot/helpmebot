@@ -32,6 +32,7 @@ namespace Helpmebot.Tests.Services
     using NHibernate;
 
     using NUnit.Framework;
+    using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -185,6 +186,18 @@ namespace Helpmebot.Tests.Services
             
             this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
             
+            this.responderMock.Setup(
+                    x => x.Respond(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<object[]>(),
+                        null,
+                        CommandResponseDestination.Default,
+                        CommandResponseType.Message,
+                        false,
+                        null))
+                .Returns(new[] { new CommandResponse { Message = "ab" } });
+            
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
 
@@ -246,6 +259,18 @@ namespace Helpmebot.Tests.Services
 
             this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
             
+            this.responderMock.Setup(
+                    x => x.Respond(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<object[]>(),
+                        null,
+                        CommandResponseDestination.Default,
+                        CommandResponseType.Message,
+                        false,
+                        null))
+                .Returns(new[] { new CommandResponse { Message = "ab" } });
+            
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea2);
@@ -269,6 +294,18 @@ namespace Helpmebot.Tests.Services
             networkUser.Object.Username = "ab";
             networkUser.Object.Hostname = "ab/test";
 
+            this.responderMock.Setup(
+                    x => x.Respond(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<object[]>(),
+                        null,
+                        CommandResponseDestination.Default,
+                        CommandResponseType.Message,
+                        false,
+                        null))
+                .Returns(new[] { new CommandResponse { Message = "ab" } });
+            
             this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
             
             this.joinMessageService.Object.ClearRateLimitCache();
@@ -301,6 +338,18 @@ namespace Helpmebot.Tests.Services
             var ea2 = new JoinEventArgs(null, networkUser.Object, "ef", this.ircClient.Object);
 
             this.joinMessageService.Setup(x => x.GetOverride(It.IsAny<string>())).Returns(() => null);
+
+            this.responderMock.Setup(
+                    x => x.Respond(
+                        It.IsAny<string>(),
+                        It.IsAny<string>(),
+                        It.IsAny<object[]>(),
+                        null,
+                        CommandResponseDestination.Default,
+                        CommandResponseType.Message,
+                        false,
+                        null))
+                .Returns(new[] { new CommandResponse { Message = "ab" } });
             
             // act
             this.joinMessageService.Object.OnJoinEvent(this.ircClient.Object, ea);
