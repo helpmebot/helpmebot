@@ -13,15 +13,14 @@ namespace Helpmebot.CoreServices.Services.Messages
     {
         private readonly ISession databaseSession;
         private readonly ILogger logger;
+        private readonly Dictionary<DatabaseMessageKey, DatabaseMessage> cache =
+            new Dictionary<DatabaseMessageKey, DatabaseMessage>();
 
         public DatabaseMessageRepository(ISession databaseSession, ILogger logger)
         {
             this.databaseSession = databaseSession;
             this.logger = logger;
         }
-
-        private readonly Dictionary<DatabaseMessageKey, DatabaseMessage> cache =
-            new Dictionary<DatabaseMessageKey, DatabaseMessage>();
 
         public bool SupportsWrite => true;
         public bool SupportsContext => true;
