@@ -35,7 +35,7 @@
       <PackageReference Include="NetMQ" Version="4.0.1.6" />
       <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
       <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.1.87" />
-      <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.1.48" />
+      <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.2.49" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
       <PackageReference Include="System.Text.Json" Version="5.0.2" />
       <PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.1" />
