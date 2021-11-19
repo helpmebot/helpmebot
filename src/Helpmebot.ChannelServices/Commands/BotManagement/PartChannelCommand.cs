@@ -22,7 +22,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     {
         private readonly ISession session;
         private readonly IChannelManagementService channelManagementService;
-        private readonly IMessageService messageService;
         private readonly IResponder responder;
 
         public PartChannelCommand(

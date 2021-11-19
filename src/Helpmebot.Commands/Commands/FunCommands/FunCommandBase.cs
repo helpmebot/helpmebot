@@ -17,7 +17,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
     {
         public IResponder Responder { get; }
         protected ISession DatabaseSession { get; private set; }
-        protected IMessageService MessageService { get; private set; }
 
         protected FunCommandBase(
             string commandSource,
@@ -28,7 +27,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService,
             IResponder responder) : base(
             commandSource,
             user,
@@ -40,7 +38,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
         {
             this.Responder = responder;
             this.DatabaseSession = databaseSession;
-            this.MessageService = messageService;
         }
 
         protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)

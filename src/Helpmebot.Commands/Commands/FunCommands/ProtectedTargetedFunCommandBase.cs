@@ -22,9 +22,8 @@
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IMessageService messageService,
             IResponder responder) : base(commandSource, user, arguments, logger, flagService,
-            configurationProvider, client, databaseSession, messageService,
+            configurationProvider, client, databaseSession,
             responder)
         {
         }
