@@ -65,6 +65,16 @@ namespace Helpmebot.WebUI.Services.Api
             return new List<InterwikiPrefix>();
         }
 
+        public List<string> GetMessageKeys()
+        {
+            return new List<string>();
+        }
+
+        public Response GetMessageDefaultResponses(ResponseKey key)
+        {
+            return new Response();
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };

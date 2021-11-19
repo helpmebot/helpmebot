@@ -58,6 +58,16 @@ namespace Helpmebot.WebUI.Services.Api
             return this.transportService.RemoteProcedureCall<object, List<InterwikiPrefix>>(MethodBase.GetCurrentMethod(), null);
         }
 
+        public List<string> GetMessageKeys()
+        {
+            return this.transportService.RemoteProcedureCall<object, List<string>>(MethodBase.GetCurrentMethod(), null);
+        }
+
+        public Response GetMessageDefaultResponses(ResponseKey key)
+        {
+            return this.transportService.RemoteProcedureCall<ResponseKey, Response>(MethodBase.GetCurrentMethod(), key);
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return this.transportService.RemoteProcedureCall<string, TokenResponse>(MethodBase.GetCurrentMethod(), loginToken);

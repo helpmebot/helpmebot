@@ -12,6 +12,7 @@ namespace Helpmebot.WebApi.Services
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Startup;
     using Helpmebot.Model;
     using Helpmebot.WebApi.Services.Interfaces;
@@ -22,6 +23,7 @@ namespace Helpmebot.WebApi.Services
     using Stwalkerster.IrcClient.Interfaces;
     using FlagGroup = Helpmebot.WebApi.TransportModels.FlagGroup;
     using InterwikiPrefix = Helpmebot.WebApi.TransportModels.InterwikiPrefix;
+    using Response = Helpmebot.WebApi.TransportModels.Response;
 
     public class ApiService : IApiService
     {
@@ -32,6 +34,7 @@ namespace Helpmebot.WebApi.Services
         private readonly IIrcConfiguration ircConfiguration;
         private readonly ILoginTokenService loginTokenService;
         private readonly ISessionFactory sessionFactory;
+        private readonly IResponseManager responseManager;
 
         public ApiService(
             ILogger logger,
@@ -40,7 +43,8 @@ namespace Helpmebot.WebApi.Services
             BotConfiguration botConfiguration,
             IIrcConfiguration ircConfiguration,
             ILoginTokenService loginTokenService,
-            ISessionFactory sessionFactory)
+            ISessionFactory sessionFactory,
+            IResponseManager responseManager)
         {
             this.logger = logger;
             this.client = client;
@@ -49,6 +53,7 @@ namespace Helpmebot.WebApi.Services
             this.ircConfiguration = ircConfiguration;
             this.loginTokenService = loginTokenService;
             this.sessionFactory = sessionFactory;
+            this.responseManager = responseManager;
         }
 
         public IKeywordService BrainKeywordService { get; set; }
@@ -273,6 +278,18 @@ namespace Helpmebot.WebApi.Services
             session.Close();
             
             return interwikiList;
+        }
+
+        public List<string> GetMessageKeys()
+        {
+            return this.responseManager.GetAllKeys();
+        }
+
+        public Response GetMessageDefaultResponses(ResponseKey key)
+        {
+            var (responses, repository) = this.responseManager.Get(key.MessageKey, key.ContextType, key.Context);
+
+            return new Response { Key = key, Repository = repository, Responses = responses };
         }
     }
 }

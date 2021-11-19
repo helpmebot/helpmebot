@@ -25,5 +25,8 @@ namespace Helpmebot.WebApi.Services.Interfaces
         AccessControlList GetAccessControlList();
         
         List<InterwikiPrefix> GetInterwikiList();
+
+        List<string> GetMessageKeys();
+        Response GetMessageDefaultResponses(ResponseKey key);
     }
 }
