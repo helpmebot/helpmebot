@@ -51,7 +51,6 @@ dataset:
     - - "#ACTION buys a drink then gives it to {0}."
     - - "#ACTION pours {0} a pint of \"the good stuff\"."
     - - "#ACTION drops four ice cubes in a glass, fills it 1/4 of the way with Jim Beam, and tops it off with Moxie then hands it to {0}."
-    - - "#ACTION was going to give {0} Disaronno mixed with Sprite but changed its mind as it couldn't even do that to its worst enemy and gives {0} a beer instead."
     - - "#ACTION is not a bartender and suggests that {0} go get their own drink."
 
   funcommands.command.electrocute:
