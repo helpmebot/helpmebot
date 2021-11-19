@@ -1,6 +1,7 @@
 namespace Helpmebot.WebApi.Services
 {
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -52,6 +53,7 @@ namespace Helpmebot.WebApi.Services
                 // FRAME 2: response data
                 
                 var frames = this.server.ReceiveMultipartStrings(Encoding.UTF8, this.expectedFrameCount);
+                var stopwatch = Stopwatch.StartNew();
                 this.logger.Trace("ZMQ message received");
                     
                 try
@@ -93,8 +95,9 @@ namespace Helpmebot.WebApi.Services
                     this.logger.Error($"ZMQ transport exception handled", ex);
                     this.server.SendMoreFrame(RpcStatus.GENERAL_ERROR).SendMoreFrameEmpty().SendFrameEmpty();
                 }
-                    
-                this.logger.Trace($"ZMQ end of message");
+                stopwatch.Stop();
+
+                this.logger.DebugFormat("ZMQ: done; {0}ms", stopwatch.ElapsedMilliseconds);
             }
         }
 
