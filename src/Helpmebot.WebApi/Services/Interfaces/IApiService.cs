@@ -28,5 +28,6 @@ namespace Helpmebot.WebApi.Services.Interfaces
 
         List<string> GetMessageKeys();
         Response GetMessageDefaultResponses(ResponseKey key);
+        List<Response> GetMessageResponses();
     }
 }

@@ -77,5 +77,10 @@ namespace Helpmebot.WebUI.Services.Api
         {
             return this.transportService.RemoteProcedureCall<object, List<BrainItem>>(MethodBase.GetCurrentMethod(), null);
         }
+
+        public List<Response> GetMessageResponses()
+        {
+            return this.transportService.RemoteProcedureCall<object, List<Response>>(MethodBase.GetCurrentMethod(), null);
+        }
     }
 }

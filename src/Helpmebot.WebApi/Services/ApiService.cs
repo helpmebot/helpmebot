@@ -291,5 +291,19 @@ namespace Helpmebot.WebApi.Services
 
             return new Response { Key = key, Repository = repository, Responses = responses };
         }
+
+        public List<Response> GetMessageResponses()
+        {
+            var allKeys = this.GetMessageKeys();
+            var list = new List<Response>();
+            
+            foreach (var key in allKeys)
+            {
+                var objectKey = new ResponseKey { MessageKey = key };
+                list.Add(this.GetMessageDefaultResponses(objectKey));
+            }
+
+            return list;
+        }
     }
 }

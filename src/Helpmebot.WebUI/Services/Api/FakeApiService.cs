@@ -75,6 +75,11 @@ namespace Helpmebot.WebUI.Services.Api
             return new Response();
         }
 
+        public List<Response> GetMessageResponses()
+        {
+            return new List<Response>();
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };
