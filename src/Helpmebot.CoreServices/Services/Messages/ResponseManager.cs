@@ -12,7 +12,6 @@ namespace Helpmebot.CoreServices.Services.Messages
     /// </summary>
     public class ResponseManager : IResponder, IResponseManager
     {
-        
         private readonly ILogger logger;
         private readonly List<IMessageRepository> messageRepositories;
         
