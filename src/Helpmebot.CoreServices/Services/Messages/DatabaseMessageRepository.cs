@@ -38,7 +38,38 @@ namespace Helpmebot.CoreServices.Services.Messages
                 }
             }
 
-            throw new NotImplementedException();
+            var messageObject = this.databaseSession.QueryOver<DatabaseMessage>()
+                .Where(x => x.MessageKey == key)
+                .And(x => contextType == null || x.ContextType == contextType)
+                .And(x => context == null || x.Context == context)
+                .SingleOrDefault();
+
+            if (messageObject == null)
+            {
+                messageObject = new DatabaseMessage
+                {
+                    Context = context,
+                    ContextType = contextType,
+                    MessageKey = key
+                };
+            }
+            
+            messageObject.Value = JsonSerializer.Serialize(value);
+            messageObject.Format = 1;
+            messageObject.LastUpdated = DateTime.UtcNow;
+
+            this.databaseSession.SaveOrUpdate(messageObject);
+            this.databaseSession.Flush();
+            
+            lock (this.cache)
+            {
+                if (this.cache.ContainsKey(databaseMessageKey))
+                {
+                    this.cache.Remove(databaseMessageKey);
+                }
+
+                this.cache.Add(databaseMessageKey, messageObject);
+            }
         }
 
         public List<List<string>> Get(string key, string contextType, string context)
@@ -102,8 +133,21 @@ namespace Helpmebot.CoreServices.Services.Messages
                     this.cache.Remove(databaseMessageKey);
                 }
             }
-
-            throw new NotImplementedException();
+            
+            var messageObject = this.databaseSession.QueryOver<DatabaseMessage>()
+                .Where(x => x.MessageKey == key)
+                .And(x => contextType == null || x.ContextType == contextType)
+                .And(x => context == null || x.Context == context)
+                .SingleOrDefault();
+            
+            if (messageObject == null)
+            {
+                // nothing to delete?
+                return;
+            }
+            
+            this.databaseSession.Delete(messageObject);
+            this.databaseSession.Flush();
         }
 
         public IEnumerable<string> GetAllKeys()

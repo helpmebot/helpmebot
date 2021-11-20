@@ -190,11 +190,23 @@ namespace Helpmebot.CoreServices.Services.Messages
         {
             if (contextType == null && context == null)
             {
-                action(this.messageRepositories.FirstOrDefault(x => !x.SupportsContext && x.SupportsWrite));
+                var repository = this.messageRepositories.FirstOrDefault(x => x.SupportsWrite);
+                if (repository == null)
+                {
+                    throw new Exception("Unable to find writable repository to accept message");
+                }
+
+                action(repository);
             }
             else
             {
-                action(this.messageRepositories.FirstOrDefault(x => x.SupportsContext && x.SupportsWrite));
+                var repository = this.messageRepositories.FirstOrDefault(x => x.SupportsContext && x.SupportsWrite);
+                if (repository == null)
+                {
+                    throw new Exception("Unable to find writable repository to accept message");
+                }
+
+                action(repository);
             }
         }
         private (List<List<string>>, IMessageRepository) FindMessage(string messageKey, string contextType, string context)

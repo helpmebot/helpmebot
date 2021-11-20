@@ -38,6 +38,9 @@
       <None Update="Messages\helpmebot.commands.fun.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Documentation\Helpmebot.Commands.Commands.BotManagement.MessageCommand.md">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

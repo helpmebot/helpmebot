@@ -258,3 +258,21 @@ div.card.card-highlightable {
     background-color: darken($body-bg, 2%);
   }
 }
+
+pre {
+  @extend .p-2;
+  @extend .bg-black;
+  @extend .bg-opacity-25;
+  @extend .rounded-3;
+}
+
+dt.command-definition {
+  @extend .p-2;
+  @extend .bg-black;
+  @extend .bg-opacity-25;
+  @extend .rounded-3;
+  @extend .font-monospace;
+  @extend .fw-normal;
+  
+  font-size: 0.875em;
+}

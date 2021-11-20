@@ -15,7 +15,7 @@ namespace Helpmebot.CoreServices.Services.Messages
         private readonly Dictionary<string, List<List<string>>> strings = new Dictionary<string, List<List<string>>>();
         public FileMessageRepository(ILogger logger)
         {
-            this.logger = logger;
+            this.logger = logger; 
             var fileNames = Directory.GetFiles("Messages/");
             var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
             
@@ -55,7 +55,9 @@ namespace Helpmebot.CoreServices.Services.Messages
         {
             if (this.strings.ContainsKey(key))
             {
-                return this.strings[key];
+                return this.strings[key]
+                    .Select(set => new List<string>(set.Select(x => x)))
+                    .ToList();
             }
 
             return null;
