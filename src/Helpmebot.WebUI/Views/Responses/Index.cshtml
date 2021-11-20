@@ -14,7 +14,10 @@
                 This shows an overview of all the bot's configurable messages. 
             </p>
             <p>
-                Please note that these are <em>not</em> the static stored responses known as the "Brain" - these are the internal formatting strings used to customise the output of the bot's normal commands.
+                Please note that these are <em>not</em> the static stored responses known as the "Brain" - these are the internal formatting strings used to customise the output of the bot's normal commands. 
+            </p>
+            <p class="small text-muted">
+                Every numbered set (where there are multiple sets) corresponds to a randomly chosen alternative message. Every entry within a set denotes a separate message which will be returned. Note that not all messages support multiple responses - where a message does not support this, the first result from the first set will be used.
             </p>
             @*<p>
                 This list can be modified with the <a asp-controller="Commands" asp-fragment="command-interwiki">@(ViewBag.BotStatus.Trigger)interwiki</a> command.
@@ -39,18 +42,18 @@
                                 <br/>
                                 @if (response.Repository == "wiki")
                                 {
-                                    <span class="badge bg-danger text-white">wiki</span>
+                                    <span class="badge bg-danger text-white" title="This message is only available in the wiki, and *should* no longer be used.">wiki</span>
                                 }
                                 @if (response.Repository == "database")
                                 {                               
-                                    <span class="badge bg-info text-dark">@response.Repository</span>
+                                    <span class="badge bg-info text-dark" title="This message has been customised in the database.">database</span>
                                 }
                                 @if (response.Repository == "file")
                                 {
-                                    <span class="badge bg-secondary text-white">@response.Repository</span>
+                                    <span class="badge bg-secondary text-white" title="This message is unchanged from the bot's defaults">default</span>
                                 }
                             </td>
-                            <td class="align-items-center">
+                            <td class="pe-0">
                                 @if (response.Responses.Count == 1)
                                 {
                                     var set = response.Responses.First();

@@ -250,3 +250,11 @@ div.card.card-highlightable {
     @extend .border-0;
   }
 }
+
+.message-list-entry-item {
+  background-color: inherit;
+  
+  &:nth-child(2) {
+    background-color: darken($body-bg, 2%);
+  }
+}

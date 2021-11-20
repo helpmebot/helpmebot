@@ -77,7 +77,38 @@ namespace Helpmebot.WebUI.Services.Api
 
         public List<Response> GetMessageResponses()
         {
-            return new List<Response>();
+            return new List<Response>
+            {
+                new()
+                {
+                    Key = new ResponseKey { MessageKey = "stw.example" },
+                    Repository = "database",
+                    Responses = new List<List<string>>
+                    {
+                        new() { "test a", "test b" },
+                        new() { "test 1", "test 2" },
+                    }
+                },
+                new()
+                {
+                    Key = new ResponseKey { MessageKey = "stw.example2" },
+                    Repository = "file",
+                    Responses = new List<List<string>>
+                    {
+                        new() { "test a" },
+                        new() { "test 1" },
+                    }
+                },
+                new()
+                {
+                    Key = new ResponseKey { MessageKey = "stw.example3" },
+                    Repository = "wiki",
+                    Responses = new List<List<string>>
+                    {
+                        new() { "test a", "test 1" },
+                    }
+                },
+            };
         }
 
         public TokenResponse GetAuthToken(string loginToken)
