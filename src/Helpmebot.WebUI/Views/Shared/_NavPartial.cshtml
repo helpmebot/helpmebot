@@ -1,42 +1,57 @@
-<li>
-    <a asp-controller="Home" asp-action="Index" class="nav-link text-white @if (ViewContext.RouteData.Values["controller"].ToString() == "Home"){@(" active")}">
-        <i class="fas fa-tachometer-alt me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Home</span>
-    </a>
-</li>
-<li>
-     <a asp-controller="Commands" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Commands"){@(" active")}">
-         <i class="fas fa-terminal me-0 me-md-2"></i>
-         <span class="d-none d-md-inline">Commands</span>
-     </a>
- </li>
-<li>
-    <a asp-controller="Brain" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Brain"){@(" active")}">
-        <i class="fas fa-brain me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Brain</span>
-    </a>
-</li>
-<li>
-    <a asp-controller="Flags" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Flags"){@(" active")}">
-        <i class="fas fa-flag me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Flags</span>
-    </a>
-</li>
-<li>
-    <a asp-controller="Access" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Access"){@(" active")}">
-        <i class="fas fa-shield-alt me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Access control</span>
-    </a>
-</li>
-<li>
-    <a asp-controller="Interwiki" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Interwiki"){@(" active")}">
-        <i class="fas fa-external-link-alt me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Interwiki prefixes</span>
-    </a>
-</li>
-<li>
-    <a asp-controller="Responses" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Responses"){@(" active")}">
-        <i class="far fa-comment me-0 me-md-2"></i>
-        <span class="d-none d-md-inline">Responses</span>
-    </a>
-</li>
+<ul class="nav nav-pills flex-column mb-auto">
+    <li>
+        <a asp-controller="Home" asp-action="Index" class="nav-link text-white @if (ViewContext.RouteData.Values["controller"].ToString() == "Home"){@(" active")}">
+            <i class="fas fa-tachometer-alt me-0 me-md-2"></i>
+            <span class="d-none d-md-inline">Home</span>
+        </a>
+    </li>
+    <li>
+        <a asp-controller="Commands" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Commands"){@(" active")}">
+            <i class="fas fa-terminal me-0 me-md-2"></i>
+            <span class="d-none d-md-inline">Commands</span>
+        </a>
+    </li>
+    <li>
+        <a asp-controller="Brain" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Brain"){@(" active")}">
+            <i class="fas fa-brain me-0 me-md-2"></i>
+            <span class="d-none d-md-inline">Brain</span>
+        </a>
+    </li>
+    <hr/>
+    <li>
+        <button class="btn btn-toggle text-start w-100 nav-link  collapsed" data-bs-target="#nav-advanced-collapse" data-bs-toggle="collapse">
+            <i class="fas fa-cogs me-0 me-md-2"></i>
+            <span class="d-none d-md-inline">Advanced</span>
+        </button>
+        <div class="collapse" id="nav-advanced-collapse">
+            <ul class="nav nav-pills flex-column mb-auto mt-2">
+                <li>
+                    <a asp-controller="Flags" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Flags"){@(" active")}">
+                        <i class="fas fa-flag me-0 me-md-2"></i>
+                        <span class="d-none d-md-inline">Flags</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Access" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Access"){@(" active")}">
+                        <i class="fas fa-shield-alt me-0 me-md-2"></i>
+                        <span class="d-none d-md-inline">Access control</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Interwiki" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Interwiki"){@(" active")}">
+                        <i class="fas fa-external-link-alt me-0 me-md-2"></i>
+                        <span class="d-none d-md-inline">Interwiki prefixes</span>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Responses" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Responses"){@(" active")}">
+                        <i class="far fa-comment me-0 me-md-2"></i>
+                        <span class="d-none d-md-inline">Responses</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <hr/>
+ 
+</ul>

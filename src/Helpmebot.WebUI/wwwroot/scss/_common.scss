@@ -128,7 +128,7 @@ main {
 }
 
 .sidebar {
-  ul.nav li a.nav-link {
+  ul.nav li a.nav-link, ul.nav li button.nav-link {
     padding: 0.5rem 0.5rem;
     
     &:not(.disabled) {
@@ -141,7 +141,7 @@ main {
   .sidebar {
     min-width: 16rem;
 
-    ul.nav li a.nav-link {
+    ul.nav li a.nav-link, ul.nav li button.nav-link {
       padding: 0.5rem 1rem;
       
       // Icons
