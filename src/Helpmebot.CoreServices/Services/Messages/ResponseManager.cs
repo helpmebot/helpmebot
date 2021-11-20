@@ -21,15 +21,13 @@ namespace Helpmebot.CoreServices.Services.Messages
         public ResponseManager(
             ILogger logger,
             FileMessageRepository fileMessageRepository,
-            DatabaseMessageRepository databaseMessageRepository,
-            WikiMessageRepository wikiMessageRepository)
+            DatabaseMessageRepository databaseMessageRepository)
         {
             this.logger = logger;
             this.messageRepositories = new List<IMessageRepository>
             {
                 databaseMessageRepository,
-                fileMessageRepository,
-                wikiMessageRepository,
+                fileMessageRepository
             };
             
             this.logger.Info("Precaching responses...");

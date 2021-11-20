@@ -10,7 +10,6 @@ namespace Helpmebot.Configuration
         
         public List<LoadableModuleConfiguration> Modules { get; set; }
         
-        public MediaWikiDocumentationConfiguration Documentation { get; set; }
         public WikimediaUrlShortnerConfiguration WikimediaShortener { get; set; }
         
         public CommandOverrideConfiguration CommandOverrides { get; set; }
