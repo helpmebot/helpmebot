@@ -241,3 +241,12 @@ div.card.card-highlightable {
 //.font-monospace.fw-normal {
 //  font-weight: 200 !important;
 //}
+
+.message-list-entry {
+  // @extend .border-secondary;
+  @extend .border-bottom;
+  
+  &:last-of-type {
+    @extend .border-0;
+  }
+}

@@ -43,8 +43,6 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         public List<List<string>> Get(string key, string contextType, string context)
         {
-            this.logger.TraceFormat("Searching for {0} / ({1}) {2}.", key, contextType, context);
-
             var objectKey = new DatabaseMessageKey(contextType, context, key);
             DatabaseMessage messageObject = null;
             bool inCache = false;
@@ -60,8 +58,6 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             if (!inCache)
             {
-                this.logger.TraceFormat("Database lookup for {0} / ({1}) {2}.", key, contextType, context);
-
                 messageObject = this.databaseSession.QueryOver<DatabaseMessage>()
                     .Where(x => x.MessageKey == key)
                     .And(x => contextType == null || x.ContextType == contextType)
@@ -80,15 +76,12 @@ namespace Helpmebot.CoreServices.Services.Messages
 
             if (messageObject == null)
             {
-                this.logger.TraceFormat("{0} not found", key);
                 return null;
             }
 
             try
             {
-                this.logger.TraceFormat("{0} deserializing", key);
                 var data = JsonSerializer.Deserialize<List<List<string>>>(messageObject.Value);
-                this.logger.TraceFormat("{0} done, {1} items", key, data?.Count);
                 return data;
             }
             catch (JsonException ex)

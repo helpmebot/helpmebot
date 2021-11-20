@@ -1,0 +1,78 @@
+@model List<Helpmebot.WebApi.TransportModels.Response>
+@{
+    ViewData["Title"] = "Responses";
+}
+<div class="container-fluid">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Command responses</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                This shows an overview of all the bot's configurable messages. 
+            </p>
+            <p>
+                Please note that these are <em>not</em> the static stored responses known as the "Brain" - these are the internal formatting strings used to customise the output of the bot's normal commands.
+            </p>
+            @*<p>
+                This list can be modified with the <a asp-controller="Commands" asp-fragment="command-interwiki">@(ViewBag.BotStatus.Trigger)interwiki</a> command.
+            </p>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Message key</th>
+                    <th>Message content</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @foreach (var response in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="font-monospace text-nowrap">@response.Key.MessageKey</span>
+                                <br/>
+                                @if (response.Repository == "wiki")
+                                {
+                                    <span class="badge bg-danger text-white">wiki</span>
+                                }
+                                @if (response.Repository == "database")
+                                {                               
+                                    <span class="badge bg-info text-dark">@response.Repository</span>
+                                }
+                                @if (response.Repository == "file")
+                                {
+                                    <span class="badge bg-secondary text-white">@response.Repository</span>
+                                }
+                            </td>
+                            <td class="align-items-center">
+                                @if (response.Responses.Count == 1)
+                                {
+                                    var set = response.Responses.First();
+                                    
+                                    <div class="ps-3 ms-3"><partial name="_ResponseSet" model="set" /></div>
+                                }
+                                else
+                                {
+                                    <ol class="mb-0">
+                                        @foreach (var set in response.Responses)
+                                        {
+                                            <li class="message-list-entry">
+                                                <partial name="_ResponseSet" model="set" />
+                                            </li>
+                                        }
+                                    </ol>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
