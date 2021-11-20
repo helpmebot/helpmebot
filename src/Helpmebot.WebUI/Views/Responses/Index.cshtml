@@ -40,10 +40,6 @@
                             <td>
                                 <span class="font-monospace text-nowrap">@response.Key.MessageKey</span>
                                 <br/>
-                                @if (response.Repository == "wiki")
-                                {
-                                    <span class="badge bg-danger text-white" title="This message is only available in the wiki, and *should* no longer be used.">wiki</span>
-                                }
                                 @if (response.Repository == "database")
                                 {                               
                                     <span class="badge bg-info text-dark" title="This message has been customised in the database.">database</span>
