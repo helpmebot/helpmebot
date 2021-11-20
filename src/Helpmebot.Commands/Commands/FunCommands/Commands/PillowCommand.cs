@@ -13,6 +13,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("pillow")]
+    [CommandInvocation("pillowfight")]
     [CommandFlag(Flags.Fun)]
     public class PillowCommand : ProtectedTargetedFunCommandBase
     {

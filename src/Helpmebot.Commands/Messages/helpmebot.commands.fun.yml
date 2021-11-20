@@ -94,6 +94,7 @@ dataset:
     - - "#ACTION places a pillow between {0}'s head and the desk."
     - - "#ACTION smacks {0} upside the head with a big fluffy pillow!  *PILLOW FIGHT!!!!*"
     - - "#ACTION hits {0} in the face with a pillow"
+    - - "#ACTION fluffs up a great big pillow, takes a deep breath, winds up, and swings it at {0}."
 
   funcommands.command.salmon:
     - - "#ACTION slaps {0} with a smoked chinook salmon."
