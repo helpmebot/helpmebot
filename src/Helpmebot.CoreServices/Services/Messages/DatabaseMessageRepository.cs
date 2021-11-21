@@ -91,8 +91,8 @@ namespace Helpmebot.CoreServices.Services.Messages
             {
                 messageObject = this.databaseSession.QueryOver<DatabaseMessage>()
                     .Where(x => x.MessageKey == key)
-                    .And(x => contextType == null || x.ContextType == contextType)
-                    .And(x => context == null || x.Context == context)
+                    .And(x => x.ContextType == contextType)
+                    .And(x => x.Context == context)
                     .And(x => x.Format == 1)
                     .SingleOrDefault();
 
