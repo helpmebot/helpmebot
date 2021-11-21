@@ -25,4 +25,10 @@
       <Folder Include="wwwroot\webfonts\cascadiacode-2110.31" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Pages\privacy.md">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
