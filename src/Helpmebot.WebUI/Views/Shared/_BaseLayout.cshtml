@@ -20,22 +20,21 @@
 
 <main>
     <div class="d-flex flex-column flex-shrink-0 p-2 p-md-3 text-white bg-dark sidebar border-primary border-end">
-        @if (configuration.ShowCssBreakpoints)
-        {
+        <environment include="Development">
             <span class="badge d-none d-xxl-inline-block bg-danger mb-3">breakpoint: xxl</span>
             <span class="badge d-none d-xl-inline-block d-xxl-none bg-warning mb-3">breakpoint: xl</span>
             <span class="badge d-none d-lg-inline-block d-xl-none bg-success mb-3">breakpoint: lg</span>
             <span class="badge d-none d-md-inline-block d-lg-none bg-info mb-3">breakpoint: md</span>
             <span class="badge d-none d-sm-inline-block d-md-none bg-secondary mb-3">sm</span>
             <span class="badge d-sm-none bg-primary mb-3">xs</span>
-        }
+        </environment>
         
         <a href="/" class="d-flex align-items-center mb-0 me-md-auto text-white text-decoration-none">
             <img style="max-height: 2.2em" class="me-0 ms-md-2 me-md-3" src="~/img/hmb-logo.svg" alt=""/>
             <span class="fs-4 d-none d-md-inline">Helpmebot</span>
         </a>
         <hr>
-        
+
         @await RenderSectionAsync("UpperNav", required: false)
 
         <ul class="nav nav-pills flex-column">
@@ -67,13 +66,14 @@
             <div class="border-top pt-2">
                 <p class="mb-0">
                     @await RenderSectionAsync("FooterBotVersion", required: false)
-                    <small class="me-2"><strong>Helpmebot Web Management Console</strong> v@(Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</small>
+                    <small class="me-2"><strong>Helpmebot Web Management Console</strong> <environment exclude="Development">v@(Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</environment></small><environment exclude="Production"><span class="badge bg-light text-dark me-2">@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</span></environment>
                 </p>
                 <p class="mb-2">
                     @await RenderSectionAsync("FooterStatus", required: false)
                     <small class="me-2 text-nowrap">
                         <a class="me-2" href="~/privacy">Privacy</a>
-                        <a class="me-2" href="~/licence">Licence</a>
+                        <a class="me-2" asp-controller="Licence">Licence</a>
+                        <a class="me-2" asp-controller="Credits">Credits</a>
                     </small>
                 </p>
             </div>
