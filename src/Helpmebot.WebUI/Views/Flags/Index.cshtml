@@ -1,5 +1,5 @@
 @using Markdig
-@model Dictionary<string, Tuple<string, string>>
+@model Tuple<Dictionary<string, Tuple<string, string>>, Dictionary<string, List<Helpmebot.WebApi.TransportModels.CommandInfo>>>
 @{
     ViewData["Title"] = "Flags";
     ViewData["Tab"] = "Index";
@@ -20,16 +20,39 @@
             <tr>
                 <th></th>
                 <th>Summary</th>
-                <th>Description</th>
+                <th>
+                    <div class="d-flex flex-row justify-content-between">
+                        <div>Description</div>
+                        <div class="form-check form-switch fw-normal">
+                            <input class="form-check-input" type="checkbox" role="switch" id="switchShowCommands" data-bs-toggle="collapse" data-bs-target=".flag-command-list">
+                            <label class="form-check-label text-muted" for="switchShowCommands">Show commands</label>
+                        </div>
+                    </div>
+                </th>
             </tr>
             </thead>
             <tbody>
-                @foreach (var kvp in Model)
+                @foreach (var kvp in Model.Item1)
                 {
                     <tr id="flag-@kvp.Key">
-                        <th class="font-monospace fs-5"><span class="badge bg-info text-dark">@kvp.Key</span></th>
-                        <td class="text-nowrap">@kvp.Value.Item1</td>
-                        <td>@Html.Raw(Markdown.ToHtml(kvp.Value.Item2, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))</td>
+                        <th rowspan="2" class="font-monospace fs-5"><span class="badge bg-info text-dark">@kvp.Key</span></th>
+                        <td class="text-nowrap border-bottom-0">@kvp.Value.Item1</td>
+                        <td class="border-bottom-0">@Html.Raw(Markdown.ToHtml("{.mb-0}\n" + kvp.Value.Item2, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="small text-muted p-0">
+                            <div class="collapse flag-command-list">
+                                <div class="d-flex flex-row m-2">
+                                    <strong class="me-2">Commands:</strong>
+                                    <ul class="list-inline mb-0">
+                                        @foreach (var data in Model.Item2[kvp.Key])
+                                        {
+                                            <li class="list-inline-item" title="@data.HelpSummary"><code class="text-muted">@ViewBag.BotStatus.Trigger@data.CanonicalName</code></li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
