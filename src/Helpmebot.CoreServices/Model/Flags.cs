@@ -7,9 +7,6 @@ namespace Helpmebot.CoreServices.Model
 
     public class Flags
     {
-        [FlagHelp("Access to bot information", "Provides information about the bot itself")]
-        public const string BotInfo = "B";
-        
         [FlagHelp("Access to general information", "Allows use of the information commands, which provide information which is publicly available")]
         public const string Info = "I";
         

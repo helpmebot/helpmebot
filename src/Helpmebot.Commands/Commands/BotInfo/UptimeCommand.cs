@@ -15,7 +15,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
 
     [CommandInvocation("uptime")]
     [HelpSummary("Returns the current uptime of the bot")]
-    [CommandFlag(Flags.BotInfo)]
+    [CommandFlag(Flags.Standard)]
     public class UptimeCommand : CommandBase
     {
         private readonly IResponder responder;

@@ -16,7 +16,7 @@
     [CommandInvocation("time")]
     [CommandInvocation("date")]
     [HelpSummary("Returns the current UTC date and time")]
-    [CommandFlag(Flags.BotInfo)]
+    [CommandFlag(Flags.Standard)]
     public class TimeCommand : CommandBase
     {
         private readonly IResponder responder;

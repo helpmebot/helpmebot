@@ -17,7 +17,7 @@ namespace Helpmebot.Commands.Commands.ACL
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.BotInfo)]
+    [CommandFlag(Flags.Standard)]
     // ReSharper disable once StringLiteralTypo
     [CommandInvocation("flaggroup")]
     // ReSharper disable once UnusedMember.Global

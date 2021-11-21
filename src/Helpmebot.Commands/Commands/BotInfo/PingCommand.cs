@@ -14,7 +14,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("ping")]
-    [CommandFlag(Flags.BotInfo)]
+    [CommandFlag(Flags.Standard)]
     public class PingCommand : CommandBase
     {
         private readonly IResponder responder;
