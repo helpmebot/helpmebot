@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
@@ -16,7 +17,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("contribs")]
-    [CommandFlag("I")]
+    [CommandFlag(Flags.Info)]
     public class ContribsCommand : CommandBase
     {
         private readonly ISession databaseSession;
