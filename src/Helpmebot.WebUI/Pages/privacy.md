@@ -1,4 +1,7 @@
-Privacy Policy
+---
+title: Privacy Policy
+path: /privacy
+---
 ### Our contact details:
 
 Name

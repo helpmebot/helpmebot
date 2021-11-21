@@ -1,14 +1,16 @@
 namespace Helpmebot.WebUI.Controllers
 {
-    using System;
     using Helpmebot.WebApi.Services.Interfaces;
-    using Markdig;
+    using Helpmebot.WebUI.Services;
     using Microsoft.AspNetCore.Mvc;
-    
+
     public class StaticPageController : ControllerBase
     {
-        public StaticPageController(IApiService apiService) : base(apiService)
+        private readonly IStaticPageService staticPageService;
+
+        public StaticPageController(IApiService apiService, IStaticPageService staticPageService) : base(apiService)
         {
+            this.staticPageService = staticPageService;
         }
         
         [HttpGet("/privacy")]
@@ -16,17 +18,17 @@ namespace Helpmebot.WebUI.Controllers
         {
             return this.Render("privacy");
         }
-
-        private IActionResult Render(string pageName)
+        
+        private IActionResult Render(string fileName)
         {
-            var text = System.IO.File.ReadAllText($"Pages/{pageName}.md");
+            var staticPage = this.staticPageService.Load(fileName);
 
-            var title = text.Substring(0, text.IndexOf('\n'));
-            var content = text.Substring(text.IndexOf('\n') + 1);
+            if (staticPage == null)
+            {
+                return this.Redirect("/");
+            }
 
-            var markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-
-            return this.View("StaticView", new Tuple<string, string>(title, Markdown.ToHtml(content, markdownPipeline)));
+            return this.View("StaticView", staticPage);
         }
     }
 }

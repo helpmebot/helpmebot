@@ -1,20 +1,17 @@
-@model Tuple<string, string>
+@model StaticPage
 @{
-    ViewData["Title"] = Model.Item1;
+    ViewData["Title"] = Model.Title;
 }
 
 <div class="container">
-    
     <div class="row border-bottom mb-4">
         <div class="col">
-            <h1>@Model.Item1</h1>
+            <h1>@Model.Title</h1>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            @Html.Raw(Model.Item2)
+            @Html.Raw(Model.Html)
         </div>
     </div>
 </div>
-
-

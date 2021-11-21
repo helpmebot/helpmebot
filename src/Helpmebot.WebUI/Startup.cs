@@ -56,6 +56,7 @@ namespace Helpmebot.WebUI
             }
 
             services.AddSingleton<IApiFrontendTransportService, ApiFrontendTransportService>();
+            services.AddSingleton<IStaticPageService, StaticPageService>();
 
             services.AddIdentity<User,Role>()
                 .AddDefaultTokenProviders();
