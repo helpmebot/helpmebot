@@ -19,7 +19,7 @@ namespace Helpmebot.WebUI.Services
 
         public StaticPageService()
         {
-            this.markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().UseYamlFrontMatter().Build();
+            this.markdownPipeline = new MarkdownPipelineBuilder().UseBootstrap().UseAdvancedExtensions().UseYamlFrontMatter().Build();
 
             var files = Directory.GetFiles("Pages/", "*.md");
             

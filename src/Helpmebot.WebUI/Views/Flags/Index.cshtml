@@ -37,7 +37,7 @@
                     <tr id="flag-@kvp.Key">
                         <th rowspan="2" class="font-monospace fs-5"><span class="badge bg-info text-dark">@kvp.Key</span></th>
                         <td class="text-nowrap border-bottom-0">@kvp.Value.Item1</td>
-                        <td class="border-bottom-0">@Html.Raw(Markdown.ToHtml("{.mb-0}\n" + kvp.Value.Item2, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))</td>
+                        <td class="border-bottom-0">@Html.Raw(Markdown.ToHtml("{.mb-0}\n" + kvp.Value.Item2, new MarkdownPipelineBuilder().UseBootstrap().UseAdvancedExtensions().DisableHtml().Build()))</td>
                     </tr>
                     <tr>
                         <td colspan="2" class="small text-muted p-0">

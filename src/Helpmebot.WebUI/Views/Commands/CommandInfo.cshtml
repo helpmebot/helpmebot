@@ -88,7 +88,7 @@
         @if (!string.IsNullOrWhiteSpace(Model.ExtendedHelp))
         {
             <div class="card-body border-bottom">
-                @Html.Raw(Markdown.ToHtml(Model.ExtendedHelp, new MarkdownPipelineBuilder().UseAdvancedExtensions().DisableHtml().Build()))
+                @Html.Raw(Markdown.ToHtml(Model.ExtendedHelp, new MarkdownPipelineBuilder().UseBootstrap().UseAdvancedExtensions().DisableHtml().Build()))
             </div>
         }
         <div class="card-footer py-1 d-flex flex-row">
