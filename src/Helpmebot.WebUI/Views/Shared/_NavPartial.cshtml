@@ -19,14 +19,13 @@
             <span class="d-none d-md-inline">Brain</span>
         </a>
     </li>
-    <hr/>
     <li>
         <button class="btn btn-toggle text-start w-100 nav-link  collapsed" data-bs-target="#nav-advanced-collapse" data-bs-toggle="collapse">
             <i class="fas fa-cogs me-0 me-md-2"></i>
             <span class="d-none d-md-inline">Advanced</span>
         </button>
         <div class="collapse @if (((bool?)ViewData["advanced"]).GetValueOrDefault()){@(" show")}" id="nav-advanced-collapse">
-            <ul class="nav nav-pills flex-column mb-auto mt-2">
+            <ul class="nav nav-pills flex-column mb-auto mt-2 ms-md-4 border border-secondary rounded-3">
                 <li>
                     <a asp-controller="Flags" asp-action="Index" class="nav-link @if (ViewContext.RouteData.Values["controller"].ToString() == "Flags"){@(" active")}">
                         <i class="fas fa-flag me-0 me-md-2"></i>
@@ -54,22 +53,21 @@
             </ul>
         </div>
     </li>
-    <hr/>
     @if (staticPageService.GetNavEntries().Any())
     {
         <li class="d-none d-md-list-item">
-            <button class="btn btn-toggle text-start w-100 nav-link  collapsed" data-bs-target="#nav-documentation-collapse" data-bs-toggle="collapse">
-                <i class="fas fa-book me-0 me-md-2"></i>
-                <span class="d-none d-md-inline">Documentation</span>
+            <button class="btn btn-toggle text-start w-100 nav-link collapsed" data-bs-target="#nav-documentation-collapse" data-bs-toggle="collapse">
+                <i class="fas fa-book me-2"></i>
+                Documentation
             </button>
             <div class="collapse @if (((bool?)ViewData["documentation"]).GetValueOrDefault()){@(" show")}" id="nav-documentation-collapse">
-                <ul class="nav nav-pills flex-column mb-auto mt-2">
+                <ul class="nav nav-pills flex-column mb-auto mt-2 ms-4 border border-secondary rounded-3">
                     @foreach (var page in staticPageService.GetNavEntries())
                     {
                         <li>
-                            <a href="~/@(page.Route)" class="nav-link @if (ViewContext.RouteData.Values["pagename"]?.ToString() == page.Route){@("active")}">
-                                <i class="@(page.NavigationIcon) me-0 me-md-2"></i>
-                                <span class="d-none d-md-inline">@(page.NavigationTitle)</span>
+                            <a href="~/@(page.Route)" class="nav-link p-1 @if (ViewContext.RouteData.Values["pagename"]?.ToString() == page.Route){@("active")}">
+                                <i class="@(page.NavigationIcon) me-1"></i>
+                                @(page.NavigationTitle)
                             </a>
                         </li>
                     }

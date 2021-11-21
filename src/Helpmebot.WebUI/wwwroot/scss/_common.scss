@@ -134,11 +134,13 @@ main {
 }
 
 .sidebar {
-  ul.nav li a.nav-link, ul.nav li button.nav-link {
-    padding: 0.5rem 0.5rem;
-    
-    &:not(.disabled) {
-      color: white;
+  ul.nav li {
+    a.nav-link, button.nav-link {
+      padding: 0.5rem 0.5rem;
+
+      &:not(.disabled) {
+        color: white;
+      }
     }
   }
 }
@@ -148,10 +150,11 @@ main {
     min-width: 16rem;
 
     ul.nav li a.nav-link, ul.nav li button.nav-link {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.7rem;
       
       // Icons
       i {
+        display: inline-block;
         min-width: 20px;
         text-align: center;
       }
