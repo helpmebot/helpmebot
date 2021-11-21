@@ -4,6 +4,11 @@
     ViewData["advanced"] = true;
 }
 
+@section Scripts 
+{
+    <script type="text/javascript" src="@Url.Content("js/genericSearch.js")" asp-append-version="true"></script>
+}
+
 <div class="container">
     <div class="row border-bottom mb-4">
         <div class="col">
@@ -21,6 +26,14 @@
             </p>
         </div>
     </div>
+    
+
+    <div class="row">
+        <div class="col">
+            <input type="text" id="search" onkeyup="genericSearch()" class="form-control mb-3" placeholder="Search...">
+        </div>
+    </div>
+    
     <div class="row">
         <div class="col">
             <table class="table">
@@ -31,7 +44,7 @@
                     <th>Groups</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="searchTarget">
                 @foreach (var entry in Model.Users)
                 {
                     <tr>
