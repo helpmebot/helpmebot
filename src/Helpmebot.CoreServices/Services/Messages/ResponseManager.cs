@@ -173,7 +173,7 @@ namespace Helpmebot.CoreServices.Services.Messages
         (List<List<string>>, string) IResponseManager.Get(string messageKey, string contextType, string context)
         {
             (var messages, var repository) = this.FindMessage(messageKey, contextType, context);
-            return (messages, repository.RepositoryType);
+            return (messages, repository?.RepositoryType);
         }
         
         void IResponseManager.Remove(string messageKey, string contextType, string context)

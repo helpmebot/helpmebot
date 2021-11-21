@@ -136,8 +136,8 @@ namespace Helpmebot.CoreServices.Services.Messages
             
             var messageObject = this.databaseSession.QueryOver<DatabaseMessage>()
                 .Where(x => x.MessageKey == key)
-                .And(x => contextType == null || x.ContextType == contextType)
-                .And(x => context == null || x.Context == context)
+                .And(x => x.ContextType == contextType)
+                .And(x => x.Context == context)
                 .SingleOrDefault();
             
             if (messageObject == null)
@@ -153,6 +153,8 @@ namespace Helpmebot.CoreServices.Services.Messages
         public IEnumerable<string> GetAllKeys()
         {
             var selectList = this.databaseSession.QueryOver<DatabaseMessage>()
+                .Where(x => x.ContextType == null)
+                .And(x => x.Context == null)
                 .List()
                 .Select(x => x.MessageKey);
 
