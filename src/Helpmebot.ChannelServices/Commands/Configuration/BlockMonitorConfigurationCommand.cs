@@ -16,7 +16,6 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("blockmonitor")]
-    [CommandFlag(Flags.LocalConfiguration)]
     [CommandFlag(Flags.Configuration, true)]
     public class BlockMonitorConfigurationCommand : CommandBase
     {
