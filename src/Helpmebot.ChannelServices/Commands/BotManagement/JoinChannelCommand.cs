@@ -15,7 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("join")]
-    [CommandFlag(Flags.BotManagement)]
+    [CommandFlag(Flags.BotManagement, true)]
     public class JoinChannelCommand : CommandBase
     {
         private readonly ISession session;

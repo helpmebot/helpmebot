@@ -16,7 +16,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("part")]
-    [CommandFlag(Flags.BotManagement)]
+    [CommandFlag(Flags.BotManagement, true)]
     [CommandFlag(Flags.LocalConfiguration)]
     public class PartChannelCommand : CommandBase
     {
