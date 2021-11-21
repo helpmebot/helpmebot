@@ -56,10 +56,10 @@ namespace Helpmebot.WebUI.Services
             using (var input = new StringReader(text))
             {
                 var parser = new Parser(input);
-                parser.Expect<StreamStart>();
-                parser.Expect<DocumentStart>();
+                parser.Consume<StreamStart>();
+                parser.Consume<DocumentStart>();
                 frontMatter = yamlDeserializer.Deserialize<Dictionary<string,string>>(parser);
-                parser.Expect<DocumentEnd>();
+                parser.Consume<DocumentEnd>();
             }
 
             if (!frontMatter.ContainsKey("title") || !frontMatter.ContainsKey("path"))
