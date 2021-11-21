@@ -1,6 +1,8 @@
 @model StaticPage
 @{
     ViewData["Title"] = Model.Title;
+
+    ViewData["documentation"] = Model.NavigationTitle != null;
 }
 
 <div class="container">

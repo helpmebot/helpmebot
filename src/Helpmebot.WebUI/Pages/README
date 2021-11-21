@@ -1,0 +1,22 @@
+This folder contains statically-defined pages for the Web UI.
+
+All files ending *.md will be loaded and parsed, and as such these files need to follow a specific format - effectively
+a Markdown document with YAML front matter.
+
+This means the file should look something like this, with the Markdown page content starting after the second "---":
+
+---
+title: Page title goes here
+path: path/to/location/on/website
+---
+Markdown content starts here
+
+
+Two attributes are mandatory for the page to be loaded - the "title" and "path" attributes. The title attribute is used
+as the page header and in the HTML title. The path attribute is used to determine where the page will be available, and
+is anchored to the root of the website. Thus the page described above would be accessible at this address:
+    https://helpmebot.org.uk/path/to/location/on/website
+    
+Two more attributes are optional: "icon" and "navigationTitle". These attributes are used if you want the page to appear
+in the navigation sidebar.
+ 

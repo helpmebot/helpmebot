@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-path: /privacy
+path: privacy
 ---
 ### Our contact details:
 

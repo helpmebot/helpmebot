@@ -58,6 +58,8 @@ namespace Helpmebot.WebUI
             services.AddSingleton<IApiFrontendTransportService, ApiFrontendTransportService>();
             services.AddSingleton<IStaticPageService, StaticPageService>();
 
+            services.AddSingleton<StaticPageValueTransformer>();
+            
             services.AddIdentity<User,Role>()
                 .AddDefaultTokenProviders();
 
@@ -109,6 +111,8 @@ namespace Helpmebot.WebUI
                     endpoints.MapControllerRoute(
                         name: "default",
                         pattern: "{controller=Home}/{action=Index}/{id?}");
+                    
+                    endpoints.MapDynamicControllerRoute<StaticPageValueTransformer>("{**pagename}");
                 });
         }
     }

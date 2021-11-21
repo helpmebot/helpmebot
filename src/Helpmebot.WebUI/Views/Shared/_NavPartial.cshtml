@@ -1,3 +1,5 @@
+@using Helpmebot.WebUI.Services
+@inject IStaticPageService staticPageService
 <ul class="nav nav-pills flex-column mb-auto">
     <li>
         <a asp-controller="Home" asp-action="Index" class="nav-link text-white @if (ViewContext.RouteData.Values["controller"].ToString() == "Home"){@(" active")}">
@@ -53,5 +55,28 @@
         </div>
     </li>
     <hr/>
+    @if (staticPageService.GetNavEntries().Any())
+    {
+        <li class="d-none d-md-list-item">
+            <button class="btn btn-toggle text-start w-100 nav-link  collapsed" data-bs-target="#nav-documentation-collapse" data-bs-toggle="collapse">
+                <i class="fas fa-book me-0 me-md-2"></i>
+                <span class="d-none d-md-inline">Documentation</span>
+            </button>
+            <div class="collapse @if (((bool?)ViewData["documentation"]).GetValueOrDefault()){@(" show")}" id="nav-documentation-collapse">
+                <ul class="nav nav-pills flex-column mb-auto mt-2">
+                    @foreach (var page in staticPageService.GetNavEntries())
+                    {
+                        <li>
+                            <a href="~/@(page.Route)" class="nav-link @if (ViewContext.RouteData.Values["pagename"]?.ToString() == page.Route){@("active")}">
+                                <i class="far fa-@(page.NavigationIcon) me-0 me-md-2"></i>
+                                <span class="d-none d-md-inline">@(page.NavigationTitle)</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <hr class="d-none d-md-block"/>
+    }
  
 </ul>

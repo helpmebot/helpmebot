@@ -11,7 +11,7 @@ namespace Helpmebot.WebUI.Models
         
         
         public string NavigationIcon { get; set; }
-        public bool NavigationTitle { get; set; }
+        public string NavigationTitle { get; set; }
         
         public string Html => Markdown.ToHtml(this.Content, this.Pipeline);
     }

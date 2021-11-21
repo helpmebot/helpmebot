@@ -13,15 +13,9 @@ namespace Helpmebot.WebUI.Controllers
             this.staticPageService = staticPageService;
         }
         
-        [HttpGet("/privacy")]
-        public IActionResult Privacy()
+        public IActionResult Index(string route)
         {
-            return this.Render("privacy");
-        }
-        
-        private IActionResult Render(string fileName)
-        {
-            var staticPage = this.staticPageService.Load(fileName);
+            var staticPage = this.staticPageService.GetPage(route);
 
             if (staticPage == null)
             {

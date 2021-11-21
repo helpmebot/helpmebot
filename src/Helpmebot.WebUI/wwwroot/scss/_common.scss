@@ -29,6 +29,12 @@ $utilities: map-merge(
         ),
       ),
     ),
+    "display": map-merge(
+      map-get($utilities, "display"),
+      (
+        values: append(map-get(map-get($utilities, "display"), "values"), list-item)
+      ),
+    ),
     "irc-bg": (
       property: background-color,
       class: irc-bg,
