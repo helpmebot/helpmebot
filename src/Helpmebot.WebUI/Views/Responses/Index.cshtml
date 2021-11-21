@@ -3,6 +3,13 @@
     ViewData["Title"] = "Responses";
     ViewData["advanced"] = true;
 }
+
+
+@section Scripts 
+{
+    <script type="text/javascript" src="@Url.Content("js/responses.js")" asp-append-version="true"></script>
+}
+
 <div class="container-fluid">
     <div class="row border-bottom mb-4">
         <div class="col">
@@ -25,16 +32,23 @@
             </p>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col">
+            <input type="text" id="search" onkeyup="responsesSearch()" class="form-control mb-3" placeholder="Search...">
+        </div>
+    </div>
+    
     <div class="row">
         <div class="col">
             <table class="table">
                 <thead>
                 <tr>
                     <th>Message key</th>
-                    <th>Message content</th>
+                    <th><div class="ps-3 ms-3">Message content</div></th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="searchTarget">
                     @foreach (var response in Model)
                     {
                         <tr>
