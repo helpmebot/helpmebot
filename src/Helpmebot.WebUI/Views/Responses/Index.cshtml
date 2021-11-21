@@ -17,12 +17,12 @@
             <p>
                 Please note that these are <em>not</em> the static stored responses known as the "Brain" - these are the internal formatting strings used to customise the output of the bot's normal commands. 
             </p>
+            <p>
+                This list can be modified with the <a asp-controller="Commands" asp-fragment="command-message">@(ViewBag.BotStatus.Trigger)message</a> command.
+            </p>
             <p class="small text-muted">
                 Every numbered set (where there are multiple sets) corresponds to a randomly chosen alternative message. Every entry within a set denotes a separate message which will be returned. Note that not all messages support multiple responses - where a message does not support this, the first result from the first set will be used.
             </p>
-            @*<p>
-                This list can be modified with the <a asp-controller="Commands" asp-fragment="command-interwiki">@(ViewBag.BotStatus.Trigger)interwiki</a> command.
-            </p>*@
         </div>
     </div>
     <div class="row">
