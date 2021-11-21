@@ -26,13 +26,22 @@ namespace Helpmebot.WebUI.Services
             foreach (var file in files)
             {
                 var staticPage = this.Load(file);
+                
+                if (staticPage.Disabled)
+                {
+                    continue;
+                }
+
                 this.routeMap.Add(staticPage.Route, staticPage);
             }
         }
 
         public List<StaticPage> GetNavEntries()
         {
-            return this.routeMap.Values.Where(x => x.NavigationTitle != null).ToList();
+            return this.routeMap.Values
+                .Where(x => x.NavigationTitle != null)
+                .OrderBy(x => x.NavigationTitle)
+                .ToList();
         }
         
         private StaticPage Load(string fileName)
@@ -74,6 +83,11 @@ namespace Helpmebot.WebUI.Services
             if (frontMatter.ContainsKey("navigationTitle"))
             {
                 page.NavigationTitle = frontMatter["navigationTitle"];
+            }
+
+            if (frontMatter.ContainsKey("disabled"))
+            {
+                page.Disabled = Convert.ToBoolean(frontMatter["disabled"]);
             }
             
             return page;

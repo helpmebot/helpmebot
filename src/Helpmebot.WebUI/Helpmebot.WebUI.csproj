@@ -23,12 +23,10 @@
     <ItemGroup>
       <Folder Include="wwwroot\lib\bootstrap" />
       <Folder Include="wwwroot\webfonts\cascadiacode-2110.31" />
+      <Folder Include="Pages" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Pages\privacy.md">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <Watch Include="**\*.md" />
     </ItemGroup>
-
 </Project>
