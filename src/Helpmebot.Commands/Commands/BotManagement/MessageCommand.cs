@@ -18,7 +18,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     [CommandFlag(Flags.Configuration)]
     [CommandInvocation("message")]
     [CommandInvocation("response")]
-    [HelpSummary("Manages the bot's responses")]
+    [HelpSummary("Manages/alters the bot's response strings for hard-coded commands")]
     public class MessageCommand : CommandBase
     {
         private readonly IResponder responder;
