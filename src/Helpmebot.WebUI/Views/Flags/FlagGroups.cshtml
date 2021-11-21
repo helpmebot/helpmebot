@@ -36,7 +36,7 @@
                                 }
                                 else
                                 {
-                                    <a asp-action="Index" asp-fragment="flag-@flag" class="font-monospace me-2 badge bg-info text-dark text-decoration-none"  data-bs-toggle="tooltip" title="@FlagHelpHelper.GetHelpForFlag("" + flag)">@flag</a>    
+                                    <a asp-action="Index" asp-fragment="flag-@flag" class="font-monospace me-2 badge @if(FlagHelpHelper.IsKnownFlag(flag + "")){@("bg-info text-dark")}else{@("bg-secondary text-light")} text-decoration-none"  data-bs-toggle="tooltip" title="@FlagHelpHelper.GetHelpForFlag("" + flag)">@flag</a>    
                                 }
                                 
                             }

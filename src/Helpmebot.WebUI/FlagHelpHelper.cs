@@ -6,6 +6,21 @@ namespace Helpmebot.WebUI
 
     public static class FlagHelpHelper
     {
+        public static bool IsKnownFlag(string flag)
+        {
+            var fieldInfos = typeof(Flags).GetFields().Where(x => x.IsLiteral && x.FieldType == typeof(string));
+            
+            foreach (var fieldInfo in fieldInfos)
+            {
+                if ((string)fieldInfo.GetRawConstantValue() == flag)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static string GetHelpForFlag(string flag)
         {
             var fieldInfos = typeof(Flags).GetFields().Where(x => x.IsLiteral && x.FieldType == typeof(string));
