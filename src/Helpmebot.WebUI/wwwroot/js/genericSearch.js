@@ -1,4 +1,4 @@
-function responsesSearch(){
+function genericSearch(){
     var searchBox = document.getElementById('search');
     var searchItems = document.getElementById('searchTarget').getElementsByTagName('tr');
     

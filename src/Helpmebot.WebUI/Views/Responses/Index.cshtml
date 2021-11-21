@@ -4,10 +4,9 @@
     ViewData["advanced"] = true;
 }
 
-
 @section Scripts 
 {
-    <script type="text/javascript" src="@Url.Content("js/responses.js")" asp-append-version="true"></script>
+    <script type="text/javascript" src="@Url.Content("js/genericSearch.js")" asp-append-version="true"></script>
 }
 
 <div class="container-fluid">
@@ -35,7 +34,7 @@
 
     <div class="row">
         <div class="col">
-            <input type="text" id="search" onkeyup="responsesSearch()" class="form-control mb-3" placeholder="Search...">
+            <input type="text" id="search" onkeyup="genericSearch()" class="form-control mb-3" placeholder="Search...">
         </div>
     </div>
     
