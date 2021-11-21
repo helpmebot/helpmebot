@@ -46,7 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         }
 
         [SubcommandInvocation("enable")]
-        [Help("<channel>", "Enables silent mode for the current channel")]
+        [Help("", "Enables silent mode for the current channel")]
         protected IEnumerable<CommandResponse> EnableCommand()
         {
             using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
@@ -67,7 +67,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         }
 
         [SubcommandInvocation("disable")]
-        [Help("<channel>", "Disables silent mode for the current channel")]
+        [Help("", "Disables silent mode for the current channel")]
         protected IEnumerable<CommandResponse> DisableCommand()
         {
             using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
