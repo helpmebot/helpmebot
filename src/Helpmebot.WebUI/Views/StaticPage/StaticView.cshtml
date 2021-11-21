@@ -1,0 +1,20 @@
+@model Tuple<string, string>
+@{
+    ViewData["Title"] = Model.Item1;
+}
+
+<div class="container">
+    
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>@Model.Item1</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            @Html.Raw(Model.Item2)
+        </div>
+    </div>
+</div>
+
+
