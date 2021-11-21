@@ -23,9 +23,14 @@
     <ItemGroup>
       <Folder Include="wwwroot\lib\bootstrap" />
       <Folder Include="wwwroot\webfonts\cascadiacode-2110.31" />
-      <Folder Include="Pages" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Pages/**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    
     <ItemGroup>
         <Watch Include="**\*.md" />
     </ItemGroup>
