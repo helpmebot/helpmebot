@@ -38,17 +38,18 @@
         @await RenderSectionAsync("UpperNav", required: false)
 
         <ul class="nav nav-pills flex-column">
-            <li>
-                <a class="nav-link text-white" href="https://github.com/helpmebot/helpmebot">
-                    <i class="fas fa-code me-0 me-md-2"></i>
-                    <span class="d-none d-md-inline">Source code</span>
-                </a>
-            </li>
-            <li>
-                <a class="nav-link text-white" href="https://phabricator.stwalkerster.co.uk/tag/helpmebot/">
-                    <i class="fas fa-bug me-0 me-md-2"></i>
-                    <span class="d-none d-md-inline">Bug tracker</span>
-                </a>
+            <li class="d-none d-md-list-item">
+                <div class="d-grid" style="grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.7em;">
+                    <a class="nav-link text-white" href="https://phabricator.stwalkerster.co.uk/tag/helpmebot/">
+                        <i class="fas fa-bug me-1"></i>
+                        <span class="d-none d-md-inline">Bugs</span>
+                    </a>
+
+                    <a class="nav-link text-white d-flex justify-content-end align-items-baseline" href="https://github.com/helpmebot/helpmebot">
+                        <span class="d-none d-md-inline">Source</span>
+                        <i class="fas fa-code ms-1"></i>
+                    </a>
+                </div>
             </li>
             @await RenderSectionAsync("LowerNav", required: false)
 
@@ -62,11 +63,11 @@
         @RenderBody()
         
         
-        <footer class="footer text-muted mt-auto">
+        <footer class="footer text-muted mt-auto px-1 px-lg-0">
             <div class="border-top pt-2">
                 <p class="mb-0">
                     @await RenderSectionAsync("FooterBotVersion", required: false)
-                    <small class="me-2"><strong>Helpmebot Web Management Console</strong> <environment exclude="Development">v@(Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</environment></small><environment exclude="Production"><span class="badge bg-light text-dark me-2">@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</span></environment>
+                    <small class="me-1"><strong>Helpmebot Web Management Console</strong> <environment exclude="Development">v@(Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion)</environment></small><environment exclude="Production"><span class="badge bg-light text-dark me-1">@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</span></environment>
                 </p>
                 <p class="mb-2">
                     @await RenderSectionAsync("FooterStatus", required: false)
