@@ -35,11 +35,11 @@
             this.client.WasKickedEvent += this.OnKicked;
         }
 
-        public void JoinChannel(string channelName, ISession localSession)
+        public void JoinChannel(string channelName)
         {
-            using (var txn = localSession.BeginTransaction(IsolationLevel.ReadCommitted))
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                var channel = localSession.CreateCriteria<Channel>()
+                var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq("Name", channelName))
                     .List<Channel>()
                     .FirstOrDefault();
@@ -47,7 +47,7 @@
                 if (channel == null)
                 {
                     
-                    var mediaWikiSite = localSession.CreateCriteria<MediaWikiSite>()
+                    var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
                         .Add(Restrictions.Eq("IsDefault", true))
                         .List<MediaWikiSite>()
                         .FirstOrDefault();
@@ -62,18 +62,18 @@
 
                 channel.Enabled = true;
 
-                localSession.SaveOrUpdate(channel);
+                this.session.SaveOrUpdate(channel);
                 txn.Commit();
             }
 
             this.client.JoinChannel(channelName);
         }
 
-        public void PartChannel(string channelName, ISession localSession, string message)
+        public void PartChannel(string channelName, string message)
         {
-            using (var txn = localSession.BeginTransaction(IsolationLevel.ReadCommitted))
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                var channel = localSession.CreateCriteria<Channel>()
+                var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq("Name", channelName))
                     .List<Channel>()
                     .FirstOrDefault();
@@ -87,7 +87,7 @@
 
                 channel.Enabled = false;
 
-                localSession.SaveOrUpdate(channel);
+                this.session.SaveOrUpdate(channel);
                 txn.Commit();
             }
         }
@@ -106,7 +106,7 @@
             }
             else
             {
-                this.JoinChannel(e.Channel, this.session);
+                this.JoinChannel(e.Channel);
                 aclStatus = CommandAclStatus.Allowed;
             }
 

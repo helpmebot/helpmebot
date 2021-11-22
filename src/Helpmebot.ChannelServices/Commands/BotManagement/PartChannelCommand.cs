@@ -20,7 +20,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     [CommandFlag(Flags.LocalConfiguration)]
     public class PartChannelCommand : CommandBase
     {
-        private readonly ISession session;
         private readonly IChannelManagementService channelManagementService;
         private readonly IResponder responder;
 
@@ -32,7 +31,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession session,
             IChannelManagementService channelManagementService,
             IResponder responder) : base(
             commandSource,
@@ -43,7 +41,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             configurationProvider,
             client)
         {
-            this.session = session;
             this.channelManagementService = channelManagementService;
             this.responder = responder;
         }
@@ -68,7 +65,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
                 this.CommandSource,
                 this.User.ToString());
             
-            this.channelManagementService.PartChannel(channel, this.session, partMessage);
+            this.channelManagementService.PartChannel(channel, partMessage);
                 
             yield break;
         }

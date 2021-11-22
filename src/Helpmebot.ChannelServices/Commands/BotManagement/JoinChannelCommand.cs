@@ -20,7 +20,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     [HelpSummary("Joins the specified channel")]
     public class JoinChannelCommand : CommandBase
     {
-        private readonly ISession session;
         private readonly IChannelManagementService channelManagementService;
 
         public JoinChannelCommand(
@@ -31,7 +30,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession session,
             IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
@@ -41,7 +39,6 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             configurationProvider,
             client)
         {
-            this.session = session;
             this.channelManagementService = channelManagementService;
         }
 
@@ -61,7 +58,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
                 throw new CommandErrorException(channelName + " is not a valid channel");
             }
 
-            this.channelManagementService.JoinChannel(channelName, this.session);
+            this.channelManagementService.JoinChannel(channelName);
 
             yield break;
         }
