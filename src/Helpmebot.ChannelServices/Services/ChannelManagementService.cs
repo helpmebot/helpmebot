@@ -205,6 +205,20 @@
                 }
             }
         }
+        
+        public void ConfigureFunCommands(string channelName, bool state)
+        {            
+            var channel = this.GetChannel(channelName);
+
+            if (channel == null)
+            {
+                throw new NullReferenceException("Channel object not found");
+            }
+            
+            channel.HedgehogMode = state;
+            this.session.SaveOrUpdate(channelName);
+            this.session.Flush();
+        }
 
         [Obsolete]
         public Channel GetChannel(string channelName)
