@@ -1,5 +1,6 @@
 ﻿namespace Helpmebot.ChannelServices.Services
 {
+    using System;
     using System.Data;
     using System.Linq;
     using Helpmebot.ChannelServices.Services.Interfaces;
@@ -46,7 +47,7 @@
 
                 if (channel == null)
                 {
-                    
+
                     var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
                         .Add(Restrictions.Eq("IsDefault", true))
                         .List<MediaWikiSite>()
@@ -140,5 +141,79 @@
                 txn.Commit();
             }
         }
+
+        public void ConfigureAutolink(string channelName, bool state)
+        {
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq("Name", channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    if (channel == null)
+                    {
+                        throw new NullReferenceException("Channel object not found");
+                    }
+
+                    channel.AutoLink = state;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
+                    this.session.Flush();
+                }
+                finally
+                {
+                    if (txn.IsActive)
+                    {
+                        txn.Rollback();
+                    }
+                }
+            }
+        }
+        
+        public void ConfigureSilence(string channelName, bool state)
+        {            
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq("Name", channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    if (channel == null)
+                    {
+                        throw new NullReferenceException("Channel object not found");
+                    }
+
+                    channel.Silenced = state;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
+                    this.session.Flush();
+                }
+                finally
+                {
+                    if (txn.IsActive)
+                    {
+                        txn.Rollback();
+                    }
+                }
+            }
+        }
+
+        [Obsolete]
+        public Channel GetChannel(string channelName)
+        {
+            return this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq("Name", channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+        }
+        
     }
 }

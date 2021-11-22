@@ -1,10 +1,11 @@
 namespace Helpmebot.ChannelServices.Commands.Configuration
 {
+    using System;
     using System.Collections.Generic;
     using System.Data;
     using Castle.Core.Logging;
+    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -20,8 +21,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     [CommandInvocation("autolink")]
     public class AutoLinkCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public AutoLinkCommand(
             string commandSource,
@@ -31,8 +32,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -41,28 +42,22 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [SubcommandInvocation("enable")]
         [Help("", "Enables autolinking for the current channel")]
         protected IEnumerable<CommandResponse> EnableCommand()
         {
-            using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
+            try
             {
-                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-                if (channel == null)
-                {
-                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
-                }
-
-                channel.AutoLink = true;
-                this.databaseSession.Save(channel);
-                txn.Commit();
-
+                this.channelManagementService.ConfigureAutolink(this.CommandSource, true);
                 return this.responder.Respond("channelservices.command.autolink.enabled", this.CommandSource);
+            }
+            catch (NullReferenceException)
+            {
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
             }
         }
 
@@ -70,20 +65,14 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         [Help("", "Disables autolinking for the current channel")]
         protected IEnumerable<CommandResponse> DisableCommand()
         {
-            using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
+            try
             {
-                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-                if (channel == null)
-                {
-                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
-                }
-
-                channel.AutoLink = false;
-                this.databaseSession.Save(channel);
-                txn.Commit();
-
+                this.channelManagementService.ConfigureAutolink(this.CommandSource, false);
                 return this.responder.Respond("channelservices.command.autolink.disabled", this.CommandSource);
+            }
+            catch (NullReferenceException)
+            {
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
             }
         }
     }
