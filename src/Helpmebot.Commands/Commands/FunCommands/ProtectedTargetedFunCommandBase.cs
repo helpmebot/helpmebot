@@ -4,7 +4,6 @@
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -21,10 +20,17 @@
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
-            IResponder responder) : base(commandSource, user, arguments, logger, flagService,
-            configurationProvider, client, databaseSession,
-            responder)
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
+            commandSource,
+            user,
+            arguments,
+            logger,
+            flagService,
+            configurationProvider,
+            client,
+            responder,
+            channelManagementService)
         {
         }
 

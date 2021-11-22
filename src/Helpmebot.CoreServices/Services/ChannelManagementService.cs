@@ -205,7 +205,7 @@
             }
         }
         
-        public void ConfigureFunCommands(string channelName, bool state)
+        public void ConfigureFunCommands(string channelName, bool disabled)
         {            
             var channel = this.GetChannel(channelName);
 
@@ -214,9 +214,21 @@
                 throw new NullReferenceException("Channel object not found");
             }
             
-            channel.HedgehogMode = state;
+            channel.HedgehogMode = disabled;
             this.session.SaveOrUpdate(channelName);
             this.session.Flush();
+        }
+        
+        public bool FunCommandsDisabled(string channelName)
+        {            
+            var channel = this.GetChannel(channelName);
+
+            if (channel == null)
+            {
+                return true;
+            }
+
+            return channel.HedgehogMode;
         }
 
         [Obsolete]

@@ -3,8 +3,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
@@ -22,8 +22,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -31,8 +31,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             flagService,
             configurationProvider,
             client,
-            databaseSession,
-            responder)
+            responder,
+            channelManagementService)
         {
         }
         

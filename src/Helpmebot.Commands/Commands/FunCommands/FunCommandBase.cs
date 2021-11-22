@@ -3,9 +3,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
-    using Helpmebot.CoreServices.ExtensionMethods;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -15,8 +14,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
     [HelpCategory("Fun")]
     public abstract class FunCommandBase : CommandBase
     {
+        private readonly IChannelManagementService channelManagementService;
         public IResponder Responder { get; }
-        protected ISession DatabaseSession { get; private set; }
 
         protected FunCommandBase(
             string commandSource,
@@ -26,8 +25,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -36,23 +35,17 @@ namespace Helpmebot.Commands.Commands.FunCommands
             configurationProvider,
             client)
         {
+            this.channelManagementService = channelManagementService;
             this.Responder = responder;
-            this.DatabaseSession = databaseSession;
         }
 
         protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
         {
-            var channel = this.DatabaseSession.GetChannelObject(this.CommandSource);
-
-            abort = false;
-            if (channel != null)
-            {
-                abort = channel.HedgehogMode;
-            }
-            
+            abort = this.channelManagementService.FunCommandsDisabled(this.CommandSource);
+        
             if (abort)
             {
-                return this.Responder.Respond("funcommands.disabled", this.CommandSource, channel?.Name);
+                return this.Responder.Respond("funcommands.disabled", this.CommandSource, this.CommandSource);
             }
 
             return null;

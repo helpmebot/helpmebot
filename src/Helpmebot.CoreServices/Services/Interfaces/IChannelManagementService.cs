@@ -12,6 +12,7 @@
         Channel GetChannel(string channelName);
         void ConfigureAutolink(string channelName, bool state);
         void ConfigureSilence(string channelName, bool state);
-        void ConfigureFunCommands(string channelName, bool state);
+        void ConfigureFunCommands(string channelName, bool disabled);
+        bool FunCommandsDisabled(string channelName);
     }
 }
