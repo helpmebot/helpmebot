@@ -245,13 +245,6 @@ namespace Helpmebot.ChannelServices.Services
             }
 
             WelcomerActivations.WithLabels(channel).Inc();
-            this.session.SaveOrUpdate(
-                new WelcomeLog
-                {
-                    Channel = channel,
-                    Usermask = networkUser.ToString(),
-                    WelcomeTimestamp = DateTime.Now
-                });
         }
 
         private bool DoesOverrideApply(IUser networkUser, WelcomerOverride welcomeOverride)
