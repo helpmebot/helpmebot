@@ -10,7 +10,6 @@ namespace Helpmebot.CoreServices.Services.AccessControl
     using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
-    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
     public class AccessControlManagementService : IAccessControlManagementService

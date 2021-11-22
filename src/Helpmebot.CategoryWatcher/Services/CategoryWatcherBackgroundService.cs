@@ -10,7 +10,6 @@
     using Helpmebot.Background;
     using Helpmebot.CategoryWatcher.Configuration;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
-    using Helpmebot.Configuration;
     using Helpmebot.Model;
     using Stwalkerster.IrcClient.Interfaces;
 

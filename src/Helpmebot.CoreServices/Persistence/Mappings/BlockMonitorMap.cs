@@ -1,9 +1,8 @@
-﻿using System;
-using FluentNHibernate.Mapping;
-using Helpmebot.Model;
-
-namespace Helpmebot.Persistence.Mappings
+﻿namespace Helpmebot.Persistence.Mappings
 {
+    using FluentNHibernate.Mapping;
+    using Helpmebot.Model;
+
     public class BlockMonitorMap: ClassMap<BlockMonitor>
     {
         public BlockMonitorMap()
