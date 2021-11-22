@@ -3,10 +3,11 @@ namespace Helpmebot.CoreServices.Services.AccessControl
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
-    using NHibernate.Util;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Model;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -15,15 +16,22 @@ namespace Helpmebot.CoreServices.Services.AccessControl
     {
         private readonly ISession session;
         private readonly ILogger logger;
+        private readonly BotConfiguration configuration;
 
-        public AccessControlAuthorisationService(ISession session, ILogger logger)
+        public AccessControlAuthorisationService(ISession session, ILogger logger, BotConfiguration configuration)
         {
             this.session = session;
             this.logger = logger;
+            this.configuration = configuration;
         }
 
         public bool UserHasFlag(IUser user, string flag, string locality)
         {
+            if (user is IrcUser ircUser && new IrcUserMask(this.configuration.OwnerMask, ircUser.Client).Matches(ircUser).GetValueOrDefault())
+            {
+                return true;    
+            }
+            
             return this.GetFlagsForUser(user, locality).Contains(flag);
         }
 
@@ -33,6 +41,12 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             if (ircUser == null)
             {
                 return new string[0];
+            }
+
+            if (new IrcUserMask(this.configuration.OwnerMask, ircUser.Client).Matches(user).GetValueOrDefault())
+            {
+                // Owner.
+                return Flags.GetValidFlags().OrderBy(x => x);
             }
 
             var matchingUsers = this.session.QueryOver<User>()
@@ -70,7 +84,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
                     new List<string>(),
                     new List<string>());
 
-            return resultantSet;
+            return resultantSet.OrderBy(x => x);
         }
 
         public void Refresh(User u)

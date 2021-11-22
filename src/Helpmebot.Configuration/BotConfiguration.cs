@@ -1,8 +1,6 @@
 ﻿// ReSharper disable UnusedAutoPropertyAccessor.Global - used by YAML deserialize
 namespace Helpmebot.Configuration
 {
-    using System;
-
     public class BotConfiguration
     {
         public string CommandTrigger { get; set; }
@@ -16,5 +14,7 @@ namespace Helpmebot.Configuration
         
         public string UrlShortener { get; set; }
         public string SecondaryUrlShortener { get; set; }
+        
+        public string OwnerMask { get; set; }
     }
 }

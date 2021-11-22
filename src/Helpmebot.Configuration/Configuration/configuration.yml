@@ -9,6 +9,7 @@ general:
   commandTrigger: "!"
   userAgent: Helpmebot (+https://helpmebot.org.uk)
   debugChannel: "##helpmebot"
+  ownerMask: $a:stwalkerster
   # disableCertificateValidation: false
   # ipInfoDbApiKey:
   # maxMindDatabasePath:
