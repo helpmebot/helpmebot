@@ -231,12 +231,12 @@ namespace Helpmebot.WebApi.Services
             {
                 var flagHelpAttr = fieldInfo.GetCustomAttributes(typeof(FlagHelpAttribute), false).Cast<FlagHelpAttribute>().FirstOrDefault();
                 var rawConstantValue = fieldInfo.GetRawConstantValue();
-                if (flagHelpAttr == null)
-                {
-                    continue;
-                }
-            
-                data.Add((string)rawConstantValue, new Tuple<string,string>(flagHelpAttr.QuickHelpText, flagHelpAttr.DetailedHelp));
+
+                var helpData = new Tuple<string, string>(
+                    flagHelpAttr?.QuickHelpText ?? "Undocumented flag",
+                    flagHelpAttr?.DetailedHelp ?? string.Empty);
+                
+                data.Add((string)rawConstantValue, helpData);
             }
 
             return data;

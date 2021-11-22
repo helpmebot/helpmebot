@@ -38,6 +38,9 @@ namespace Helpmebot.WebUI.Controllers
         [HttpGet("/flags/groups")]
         public IActionResult FlagGroups()
         {
+            var flagHelp = this.ApiService.GetFlagHelp();
+            this.ViewData.Add("flagHelper", new FlagHelpHelper(flagHelp));
+            
             return this.View(this.ApiService.GetFlagGroups());
         }
     }

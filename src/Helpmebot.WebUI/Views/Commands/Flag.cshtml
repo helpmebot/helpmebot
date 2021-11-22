@@ -2,13 +2,13 @@
 
 @if (Model.GlobalOnly)
 {
-    <a asp-controller="Flags" asp-action="Index" asp-fragment="flag-@Model.Flag" class="badge bg-warning text-dark text-decoration-none" data-bs-toggle="tooltip" data-bs-html="true" title="<p>@FlagHelpHelper.GetHelpForFlag(Model.Flag)</p><p class=&quot;mb-0&quot;>This flag must be granted globally across all channels</p>">
+    <a asp-controller="Flags" asp-action="Index" asp-fragment="flag-@Model.Flag" class="badge bg-warning text-dark text-decoration-none" data-bs-toggle="tooltip" data-bs-html="true" title="<p>@(((FlagHelpHelper)ViewData["flagHelper"]).GetHelpForFlag(Model.Flag))</p><p class=&quot;mb-0&quot;>This flag must be granted globally across all channels</p>">
         <i class="fas fa-globe-europe"></i>&nbsp;@Model.Flag
     </a>
 }
 else
 {
-    <a asp-controller="Flags" asp-action="Index" asp-fragment="flag-@Model.Flag" class="badge bg-secondary text-light text-decoration-none" data-bs-toggle="tooltip" title="@FlagHelpHelper.GetHelpForFlag(Model.Flag)">
+    <a asp-controller="Flags" asp-action="Index" asp-fragment="flag-@Model.Flag" class="badge bg-secondary text-light text-decoration-none" data-bs-toggle="tooltip" title="@(((FlagHelpHelper)ViewData["flagHelper"]).GetHelpForFlag(Model.Flag))">
         <i class="fas fa-flag"></i>&nbsp;@Model.Flag
     </a>    
 }

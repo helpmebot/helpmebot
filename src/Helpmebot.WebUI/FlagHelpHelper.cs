@@ -1,43 +1,34 @@
 namespace Helpmebot.WebUI
 {
-    using System.Linq;
-    using Helpmebot.CoreServices.Attributes;
-    using Helpmebot.CoreServices.Model;
+    using System;
+    using System.Collections.Generic;
 
-    public static class FlagHelpHelper
+    public class FlagHelpHelper
     {
-        public static bool IsKnownFlag(string flag)
-        {
-            var fieldInfos = typeof(Flags).GetFields().Where(x => x.IsLiteral && x.FieldType == typeof(string));
-            
-            foreach (var fieldInfo in fieldInfos)
-            {
-                if ((string)fieldInfo.GetRawConstantValue() == flag)
-                {
-                    return true;
-                }
-            }
+        private readonly Dictionary<string, Tuple<string, string>> flagData;
 
-            return false;
+        public FlagHelpHelper(Dictionary<string, Tuple<string, string>> flagData)
+        {
+            this.flagData = flagData;
+        }
+        
+        public bool IsKnownFlag(string flag)
+        {
+            return this.flagData.ContainsKey(flag);
         }
 
-        public static string GetHelpForFlag(string flag)
+        public string GetHelpForFlag(string flag)
         {
-            var fieldInfos = typeof(Flags).GetFields().Where(x => x.IsLiteral && x.FieldType == typeof(string));
-            
-            foreach (var fieldInfo in fieldInfos)
+            if (this.flagData.ContainsKey(flag))
             {
-                if ((string)fieldInfo.GetRawConstantValue() == flag)
-                {
-                    var flagHelpAttr = fieldInfo.GetCustomAttributes(typeof(FlagHelpAttribute), false).Cast<FlagHelpAttribute>().FirstOrDefault();
-                    if (flagHelpAttr != null)
-                    {
-                        return flagHelpAttr.QuickHelpText;
-                    }
-                }
+                return this.flagData[flag].Item1;
             }
 
-            return "Unknown or undocumented flag";
+            return "Unknown flag";
+        }
+        public string GetHelpForFlag(char flag)
+        {
+            return this.GetHelpForFlag(flag + "");
         }
     }
 }

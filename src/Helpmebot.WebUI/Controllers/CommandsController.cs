@@ -15,6 +15,9 @@ namespace Helpmebot.WebUI.Controllers
         [HttpGet("/commands")]
         public IActionResult Index()
         {
+            var flagHelp = this.ApiService.GetFlagHelp();
+            this.ViewData.Add("flagHelper", new FlagHelpHelper(flagHelp));
+            
             var registeredCommands = this.ApiService.GetRegisteredCommands();
 
             var groups = new Dictionary<string, List<CommandInfo>>();
