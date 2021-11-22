@@ -5,6 +5,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;

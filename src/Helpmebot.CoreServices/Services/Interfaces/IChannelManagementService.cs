@@ -1,4 +1,4 @@
-﻿namespace Helpmebot.ChannelServices.Services.Interfaces
+﻿namespace Helpmebot.CoreServices.Services.Interfaces
 {
     using Helpmebot.Model;
     using Stwalkerster.IrcClient.Events;

@@ -6,6 +6,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

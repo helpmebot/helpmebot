@@ -1,9 +1,8 @@
-﻿namespace Helpmebot.ChannelServices.Services
+﻿namespace Helpmebot.CoreServices.Services
 {
     using System;
     using System.Data;
     using System.Linq;
-    using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
@@ -47,7 +46,7 @@
 
                 if (channel == null)
                 {
-
+                    
                     var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
                         .Add(Restrictions.Eq("IsDefault", true))
                         .List<MediaWikiSite>()
