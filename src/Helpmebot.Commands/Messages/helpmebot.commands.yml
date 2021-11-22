@@ -7,7 +7,7 @@ dataset:
     - - "Group {0}: {1}"
   commands.command.flaggroup.created:
     - - Flag group created.
-  commands.command.flaggroup.modifed:
+  commands.command.flaggroup.modified:
     - - Flag group modified.
   commands.command.flaggroup.updated:
     - - Flag group updated.
