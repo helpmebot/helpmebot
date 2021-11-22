@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -16,6 +17,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
 
     [CommandInvocation("join")]
     [CommandFlag(Flags.BotManagement, true)]
+    [HelpSummary("Joins the specified channel")]
     public class JoinChannelCommand : CommandBase
     {
         private readonly ISession session;
@@ -44,7 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
         }
 
         [RequiredArguments(1)]
-        [Help("<channel>", "Joins the specified channel")]
+        [Help("<channel>", "This command is also usable through an /invite on IRC.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var channelName = this.Arguments.First();
