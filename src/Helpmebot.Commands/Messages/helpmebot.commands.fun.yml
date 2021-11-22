@@ -7,6 +7,9 @@ dataset:
   funcommands.command.curl:
     - - "#ACTION curls up in a ball"
       - "#PRIVMSG All fun commands are now disabled in {0}"
+  funcommands.command.uncurl:
+    - - "#ACTION stretches"
+      - "#PRIVMSG All fun commands are now enabled in {0}"
 
   funcommands.command.sayhi:
     - - "Hi there {0}!"

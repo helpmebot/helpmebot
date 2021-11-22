@@ -1,16 +1,15 @@
 namespace Helpmebot.Commands.Commands.FunCommands
 {
+    using System;
     using System.Collections.Generic;
-    using System.Data;
     using Castle.Core.Logging;
-    using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.Model;
-    using NHibernate;
-    using NHibernate.Criterion;
+    using Helpmebot.CoreServices.Services.Interfaces;
+    using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -19,7 +18,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
     [CommandInvocation("uncurl")]
     public class UncurlCommand : CommandBase
     {
-        private readonly ISession session;
+        private readonly IChannelManagementService channelManagementService;
+        private readonly IResponder responder;
 
         public UncurlCommand(
             string commandSource,
@@ -29,7 +29,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession session) : base(
+            IChannelManagementService channelManagementService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -38,55 +39,21 @@ namespace Helpmebot.Commands.Commands.FunCommands
             configurationProvider,
             client)
         {
-            this.session = session;
+            this.channelManagementService = channelManagementService;
+            this.responder = responder;
         }
 
         [Help("", "Enables all fun commands in the current channel.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
-                var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", this.CommandSource))
-                    .UniqueResult<Channel>();
-
-                if (channel == null)
-                {
-                    return new CommandResponse
-                    {
-                        Message = string.Format("Cannot find configuration for channel {0}", this.CommandSource),
-                        IgnoreRedirection = true
-                    }.ToEnumerable();
-                }
-
-                channel.HedgehogMode = false;
-                this.session.SaveOrUpdate(channel);
-
-                txn.Commit();
-                this.session.Flush();
-                
-                return new[]
-                {
-                    new CommandResponse
-                    {
-                        Message = "Done"
-                    },
-
-                    new CommandResponse
-                    {
-                        Message = string.Format("All fun commands are now enabled in {0}", this.CommandSource),
-                        Destination = CommandResponseDestination.PrivateMessage,
-                        IgnoreRedirection = true
-                    }
-                };
+                this.channelManagementService.ConfigureFunCommands(this.CommandSource, false);
+                return this.responder.Respond("funcommands.command.uncurl", this.CommandSource, this.CommandSource);
             }
-            finally
+            catch (NullReferenceException)
             {
-                if (!txn.WasCommitted)
-                {
-                    txn.Rollback();
-                }
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
             }
         }
     }

@@ -252,6 +252,36 @@
             return channel.HedgehogMode;
         }
 
+        public bool AutoLinkEnabled(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq("Name", channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+            
+            if (channel == null)
+            {
+                return false;
+            }
+
+            return channel.AutoLink;
+        }
+        
+        public bool IsSilenced(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq("Name", channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+            
+            if (channel == null)
+            {
+                return false;
+            }
+
+            return channel.Silenced;
+        }
+        
         [Obsolete]
         public Channel GetChannel(string channelName)
         {
@@ -260,6 +290,5 @@
                 .List<Channel>()
                 .FirstOrDefault();
         }
-        
     }
 }

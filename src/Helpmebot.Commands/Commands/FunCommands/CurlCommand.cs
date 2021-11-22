@@ -1,13 +1,11 @@
 namespace Helpmebot.Commands.Commands.FunCommands
 {
+    using System;
     using System.Collections.Generic;
-    using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
+    using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Helpmebot.Model;
-    using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -20,8 +18,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
     [CommandInvocation("curl")]
     public class CurlCommand : CommandBase
     {
-        private readonly ISession session;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public CurlCommand(
             string commandSource,
@@ -31,8 +29,8 @@ namespace Helpmebot.Commands.Commands.FunCommands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession session,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -41,37 +39,21 @@ namespace Helpmebot.Commands.Commands.FunCommands
             configurationProvider,
             client)
         {
-            this.session = session;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("", "Disables all fun commands in the current channel.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
-                var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", this.CommandSource))
-                    .UniqueResult<Channel>();
-
-                if (channel == null)
-                {
-                    throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
-                }
-
-                channel.HedgehogMode = true;
-                this.session.SaveOrUpdate(channel);
-                txn.Commit();
-
-                return this.responder.Respond("funcommands.command.curl", this.CommandSource, channel);
+                this.channelManagementService.ConfigureFunCommands(this.CommandSource, true);
+                return this.responder.Respond("funcommands.command.curl", this.CommandSource, this.CommandSource);
             }
-            finally
+            catch (NullReferenceException)
             {
-                if (!txn.WasCommitted)
-                {
-                    txn.Rollback();
-                }
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
             }
         }
     }
