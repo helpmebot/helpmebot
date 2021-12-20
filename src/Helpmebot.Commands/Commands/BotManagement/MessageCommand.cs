@@ -15,7 +15,8 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.Configuration)]
+    [CommandFlag(Flags.Configuration, true)]
+    [CommandFlag(Flags.LocalConfiguration)]
     [CommandInvocation("message")]
     [CommandInvocation("response")]
     [HelpSummary("Manages/alters the bot's response strings for hard-coded commands")]
