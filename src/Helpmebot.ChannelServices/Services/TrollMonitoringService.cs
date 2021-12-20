@@ -230,6 +230,8 @@ namespace Helpmebot.ChannelServices.Services
             //     this.trackedUsers[e.User]++;
             // }
 
+            var banSet = false;
+
             if (instaQuietMatch.Success)
             {
                 this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} automatically banned due to expression match");
@@ -256,8 +258,8 @@ namespace Helpmebot.ChannelServices.Services
                         ircClient.SendMessage(this.banTracker, $"2w Applied automatically by bot following match expression hit: LTA (skiyomi).");
                     },
                     true);
-                
-                
+
+                banSet = true;
                 
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was banned.");
 
@@ -323,7 +325,7 @@ namespace Helpmebot.ChannelServices.Services
             // we've now received a message, so don't check this again.
             this.trackedUsers[e.User].CheckFirstMessage = false;
 
-            if (this.trackedUsers[e.User].Score >= 3) 
+            if (this.trackedUsers[e.User].Score >= 3 && !banSet) 
             {
                 this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} has score={this.trackedUsers[e.User].Score}  *** PROPOSED BAN ***  Use !enact within the next 60 seconds to apply.");
                 this.SendIrcAlert($"Tracked user {e.User} in {e.Target} has score={this.trackedUsers[e.User].Score}");
