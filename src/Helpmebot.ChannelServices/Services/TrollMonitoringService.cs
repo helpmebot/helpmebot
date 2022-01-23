@@ -243,7 +243,7 @@ namespace Helpmebot.ChannelServices.Services
                         ircClient.PrioritySend(
                             new Message(
                                 "MODE",
-                                new[] { this.targetChannel, "+bzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+                                new[] { this.targetChannel, "+bzo", $"*!*@{e.User.Hostname}", "ozone" }));
                         
                         if (this.JoinMessageService != null)
                         {
