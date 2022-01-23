@@ -428,7 +428,16 @@ namespace Helpmebot.ChannelServices.Services
         
         private void AddNetworkTracking(IUser user)
         {
-            var address = user.GetIpAddress();
+            IPAddress address;
+            try
+            {
+                address = user.GetIpAddress();
+            }   
+            catch (Exception ex)
+            {
+                this.logger.DebugFormat(ex, "Not tracking {0}, no IP detected", user);
+                return;
+            }
 
             // no IP detected, don't track
             if (address == null)
