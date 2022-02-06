@@ -132,12 +132,56 @@ namespace Helpmebot.Commands.Commands.ACL
         [RequiredArguments(2)]
         [Help("<name> <flags>", "Sets the flags on an existing flag group")]
         // ReSharper disable once UnusedMember.Global
-        protected IEnumerable<CommandResponse> SetMode()
+        protected IEnumerable<CommandResponse> SetFlagsMode()
         {
             var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
-                this.aclManagementService.SetFlagGroup(this.Arguments[0], this.Arguments[1], this.session);
+                this.aclManagementService.SetFlagGroupFlags(this.Arguments[0], this.Arguments[1], this.session);
+                tx.Commit();
+                return this.responder.Respond("commands.command.flaggroup.updated", this.CommandSource);
+            }
+            catch (AclException ex)
+            {
+                return this.responder.Respond("commands.command.flaggroup.error", this.CommandSource, ex.Message);
+            }
+            finally
+            {
+                if (!tx.WasCommitted)
+                {
+                    tx.Rollback();
+                }
+            }
+        }
+        
+        [SubcommandInvocation("mode")]
+        [CommandFlag(Flags.AccessControl)]
+        [RequiredArguments(2)]
+        [Help("<name> granting|revoking", "Sets the mode the flag group operates in - either granting flags from a user, or revoking flags from a user.")]
+        // ReSharper disable once UnusedMember.Global
+        protected IEnumerable<CommandResponse> SetFlagGroupMode()
+        {
+            bool granting;
+            switch (this.Arguments[1])
+            {
+                case "granting":
+                case "grant":
+                case "+":
+                    granting = true;
+                    break;
+                case "revoking":
+                case "revoke":
+                case "-":
+                    granting = false;
+                    break;
+                default:
+                    return this.responder.Respond("commands.command.flaggroup.invalidmode", this.CommandSource);
+            }
+            
+            var tx = this.session.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
+                this.aclManagementService.SetFlagGroupMode(this.Arguments[0], granting, this.session);
                 tx.Commit();
                 return this.responder.Respond("commands.command.flaggroup.updated", this.CommandSource);
             }

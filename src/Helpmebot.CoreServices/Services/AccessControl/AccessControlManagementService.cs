@@ -95,9 +95,8 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             }
         }
 
-        public void SetFlagGroup(string name, string flags, ISession session)
+        public void SetFlagGroupFlags(string name, string flags, ISession session)
         {
-
             var item = session.CreateCriteria<FlagGroup>()
                 .Add(Restrictions.Eq("Name", name))
                 .UniqueResult<FlagGroup>();
@@ -116,6 +115,33 @@ namespace Helpmebot.CoreServices.Services.AccessControl
                     new List<string>()));
             
             this.logger.DebugFormat("Updating flag group {0} with flags {1}", name, flags);
+            item.LastModified = DateTime.UtcNow;
+            
+            try
+            {
+                session.Update(item);
+            }
+            catch (Exception ex)
+            {
+                this.logger.ErrorFormat(ex, "Error updating flag group {0}", name);
+                throw new AclException("Encountered unknown error while updating flag group.");
+            }
+        }
+
+        public void SetFlagGroupMode(string name, bool granting, ISession session)
+        {
+            var item = session.CreateCriteria<FlagGroup>()
+                .Add(Restrictions.Eq("Name", name))
+                .UniqueResult<FlagGroup>();
+
+            if (item == null)
+            {
+                throw new AclException("This flag group does not exist.");
+            }
+            
+            item.Mode = granting ? "+" : "-"; 
+            
+            this.logger.DebugFormat("Updating flag group {0} with mode {1}", name, item.Mode);
             item.LastModified = DateTime.UtcNow;
             
             try

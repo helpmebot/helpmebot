@@ -7,7 +7,8 @@ namespace Helpmebot.CoreServices.Services.Interfaces
     {
         void CreateFlagGroup(string name, string flags, ISession session);
         void ModifyFlagGroup(string name, string flags, ISession session);
-        void SetFlagGroup(string name, string flags, ISession session);
+        void SetFlagGroupFlags(string name, string flags, ISession session);
+        void SetFlagGroupMode(string name, bool granting, ISession session);
         void DeleteFlagGroup(string name, ISession session);
 
         void GrantFlagGroupGlobally(User user, FlagGroup group, ISession session);
