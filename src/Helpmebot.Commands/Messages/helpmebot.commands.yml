@@ -1,6 +1,9 @@
 ---
 format: 1
 dataset: 
+  commands.command.help:
+    - - "#PRIVMSG I am a bot with many commands. All my commands are listed on https://helpmebot.org.uk/commands  and all of my stored responses are listed on https://helpmebot.org.uk/brain"
+      - "#PRIVMSG For help with a specific command, you can use !help <command>, or simply refer to the command list on my website."
   commands.command.access.no-flag-group:
     - - The specified flag group does not exist!
   commands.command.flaggroup.list:
