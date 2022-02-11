@@ -165,7 +165,7 @@
     <PackageReference Include="Castle.Windsor-log4net" Version="3.3.0" />
     <PackageReference Include="DnsClient" Version="1.5.0" />
     <PackageReference Include="FluentNHibernate" Version="3.1.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.15.0" />
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="IPNetwork2" Version="2.5.362" />
     <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
