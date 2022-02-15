@@ -257,11 +257,19 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             return user;
         }
         
-        // ReSharper disable once UnusedParameter.Local
         private void CleanUpUserEntries(ISession session)
         {
-            this.logger.Debug("Cleaned up no user unused user entries. This function is not yet implemented.");
-            // placeholder to clean up any user entries with no grants
+            var list = session.CreateCriteria<User>().List<User>().Where(x => !x.AppliedFlagGroups.Any()).ToList();
+
+            if (!list.Any())
+            {
+                this.logger.Info("Cleaned up no user unused user entries.");
+                return;
+            }
+            
+            var proposed = list.Aggregate("", (s, user) => s + $", [{user.Id}: {user.Mask}, {user.Account}]").TrimStart(' ', ',');
+
+            this.logger.InfoFormat("Proposing cleanup of {0} users: {1}", list.Count, proposed);
         }
 
         /// <summary>
