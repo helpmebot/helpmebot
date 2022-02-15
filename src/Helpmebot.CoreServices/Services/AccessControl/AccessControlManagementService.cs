@@ -185,7 +185,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         #region Global grants
         public void GrantFlagGroupGlobally(User user, FlagGroup group, ISession session)
         {
-            this.logger.DebugFormat("Granting group {0} to {1} globally", group, user.Mask);
+            this.logger.DebugFormat("Granting group {0} to [{1}, {2}] globally", group, user.Mask, user.Account);
 
             var existing = session.CreateCriteria<FlagGroupUser>()
                 .Add(Restrictions.Eq("User", user))
@@ -201,7 +201,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
 
         public void RevokeFlagGroupGlobally(User user, FlagGroup group, ISession session)
         {
-            this.logger.DebugFormat("Revoking group {0} from {1} globally", group, user.Mask);
+            this.logger.DebugFormat("Revoking group {0} from [{1}, {2}] globally", group, user.Mask, user.Account);
 
             var existing = session.CreateCriteria<FlagGroupUser>()
                 .Add(Restrictions.Eq("User", user))
