@@ -259,17 +259,24 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         
         private void CleanUpUserEntries(ISession session)
         {
-            var list = session.CreateCriteria<User>().List<User>().Where(x => !x.AppliedFlagGroups.Any()).ToList();
+            var emptyUsers = session.CreateCriteria<User>().List<User>().Where(x => !x.AppliedFlagGroups.Any()).ToList();
 
-            if (!list.Any())
+            if (!emptyUsers.Any())
             {
                 this.logger.Info("Cleaned up no user unused user entries.");
                 return;
             }
-            
-            var proposed = list.Aggregate("", (s, user) => s + $", [{user.Id}: {user.Mask}, {user.Account}]").TrimStart(' ', ',');
 
-            this.logger.InfoFormat("Proposing cleanup of {0} users: {1}", list.Count, proposed);
+            this.logger.InfoFormat(
+                "Cleaning up {0} users with no ACLs: {1}",
+                emptyUsers.Count,
+                emptyUsers.Aggregate("", (s, user) => s + $", [{user.Id}: {user.Mask}, {user.Account}]").TrimStart(' ', ',')
+                );
+
+            foreach (var user in emptyUsers)
+            {
+                session.Delete(user);
+            }
         }
 
         /// <summary>
