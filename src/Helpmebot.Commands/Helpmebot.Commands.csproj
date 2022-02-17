@@ -29,16 +29,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Configuration\afc-data.yml">
+      <None Update="Configuration\**.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Messages\helpmebot.commands.yml">
+      <None Update="Messages\**.yml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="Messages\helpmebot.commands.fun.yml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Documentation\Helpmebot.Commands.Commands.BotManagement.MessageCommand.md">
+      <None Update="Documentation\**.md">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

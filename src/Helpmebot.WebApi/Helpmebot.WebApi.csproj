@@ -27,11 +27,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Configuration\webapi.yml">
+        <None Update="Configuration\**.yml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Messages\helpmebot.webapi.yml">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <None Update="Messages\**.yml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Documentation\**.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
