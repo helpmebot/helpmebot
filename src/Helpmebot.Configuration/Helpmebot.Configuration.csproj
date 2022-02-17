@@ -22,12 +22,12 @@
       <None Update="logger.config">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-        <None Update="Configuration\**.yml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="Messages\**.yml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+      <None Update="Configuration\configuration.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Messages\core.yml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
