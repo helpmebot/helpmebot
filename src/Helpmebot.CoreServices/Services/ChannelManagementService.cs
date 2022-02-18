@@ -207,21 +207,42 @@
         
         public void ConfigureFunCommands(string channelName, bool disabled)
         {            
-            var channel = this.GetChannel(channelName);
-
-            if (channel == null)
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                throw new NullReferenceException("Channel object not found");
+                try
+                {
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq("Name", channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    if (channel == null)
+                    {
+                        throw new NullReferenceException("Channel object not found");
+                    }
+
+                    channel.HedgehogMode = disabled;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
+                    this.session.Flush();
+                }
+                finally
+                {
+                    if (txn.IsActive)
+                    {
+                        txn.Rollback();
+                    }
+                }
             }
-            
-            channel.HedgehogMode = disabled;
-            this.session.SaveOrUpdate(channelName);
-            this.session.Flush();
         }
         
         public bool FunCommandsDisabled(string channelName)
         {            
-            var channel = this.GetChannel(channelName);
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq("Name", channelName))
+                .List<Channel>()
+                .FirstOrDefault();
 
             if (channel == null)
             {
