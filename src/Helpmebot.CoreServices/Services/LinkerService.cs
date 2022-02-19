@@ -38,6 +38,7 @@ namespace Helpmebot.CoreServices.Services
         private readonly ISession databaseSession;
         private readonly IIrcClient client;
         private readonly ILogger logger;
+        private readonly IChannelManagementService channelManagementService;
         private readonly Dictionary<string, string> lastLink;
 
         /// <summary>
@@ -47,12 +48,14 @@ namespace Helpmebot.CoreServices.Services
             IMediaWikiApiHelper apiHelper,
             ISession databaseSession,
             IIrcClient client,
-            ILogger logger)
+            ILogger logger,
+            IChannelManagementService channelManagementService)
         {
             this.apiHelper = apiHelper;
             this.databaseSession = databaseSession;
             this.client = client;
             this.logger = logger;
+            this.channelManagementService = channelManagementService;
             this.lastLink = new Dictionary<string, string>();
         }
 
@@ -210,19 +213,12 @@ namespace Helpmebot.CoreServices.Services
 
             this.lastLink.Add(messageTarget, e.Message);
 
-            var channel = this.databaseSession.GetChannelObject(messageTarget);
-            
-            if (channel != null)
+            if (this.channelManagementService.AutoLinkEnabled(messageTarget))
             {
-                this.databaseSession.Refresh(channel);
-                
-                if (channel.AutoLink)
-                {
-                    var links = this.ParseMessageForLinks(string.Join(" ", e.Message))
-                        .Select(x => this.ConvertWikilinkToUrl(messageTarget, x));
-                
-                    e.Client.SendMessage(messageTarget, string.Join(", ", links));
-                }
+                var links = this.ParseMessageForLinks(string.Join(" ", e.Message))
+                    .Select(x => this.ConvertWikilinkToUrl(messageTarget, x));
+            
+                e.Client.SendMessage(messageTarget, string.Join(", ", links));
             }
         }
 

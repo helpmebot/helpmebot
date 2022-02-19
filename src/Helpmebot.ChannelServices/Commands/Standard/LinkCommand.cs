@@ -20,7 +20,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     public class LinkCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
-        private readonly ISession databaseSession;
+        private readonly IChannelManagementService channelManagementService;
 
         public LinkCommand(
             string commandSource,
@@ -31,7 +31,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ILinkerService linkerService,
-            ISession databaseSession) : base(
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -41,7 +41,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             client)
         {
             this.linkerService = linkerService;
-            this.databaseSession = databaseSession;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help(
@@ -56,14 +56,13 @@ namespace Helpmebot.ChannelServices.Commands.Standard
         {
             if (this.Arguments.Any())
             {
-                var channel = this.databaseSession.GetChannelObject(this.CommandSource);
                 var links = this.linkerService.ParseMessageForLinks(string.Join(" ", this.Arguments));
 
                 if (links.Count == 0)
                 {
                     links = this.linkerService.ParseMessageForLinks("[[" + string.Join(" ", this.Arguments) + "]]");
                 } 
-                else if (channel != null && channel.AutoLink) 
+                else if (this.channelManagementService.AutoLinkEnabled(this.CommandSource)) 
                 {
                     yield break;
                 }
