@@ -14,12 +14,14 @@ namespace Helpmebot.CoreServices.Startup
     public class ModuleLoader
     {
         private readonly List<LoadableModuleConfiguration> moduleList;
+        private readonly IFrameworkAbstraction frameworkAbstraction;
         private readonly ILogger logger;
         public List<Assembly> LoadedAssemblies { get; } = new List<Assembly>();
 
-        public ModuleLoader(List<LoadableModuleConfiguration> moduleList, ILogger logger)
+        public ModuleLoader(List<LoadableModuleConfiguration> moduleList, IFrameworkAbstraction frameworkAbstraction, ILogger logger)
         {
             this.moduleList = moduleList;
+            this.frameworkAbstraction = frameworkAbstraction;
             this.logger = logger;
         }
 
@@ -33,8 +35,7 @@ namespace Helpmebot.CoreServices.Startup
             foreach (var module in this.moduleList)
             {
                 this.logger.InfoFormat("Loading module {0}", module.Assembly);
-                var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
-                // allAssemblies.Add(assembly.GetName());
+                var assembly = this.frameworkAbstraction.LoadAssembly(Path.GetFullPath(module.Assembly));
                 foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                 {
                     if (allAssemblies.Any(x => x.FullName == referencedAssembly.FullName))
