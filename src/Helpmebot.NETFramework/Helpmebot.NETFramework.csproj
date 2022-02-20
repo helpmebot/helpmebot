@@ -158,21 +158,21 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
-    <PackageReference Include="BouncyCastle" Version="1.8.5" />
+    <PackageReference Include="BouncyCastle" Version="1.8.9" />
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
     <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
     <PackageReference Include="Castle.Windsor" Version="4.1.1" />
     <PackageReference Include="Castle.Windsor-log4net" Version="3.3.0" />
-    <PackageReference Include="DnsClient" Version="1.5.0" />
+    <PackageReference Include="DnsClient" Version="1.6.0" />
     <PackageReference Include="FluentNHibernate" Version="3.1.0" />
     <PackageReference Include="Google.Protobuf" Version="3.15.0" />
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="IPNetwork2" Version="2.5.362" />
-    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.6" />
-    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.6" />
-    <PackageReference Include="K4os.Hash.xxHash" Version="1.0.6" />
-    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="IPNetwork2" Version="2.5.386" />
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.2.16" />
+    <PackageReference Include="K4os.Compression.LZ4.Streams" Version="1.2.16" />
+    <PackageReference Include="K4os.Hash.xxHash" Version="1.0.7" />
+    <PackageReference Include="log4net" Version="2.0.14" />
     <PackageReference Include="MaxMind.Db" Version="3.0.0" />
     <PackageReference Include="MaxMind.GeoIP2" Version="4.0.1" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="5.0.0" />
@@ -192,12 +192,12 @@
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="MySql.Data" Version="8.0.28" />
     <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
-    <PackageReference Include="NetMQ" Version="4.0.1.6" />
+    <PackageReference Include="NetMQ" Version="4.0.1.8" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NHibernate" Version="5.3.10" />
-    <PackageReference Include="prometheus-net" Version="5.0.1" />
-    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+    <PackageReference Include="NHibernate" Version="5.3.11" />
+    <PackageReference Include="prometheus-net" Version="5.0.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.3" />
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.2.0" />
     <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.1.88" />
