@@ -6,6 +6,7 @@ namespace Helpmebot.CoreServices.Commands
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
@@ -67,7 +68,7 @@ namespace Helpmebot.CoreServices.Commands
                 ircVersion,
                 botLibVersion,
                 mediaWikiLibVersion,
-                Environment.Version,
+                RuntimeInformation.FrameworkDescription,
                 Environment.OSVersion
             );
 
