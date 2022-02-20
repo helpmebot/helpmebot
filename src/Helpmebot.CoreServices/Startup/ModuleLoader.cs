@@ -5,6 +5,7 @@ namespace Helpmebot.CoreServices.Startup
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using Castle.Core.Logging;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
     using Helpmebot.Configuration;
@@ -13,11 +14,13 @@ namespace Helpmebot.CoreServices.Startup
     public class ModuleLoader
     {
         private readonly List<LoadableModuleConfiguration> moduleList;
+        private readonly ILogger logger;
         public List<Assembly> LoadedAssemblies { get; } = new List<Assembly>();
 
-        public ModuleLoader(List<LoadableModuleConfiguration> moduleList)
+        public ModuleLoader(List<LoadableModuleConfiguration> moduleList, ILogger logger)
         {
             this.moduleList = moduleList;
+            this.logger = logger;
         }
 
         internal void LoadModuleAssemblies()
@@ -29,7 +32,9 @@ namespace Helpmebot.CoreServices.Startup
 
             foreach (var module in this.moduleList)
             {
+                this.logger.InfoFormat("Loading module {0}", module.Assembly);
                 var assembly = Assembly.LoadFile(Path.GetFullPath(module.Assembly));
+                // allAssemblies.Add(assembly.GetName());
                 foreach (var referencedAssembly in assembly.GetReferencedAssemblies())
                 {
                     if (allAssemblies.Any(x => x.FullName == referencedAssembly.FullName))
@@ -39,10 +44,17 @@ namespace Helpmebot.CoreServices.Startup
 
                     try
                     {
+                        this.logger.DebugFormat("Loading module {0} dependency {1}", module.Assembly, referencedAssembly.Name);
                         Assembly.Load(referencedAssembly);
                     }
-                    catch (FileNotFoundException ex) when (filesFound.ContainsKey(referencedAssembly.FullName))
+                    catch (FileNotFoundException) when (filesFound.ContainsKey(referencedAssembly.FullName))
                     {
+                        this.logger.DebugFormat(
+                            "Loading module {0} dependency {1} from file {2}",
+                            module.Assembly,
+                            referencedAssembly.Name,
+                            filesFound[referencedAssembly.FullName]);
+                        
                         Assembly.LoadFile(filesFound[referencedAssembly.FullName]);
                     }
 
@@ -59,6 +71,7 @@ namespace Helpmebot.CoreServices.Startup
             {
                 foreach (var file in module.Configuration)
                 {
+                    this.logger.DebugFormat("Loading configuration for {0} from {1}", module.Assembly, file.File);
                     var target = TypeResolver.GetType(file.Type);
                     var config = ConfigurationReader.ReadConfiguration(file.File, target);
                     container.Register(Component.For(target).Instance(config));
@@ -69,12 +82,14 @@ namespace Helpmebot.CoreServices.Startup
         internal void InstallModuleServices(IWindsorContainer container)
         {
             foreach (var assembly in this.LoadedAssemblies)
-            {
-                var ns = assembly.FullName.Split(',')[0];
+            {   
+                var assemblyNamespace = assembly.FullName.Split(',')[0];
+                
+                this.logger.DebugFormat("Installing services for {0}", assemblyNamespace);
                 
                 container.Register(
                     Classes.FromAssembly(assembly).BasedOn<ICommand>().LifestyleTransient(),            
-                    Classes.FromAssembly(assembly).InNamespace(ns + ".Services").WithServiceAllInterfaces()
+                    Classes.FromAssembly(assembly).InNamespace(assemblyNamespace + ".Services").WithServiceAllInterfaces()
                 );
             }
         }

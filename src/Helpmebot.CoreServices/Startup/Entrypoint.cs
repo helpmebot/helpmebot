@@ -2,6 +2,8 @@ namespace Helpmebot.CoreServices.Startup
 {
     using System;
     using System.IO;
+    using Castle.Facilities.Logging;
+    using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Security;
@@ -36,16 +38,17 @@ namespace Helpmebot.CoreServices.Startup
             // setup the container
             var container = new WindsorContainer();
 
-            // Load other module assemblies, and add them to the relevant installation queues
             var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile);
-            var moduleLoader = new ModuleLoader(globalConfiguration.Modules);
+            container.AddFacility<LoggingFacility>(f => f.LogUsing<Log4netFactory>().WithConfig(globalConfiguration.General.Log4NetConfiguration));
+            container.Register(Component.For<ModuleLoader>());
             
+            // Load other module assemblies, and add them to the relevant installation queues            
+            var moduleLoader = container.Resolve<ModuleLoader>(new {moduleList = globalConfiguration.Modules});
             moduleLoader.LoadModuleAssemblies();
 
             new CommandOverrideMapEntryInflater().Inflate(globalConfiguration.CommandOverrides);
             
             container.Register(
-                Component.For<ModuleLoader>().Instance(moduleLoader),
                 Component.For<IIrcConfiguration>().Instance(globalConfiguration.Irc.ToConfiguration()),
                 Component.For<BotConfiguration>().Instance(globalConfiguration.General),
                 Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),

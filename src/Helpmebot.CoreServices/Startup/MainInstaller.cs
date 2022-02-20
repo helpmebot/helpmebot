@@ -1,11 +1,9 @@
 ﻿namespace Helpmebot.CoreServices.Startup
 {
-    using Castle.Facilities.Logging;
     using Castle.Facilities.Startable;
     using Castle.Facilities.TypedFactory;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.SubSystems.Configuration;
-    using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Facilities;
@@ -29,12 +27,8 @@
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             var botConfiguration = container.Resolve<BotConfiguration>();
-            botConfiguration.Log4NetConfiguration = botConfiguration.Log4NetConfiguration ?? "logger.config";
-            
             var loggerFactory = new LoggerFactory().AddLog4Net(botConfiguration.Log4NetConfiguration);
-
-            container.AddFacility<LoggingFacility>(
-                f => f.LogUsing<Log4netFactory>().WithConfig(botConfiguration.Log4NetConfiguration));
+            
             container.AddFacility<PersistenceFacility>();
             container.AddFacility<StartableFacility>(f => f.DeferredStart());
             container.AddFacility<TypedFactoryFacility>();
