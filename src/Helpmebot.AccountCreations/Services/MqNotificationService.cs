@@ -1,5 +1,7 @@
 namespace Helpmebot.AccountCreations.Services
 {
+    using System;
+    using System.Collections.Generic;
     using System.Text;
     using Castle.Core.Logging;
     using Helpmebot.AccountCreations.Configuration;
@@ -10,7 +12,7 @@ namespace Helpmebot.AccountCreations.Services
     using Stwalkerster.IrcClient.Interfaces;
     using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
-    public class MqNotificationService : IMqNotificationService
+    public class MqNotificationService : IMqNotificationService, IDisposable
     {
         private readonly ILogger logger;
         private readonly IIrcClient client;
@@ -51,10 +53,26 @@ namespace Helpmebot.AccountCreations.Services
 
             this.connection = factory.CreateConnection();
             this.channel = this.connection.CreateModel();
+
+            var exchange = this.configuration.ObjectPrefix + ".x.notification";
+            var dlExchange = this.configuration.ObjectPrefix + ".x.notification-dead";
+            var queue = this.configuration.ObjectPrefix + ".q.notification";
+            var dlQueue = this.configuration.ObjectPrefix + ".q.notification-dead";
+
+            var exchangeConfig = new Dictionary<string, object> { { "alternate-exchange", dlExchange } };
+            
+            this.channel.ExchangeDeclare(dlExchange, "fanout", true);
+            this.channel.ExchangeDeclare(exchange, "direct", true, false, exchangeConfig);
+            this.channel.QueueDeclare(queue, true, false, false);
+            this.channel.QueueDeclare(dlQueue, true, false, false);
+
+            // bind the dead letter queue
+            this.channel.QueueBind(dlQueue, dlExchange, string.Empty);
+            
             this.consumer = new EventingBasicConsumer(this.channel);
             this.consumer.Received += this.ConsumerOnReceived;
             
-            this.channel.BasicConsume(this.configuration.NotificationQueue, true, this.consumer);
+            this.channel.BasicConsume(queue, true, this.consumer);
             this.logger.Debug("Connected.");
         }
 
@@ -74,7 +92,13 @@ namespace Helpmebot.AccountCreations.Services
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
             var message = Encoding.UTF8.GetString(e.Body.ToArray());
-            this.client.SendMessage("##stwalkerster-development", message);
+            this.client.SendMessage(e.RoutingKey, message);
+        }
+
+        public void Dispose()
+        {
+            this.connection?.Dispose();
+            this.channel?.Dispose();
         }
     }
 }
