@@ -8,7 +8,7 @@ notifications:
   
 mqConfiguration:
   enabled: false
-  notificationQueue: notification
+  objectPrefix: notification
   hostname: localhost
   port: 5672
   virtualHost: /
