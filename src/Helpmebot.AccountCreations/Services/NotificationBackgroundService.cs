@@ -33,8 +33,6 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
-    using Prometheus;
-    using Stwalkerster.IrcClient.Interfaces;
     using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
     /// <summary>
@@ -42,17 +40,9 @@ namespace Helpmebot.AccountCreations.Services
     /// </summary>
     public class NotificationBackgroundService : TimerBackgroundServiceBase, INotificationBackgroundService
     {
-        private static readonly Counter NotificationsSent = Metrics.CreateCounter(
-            "helpmebot_notifications_total",
-            "Number of notifications sent",
-            new CounterConfiguration
-            {
-                LabelNames = new[] {"channel"}
-            });
-        
-        private readonly IIrcClient ircClient;
         private readonly ISession session;
         private readonly NotificationReceiverConfiguration configuration;
+        private readonly INotificationHelper helper;
 
         /// <summary>
         /// The sync point.
@@ -60,14 +50,14 @@ namespace Helpmebot.AccountCreations.Services
         private readonly object syncLock = new object();
 
         public NotificationBackgroundService(
-            IIrcClient ircClient,
             ILogger logger,
             ISession session,
-            ModuleConfiguration configuration)
+            ModuleConfiguration configuration,
+            INotificationHelper helper)
             : base(logger, configuration.Notifications.PollingInterval * 1000, configuration.Notifications.Enabled)
         {
-            this.ircClient = ircClient;
             this.session = session;
+            this.helper = helper;
             this.configuration = configuration.Notifications;
         }
 
@@ -131,19 +121,9 @@ namespace Helpmebot.AccountCreations.Services
                     this.Logger.Debug(
                         $"Handling message {notification.Id} for {notification.Type}, dated {notification.Date:u}");
 
-                    var sanitisedMessage = this.SanitiseMessage(notification.Text);
-                    foreach (var x in destinations)
-                    {
-                        this.ircClient.SendMessage(x, sanitisedMessage);
-                        NotificationsSent.WithLabels(x).Inc();
-                    }
+                    this.helper.DeliverNotification(notification.Text, destinations);
                 }
             }
-        }
-
-        private string SanitiseMessage(string text)
-        {
-            return text.Replace("\r", "").Replace("\n", "");
         }
     }
 }

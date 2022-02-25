@@ -2,6 +2,7 @@ namespace Helpmebot.AccountCreations.Services
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using Castle.Core.Logging;
     using Helpmebot.AccountCreations.Configuration;
@@ -9,33 +10,38 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.Configuration;
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
-    using Stwalkerster.IrcClient.Interfaces;
     using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
     public class MqNotificationService : IMqNotificationService, IDisposable
     {
         private readonly ILogger logger;
-        private readonly IIrcClient client;
         private readonly string userAgent;
 
         private IConnection connection;
         private IModel channel;
         private EventingBasicConsumer consumer;
-        private readonly RabbitMqConfiguration configuration;
+        private readonly RabbitMqConfiguration mqConfig;
+        private readonly NotificationReceiverConfiguration notificationConfig;
+        private readonly INotificationHelper helper;
 
-        public MqNotificationService(ModuleConfiguration configuration, ILogger logger, BotConfiguration botConfiguration, IIrcClient client)
+        public MqNotificationService(
+            ModuleConfiguration configuration, 
+            ILogger logger,
+            BotConfiguration botConfiguration,
+            INotificationHelper helper)
         {
-            this.configuration = configuration.MqConfiguration;
+            this.mqConfig = configuration.MqConfiguration;
+            this.notificationConfig = configuration.Notifications;
             this.logger = logger;
-            this.client = client;
+            this.helper = helper;
             this.userAgent = botConfiguration.UserAgent;
         }
-        
+
         public void Start()
         {
             this.logger.Debug("Starting MQ connection...");
 
-            if (!this.configuration.Enabled)
+            if (!this.mqConfig.Enabled)
             {
                 this.logger.Warn("RabbitMQ disabled, refusing to start.");
                 return;
@@ -43,21 +49,21 @@ namespace Helpmebot.AccountCreations.Services
             
             var factory = new ConnectionFactory
             {
-                HostName = this.configuration.Hostname,
-                Port = this.configuration.Port,
-                VirtualHost = this.configuration.VirtualHost,
-                UserName = this.configuration.Username,
-                Password = this.configuration.Password,
+                HostName = this.mqConfig.Hostname,
+                Port = this.mqConfig.Port,
+                VirtualHost = this.mqConfig.VirtualHost,
+                UserName = this.mqConfig.Username,
+                Password = this.mqConfig.Password,
                 ClientProvidedName = this.userAgent
             };
 
             this.connection = factory.CreateConnection();
             this.channel = this.connection.CreateModel();
 
-            var exchange = this.configuration.ObjectPrefix + ".x.notification";
-            var dlExchange = this.configuration.ObjectPrefix + ".x.notification-dead";
-            var queue = this.configuration.ObjectPrefix + ".q.notification";
-            var dlQueue = this.configuration.ObjectPrefix + ".q.notification-dead";
+            var exchange = this.mqConfig.ObjectPrefix + ".x.notification";
+            var dlExchange = this.mqConfig.ObjectPrefix + ".x.notification.deadletter";
+            var queue = this.mqConfig.ObjectPrefix + ".q.notification";
+            var dlQueue = this.mqConfig.ObjectPrefix + ".q.notification.deadletter";
 
             var exchangeConfig = new Dictionary<string, object> { { "alternate-exchange", dlExchange } };
             
@@ -69,6 +75,12 @@ namespace Helpmebot.AccountCreations.Services
             // bind the dead letter queue
             this.channel.QueueBind(dlQueue, dlExchange, string.Empty);
             
+            // bind any declared targets
+            foreach (var target in this.notificationConfig.NotificationTargets)
+            {
+                this.channel.QueueBind(queue, exchange, target.Key);
+            }
+            
             this.consumer = new EventingBasicConsumer(this.channel);
             this.consumer.Received += this.ConsumerOnReceived;
             
@@ -78,7 +90,7 @@ namespace Helpmebot.AccountCreations.Services
 
         public void Stop()
         {
-            if (!this.configuration.Enabled)
+            if (!this.mqConfig.Enabled)
             {
                 return;
             }
@@ -91,8 +103,16 @@ namespace Helpmebot.AccountCreations.Services
 
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
-            var message = Encoding.UTF8.GetString(e.Body.ToArray());
-            this.client.SendMessage(e.RoutingKey, message);
+            this.logger.Debug($"Handling message for {e.RoutingKey}");
+            
+            var destinations = new List<string> { e.RoutingKey };
+            if (this.notificationConfig.NotificationTargets.ContainsKey(e.RoutingKey))
+            {
+                destinations = this.notificationConfig.NotificationTargets[e.RoutingKey].ToList();
+            }
+
+            this.helper.DeliverNotification(Encoding.UTF8.GetString(e.Body.ToArray()), destinations);
+            
         }
 
         public void Dispose()
