@@ -6,6 +6,6 @@ namespace Helpmebot.AccountCreations.Services.Interfaces
     {
         string SanitiseMessage(string text);
 
-        void DeliverNotification(string text, List<string> targets);
+        void DeliverNotification(string text, List<string> targets, string origin);
     }
 }

@@ -27,12 +27,12 @@ namespace Helpmebot.AccountCreations.Services
             return text.Replace("\r", "").Replace("\n", "");
         }
 
-        public void DeliverNotification(string text, List<string> targets)
+        public void DeliverNotification(string text, List<string> targets, string origin)
         {
             foreach (var x in targets)
             {
                 this.client.SendMessage(x, this.SanitiseMessage(text));
-                NotificationsSent.WithLabels(x).Inc();
+                NotificationsSent.WithLabels(x, origin).Inc();
             }
         }
     }

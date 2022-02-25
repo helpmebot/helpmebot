@@ -121,7 +121,7 @@ namespace Helpmebot.AccountCreations.Services
                     this.Logger.Debug(
                         $"Handling message {notification.Id} for {notification.Type}, dated {notification.Date:u}");
 
-                    this.helper.DeliverNotification(notification.Text, destinations);
+                    this.helper.DeliverNotification(notification.Text, destinations, "database");
                 }
             }
         }

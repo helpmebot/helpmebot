@@ -103,7 +103,23 @@ namespace Helpmebot.AccountCreations.Services
 
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
-            this.logger.Debug($"Handling message for {e.RoutingKey}");
+            if (!e.BasicProperties.IsAppIdPresent())
+            {
+                this.logger.WarnFormat("Refusing to deliver message missing appid");
+                return;
+            }
+            
+            if (!e.BasicProperties.IsUserIdPresent())
+            {
+                this.logger.WarnFormat("Refusing to deliver message missing userid");
+                return;
+            }
+            
+            this.logger.InfoFormat(
+                "Handling message for {0} from user <{1}> app <{2}>",
+                e.RoutingKey,
+                e.BasicProperties.UserId,
+                e.BasicProperties.AppId);
             
             var destinations = new List<string> { e.RoutingKey };
             if (this.notificationConfig.NotificationTargets.ContainsKey(e.RoutingKey))
@@ -111,8 +127,9 @@ namespace Helpmebot.AccountCreations.Services
                 destinations = this.notificationConfig.NotificationTargets[e.RoutingKey].ToList();
             }
 
-            this.helper.DeliverNotification(Encoding.UTF8.GetString(e.Body.ToArray()), destinations);
+            var appId = "amqp:" + e.BasicProperties.AppId;
             
+            this.helper.DeliverNotification(Encoding.UTF8.GetString(e.Body.ToArray()), destinations, appId);
         }
 
         public void Dispose()
