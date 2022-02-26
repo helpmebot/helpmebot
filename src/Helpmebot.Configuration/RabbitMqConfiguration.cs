@@ -1,5 +1,5 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Helpmebot.AccountCreations.Configuration
+namespace Helpmebot.Configuration
 {
     public class RabbitMqConfiguration
     {

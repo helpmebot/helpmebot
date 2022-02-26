@@ -55,6 +55,7 @@ namespace Helpmebot.CoreServices.Startup
                 Component.For<DatabaseConfiguration>().Instance(globalConfiguration.Database),
                 Component.For<WikimediaUrlShortnerConfiguration>().Instance(globalConfiguration.WikimediaShortener),
                 Component.For<CommandOverrideConfiguration>().Instance(globalConfiguration.CommandOverrides),
+                Component.For<RabbitMqConfiguration>().Instance(globalConfiguration.MqConfiguration),
                 Component.For<IMessageRepository, DatabaseMessageRepository>().ImplementedBy<DatabaseMessageRepository>(),
                 Component.For<IMessageRepository, FileMessageRepository>().ImplementedBy<FileMessageRepository>().Named("fileMessageRepository")
             );

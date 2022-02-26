@@ -5,6 +5,7 @@ namespace Helpmebot.CoreServices.Startup
     using System.Diagnostics;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Runtime.Versioning;
     using System.Threading;
     using Castle.Core.Logging;
@@ -81,7 +82,7 @@ namespace Helpmebot.CoreServices.Startup
                             .FileVersion,
                         FileVersionInfo.GetVersionInfo(Assembly.GetAssembly(typeof(MediaWikiApi)).Location)
                             .FileVersion,
-                        Environment.Version.ToString(),
+                        RuntimeInformation.FrameworkDescription,
                         Environment.OSVersion.ToString(),
                         ((TargetFrameworkAttribute) mainAssembly
                             .GetCustomAttributes(typeof(TargetFrameworkAttribute), false)

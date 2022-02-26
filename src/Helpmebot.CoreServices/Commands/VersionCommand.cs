@@ -26,6 +26,22 @@ namespace Helpmebot.CoreServices.Commands
     [HelpCategory("Diagnostics")]
     public class VersionCommand : CommandBase
     {
+        public static string BotVersion
+        {
+            get
+            {
+                var mainAssembly = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot"));
+                var version = mainAssembly.GetName().Version;
+                
+                return string.Format(
+                    "{0}.{1} (build {2})",
+                    version.Major.ToString(CultureInfo.InvariantCulture),
+                    version.Minor.ToString(CultureInfo.InvariantCulture),
+                    version.Build.ToString(CultureInfo.InvariantCulture)
+                );
+            }
+        }
+        
         private readonly ModuleLoader moduleLoader;
 
         public VersionCommand(
@@ -52,19 +68,17 @@ namespace Helpmebot.CoreServices.Commands
             
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mainAssembly = Assembly.GetAssembly(Type.GetType("Helpmebot.Launch, Helpmebot"));
-            var version = mainAssembly.GetName().Version;
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
             var botLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(CommandHandler)));
             var mediaWikiLibVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(MediaWikiApi)));
 
             var messageFormat =
-                "Version {0}.{1} (Build {2}); using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}, Stwalkerster.Bot.MediaWikiLib v{5} (Runtime: {6} / {7})";
+                "Version {0}; using Stwalkerster.IrcClient v{3}, Stwalkerster.Bot.CommandLib v{4}, Stwalkerster.Bot.MediaWikiLib v{5} (Runtime: {6} / {7})";
             var message = string.Format(
                 messageFormat,
-                version.Major.ToString(CultureInfo.InvariantCulture),
-                version.Minor.ToString(CultureInfo.InvariantCulture),
-                version.Build.ToString(CultureInfo.InvariantCulture),
+                BotVersion,
+                "",
+                "",
                 ircVersion,
                 botLibVersion,
                 mediaWikiLibVersion,

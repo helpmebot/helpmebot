@@ -115,3 +115,17 @@ wikimediaShortener:
 #         type: "NullCommand"
 commandOverrides:
   overrideMap: {}
+
+########################################################################################################
+# AMQP configuration
+#
+# This allows the bot to receive control messages via an AMQP service such as RabbitMQ.
+# 
+mqConfiguration:
+  enabled: false
+  objectPrefix: helpmebot
+  hostname: localhost
+  port: 5672
+  virtualHost: /
+  username: guest
+  password: guest

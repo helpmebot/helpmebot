@@ -1,6 +1,5 @@
 namespace Helpmebot.AccountCreations.Services
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -8,57 +7,55 @@ namespace Helpmebot.AccountCreations.Services
     using Helpmebot.AccountCreations.Configuration;
     using Helpmebot.AccountCreations.Services.Interfaces;
     using Helpmebot.Configuration;
+    using Helpmebot.CoreServices.Background;
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
     using ModuleConfiguration = Helpmebot.AccountCreations.Configuration.ModuleConfiguration;
 
-    public class MqNotificationService : IMqNotificationService, IDisposable
+    public class MqNotificationService : IMqNotificationService
     {
-        private readonly ILogger logger;
-        private readonly string userAgent;
-
-        private IConnection connection;
-        private IModel channel;
-        private EventingBasicConsumer consumer;
         private readonly RabbitMqConfiguration mqConfig;
+        private readonly IMqService mqService;
+        private readonly ILogger logger;
         private readonly NotificationReceiverConfiguration notificationConfig;
         private readonly INotificationHelper helper;
+        private IModel channel;
+        private EventingBasicConsumer consumer;
+        private bool active = false; 
 
         public MqNotificationService(
-            ModuleConfiguration configuration, 
+            RabbitMqConfiguration mqConfig,
+            IMqService mqService,
+            ModuleConfiguration configuration,
             ILogger logger,
-            BotConfiguration botConfiguration,
             INotificationHelper helper)
         {
-            this.mqConfig = configuration.MqConfiguration;
             this.notificationConfig = configuration.Notifications;
+            this.mqConfig = mqConfig;
+            this.mqService = mqService;
             this.logger = logger;
             this.helper = helper;
-            this.userAgent = botConfiguration.UserAgent;
         }
 
         public void Start()
         {
             this.logger.Debug("Starting MQ connection...");
 
-            if (!this.mqConfig.Enabled)
+            this.channel = this.mqService.CreateChannel();
+
+            if (!this.notificationConfig.Enabled)
             {
-                this.logger.Warn("RabbitMQ disabled, refusing to start.");
+                this.logger.Warn("Notifications are disabled.");
                 return;
             }
             
-            var factory = new ConnectionFactory
+            if (this.channel == null || this.channel.IsClosed)
             {
-                HostName = this.mqConfig.Hostname,
-                Port = this.mqConfig.Port,
-                VirtualHost = this.mqConfig.VirtualHost,
-                UserName = this.mqConfig.Username,
-                Password = this.mqConfig.Password,
-                ClientProvidedName = this.userAgent
-            };
+                this.logger.Warn("Unable to acquire channel.");
+                return;
+            }
 
-            this.connection = factory.CreateConnection();
-            this.channel = this.connection.CreateModel();
+            this.active = true;
 
             var exchange = this.mqConfig.ObjectPrefix + ".x.notification";
             var dlExchange = this.mqConfig.ObjectPrefix + ".x.notification.deadletter";
@@ -90,15 +87,15 @@ namespace Helpmebot.AccountCreations.Services
 
         public void Stop()
         {
-            if (!this.mqConfig.Enabled)
+            if (!this.active)
             {
                 return;
             }
 
             this.consumer.Received -= this.ConsumerOnReceived;
             this.logger.Debug("Stopped MQ connection.");
-            this.channel.Close();
-            this.connection.Close();
+            this.mqService.ReturnChannel(this.channel);
+            this.channel = null;
         }
 
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
@@ -130,12 +127,6 @@ namespace Helpmebot.AccountCreations.Services
             var appId = "amqp:" + e.BasicProperties.AppId;
             
             this.helper.DeliverNotification(Encoding.UTF8.GetString(e.Body.ToArray()), destinations, appId);
-        }
-
-        public void Dispose()
-        {
-            this.connection?.Dispose();
-            this.channel?.Dispose();
         }
     }
 }

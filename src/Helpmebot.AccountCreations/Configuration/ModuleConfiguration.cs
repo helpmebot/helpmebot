@@ -6,7 +6,5 @@ namespace Helpmebot.AccountCreations.Configuration
         public string DeploymentPassword { get; set; }
         
         public NotificationReceiverConfiguration Notifications { get; set; }
-        
-        public RabbitMqConfiguration MqConfiguration { get; set; }
     }
 }
