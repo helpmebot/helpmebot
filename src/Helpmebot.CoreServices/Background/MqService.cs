@@ -8,21 +8,28 @@ namespace Helpmebot.CoreServices.Background
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Commands;
     using RabbitMQ.Client;
+    using RabbitMQ.Client.Events;
+    using Stwalkerster.IrcClient;
+    using Stwalkerster.IrcClient.Interfaces;
 
     public class MqService : IMqService
     {
         private readonly RabbitMqConfiguration mqConfig;
         private readonly ILogger logger;
         private readonly BotConfiguration botConfiguration;
+        private readonly IIrcClient client;
         private IConnection connection;
 
         private readonly List<IModel> channels = new List<IModel>();
+        private IModel managementChannel;
+        private EventingBasicConsumer consumer;
 
-        public MqService(RabbitMqConfiguration mqConfig, ILogger logger, BotConfiguration botConfiguration)
+        public MqService(RabbitMqConfiguration mqConfig, ILogger logger, BotConfiguration botConfiguration, IIrcClient client)
         {
             this.mqConfig = mqConfig;
             this.logger = logger;
             this.botConfiguration = botConfiguration;
+            this.client = client;
         }
 
         public void Start()
@@ -53,7 +60,49 @@ namespace Helpmebot.CoreServices.Background
             };
 
             this.connection = factory.CreateConnection();
-            this.logger.Debug("Connected.");
+            this.logger.Debug("MQ connected.");
+
+            this.managementChannel = this.CreateChannel();
+            
+            var queue = this.mqConfig.ObjectPrefix + ".q.control";
+            this.managementChannel.QueueDeclare(queue, true, false, false);
+            this.managementChannel.QueuePurge(queue);
+            
+            this.consumer = new EventingBasicConsumer(this.managementChannel);
+            this.consumer.Received += this.ConsumerOnReceived;
+            
+            this.managementChannel.BasicConsume(queue, true, this.consumer);
+
+        }
+
+        private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
+        {
+            if (!e.BasicProperties.IsAppIdPresent())
+            {
+                this.logger.WarnFormat("Command message received with no app ID");
+                return;
+            }
+            
+            if (!e.BasicProperties.IsUserIdPresent())
+            {
+                this.logger.ErrorFormat("Command message received with no user ID");
+                return;
+            }
+
+            var type = e.BasicProperties.Type;
+            var content = Encoding.UTF8.GetString(e.Body.ToArray());
+
+            if (type == "inject")
+            {
+                this.logger.InfoFormat(
+                    "Injecting message into IRC stream per request of {1}@{2}: {0}",
+                    content,
+                    e.BasicProperties.UserId,
+                    e.BasicProperties.AppId);
+
+                ((IrcClient)this.client).Inject(content);
+            }
+            
         }
 
         public void Stop()
@@ -63,6 +112,11 @@ namespace Helpmebot.CoreServices.Background
                 return;
             }
 
+            this.consumer.Received -= this.ConsumerOnReceived;
+            this.consumer = null;
+            this.ReturnChannel(this.managementChannel);
+            this.managementChannel = null;
+            
             foreach (var channel in this.channels)
             {
                 channel.Close();

@@ -39,7 +39,7 @@ namespace Helpmebot.AccountCreations.Services
 
         public void Start()
         {
-            this.logger.Debug("Starting MQ connection...");
+            this.logger.Debug("Starting MQ notification service...");
 
             this.channel = this.mqService.CreateChannel();
 
@@ -82,7 +82,7 @@ namespace Helpmebot.AccountCreations.Services
             this.consumer.Received += this.ConsumerOnReceived;
             
             this.channel.BasicConsume(queue, true, this.consumer);
-            this.logger.Debug("Connected.");
+            this.logger.Debug("Initialised MQ notifications.");
         }
 
         public void Stop()
@@ -93,7 +93,8 @@ namespace Helpmebot.AccountCreations.Services
             }
 
             this.consumer.Received -= this.ConsumerOnReceived;
-            this.logger.Debug("Stopped MQ connection.");
+            this.consumer = null;
+            this.logger.Debug("Stopped MQ notifications.");
             this.mqService.ReturnChannel(this.channel);
             this.channel = null;
         }

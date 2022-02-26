@@ -8,6 +8,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -43,6 +44,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
         {
             if (this.Arguments.First() == this.Client.Nickname)
             {
+                ((IrcClient)this.Client).Inject("QUIT :Requested by " + this.User);
                 this.application.Stop();    
             }
             
