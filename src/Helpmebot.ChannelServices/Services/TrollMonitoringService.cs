@@ -201,7 +201,7 @@ namespace Helpmebot.ChannelServices.Services
                 if ((badWordMatch.Success || reallyBadWordMatch.Success || instaQuietMatch.Success || firstMessageQuietMatch.Success ) && !channelUser.Voice)
                 {
                     // add to tracking anyway.
-                    this.trackedUsers.Add(e.User, new TrackedUser(0, e.User));
+                    this.trackedUsers.Add(e.User, new TrackedUser(0, e.User) { CheckFirstMessage = true });
                     this.logger.InfoFormat($"UNTRACKED unvoiced user {e.User} added to tracking due to filter hit");
 
                 } else {
