@@ -15,3 +15,9 @@ dataset:
     - - "{0} ({1}) was last active {2}. They currently have automatic welcoming of users {3}. Their on-wiki username is [[User:{4}]]."
   accountcreations.command.status:
     - - "Open requests: {0}, Flagged user requests: {1}, Checkuser requests: {2}, On Hold: {3}, ProxyCheck: {4}, Steward: {5}, Hospital: {6}, JobQueue: {7}, Banned: {8}, Site users: {10}, Site admins: {9}, Awaiting approval: {11}"
+  accountcreations.command.notifications.unavailable:
+    - - Notification configuration cannot be modified while the notification service is inactive.
+  accountcreations.command.notifications.enabled:
+    - - Notification delivery enabled.
+  accountcreations.command.notifications.disabled:
+    - - Notification delivery disabled.

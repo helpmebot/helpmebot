@@ -21,7 +21,10 @@ namespace Helpmebot.AccountCreations.Services
         private readonly INotificationHelper helper;
         private IModel channel;
         private EventingBasicConsumer consumer;
-        private bool active = false; 
+        private string exchange;
+        private string queue;
+        
+        public bool Active { get; private set; }
 
         public MqNotificationService(
             RabbitMqConfiguration mqConfig,
@@ -48,46 +51,46 @@ namespace Helpmebot.AccountCreations.Services
                 this.logger.Warn("Notifications are disabled.");
                 return;
             }
-            
+
             if (this.channel == null || this.channel.IsClosed)
             {
                 this.logger.Warn("Unable to acquire channel.");
                 return;
             }
 
-            this.active = true;
+            this.Active = true;
 
-            var exchange = this.mqConfig.ObjectPrefix + ".x.notification";
+            this.exchange = this.mqConfig.ObjectPrefix + ".x.notification";
             var dlExchange = this.mqConfig.ObjectPrefix + ".x.notification.deadletter";
-            var queue = this.mqConfig.ObjectPrefix + ".q.notification";
+            this.queue = this.mqConfig.ObjectPrefix + ".q.notification";
             var dlQueue = this.mqConfig.ObjectPrefix + ".q.notification.deadletter";
 
             var exchangeConfig = new Dictionary<string, object> { { "alternate-exchange", dlExchange } };
-            
+
             this.channel.ExchangeDeclare(dlExchange, "fanout", true);
-            this.channel.ExchangeDeclare(exchange, "direct", true, false, exchangeConfig);
-            this.channel.QueueDeclare(queue, true, false, false);
+            this.channel.ExchangeDeclare(this.exchange, "direct", true, false, exchangeConfig);
+            this.channel.QueueDeclare(this.queue, true, false, false);
             this.channel.QueueDeclare(dlQueue, true, false, false);
 
             // bind the dead letter queue
             this.channel.QueueBind(dlQueue, dlExchange, string.Empty);
-            
+
             // bind any declared targets
             foreach (var target in this.notificationConfig.NotificationTargets)
             {
-                this.channel.QueueBind(queue, exchange, target.Key);
+                this.channel.QueueBind(this.queue, this.exchange, target.Key);
             }
-            
+
             this.consumer = new EventingBasicConsumer(this.channel);
             this.consumer.Received += this.ConsumerOnReceived;
-            
-            this.channel.BasicConsume(queue, true, this.consumer);
+
+            this.channel.BasicConsume(this.queue, true, this.consumer);
             this.logger.Debug("Initialised MQ notifications.");
         }
 
         public void Stop()
         {
-            if (!this.active)
+            if (!this.Active)
             {
                 return;
             }
@@ -99,6 +102,23 @@ namespace Helpmebot.AccountCreations.Services
             this.channel = null;
         }
 
+        public void Bind(string ircChannel)
+        {
+            if (this.Active && this.channel != null)
+            {
+                this.channel.QueueBind(this.queue, this.exchange, ircChannel);
+            }
+        }
+
+        public void Unbind(string ircChannel)
+        {
+            if (this.Active && this.channel != null)
+            {
+                this.channel.QueueUnbind(this.queue, this.exchange, ircChannel);
+            }
+        }
+        
+        
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
             if (!e.BasicProperties.IsAppIdPresent())

@@ -4,5 +4,9 @@ namespace Helpmebot.AccountCreations.Services.Interfaces
 
     public interface IMqNotificationService : IStartable
     {
+        bool Active { get; }
+        
+        void Bind(string ircChannel);
+        void Unbind(string ircChannel);
     }
 }
