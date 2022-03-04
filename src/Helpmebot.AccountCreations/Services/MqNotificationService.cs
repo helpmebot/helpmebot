@@ -43,7 +43,7 @@ namespace Helpmebot.AccountCreations.Services
 
             this.channel = this.mqService.CreateChannel();
 
-            if (!this.notificationConfig.Enabled)
+            if (!this.notificationConfig.MqEnabled)
             {
                 this.logger.Warn("Notifications are disabled.");
                 return;

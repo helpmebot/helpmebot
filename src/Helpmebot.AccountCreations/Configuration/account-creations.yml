@@ -2,6 +2,7 @@
 deploymentPassword:
 
 notifications:
-  enabled: false
+  databaseEnabled: false
+  mqEnabled: false
   pollingInterval: 5
   notificationTargets: {}

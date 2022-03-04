@@ -54,7 +54,7 @@ namespace Helpmebot.AccountCreations.Services
             ISession session,
             ModuleConfiguration configuration,
             INotificationHelper helper)
-            : base(logger, configuration.Notifications.PollingInterval * 1000, configuration.Notifications.Enabled)
+            : base(logger, configuration.Notifications.PollingInterval * 1000, configuration.Notifications.DatabaseEnabled)
         {
             this.session = session;
             this.helper = helper;

@@ -5,7 +5,8 @@ namespace Helpmebot.AccountCreations.Configuration
 
     public class NotificationReceiverConfiguration
     {
-        public bool Enabled { get; set; }
+        public bool DatabaseEnabled { get; set; }
+        public bool MqEnabled { get; set; }
 
         public IDictionary<string, IList<string>> NotificationTargets { get; set; }
 
