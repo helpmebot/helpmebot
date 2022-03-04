@@ -1,9 +1,9 @@
 namespace Helpmebot.AccountCreations.Commands
 {
-    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.AccountCreations.Services.Interfaces;
+    using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -19,6 +19,7 @@ namespace Helpmebot.AccountCreations.Commands
     [CommandFlag(Flags.LocalConfiguration)]
     [CommandFlag(Flags.Configuration, true)]    
     [HelpSummary("Manages AMQP notification delivery to the channel.")]
+    [HelpCategory("ACC")]
     public class NotificationCommand : CommandBase
     {
         private readonly IResponder responder;
