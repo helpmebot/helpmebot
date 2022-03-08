@@ -109,7 +109,7 @@ namespace Helpmebot.ChannelServices.Services
             this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
             this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|skiyomi|yamlafuck|deepfuckfuck|pooyo)", RegexOptions.IgnoreCase);
             this.instaQuietRegex = new Regex("(yamlafuck pooyo and deepfuckfuck|free skiyomi and other ltas|hope you all die and kill yourself)", RegexOptions.IgnoreCase);
-            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you|hi fuckers)\\s*$", RegexOptions.IgnoreCase);
+            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you|hi fuckers|fuckyou|fuck u)\\s*$", RegexOptions.IgnoreCase);
 
             this.pasteRegex = new Regex("^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)", RegexOptions.IgnoreCase);
 
