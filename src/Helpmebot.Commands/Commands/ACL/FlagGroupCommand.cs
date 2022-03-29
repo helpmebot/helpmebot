@@ -200,6 +200,8 @@ namespace Helpmebot.Commands.Commands.ACL
 
         [SubcommandInvocation("delete")]
         [SubcommandInvocation("remove")]
+        [SubcommandInvocation("del")]
+        [SubcommandInvocation("rm")]
         [CommandFlag(Flags.AccessControl)]
         [RequiredArguments(1)]
         [Help("<name>", "Deletes an existing flag group")]
