@@ -59,8 +59,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                     ircClient =>
                     {
                         ircClient.Mode(channel, $"+b *!*@{banTarget.Value.User.Hostname}");
-                        ircClient.Send(
-                            new Message("KICK", new[] {channel, banTarget.Value.User.Nickname}));
+                        ircClient.Send(new Message("KICK", new[] {channel, banTarget.Value.User.Nickname}));
                         
                         // allow time for eir to message us
                         Thread.Sleep(1000);

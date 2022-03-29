@@ -441,14 +441,14 @@ namespace Helpmebot.ChannelServices.Services
 
             foreach (var exemption in exemptions)
             {
-                var message = new Message("MODE", new[] { channel, "-e", exemption.Exemption });
+                var unexemptMessage = new Message("MODE", new[] { channel, "-e", exemption.Exemption });
                 if (priority)
                 {
-                    this.client.PrioritySend(message);
+                    this.client.PrioritySend(unexemptMessage);
                 }
                 else
                 {
-                    this.client.Send(message);
+                    this.client.Send(unexemptMessage);
                 }
             }
         }

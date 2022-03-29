@@ -65,8 +65,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         {
             this.modeMonitoringService.PerformAsOperator(
                 this.CommandSource,
-                client => client.Send(
-                    new Message("TOPIC", new[] {this.CommandSource, string.Join(" ", this.Arguments)})));
+                client => client.Send(new Message("TOPIC", new[] {this.CommandSource, string.Join(" ", this.Arguments)})));
             yield break;
         }
     }
