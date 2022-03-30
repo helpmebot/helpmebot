@@ -43,8 +43,8 @@ namespace Helpmebot.ChannelServices.Services
 
         private readonly List<string> ignoreList;
         private readonly string monitoringChannel;
-        private readonly string targetChannel;
-        
+        public string TargetChannel { get; }
+
         private readonly object lockToken = new object();
         
 
@@ -53,7 +53,7 @@ namespace Helpmebot.ChannelServices.Services
             this.client = client;
             this.logger = logger;
             
-            this.targetChannel = configuration.HelpeeManagement.TargetChannel;
+            this.TargetChannel = configuration.HelpeeManagement.TargetChannel;
             this.monitoringChannel = configuration.HelpeeManagement.MonitorChannel;
             this.ignoreList = configuration.HelpeeManagement.IgnoredNicknames;
         }
@@ -89,7 +89,7 @@ namespace Helpmebot.ChannelServices.Services
         #region IRC tracking
         private void IrcJoinReceived(object sender, JoinEventArgs e)
         {
-            if (e.Channel == this.targetChannel && e.User.Nickname == e.Client.Nickname)
+            if (e.Channel == this.TargetChannel && e.User.Nickname == e.Client.Nickname)
             {
                 lock (this.lockToken)
                 {
@@ -104,7 +104,7 @@ namespace Helpmebot.ChannelServices.Services
                 return;
             }
             
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 // not for this channel
                 return;
@@ -129,7 +129,7 @@ namespace Helpmebot.ChannelServices.Services
 
         private void IrcMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            if (e.Target != this.targetChannel)
+            if (e.Target != this.TargetChannel)
             {
                 // not for us
                 return;
@@ -152,7 +152,7 @@ namespace Helpmebot.ChannelServices.Services
         
         private void IrcWasKicked(object sender, KickedEventArgs e)
         {
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 // not for us
                 return;
@@ -165,7 +165,7 @@ namespace Helpmebot.ChannelServices.Services
         
         private void ChannelUserModeEvent(object sender, ChannelUserModeEventArgs e)
         {
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 this.logger.Debug("Channel mode not target channel");
                 return;
@@ -213,7 +213,7 @@ namespace Helpmebot.ChannelServices.Services
 
         private void IrcKickReceived(object sender, KickEventArgs e)
         {
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 // not for us
                 return;
@@ -225,7 +225,7 @@ namespace Helpmebot.ChannelServices.Services
 
         private void IrcPartReceived(object sender, JoinEventArgs e)
         {
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 // not for us
                 return;
@@ -314,14 +314,14 @@ namespace Helpmebot.ChannelServices.Services
 
         private void EndOfWhoReceived(object sender, EndOfWhoEventArgs e)
         {
-            if (e.Channel != this.targetChannel)
+            if (e.Channel != this.TargetChannel)
             {
                 return;
             }
 
             lock (this.lockToken)
             {
-                foreach (var entry in e.Client.Channels[this.targetChannel].Users)
+                foreach (var entry in e.Client.Channels[this.TargetChannel].Users)
                 {
                     if (this.ignoreList.Contains(entry.Value.User.Nickname) || entry.Value.User.Nickname == this.client.Nickname)
                     {
@@ -349,9 +349,9 @@ namespace Helpmebot.ChannelServices.Services
             HelperCount.Set(this.helperIdleCache.Count);
             HelpeeCount.Set(this.helpeeIdleCache.Count);
 
-            if (this.client.Channels.ContainsKey(this.targetChannel))
+            if (this.client.Channels.ContainsKey(this.TargetChannel))
             {
-                var usersCount = this.client.Channels[this.targetChannel].Users.Count;
+                var usersCount = this.client.Channels[this.TargetChannel].Users.Count;
                 UserMismatchCount.Set(
                     this.ignoredInChannel.Count + this.helperIdleCache.Count + this.helpeeIdleCache.Count
                     - usersCount);
@@ -397,7 +397,7 @@ namespace Helpmebot.ChannelServices.Services
         #region Startable service
         public void Start()
         {
-            if (this.targetChannel == null)
+            if (this.TargetChannel == null)
             {
                 this.logger.Warn("Helpee management service not configured; not starting");
                 return;

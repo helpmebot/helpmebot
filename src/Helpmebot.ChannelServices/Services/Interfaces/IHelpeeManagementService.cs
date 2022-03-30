@@ -9,5 +9,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
     {
         IDictionary<IrcUser, DateTime> Helpees { get; }
         IDictionary<IrcUser, DateTime> Helpers { get; }
+        string TargetChannel { get; }
     }
 }

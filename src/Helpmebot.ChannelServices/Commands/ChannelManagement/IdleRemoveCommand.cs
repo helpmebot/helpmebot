@@ -8,9 +8,11 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Startup;
+    using NDesk.Options;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
@@ -24,7 +26,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         private readonly IModeMonitoringService modeMonitoringService;
         private readonly IResponder responder;
 
-        public IdleRemoveCommand(
+        public IdleRemoveCommand( 
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -46,7 +48,15 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [SubcommandInvocation("dryrun")]
         protected IEnumerable<CommandResponse> DryRun()
         {
-            var removableHelpees = this.GetRemovableHelpees();
+            var force = false;
+            var opts = new OptionSet
+            {
+                { "force", x => force = true },
+            };
+            
+            var remainingArgs = opts.Parse(this.Arguments);
+            
+            var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
 
             var helpees = string.Join(", ", removableHelpees);
 
@@ -57,7 +67,15 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [SubcommandInvocation("remove")]
         protected IEnumerable<CommandResponse> Remove()
         {
-            var removableHelpees = this.GetRemovableHelpees();
+            var force = false;
+            var opts = new OptionSet
+            {
+                { "force", x => force = true },
+            };
+            
+            var remainingArgs = opts.Parse(this.Arguments);
+            
+            var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
             
             var channel = "#wikipedia-en-help";
             var removeMessage = this.responder.GetMessagePart("channelservices.command.idlehelpees.kick", this.CommandSource);
@@ -75,8 +93,22 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             return null;
         }
 
-        private List<string> GetRemovableHelpees()
+        private List<string> GetRemovableHelpees(IList<string> helpees, bool force)
         {
+            if (!this.FlagService.UserHasFlag(this.User, Flags.Owner, this.CommandSource) && force)
+            {
+                throw new CommandAccessDeniedException();
+            }
+
+            if (force)
+            {
+                return this.Client.Channels[this.helpeeManagementService.TargetChannel]
+                    .Users.Select(x => x.Key)
+                    .Intersect(helpees)
+                    .Except(new List<string>{"ChanServ", this.Client.Nickname})
+                    .ToList();
+            }
+            
             var removableHelpees = this.helpeeManagementService.Helpees
                 .Where(
                     x =>
@@ -97,7 +129,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                         return false;
                     })
                 .Select(x => x.Key.Nickname)
-                .Intersect(this.Arguments)
+                .Intersect(helpees)
                 .ToList();
             return removableHelpees;
         }
