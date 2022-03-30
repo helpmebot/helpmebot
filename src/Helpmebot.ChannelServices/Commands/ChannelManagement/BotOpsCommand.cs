@@ -68,5 +68,15 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 client => client.Send(new Message("TOPIC", new[] {this.CommandSource, string.Join(" ", this.Arguments)})));
             yield break;
         }
+        
+        [SubcommandInvocation("sync")]
+        [CommandFlag(Flags.Owner)]
+        [RequiredArguments(1)]
+        protected IEnumerable<CommandResponse> SyncCommand()
+        {
+            this.Client.SendMessage("ChanServ", "SYNC " + this.Arguments[0]);
+
+            yield break;
+        }
     }
 }
