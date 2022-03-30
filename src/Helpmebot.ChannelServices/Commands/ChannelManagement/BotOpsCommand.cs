@@ -1,10 +1,8 @@
 namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 {
-    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -44,7 +42,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [SubcommandInvocation("grant")]
-        [Help("", "Requests the bot gain channel operator status.")]
+        [Help("", "Requests the bot gain channel operator status. Requires ChanServ flag `+o` on the target channel.")]
         protected IEnumerable<CommandResponse> GrantCommand()
         {
             this.persistentChanOpsService.RequestOps(this.CommandSource);
@@ -72,6 +70,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         [SubcommandInvocation("sync")]
         [CommandFlag(Flags.Owner)]
         [RequiredArguments(1)]
+        [Help("<channel>", "Runs a ChanServ SYNC on the specified channel. Requires ChanServ flag `+R` on the target channel.")]
         protected IEnumerable<CommandResponse> SyncCommand()
         {
             this.Client.SendMessage("ChanServ", "SYNC " + this.Arguments[0]);
