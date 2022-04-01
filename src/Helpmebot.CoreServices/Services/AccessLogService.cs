@@ -94,9 +94,12 @@ namespace Helpmebot.CoreServices.Services
             entry.RequiredSubCommand = subCommandFlags;
             entry.Result = aclStatus.ToString();
 
-            var txn = this.session.BeginTransaction(IsolationLevel.Serializable);
-            this.session.Save(entry);
-            txn.Commit();
+            lock (this)
+            {
+                var txn = this.session.BeginTransaction(IsolationLevel.Serializable);
+                this.session.Save(entry);
+                txn.Commit();
+            }
         }
 
         public void Stop()

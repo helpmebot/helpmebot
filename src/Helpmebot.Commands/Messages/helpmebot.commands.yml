@@ -46,6 +46,10 @@ dataset:
     - - Could not find imported interwiki entry to accept.
   commands.command.iw.accepted:
     - - Accepted modifications to interwiki entry.
+  commands.command.iw.reject-not-found:
+    - - Could not find imported interwiki entry to reject.
+  commands.command.iw.rejected:
+    - - Rejected modifications to interwiki entry.
       
   commands.command.decode.invalid:
     - - Oops! That's not a recognised input for this command! I'm looking for 8 hexadecimal characters which represent an IPv4 address.
