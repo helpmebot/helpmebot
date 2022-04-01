@@ -174,15 +174,26 @@ namespace Helpmebot.ChannelServices.Services
                 hwr.Method = "GET";
 
                 var memoryStream = new MemoryStream();
-                using (var resp = (HttpWebResponse) hwr.GetResponse())
-                {               
-                    var responseStream = resp.GetResponseStream();
-
-                    if (responseStream != null)
+                try
+                {
+                    using (var resp = (HttpWebResponse)hwr.GetResponse())
                     {
-                        responseStream.CopyTo(memoryStream);
-                        resp.Close();
+                        var responseStream = resp.GetResponseStream();
+
+                        if (responseStream != null)
+                        {
+                            responseStream.CopyTo(memoryStream);
+                            resp.Close();
+                        }
                     }
+                }
+                catch (WebException ex)
+                {
+                    this.logger.Error("Error encountered while checking paste content", ex);
+                    
+                    // it's a paste, so it'll probably contain nothing else. Since we can't see the content of the paste,
+                    // there's nothing much we can do, so give up.
+                    return;
                 }
 
                 memoryStream.Position = 0;
