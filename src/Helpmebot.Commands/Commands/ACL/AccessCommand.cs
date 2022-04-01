@@ -86,7 +86,8 @@ namespace Helpmebot.Commands.Commands.ACL
                     tx.Rollback();
                 }
             }
-        }        
+        }
+        
         // ReSharper disable once UnusedMember.Global
         [Help("global <mask> <flaggroup>", "Revokes the specified flag group from the user globally.")]
         [SubcommandInvocation("revoke")]

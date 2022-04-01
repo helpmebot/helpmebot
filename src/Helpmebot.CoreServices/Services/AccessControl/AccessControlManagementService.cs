@@ -211,6 +211,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             if (existing != null)
             {
                 session.Delete(existing);
+                session.Flush();
                 ((AccessControlAuthorisationService) this.authService).Refresh(user);
             }
 
