@@ -9,6 +9,7 @@ namespace Helpmebot.ChannelServices.Services
     using System.Threading;
     using System.Timers;
     using Castle.Core.Logging;
+    using Configuration;
     using Helpmebot.ChannelServices.Commands.ChannelManagement;
     using Helpmebot.ChannelServices.ExtensionMethods;
     using Helpmebot.ChannelServices.Model;
@@ -28,6 +29,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly ILogger logger;
         private readonly IModeMonitoringService modeMonitoringService;
         private readonly ICommandParser commandParser;
+        private readonly ModuleConfiguration moduleConfiguration;
         private readonly BotConfiguration config;
         private List<IPNetwork> networks;
 
@@ -40,34 +42,35 @@ namespace Helpmebot.ChannelServices.Services
         private readonly Regex firstMessageQuietRegex;
 
         private IUser banProposal;
+        
+        private readonly string targetChannel;
+        private readonly string publicAlertChannel;
+        private readonly List<string> privateAlertTargets;
+        private readonly string banTracker;
+        
 
-        #if DEBUG
-            private string targetChannel = "##stwalkerster-development2";
-            private string publicAlertChannel = "##stwalkerster-development";
-            private string[] privateAlertTargets = {"stwalkerster"};
-            private string banTracker = "##stwalkerster-development3";
-        #else
-            private string targetChannel = "#wikipedia-en-help";
-            private string publicAlertChannel = "#wikipedia-en-helpers";
-            private string[] privateAlertTargets = {"stwalkerster", "Waggie"};
-            private string banTracker = "litharge";
-        #endif        
-
-        private Timer banProposalTimer = new Timer(60000);
+        private Timer banProposalTimer = new Timer(60 * 1000);
 
         public TrollMonitorService(
             IIrcClient client,
             ILogger logger,
             IModeMonitoringService modeMonitoringService,
             ICommandParser commandParser,
+            ModuleConfiguration moduleConfiguration,
             BotConfiguration config)
         {
             this.client = client;
             this.logger = logger;
             this.modeMonitoringService = modeMonitoringService;
             this.commandParser = commandParser;
+            this.moduleConfiguration = moduleConfiguration;
             this.config = config;
 
+            this.targetChannel = moduleConfiguration.TrollManagement.TargetChannel;
+            this.publicAlertChannel = moduleConfiguration.TrollManagement.PublicAlertChannel;
+            this.privateAlertTargets = moduleConfiguration.TrollManagement.PrivateAlertTargets;
+            this.banTracker = moduleConfiguration.TrollManagement.BanTracker;
+            
             this.networks = new List<IPNetwork>
             {
                 // IPNetwork.Parse("103.139.56.0/23"), // Avjr
@@ -105,13 +108,13 @@ namespace Helpmebot.ChannelServices.Services
             };
 
             this.emojiRegex = new Regex("(\\u00a9|\\u00ae|[\\u2000-\\u3300]|\\ud83c[\\ud000-\\udfff]|\\ud83d[\\ud000-\\udfff]|\\ud83e[\\ud000-\\udfff])", RegexOptions.IgnoreCase);
+            
+            this.badWordRegex = new Regex(this.moduleConfiguration.TrollManagement.BadWordRegex, RegexOptions.IgnoreCase);
+            this.reallyBadWordRegex = new Regex(this.moduleConfiguration.TrollManagement.ReallyBadWordRegex, RegexOptions.IgnoreCase);
+            this.instaQuietRegex = new Regex(this.moduleConfiguration.TrollManagement.InstaQuietRegex, RegexOptions.IgnoreCase);
+            this.firstMessageQuietRegex = new Regex(this.moduleConfiguration.TrollManagement.FirstMessageQuietRegex, RegexOptions.IgnoreCase);
 
-            this.badWordRegex = new Regex("(cock|pussy|fuck|babes|dick|ur mom|belle|delphine|uwu|shit)", RegexOptions.IgnoreCase);
-            this.reallyBadWordRegex = new Regex("(hard core|hardcore|cunt|nigger|niggers|jews|9/11|aids|blowjob|cumshot|suk mai dik|skiyomi|yamlafuck|deepfuckfuck|pooyo|teri maa ki chot|bastard baby|i wish you die)", RegexOptions.IgnoreCase);
-            this.instaQuietRegex = new Regex("(yamlafuck pooyo and deepfuckfuck|free skiyomi and other ltas|hope you all die and kill yourself|i wish you die of postpartum hemorrhage)", RegexOptions.IgnoreCase);
-            this.firstMessageQuietRegex = new Regex("^\\s*(fuck you|hi fuckers|fuckyou|fuck u)\\s*$", RegexOptions.IgnoreCase);
-
-            this.pasteRegex = new Regex("^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)", RegexOptions.IgnoreCase);
+            this.pasteRegex = new Regex(this.moduleConfiguration.TrollManagement.PasteRegex, RegexOptions.IgnoreCase);
 
             this.banProposalTimer.Enabled = false;
             this.banProposalTimer.AutoReset = false;
@@ -266,7 +269,7 @@ namespace Helpmebot.ChannelServices.Services
                         }
 
                         Thread.Sleep(1000);
-                        ircClient.SendMessage(this.banTracker, $"2w Applied automatically by bot following match expression hit: LTA (skiyomi).");
+                        ircClient.SendMessage(this.banTracker, $"3d Applied automatically by bot following match expression hit");
                     },
                     true);
 

@@ -21,3 +21,16 @@ helpeeManagement:
 # modeMonitorChannelMap:
 #   "#a": "#b"
 modeMonitorChannelMap: {}
+
+# Troll monitoring configuration
+trollManagement:
+  targetChannel: "##helpmebot-help"
+  publicAlertChannel: "##helpmebot-helpers"
+  privateAlertTargets:
+    - stwalkerster
+  banTracker: "##stwalkerster-development3"
+  badWordRegex: "(badwordtestone|badwordtesttwo)"
+  reallyBadWordRegex: "(reallybadwordtestone|reallybadwordtesttwo)"
+  instaQuietRegex: "(instaquiettest)"
+  firstMessageQuietRegex: "^\\s*(fmquiettest)\\s*$"
+  pasteRegex: "^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)"

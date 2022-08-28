@@ -9,6 +9,8 @@ namespace Helpmebot.ChannelServices.Configuration
         public RateLimitConfiguration JoinMessageRateLimits { get; set; }
         
         public HelpeeManagementConfiguration HelpeeManagement { get; set; }
+        
+        public TrollManagementConfiguration TrollManagement { get; set; }
 
         public IDictionary<string, string> ModeMonitorChannelMap { get; set; }
 
