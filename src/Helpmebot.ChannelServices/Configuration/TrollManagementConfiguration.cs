@@ -8,6 +8,8 @@ namespace Helpmebot.ChannelServices.Configuration
         public string PublicAlertChannel { get; set; }
         public List<string> PrivateAlertTargets { get; set; }
         public string BanTracker { get; set; }
+        public string AntiSpamBot { get; set; }
+        public string OpTargetAccount { get; set; }
         
         public string BadWordRegex { get; set; }
         public string ReallyBadWordRegex { get; set; }

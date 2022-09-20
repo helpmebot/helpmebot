@@ -45,9 +45,12 @@ namespace Helpmebot.ChannelServices.Services
         
         private readonly string targetChannel;
         private readonly string publicAlertChannel;
-        private readonly List<string> privateAlertTargets;
-        private readonly string banTracker;
         
+        private readonly List<string> privateAlertTargets;
+        private readonly string opTargetAccount;
+        
+        private readonly string banTracker;
+        private readonly string antiSpamBot;
 
         private Timer banProposalTimer = new Timer(60 * 1000);
 
@@ -70,6 +73,8 @@ namespace Helpmebot.ChannelServices.Services
             this.publicAlertChannel = moduleConfiguration.TrollManagement.PublicAlertChannel;
             this.privateAlertTargets = moduleConfiguration.TrollManagement.PrivateAlertTargets;
             this.banTracker = moduleConfiguration.TrollManagement.BanTracker;
+            this.antiSpamBot = moduleConfiguration.TrollManagement.AntiSpamBot;
+            this.opTargetAccount = moduleConfiguration.TrollManagement.OpTargetAccount;
             
             this.networks = new List<IPNetwork>
             {
@@ -170,6 +175,8 @@ namespace Helpmebot.ChannelServices.Services
             
             if (pasteMatch.Success)
             {
+                this.logger.Debug("Paste detected, replacing message with contents of paste");
+                
                 var url = pasteMatch.Groups["url"].Value;
                     
                 var hwr = (HttpWebRequest)WebRequest.Create(url);
@@ -202,6 +209,7 @@ namespace Helpmebot.ChannelServices.Services
                 memoryStream.Position = 0;
                 var newMessage = new StreamReader(memoryStream).ReadToEnd();
                 
+                this.logger.Trace("Re-running regexes");
                 badWordMatch = this.badWordRegex.Match(newMessage);
                 reallyBadWordMatch = this.reallyBadWordRegex.Match(newMessage);
                 instaQuietMatch = this.instaQuietRegex.Match(newMessage);
@@ -257,7 +265,7 @@ namespace Helpmebot.ChannelServices.Services
                         ircClient.PrioritySend(
                             new Message(
                                 "MODE",
-                                new[] { this.targetChannel, "+bzo", $"*!*@{e.User.Hostname}", "ozone" }));
+                                new[] { this.targetChannel, "+bzo", $"*!*@{e.User.Hostname}", this.antiSpamBot }));
                         
                         if (this.JoinMessageService != null)
                         {
@@ -284,14 +292,21 @@ namespace Helpmebot.ChannelServices.Services
             {
                 this.logger.InfoFormat($"Tracked user {e.User} in {e.Target} automatically quieted due to expression match on first message");
 
+                var monitoringOpTargetAccount = 
+                    this.client.UserCache.First(x => x.Value.Account == this.opTargetAccount)
+                        .Value.Nickname;
+
                 this.modeMonitoringService.PerformAsOperator(
                     this.targetChannel,
                     ircClient =>
                     {
-                        ircClient.PrioritySend(
-                            new Message(
-                                "MODE",
-                                new[] { this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", "ozone", "stw" }));
+                        ircClient.PrioritySend(new Message(
+                            "MODE",
+                            new[]
+                            {
+                                this.targetChannel, "+qzoo", $"*!*@{e.User.Hostname}", this.antiSpamBot,
+                                monitoringOpTargetAccount
+                            }));
 
                         if (this.JoinMessageService != null)
                         {
@@ -359,7 +374,7 @@ namespace Helpmebot.ChannelServices.Services
                 }
                 catch (Exception ex)
                 {
-                    this.logger.Error("Could not register command, is it already registered?");
+                    this.logger.Error("Could not register command, is it already registered?", ex);
                 }
 
                 this.banProposalTimer.Start();

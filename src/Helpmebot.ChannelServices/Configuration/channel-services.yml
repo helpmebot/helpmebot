@@ -28,7 +28,16 @@ trollManagement:
   publicAlertChannel: "##helpmebot-helpers"
   privateAlertTargets:
     - stwalkerster
+  
+  # Account to automatically op when a +qz is put in place
+  opTargetAccount: stwalkerster
+  
+  # Instance of ncoevoet's ChanTracker bot to maintain ban list
   banTracker: "##stwalkerster-development3"
+  
+  # Anti-abuse bot to automatically op when a +qz is put in place
+  antiSpamBot: "ozone"
+  
   badWordRegex: "(badwordtestone|badwordtesttwo)"
   reallyBadWordRegex: "(reallybadwordtestone|reallybadwordtesttwo)"
   instaQuietRegex: "(instaquiettest)"
