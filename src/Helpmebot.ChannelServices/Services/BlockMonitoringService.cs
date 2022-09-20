@@ -218,7 +218,7 @@ namespace Helpmebot.ChannelServices.Services
                         RegisteredUser = false
                     };
 
-                    if (blockInformation.BlockReason.Contains("blocked proxy") || blockInformation.BlockReason.Contains("colocation"))
+                    if (blockInformation.BlockReason.ToLower().Contains("blocked proxy") || blockInformation.BlockReason.ToLower().Contains("colocation"))
                     {
                         if (joinedChannel == "#wikipedia-en-help")
                         {
