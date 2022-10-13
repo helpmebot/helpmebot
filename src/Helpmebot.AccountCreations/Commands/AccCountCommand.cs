@@ -100,37 +100,48 @@ namespace Helpmebot.AccountCreations.Commands
                     this.CommandSource,
                     username);
             }
-
-            var userLevelNode = nav.SelectSingleNode("//user/@level");
+            
+            var created = nav.SelectSingleNode("//user/@created").Value;
+            var today = nav.SelectSingleNode("//user/@today").Value;
+            var suspended = nav.SelectSingleNode("//user/@suspended").Value;
+            var promoted = nav.SelectSingleNode("//user/@promoted").Value;
+            var approved = nav.SelectSingleNode("//user/@approved").Value;
+            var demoted = nav.SelectSingleNode("//user/@demoted").Value;
+            var declined = nav.SelectSingleNode("//user/@declined").Value;
+            var renamed = nav.SelectSingleNode("//user/@renamed").Value;
+            var edited = nav.SelectSingleNode("//user/@edited").Value;
+            var prefchange = nav.SelectSingleNode("//user/@prefchange").Value;
+            
+            var adminCount = suspended + promoted + approved + demoted + declined + renamed + edited + prefchange;
 
             object[] messageParams =
             {
                 username, // username
-                userLevelNode.Value,
-                nav.SelectSingleNode("//user/@created").Value,
-                nav.SelectSingleNode("//user/@today").Value,
+                "User",
+                created,
+                today,
                 string.Empty
             };
 
             var messageKey = "accountcreations.command.count";
 
-            if (userLevelNode.Value == "Admin")
+            if (adminCount > 0)
             {
                 messageKey = "accountcreations.command.count.admin";
                 messageParams = new object[]
                 {
                     username, // username
-                    userLevelNode.Value,
-                    nav.SelectSingleNode("//user/@created").Value,
-                    nav.SelectSingleNode("//user/@today").Value,
-                    nav.SelectSingleNode("//user/@suspended").Value,
-                    nav.SelectSingleNode("//user/@promoted").Value,
-                    nav.SelectSingleNode("//user/@approved").Value,
-                    nav.SelectSingleNode("//user/@demoted").Value,
-                    nav.SelectSingleNode("//user/@declined").Value,
-                    nav.SelectSingleNode("//user/@renamed").Value,
-                    nav.SelectSingleNode("//user/@edited").Value,
-                    nav.SelectSingleNode("//user/@prefchange").Value
+                    "Admin",
+                    created,
+                    today,
+                    suspended,
+                    promoted,
+                    approved,
+                    demoted,
+                    declined,
+                    renamed,
+                    edited,
+                    prefchange
                 };
             }
 
