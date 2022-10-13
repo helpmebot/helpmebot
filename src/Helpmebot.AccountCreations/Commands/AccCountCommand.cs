@@ -101,16 +101,16 @@ namespace Helpmebot.AccountCreations.Commands
                     username);
             }
             
-            var created = nav.SelectSingleNode("//user/@created").Value;
-            var today = nav.SelectSingleNode("//user/@today").Value;
-            var suspended = nav.SelectSingleNode("//user/@suspended").Value;
-            var promoted = nav.SelectSingleNode("//user/@promoted").Value;
-            var approved = nav.SelectSingleNode("//user/@approved").Value;
-            var demoted = nav.SelectSingleNode("//user/@demoted").Value;
-            var declined = nav.SelectSingleNode("//user/@declined").Value;
-            var renamed = nav.SelectSingleNode("//user/@renamed").Value;
-            var edited = nav.SelectSingleNode("//user/@edited").Value;
-            var prefchange = nav.SelectSingleNode("//user/@prefchange").Value;
+            var created = int.Parse(nav.SelectSingleNode("//user/@created").Value);
+            var today = int.Parse(nav.SelectSingleNode("//user/@today").Value);
+            var suspended = int.Parse(nav.SelectSingleNode("//user/@suspended").Value);
+            var promoted = int.Parse(nav.SelectSingleNode("//user/@promoted").Value);
+            var approved = int.Parse(nav.SelectSingleNode("//user/@approved").Value);
+            var demoted = int.Parse(nav.SelectSingleNode("//user/@demoted").Value);
+            var declined = int.Parse(nav.SelectSingleNode("//user/@declined").Value);
+            var renamed = int.Parse(nav.SelectSingleNode("//user/@renamed").Value);
+            var edited = int.Parse(nav.SelectSingleNode("//user/@edited").Value);
+            var prefchange = int.Parse(nav.SelectSingleNode("//user/@prefchange").Value);
             
             var adminCount = suspended + promoted + approved + demoted + declined + renamed + edited + prefchange;
 
