@@ -6,7 +6,7 @@ dataset:
   accountcreations.command.count:
     - - "{0} ({1}) has closed {2} requests as 'Created', {3} of them today."
   accountcreations.command.count.admin:
-    - - "{0} ({1}) has closed {2} requests as 'Created', {3} of them today. Suspended: {0}, Promoted: {1}, Approved: {2}, Demoted: {3}, Declined: {4}, Renamed: {5}, Messages edited: {6}, Preferences edited: {7}"
+    - - "{0} ({1}) has closed {2} requests as 'Created', {3} of them today. Suspended: {4}, Promoted: {5}, Approved: {6}, Demoted: {7}, Declined: {8}, Renamed: {9}, Messages edited: {10}, Preferences edited: {11}"
   accountcreations.command.deploy.disabled:
     - - Deployment disabled in configuration
   accountcreations.command.deploy.inprogress:
