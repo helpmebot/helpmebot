@@ -46,8 +46,8 @@ namespace Helpmebot.ChannelServices.Services
         public string TargetChannel { get; }
 
         private readonly object lockToken = new object();
-        
 
+        private bool mismatchReported = false;
         public HelpeeManagementService(IIrcClient client, ILogger logger, ModuleConfiguration configuration)
         {
             this.client = client;
@@ -352,12 +352,32 @@ namespace Helpmebot.ChannelServices.Services
             if (this.client.Channels.ContainsKey(this.TargetChannel))
             {
                 var usersCount = this.client.Channels[this.TargetChannel].Users.Count;
-                UserMismatchCount.Set(
-                    this.ignoredInChannel.Count + this.helperIdleCache.Count + this.helpeeIdleCache.Count
-                    - usersCount);
+                var mismatchCount = this.ignoredInChannel.Count + this.helperIdleCache.Count + this.helpeeIdleCache.Count
+                            - usersCount;
+                UserMismatchCount.Set(mismatchCount);
+
+                if (!this.mismatchReported && mismatchCount > 0)
+                {
+                    try
+                    {
+                        throw new Exception("Helpee count mismatches with channel count!");
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.Error("Helpee count mismatch detected", ex);
+                        this.mismatchReported = true;
+                    }
+                }
+
+                if (mismatchCount == 0)
+                {
+                    this.mismatchReported = false;
+                    this.logger.Info("Helpee count mismatch resolved.");
+                }
             }
             else
             {
+                this.mismatchReported = false;
                 UserMismatchCount.Unpublish();
             }
 
