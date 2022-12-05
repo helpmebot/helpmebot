@@ -32,8 +32,19 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
             this.logger = logger;
             this.apiTypedFactory = apiTypedFactory;
             this.secondaryShortener = (UrlShorteningServiceBase) secondaryShortener;
-            this.allowedDomains = shortenerConfiguration.AllowedDomains.Select(x => new Regex(x)).ToList();
-
+            this.allowedDomains = shortenerConfiguration.AllowedDomains.Select(x =>
+            {
+                try
+                {
+                    return new Regex(x);
+                }
+                catch (Exception ex)
+                {
+                    this.logger.ErrorFormat(ex, "Could not parse regex {0} for URL shortener, skipping", x);
+                    return null;
+                }
+            }).Where(x => x != null).ToList();
+            
             this.mediaWikiConfig = new MediaWikiConfiguration(
                 shortenerConfiguration.MediaWikiApiEndpoint,
                 configuration.UserAgent,
