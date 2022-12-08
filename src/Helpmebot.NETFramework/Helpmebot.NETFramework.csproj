@@ -194,7 +194,7 @@
     <PackageReference Include="NDesk.Options.Core" Version="1.2.5" />
     <PackageReference Include="NetMQ" Version="4.0.1.8" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NHibernate" Version="5.3.11" />
     <PackageReference Include="prometheus-net" Version="5.0.2" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
