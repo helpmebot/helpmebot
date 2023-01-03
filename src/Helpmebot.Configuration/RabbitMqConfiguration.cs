@@ -3,6 +3,7 @@ namespace Helpmebot.Configuration
 {
     public class RabbitMqConfiguration
     {
+        public bool Tls { get; set; } = false;
         public bool Enabled { get; set; }
         public string ObjectPrefix { get; set; }
         public string Hostname { get; set; } = "localhost";

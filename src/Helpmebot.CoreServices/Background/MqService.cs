@@ -58,6 +58,7 @@ namespace Helpmebot.CoreServices.Background
                     {"platform", Encoding.UTF8.GetBytes(RuntimeInformation.FrameworkDescription)},
                     {"os", Encoding.UTF8.GetBytes(Environment.OSVersion.ToString())}
                 },
+               Ssl = new SslOption{Enabled = this.mqConfig.Tls, ServerName = this.mqConfig.Hostname}
             };
 
             try
