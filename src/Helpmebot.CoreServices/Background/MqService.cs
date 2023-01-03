@@ -9,6 +9,7 @@ namespace Helpmebot.CoreServices.Background
     using Helpmebot.CoreServices.Commands;
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
+    using RabbitMQ.Client.Exceptions;
     using Stwalkerster.IrcClient;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -59,8 +60,17 @@ namespace Helpmebot.CoreServices.Background
                 },
             };
 
-            this.connection = factory.CreateConnection();
-            this.logger.Debug("MQ connected.");
+            try
+            {
+                this.connection = factory.CreateConnection();
+                this.logger.Debug("MQ connected.");
+            }
+            catch (BrokerUnreachableException ex)
+            {
+                this.logger.Error("MQ failed to connect.", ex);
+                this.mqConfig.Enabled = false;
+                return;
+            }
 
             this.managementChannel = this.CreateChannel();
             

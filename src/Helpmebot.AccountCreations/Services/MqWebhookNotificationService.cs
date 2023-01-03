@@ -39,7 +39,7 @@ namespace Helpmebot.AccountCreations.Services
 
         public void Start()
         {
-            this.logger.Debug("Starting MQ notification service...");
+            this.logger.Debug("Starting MQ webhook notification service...");
 
             this.channel = this.mqService.CreateChannel();
 
@@ -70,7 +70,7 @@ namespace Helpmebot.AccountCreations.Services
             this.consumer.Received += this.ConsumerOnReceived;
 
             this.channel.BasicConsume(this.queue, true, this.consumer);
-            this.logger.Debug("Initialised MQ notifications.");
+            this.logger.Debug("Initialised MQ webhook notifications.");
         }
 
         public void Stop()
@@ -82,7 +82,7 @@ namespace Helpmebot.AccountCreations.Services
 
             this.consumer.Received -= this.ConsumerOnReceived;
             this.consumer = null;
-            this.logger.Debug("Stopped MQ notifications.");
+            this.logger.Debug("Stopped MQ webhook notifications.");
             this.mqService.ReturnChannel(this.channel);
             this.channel = null;
         }
