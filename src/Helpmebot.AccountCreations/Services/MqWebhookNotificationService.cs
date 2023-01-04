@@ -1,5 +1,6 @@
 namespace Helpmebot.AccountCreations.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Text.Json;
@@ -114,30 +115,39 @@ namespace Helpmebot.AccountCreations.Services
 
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
-            this.logger.InfoFormat(
-                "Handling message for {0} from source <{1}>",
-                e.RoutingKey,
-                e.BasicProperties.Headers["source"]);
-
-            var rawPayload = Encoding.UTF8.GetString(e.Body.ToArray());
-
-            IEnumerable<string> messages = new List<string>();
-            switch ((string)e.BasicProperties.Headers["source"])
+            try
             {
-                case "terraformcloud":
-                    messages = this.HandleTerraform(rawPayload);
-                    break;
-                case "github":
-                    messages = this.HandleGithub(rawPayload, e.BasicProperties.Headers["x-github-event"].ToString());
-                    break;
-            }
-            
-            foreach (var s in messages)
-            {
-                this.client.SendMessage(e.RoutingKey, s);
-            }
+                var source = (string)e.BasicProperties.Headers["source"];
+                this.logger.InfoFormat(
+                    "Handling message for {0} from source <{1}>",
+                    e.RoutingKey,
+                    source);
 
-            this.logger.Debug(rawPayload);
+                var rawPayload = Encoding.UTF8.GetString(e.Body.ToArray());
+                this.logger.Debug(rawPayload);
+
+                IEnumerable<string> messages = new List<string>();
+                switch (source)
+                {
+                    case "terraformcloud":
+                        messages = this.HandleTerraform(rawPayload);
+                        break;
+                    case "github":
+                        messages = this.HandleGithub(
+                            rawPayload,
+                            e.BasicProperties.Headers["x-github-event"].ToString());
+                        break;
+                }
+
+                foreach (var s in messages)
+                {
+                    this.client.SendMessage(e.RoutingKey, s);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.ErrorFormat(ex, "Something went wrong processing inbound webhook notification");
+            }
         }
 
         private IEnumerable<string> HandleGithub(string rawPayload, string githubEvent)
