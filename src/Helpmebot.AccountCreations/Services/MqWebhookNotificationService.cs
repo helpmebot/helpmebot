@@ -117,11 +117,8 @@ namespace Helpmebot.AccountCreations.Services
         {
             try
             {
-                var source = (string)e.BasicProperties.Headers["source"];
-                this.logger.InfoFormat(
-                    "Handling message for {0} from source <{1}>",
-                    e.RoutingKey,
-                    source);
+                var source = Encoding.UTF8.GetString((byte[])e.BasicProperties.Headers["source"]);
+                this.logger.InfoFormat("Handling message for {0} from source <{1}>", e.RoutingKey, source);
 
                 var rawPayload = Encoding.UTF8.GetString(e.Body.ToArray());
                 this.logger.Debug(rawPayload);
@@ -173,7 +170,7 @@ namespace Helpmebot.AccountCreations.Services
                 $"[{BoldMarker}{ColourMarker}{Purple}Terraform{ClearMarker}][{ColourMarker}{Yellow}{payload.OrganizationName}/{payload.WorkspaceName}{ClearMarker}] ";
 
             var shorturl = this.urlShorteningService.Shorten(payload.RunUrl);
-            
+
             foreach (var notification in payload.Notifications)
             {
                 var colour = string.Empty;
@@ -201,8 +198,9 @@ namespace Helpmebot.AccountCreations.Services
                 {
                     authorship = " by " + notification.RunUpdatedBy;
                 }
-                
-                yield return prefix + $"{BoldMarker}{colour}{payload.Notifications[0].Message}{ClearMarker}{authorship}: {payload.RunMessage} <{shorturl}>";
+
+                yield return prefix
+                             + $"{BoldMarker}{colour}{payload.Notifications[0].Message}{ClearMarker}{authorship}: {payload.RunMessage} <{shorturl}>";
             }
         }
     }
