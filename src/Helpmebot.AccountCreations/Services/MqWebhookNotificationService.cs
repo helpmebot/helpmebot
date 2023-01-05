@@ -166,8 +166,8 @@ namespace Helpmebot.AccountCreations.Services
 
             var payload = JsonSerializer.Deserialize<RunPayload>(rawPayload);
 
-            var prefix =
-                $"[{BoldMarker}{ColourMarker}{Purple}Terraform{ClearMarker}][{ColourMarker}{Yellow}{payload.OrganizationName}/{payload.WorkspaceName}{ClearMarker}] ";
+            var workspace = $"[{ColourMarker}{Yellow}{payload.OrganizationName}/{payload.WorkspaceName}{ClearMarker}]";
+            var prefix = $"[{BoldMarker}{ColourMarker}{Purple}Terraform{ClearMarker}]";
 
             var shorturl = this.urlShorteningService.Shorten(payload.RunUrl);
 
@@ -176,6 +176,10 @@ namespace Helpmebot.AccountCreations.Services
                 var colour = string.Empty;
                 switch (notification.Trigger)
                 {
+                    case "verification":
+                        yield return prefix + " " + notification.Message;
+                        continue;
+                        
                     case "run:created":
                         break;
                     case "run:planning":
@@ -199,8 +203,8 @@ namespace Helpmebot.AccountCreations.Services
                     authorship = " by " + notification.RunUpdatedBy;
                 }
 
-                yield return prefix
-                             + $"{BoldMarker}{colour}{payload.Notifications[0].Message}{ClearMarker}{authorship}: {payload.RunMessage} <{shorturl}>";
+                yield return prefix + workspace + " "
+                             + $"{BoldMarker}{colour}{notification.Message}{ClearMarker}{authorship}: {payload.RunMessage} <{shorturl}>";
             }
         }
     }
