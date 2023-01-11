@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a bug which you have discovered
 title: ''
-labels: priority/needs-triage, type/bug, verification-needed
+labels: needs-triage, type/bug, verification-needed
 assignees: ''
 
 ---
