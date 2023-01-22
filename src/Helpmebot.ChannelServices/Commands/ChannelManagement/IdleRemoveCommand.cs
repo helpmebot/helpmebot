@@ -26,7 +26,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         private readonly IModeMonitoringService modeMonitoringService;
         private readonly IResponder responder;
 
-        public IdleRemoveCommand( 
+        public IdleRemoveCommand(
             string commandSource,
             IUser user,
             IList<string> arguments,
@@ -53,9 +53,9 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             {
                 { "force", x => force = true },
             };
-            
+
             var remainingArgs = opts.Parse(this.Arguments);
-            
+
             var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
 
             var helpees = string.Join(", ", removableHelpees);
@@ -72,11 +72,11 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             {
                 { "force", x => force = true },
             };
-            
+
             var remainingArgs = opts.Parse(this.Arguments);
-            
+
             var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
-            
+
             var channel = "#wikipedia-en-help";
             var removeMessage = this.responder.GetMessagePart("channelservices.command.idlehelpees.kick", this.CommandSource);
 
@@ -86,9 +86,29 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 {
                     foreach (var helpee in removableHelpees)
                     {
-                        ircClient.Send(new Message("KICK", new[] {channel, helpee, removeMessage}));
+                        ircClient.Send(new Message("KICK", new[] { channel, helpee, removeMessage }));
                     }
                 });
+
+            var helpees = string.Join(", ", removableHelpees);
+            if (this.CommandSource == "#wikipedia-en-helpers")
+            {
+                this.Client.SendMessage(
+                    "#wikipedia-en-helpers",
+                    this.responder.GetMessagePart(
+                        "channelservices.command.idlehelpees.local-confirm",
+                        this.CommandSource,
+                        helpees));
+            }
+            else
+            {
+                this.Client.SendMessage(
+                    "#wikipedia-en-helpers",
+                    this.responder.GetMessagePart(
+                        "channelservices.command.idlehelpees.confirm",
+                        this.CommandSource,
+                        new object[] { helpees, this.User.Nickname }));
+            }
 
             return null;
         }
@@ -105,10 +125,10 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 return this.Client.Channels[this.helpeeManagementService.TargetChannel]
                     .Users.Select(x => x.Key)
                     .Intersect(helpees)
-                    .Except(new List<string>{"ChanServ", this.Client.Nickname})
+                    .Except(new List<string> { "ChanServ", this.Client.Nickname })
                     .ToList();
             }
-            
+
             var removableHelpees = this.helpeeManagementService.Helpees
                 .Where(
                     x =>
