@@ -9,7 +9,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
-    using NDesk.Options;
+    using Mono.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
