@@ -35,8 +35,10 @@ dataset:
       
   channelservices.command.welcomer.not-welcoming:
     - - Not welcoming in {0}.
-  channelservices.command.welcomer.list:
-    - - "Welcoming these masks to {0}: {1}"
+  channelservices.command.welcomer.list.start:
+    - - "Welcoming these masks to {0}:"
+  channelservices.command.welcomer.list.item:
+    - - "* {0}"
   channelservices.command.welcomer.override-not-found:
     - - Unable to find welcomer override configuration with alias {0}
 

@@ -47,9 +47,9 @@ namespace Helpmebot.Model
         /// Gets or sets the host.
         /// </summary>
         public virtual string Host { get; set; }
-        
+
         public virtual string Account { get; set; }
-        
+
         public virtual string RealName { get; set; }
 
         /// <summary>
@@ -66,28 +66,45 @@ namespace Helpmebot.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
+            sb.Append(this.Exception ? "(Ignored!)" : string.Empty);
+            var restricted = false;
+
             if (this.Nick != ".*")
             {
                 sb.AppendFormat(" Nick: {0}", this.Nick);
+                restricted = true;
             }
+
             if (this.User != ".*")
             {
                 sb.AppendFormat(" User: {0}", this.User);
+                restricted = true;
             }
+
             if (this.Host != ".*")
             {
                 sb.AppendFormat(" Host: {0}", this.Host);
+                restricted = true;
             }
+
             if (this.Account != ".*")
             {
                 sb.AppendFormat(" Account: {0}", this.Account);
+                restricted = true;
             }
+
             if (this.RealName != ".*")
             {
                 sb.AppendFormat(" RealName: {0}", this.RealName);
+                restricted = true;
             }
 
-            return string.Format("{0} {1}", sb.ToString().TrimStart(), this.Exception ? "(!)" : string.Empty);
+            if (!restricted)
+            {
+                sb.AppendFormat(" Everyone");
+            }
+
+            return sb.ToString().TrimStart();
         }
     }
 }

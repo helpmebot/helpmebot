@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
@@ -75,38 +76,66 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             {
                 return this.responder.Respond("channelservices.command.welcomer.not-welcoming", this.CommandSource, target);
             }
-
-            var welcomeEntries = string.Join(" ; ", welcomeForChannel.Select(x => x.ToString()));
-            return this.responder.Respond(
-                "channelservices.command.welcomer.list",
+            
+            var commandResponses = this.responder.Respond(
+                "channelservices.command.welcomer.list.start",
                 this.CommandSource,
-                new object[] { target, welcomeEntries });
+                new object[] { target })
+                .ToList();
+
+            var listItems = welcomeForChannel.Select(
+                x => new CommandResponse
+                {
+                    Message = this.responder.GetMessagePart(
+                        "channelservices.command.welcomer.list.item",
+                        this.CommandSource,
+                        x.ToString())
+                });
+            
+            commandResponses.AddRange(listItems);
+            
+            return commandResponses;
         }
 
         [SubcommandInvocation("add")]
-        [RequiredArguments(1)]
-        [Help("<mask>", "Adds a mask to the welcome list for the current channel.")]
+        [Help("", new[]{"Adds a mask to the welcome list for the current channel.", "All attributes default to `.*`; use the listed options to override specific attributes."})]
         [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
         [CommandParameter("ignore", "Interpret this mask as an exception rule instead of a match rule", "exception", typeof(bool))]
+        [CommandParameter("host=", "Specify the hostname part of the mask to use", "host", typeof(string))]
+        [CommandParameter("user=", "Specify the username part of the mask to use", "user", typeof(string))]
+        [CommandParameter("nick=", "Specify the hostname part of the mask to use", "nick", typeof(string))]
+        [CommandParameter("account=", "Specify the NickServ account part of the mask to use", "account", typeof(string))]
+        [CommandParameter("realname=", "Specify the GECOS/realname part of the mask to use", "realname", typeof(string))]
         protected IEnumerable<CommandResponse> AddMode()
         {
             var target = this.Parameters.GetParameter("target", this.CommandSource);
             var exception = this.Parameters.GetParameter("exception", false);
+            
+            var host = this.Parameters.GetParameter("host", ".*");
+            var nick = this.Parameters.GetParameter("nick", ".*");
+            var user = this.Parameters.GetParameter("user", ".*");
+            var account = this.Parameters.GetParameter("account", ".*");
+            var realname = this.Parameters.GetParameter("realname", ".*");
 
+            if (!this.ValidateRegex(nick, user, host, account, realname, out var responses))
+            {
+                return responses;
+            }
+            
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
             try
             {
                 var welcomeUser = new WelcomeUser
                 {
-                    Nick = ".*",
-                    User = ".*",
-                    Host = string.Join(" ", this.Arguments),
-                    Account = ".*",
-                    RealName = ".*",
+                    Nick = nick,
+                    User = user,
+                    Host = host,
+                    Account = account,
+                    RealName = realname,
                     Channel = target,
                     Exception = exception
                 };
-
+                
                 this.databaseSession.Save(welcomeUser);
                 this.databaseSession.Transaction.Commit();
                 
@@ -122,35 +151,109 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             }
         }
 
+        private bool ValidateRegex(
+            string nick,
+            string user,
+            string host,
+            string account,
+            string realname,
+            out IEnumerable<CommandResponse> o)
+        {
+            var errors = new List<CommandResponse>();
+            var valid = true;
+            
+            try
+            {
+                Regex.Match("", nick);
+            }
+            catch (ArgumentException ex)
+            {
+                valid = false;
+                errors.Add(new CommandResponse { Message = "Error validating nick field: " + ex.Message });
+            }
+            try
+            {
+                Regex.Match("", user);
+            }
+            catch (ArgumentException ex)
+            {
+                valid = false;
+                errors.Add(new CommandResponse { Message = "Error validating user field: " + ex.Message });
+            }
+            try
+            {
+                Regex.Match("", host);
+            }
+            catch (ArgumentException ex)
+            {
+                valid = false;
+                errors.Add(new CommandResponse { Message = "Error validating host field: " + ex.Message });
+            }
+            try
+            {
+                Regex.Match("", account);
+            }
+            catch (ArgumentException ex)
+            {
+                valid = false;
+                errors.Add(new CommandResponse { Message = "Error validating account field: " + ex.Message });
+            }
+            try
+            {
+                Regex.Match("", realname);
+            }
+            catch (ArgumentException ex)
+            {
+                valid = false;
+                errors.Add(new CommandResponse { Message = "Error validating realname field: " + ex.Message });
+            }
+
+            o = errors;
+            return valid;
+        }
+
         [SubcommandInvocation("del")]
         [SubcommandInvocation("delete")]
         [SubcommandInvocation("remove")]
-        [RequiredArguments(1)]
-        [Help("<mask>", "Removes a mask from the welcome list for the current channel.")]
+        [Help("", "Removes a mask from the welcome list for the current channel.")]
         [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
         [CommandParameter("ignore", "Interpret this mask as an exception rule instead of a match rule", "exception", typeof(bool))]
+        [CommandParameter("host=", "Specify the hostname part of the mask to use", "host", typeof(string))]
+        [CommandParameter("user=", "Specify the username part of the mask to use", "user", typeof(string))]
+        [CommandParameter("nick=", "Specify the hostname part of the mask to use", "nick", typeof(string))]
+        [CommandParameter("account=", "Specify the NickServ account part of the mask to use", "account", typeof(string))]
+        [CommandParameter("realname=", "Specify the GECOS/realname part of the mask to use", "realname", typeof(string))]
         protected IEnumerable<CommandResponse> DeleteMode()
         {
             var target = this.Parameters.GetParameter("target", this.CommandSource);
             var exception = this.Parameters.GetParameter("exception", false);
 
+            var host = this.Parameters.GetParameter("host", ".*");
+            var nick = this.Parameters.GetParameter("nick", ".*");
+            var user = this.Parameters.GetParameter("user", ".*");
+            var account = this.Parameters.GetParameter("account", ".*");
+            var realname = this.Parameters.GetParameter("realname", ".*");
+            
+            if (!this.ValidateRegex(nick, user, host, account, realname, out var responses))
+            {
+                return responses;
+            }
+            
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
             
             try
             {
                 this.Logger.Trace("Getting list of welcomeusers ready for deletion!");
 
-                var implode = string.Join(" ", this.Arguments);
-
                 var welcomeUsers =
                     this.databaseSession.QueryOver<WelcomeUser>()
                         .Where(
                             x => x.Exception == exception 
-                                 && x.Host == implode 
-                                 && x.User == ".*" 
-                                 && x.Nick == ".*"
-                                 && x.Account == ".*"
-                                 && x.RealName == ".*"
+                                 && x.Host == host 
+                                 && x.User == user 
+                                 && x.Nick == nick
+                                 && x.Account == account
+                                 && x.RealName == realname
                                  && x.Channel == target)
                         .List();
 
