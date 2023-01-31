@@ -8,11 +8,11 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Startup;
-    using Mono.Options;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
@@ -46,17 +46,12 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
         [Help("[nickname...]", "Produces a list of who will be removed from the channel by the remove command")]
         [SubcommandInvocation("dryrun")]
+        [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
         protected IEnumerable<CommandResponse> DryRun()
         {
-            var force = false;
-            var opts = new OptionSet
-            {
-                { "force", x => force = true },
-            };
+            var force = this.Parameters.GetParameter("force", false);
 
-            var remainingArgs = opts.Parse(this.Arguments);
-
-            var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
+            var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
             var helpees = string.Join(", ", removableHelpees);
 
@@ -64,18 +59,13 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [Help("[nickname...]", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
-        [SubcommandInvocation("remove")]
+        [SubcommandInvocation("remove")]       
+        [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
         protected IEnumerable<CommandResponse> Remove()
         {
-            var force = false;
-            var opts = new OptionSet
-            {
-                { "force", x => force = true },
-            };
+            var force = this.Parameters.GetParameter("force", false);
 
-            var remainingArgs = opts.Parse(this.Arguments);
-
-            var removableHelpees = this.GetRemovableHelpees(remainingArgs, force);
+            var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
             var channel = "#wikipedia-en-help";
             var removeMessage = this.responder.GetMessagePart("channelservices.command.idlehelpees.kick", this.CommandSource);

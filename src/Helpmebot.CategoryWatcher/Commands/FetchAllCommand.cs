@@ -8,11 +8,11 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Mono.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -49,21 +49,15 @@ namespace Helpmebot.CategoryWatcher.Commands
             this.responder = responder;
         }
 
-        [Help(
-            "[--all]",
-            new[]
-            {
-                "Returns the current state of all category watchers configured in the current channel.",
-                "Use --all to return the current state of all category watchers configured on the bot."
-            })]
+        [Help("[--all]", "Returns the current state of all category watchers configured in the current channel.")]
+        [CommandParameter(
+            "all",
+            "Return the current state of all category watchers configured on the bot.",
+            "all",
+            typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var allKeywords = false;
-            var opts = new OptionSet
-            {
-                {"all", x => allKeywords = true}
-            };
-            opts.Parse(this.Arguments);
+            var allKeywords = this.Parameters.GetParameter("all", false);
 
             var channelObject = this.databaseSession.GetChannelObject(this.CommandSource);
             if (channelObject == null && !allKeywords)
