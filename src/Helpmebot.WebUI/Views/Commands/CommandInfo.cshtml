@@ -34,7 +34,7 @@
                 <ul class="mb-0 list-inline">
                     @foreach (var alias in Model.Aliases)
                     {
-                        <li class="list-inline-item font-monospace fw-light">@ViewBag.BotStatus.Trigger@alias</li>
+                        <li class="list-inline-item font-monospace small">@ViewBag.BotStatus.Trigger@alias</li>
                     }
                 </ul>
              
@@ -65,7 +65,7 @@
                             {                                
                                 <h6 class="mt-3">Aliases</h6>
 
-                                <ul class="list-unstyled ms-3">
+                                <ul class="list-unstyled ms-3 font-monospace small">
                                     @foreach (var scAlias in sc.Aliases)
                                     {
                                         <li class="mb-0">@ViewBag.BotStatus.Trigger@scAlias</li>
