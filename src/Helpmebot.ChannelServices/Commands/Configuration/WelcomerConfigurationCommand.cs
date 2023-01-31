@@ -9,11 +9,12 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
-    using Mono.Options;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -49,36 +50,48 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             this.responder = responder;
         }
 
+        protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
+        {
+            var target = this.Parameters.GetParameter("target", this.CommandSource);
+            if (target != this.CommandSource && !this.FlagService.UserHasFlag(this.User, Flags.Configuration, null))
+            {
+                throw new CommandAccessDeniedException();
+            }
+
+            return base.OnPreRun(out abort);
+        }
+
         [SubcommandInvocation("list")]
         [Help("", "Lists all masks configured to be welcomed in this channel")]
+        [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
         protected IEnumerable<CommandResponse> ListMode()
         {
+            var target = this.Parameters.GetParameter("target", this.CommandSource);
+
             var welcomeForChannel =
-                this.databaseSession.QueryOver<WelcomeUser>().Where(x => x.Channel == this.CommandSource).List();
+                this.databaseSession.QueryOver<WelcomeUser>().Where(x => x.Channel == target).List();
 
             if (welcomeForChannel.Count == 0)
             {
-                return this.responder.Respond("channelservices.command.welcomer.not-welcoming", this.CommandSource, this.CommandSource);
+                return this.responder.Respond("channelservices.command.welcomer.not-welcoming", this.CommandSource, target);
             }
 
             var welcomeEntries = string.Join(" ; ", welcomeForChannel.Select(x => x.ToString()));
             return this.responder.Respond(
                 "channelservices.command.welcomer.list",
                 this.CommandSource,
-                new object[] { this.CommandSource, welcomeEntries });
+                new object[] { target, welcomeEntries });
         }
 
         [SubcommandInvocation("add")]
         [RequiredArguments(1)]
-        [Help("[--ignore] <mask>", new[]{"Adds a mask to the welcome list for the current channel.", "Use the --ignore flag to make this an exception rule instead of a match rule."})]
+        [Help("<mask>", "Adds a mask to the welcome list for the current channel.")]
+        [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
+        [CommandParameter("ignore", "Interpret this mask as an exception rule instead of a match rule", "exception", typeof(bool))]
         protected IEnumerable<CommandResponse> AddMode()
         {
-            var exception = false;
-            var opts = new OptionSet
-            {
-                {"ignore", x => exception = true}
-            };
-            var extra = opts.Parse(this.Arguments);
+            var target = this.Parameters.GetParameter("target", this.CommandSource);
+            var exception = this.Parameters.GetParameter("exception", false);
 
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
             try
@@ -87,10 +100,10 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 {
                     Nick = ".*",
                     User = ".*",
-                    Host = string.Join(" ", extra),
+                    Host = string.Join(" ", this.Arguments),
                     Account = ".*",
                     RealName = ".*",
-                    Channel = this.CommandSource,
+                    Channel = target,
                     Exception = exception
                 };
 
@@ -113,23 +126,21 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         [SubcommandInvocation("delete")]
         [SubcommandInvocation("remove")]
         [RequiredArguments(1)]
-        [Help("[--ignore] <mask>", new[]{"Removes a mask from the welcome list for the current channel.", "Use the --ignore flag to remove an exception rule instead of a match rule."})]
+        [Help("<mask>", "Removes a mask from the welcome list for the current channel.")]
+        [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
+        [CommandParameter("ignore", "Interpret this mask as an exception rule instead of a match rule", "exception", typeof(bool))]
         protected IEnumerable<CommandResponse> DeleteMode()
         {
-            var exception = false;
-            var opts = new OptionSet
-            {
-                {"ignore", x => exception = true}
-            };
-            var extra = opts.Parse(this.Arguments);
-            
+            var target = this.Parameters.GetParameter("target", this.CommandSource);
+            var exception = this.Parameters.GetParameter("exception", false);
+
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
             
             try
             {
                 this.Logger.Trace("Getting list of welcomeusers ready for deletion!");
 
-                var implode = string.Join(" ", extra);
+                var implode = string.Join(" ", this.Arguments);
 
                 var welcomeUsers =
                     this.databaseSession.QueryOver<WelcomeUser>()
@@ -140,7 +151,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                                  && x.Nick == ".*"
                                  && x.Account == ".*"
                                  && x.RealName == ".*"
-                                 && x.Channel == this.CommandSource)
+                                 && x.Channel == target)
                         .List();
 
                 this.Logger.Trace("Got list of WelcomeUsers, proceeding to Delete...");
@@ -176,8 +187,11 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 "Sets the welcomer override mode",
                 "This enables a specific override rule for the welcomer allowing a different welcome message to be used for users matching pre-defined conditions"
             })]
+        [CommandParameter("target=", "The target channel to apply this command to", "target", typeof(string))]
         protected IEnumerable<CommandResponse> WelcomerMode()
         {
+            var target = this.Parameters.GetParameter("target", this.CommandSource);
+
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
             try
             {
@@ -189,7 +203,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                     var welcomerOverride = this.databaseSession.QueryOver<WelcomerOverride>()
                         .Inner.JoinAlias(x => x.Channel, () => channelAlias)
                         .Where(x => x.ActiveFlag == this.Arguments[0])
-                        .And(x => channelAlias.Name == this.CommandSource)
+                        .And(x => channelAlias.Name == target)
                         .SingleOrDefault();
 
                     if (welcomerOverride == null)
@@ -201,7 +215,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 }
 
                 var channel = this.databaseSession.QueryOver<Channel>()
-                    .Where(x => x.Name == this.CommandSource)
+                    .Where(x => x.Name == target)
                     .SingleOrDefault();
                 channel.WelcomerFlag = flagName;
                 this.databaseSession.SaveOrUpdate(channel);
