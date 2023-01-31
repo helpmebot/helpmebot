@@ -11,6 +11,7 @@ namespace Helpmebot.Brain.Commands
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -47,24 +48,13 @@ namespace Helpmebot.Brain.Commands
         }
 
         [RequiredArguments(2)]
-        [Help(new[]{"<keyword> <message>", "--action <keyword> <message>"}, 
-            new[]{"Creates a new learnt command invoked by <keyword> to respond with the provided message",
-                "Optionally sends message as a CTCP ACTION (aka a /me command) if --action is provided before the first parameter.",
-                "@action is accepted in place of --action for backwards compatibility."
-            })]
+        [Help("<keyword> <message>", 
+            "Creates a new learnt command invoked by <keyword> to respond with the provided message")]
+        [CommandParameter("action", "Send the response as a CTCP action (aka a /me command) instead of a normal message", "action", typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var action = false;
+            var action = this.Parameters.GetParameter("action", false);
             var args = new List<string>(this.Arguments);
-
-            if (args.Count >= 3)
-            {
-                if (args[0] == "@action" || args[0] == "--action")
-                {
-                    action = true;
-                    args.PopFromFront();
-                }
-            }
 
             var keywordName = args.PopFromFront();
             this.keywordService.Create(keywordName, string.Join(" ", Enumerable.ToArray(args)), action);

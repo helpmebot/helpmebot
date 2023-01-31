@@ -47,5 +47,10 @@ dataset:
   channelservices.command.ipinfo:
     - - "Whois for {0} gives organisation {1}; Location: {2}"
 
+  channelservices.command.crosschannel.enabled:
+    - - "Cross-channel notifications are enabled for {0}."
+  channelservices.command.crosschannel.disabled:
+    - - "Cross-channel notifications are disabled for {0}."
+
   channelservices.welcomer.welcome:
     - - "Hi {0}! Welcome to the channel!"

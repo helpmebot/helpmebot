@@ -86,7 +86,7 @@ namespace Helpmebot.ChannelServices.Services
             localSession.Delete(existing);
         }
 
-        public void NotificationStatus(Channel backend, bool status, ISession localSession)
+        public void SetNotificationStatus(Channel backend, bool status, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
                 .Add(Restrictions.Eq("BackendChannel", backend))
@@ -126,7 +126,21 @@ namespace Helpmebot.ChannelServices.Services
             }
         }
 
-        public void NotificationMessage(Channel backend, string message, ISession localSession)
+        public bool GetNotificationStatus(Channel backend, ISession localSession)
+        {
+            var existing = localSession.CreateCriteria<CrossChannel>()
+                .Add(Restrictions.Eq("BackendChannel", backend))
+                .UniqueResult<CrossChannel>();
+
+            if (existing == null)
+            {
+                throw new Exception("Cannot find cross-channel configuration for this channel.");
+            }
+
+            return existing.NotifyEnabled;
+        }
+
+        public void SetNotificationMessage(Channel backend, string message, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
                 .Add(Restrictions.Eq("BackendChannel", backend))
@@ -147,7 +161,7 @@ namespace Helpmebot.ChannelServices.Services
             localSession.Update(existing);
         }
 
-        public void NotificationKeyword(Channel backend, string keyword, ISession localSession)
+        public void SetNotificationKeyword(Channel backend, string keyword, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
                 .Add(Restrictions.Eq("BackendChannel", backend))

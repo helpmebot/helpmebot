@@ -15,6 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -50,7 +51,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             this.crossChannelService = crossChannelService;
             this.databaseSession = databaseSession;
         }
-        
+
         [RequiredArguments(1)]
         [SubcommandInvocation("configure")]
         [Help("<channel>", "Sets up cross-channel notifications from the provided channel to this channel.")]
@@ -114,23 +115,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             }
         }
         
+        [SubcommandInvocation("notifications")]
         [SubcommandInvocation("notify")]
-        [RequiredArguments(1)]
-        [Help(new[]{"--enable","--disable"}, "Enables or disables notifications")]
+        [Help("", "Manages the notification state. Without parameters, this will return the current state.")]
+        [CommandParameter("enable", "Enable notifications", "enable", typeof(bool), hidden: true)]
+        [CommandParameter("disable", "Disable notifications", "enable", typeof(bool), booleanInverse: true, hidden: true)]
         protected IEnumerable<CommandResponse> NotifyMode()
         {
-            var status = (bool?)null;
-            var opts = new OptionSet
-            {
-                {"enable", x => status = true},
-                {"disable", x => status = false}
-            };
-            opts.Parse(this.Arguments);
-
-            if (!status.HasValue)
-            {
-                throw new CommandInvocationException("notify");
-            }
+            var status = this.Parameters.GetParameter("enable", (bool?)null);
             
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
 
@@ -143,11 +135,24 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
-                this.crossChannelService.NotificationStatus(backend, status.Value, this.databaseSession);
+                if (!status.HasValue)
+                {
+                    var currentStatus = this.crossChannelService.GetNotificationStatus(backend, this.databaseSession);
+                    this.databaseSession.Transaction.Rollback();
+                    
+                    return this.responder.Respond(
+                        "channelservices.command.crosschannel." + (currentStatus ? "enabled" : "disabled"),
+                        this.CommandSource,
+                        backend.Name);
+                }
+                else
+                {
+                    this.crossChannelService.SetNotificationStatus(backend, status.Value, this.databaseSession);
+
+                    this.databaseSession.Transaction.Commit();
                 
-                this.databaseSession.Transaction.Commit();
-                
-                return this.responder.Respond("common.done", this.CommandSource);
+                    return this.responder.Respond("common.done", this.CommandSource);
+                }
             }
             catch(Exception ex)
             {
@@ -172,7 +177,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
-                this.crossChannelService.NotificationKeyword(backend, this.Arguments.First(), this.databaseSession);
+                this.crossChannelService.SetNotificationKeyword(backend, this.Arguments.First(), this.databaseSession);
                 
                 this.databaseSession.Transaction.Commit();
                 
@@ -201,7 +206,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
 
-                this.crossChannelService.NotificationMessage(
+                this.crossChannelService.SetNotificationMessage(
                     backend,
                     string.Join(" ", this.Arguments),
                     this.databaseSession);

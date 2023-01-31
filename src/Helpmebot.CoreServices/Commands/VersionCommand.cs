@@ -14,6 +14,7 @@ namespace Helpmebot.CoreServices.Commands
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services;
@@ -64,8 +65,8 @@ namespace Helpmebot.CoreServices.Commands
             this.moduleLoader = moduleLoader;
         }
 
-        [Help("[--modules]", "Provides the current version of the bot and the key libraries")]
-            
+        [Help("", "Provides the current version of the bot and the key libraries")]
+        [CommandParameter("modules", "Include the versions of all loaded modules", "modules", typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var ircVersion = this.GetFileVersion(Assembly.GetAssembly(typeof(IrcClient)));
@@ -88,7 +89,7 @@ namespace Helpmebot.CoreServices.Commands
 
             yield return new CommandResponse { Message = message };
 
-            if (this.Arguments.Contains("--modules"))
+            if (this.Parameters.GetParameter("modules", false))
             {
                 foreach (var moduleVersion in
                     this.moduleLoader.LoadedAssemblies
