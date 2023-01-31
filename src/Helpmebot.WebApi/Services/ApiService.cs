@@ -209,7 +209,7 @@ namespace Helpmebot.WebApi.Services
                     }
 
                     subcommandInfo.Parameters = new List<CommandInfo.Parameter>();
-                    var optionSet = info.ParseOptionSet((x, y) => { }, (x, y) => { });
+                    var optionSet = info.ParseOptionSet((x, y, z) => { }, (x, y) => { });
                     foreach (var option in optionSet)
                     {
                         subcommandInfo.Parameters.Add(
