@@ -19,6 +19,7 @@ namespace Helpmebot.WebApi.Services
     using Helpmebot.WebApi.TransportModels;
     using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using FlagGroup = Helpmebot.WebApi.TransportModels.FlagGroup;
@@ -206,7 +207,21 @@ namespace Helpmebot.WebApi.Services
                             subcommandInfo.Aliases.Add(commandInfo.CanonicalName + " " + invoke.CommandName);
                         }
                     }
-                    
+
+                    subcommandInfo.Parameters = new List<CommandInfo.Parameter>();
+                    var optionSet = info.ParseOptionSet((x, y) => { }, (x, y) => { });
+                    foreach (var option in optionSet)
+                    {
+                        subcommandInfo.Parameters.Add(
+                            new CommandInfo.Parameter
+                            {
+                                Description = option.Description,
+                                Hidden = option.Hidden,
+                                Names = option.GetNames(),
+                                ValueType = (CommandInfo.ParameterValueType)option.OptionValueType
+                            });
+                    }
+
                     subcommandInfo.Syntax = helpAttr.HelpMessage.Syntax.ToList();
                     subcommandInfo.HelpText = helpAttr.HelpMessage.Text.ToList();
 

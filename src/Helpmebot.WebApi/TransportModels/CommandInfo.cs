@@ -22,12 +22,28 @@ namespace Helpmebot.WebApi.TransportModels
             public List<CommandFlag> Flags { get; set; } = new List<CommandFlag>();
             public List<string> Syntax { get; set; }
             public List<string> HelpText { get; set; }
+            public List<Parameter> Parameters { get; set; }
         }
 
         public class CommandFlag
         {
             public string Flag { get; set; }
             public bool GlobalOnly { get; set; }
+        }
+
+        public enum ParameterValueType
+        {
+            None,
+            Optional,
+            Required,
+        }
+
+        public class Parameter
+        {
+            public string Description { get; set; }
+            public bool Hidden { get; set; }
+            public ParameterValueType ValueType { get; set; }
+            public string[] Names { get; set; }
         }
     }
 }
