@@ -1,3 +1,5 @@
-This command configures the channel welcomer. Any user who has a hostmask on the list (but not on the ignore list) will be greeted with the message at [Messages:WelcomeMessage/channel](https://helpmebot.org.uk/wiki/Messages:WelcomeMessage/channel) (for example, [Message:WelcomeMessage/wikipedia-en-help](https://helpmebot.org.uk/wiki/Messages:WelcomeMessage/wikipedia-en-help)) on their entry to the channel. As a fallback, it will use [Message:WelcomeMessage](https://helpmebot.org.uk/wiki/Messages:WelcomeMessage).
+This command configures the channel welcomer. Any user who has a hostmask on the list (but not on the ignore list) will be greeted with the message defined by the [response](https://helpmebot.org.uk/responses) `channelservices.welcomer.welcome` on their entry to the channel. It is strongly recommended to [set a local override](https://helpmebot.org.uk/commands#command-message) for this message in the channel.
+
+If an override mode is configured, then a different message key might be used.
 
 If there are no hostmasks in the list to be welcomed, then nobody will be welcomed.
