@@ -40,7 +40,7 @@
     
     <div class="row">
         <div class="col">
-            <table class="table">
+            <table class="table table-highlightable">
                 <thead>
                 <tr>
                     <th>Message key</th>
@@ -50,7 +50,7 @@
                 <tbody id="searchTarget">
                     @foreach (var response in Model)
                     {
-                        <tr>
+                        <tr id="@response.Key.MessageKey">
                             <td>
                                 <span class="font-monospace text-nowrap">@response.Key.MessageKey</span>
                                 <br/>
