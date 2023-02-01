@@ -5,7 +5,18 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 
 function commandSearch(){
-    var searchItem = document.getElementById('search').value.toLowerCase();
+    const searchBox = document.getElementById('search');
+    var searchItem = searchBox.value.toLowerCase();
+
+    if(searchBox.value === "") {
+        const {
+            host, hostname, href, origin, pathname, port, protocol, search
+        } = window.location
+
+        history.replaceState({}, "", pathname);
+    } else {
+        history.replaceState({}, "", "?q=" + searchBox.value.toLowerCase())
+    }
     
     var shownCommands = [];
     var groups = {};
@@ -56,3 +67,9 @@ function commandSearch(){
        }
     });
 }
+
+(function($) {
+    $(document).ready(function() {
+        commandSearch()
+    });
+})(jQuery);

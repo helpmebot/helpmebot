@@ -31,6 +31,8 @@ namespace Helpmebot.WebUI.Controllers
                 groups[command.HelpCategory].Add(command);
             }
             
+            this.ViewData["q"] = this.HttpContext.Request.Query["q"].ToString();
+
             return View(groups);
         }
     }
