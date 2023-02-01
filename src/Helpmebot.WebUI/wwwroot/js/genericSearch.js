@@ -11,3 +11,9 @@ function genericSearch(){
         }
     }
 }
+
+(function($) {
+    $(document).ready(function() {
+        genericSearch()
+    });
+})(jQuery);

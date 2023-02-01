@@ -13,6 +13,8 @@ namespace Helpmebot.WebUI.Controllers
         [HttpGet("/interwiki")]
         public IActionResult Index()
         {
+            this.ViewData["q"] = this.HttpContext.Request.Query["q"].ToString();
+
             return this.View(this.ApiService.GetInterwikiList().OrderBy(x => x.ImportedAs ?? x.Prefix).ToList());
         }
     }

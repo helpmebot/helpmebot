@@ -25,7 +25,9 @@ namespace Helpmebot.WebUI.Controllers
             // }
 
             var responses = this.ApiService.GetMessageResponses().OrderBy(x => x.Key.MessageKey).ToList();
-            
+
+            this.ViewData["q"] = this.HttpContext.Request.Query["q"].ToString();
+
             return View(responses);
         }
     }

@@ -23,7 +23,9 @@ namespace Helpmebot.WebUI.Controllers
             {
                 brainItem.Parse();
             }
-            
+
+            this.ViewData["q"] = this.HttpContext.Request.Query["q"].ToString();
+
             return this.View(brainItems);
         }
     }
