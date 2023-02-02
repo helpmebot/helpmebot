@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 
     [CommandInvocation("icecream")]
     [CommandFlag(Flags.Fun)]
+    [HelpSummary("Frozen calories")]
     public class IceCreamCommand : TargetedFunCommandBase
     {
         public IceCreamCommand(
@@ -38,7 +40,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         {
         }
 
-        [Help(new[] {"", "<user>"}, "Provides a frozen treat")]
+        [Help("[user]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("funcommands.command.icecream");

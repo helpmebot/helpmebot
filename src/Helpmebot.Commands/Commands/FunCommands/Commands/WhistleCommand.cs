@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 
     [CommandInvocation("whistle")]
     [CommandFlag(Flags.Fun)]
+    [HelpSummary("Music box")]
     public class WhistleCommand : FunCommandBase
     {
         public WhistleCommand(
@@ -38,7 +40,6 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         {
         }
 
-        [Help("", "Makes the bot whistle a tune")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.Responder.Respond("funcommands.command.whistle", this.CommandSource, this.User.Nickname);

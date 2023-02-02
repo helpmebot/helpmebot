@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 
     [CommandInvocation("drink")]
     [CommandFlag(Flags.Fun)]
+    [HelpSummary("Feeling thirsty?")]
     public class DrinkCommand : TargetedFunCommandBase
     {
         public DrinkCommand(
@@ -38,7 +40,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         {
         }
 
-        [Help(new[] {"", "<user>"}, "Gives user a drink.")]
+        [Help("[user]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("funcommands.command.drink");

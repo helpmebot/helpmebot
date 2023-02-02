@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -15,6 +16,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
     [CommandInvocation("pillow")]
     [CommandInvocation("pillowfight")]
     [CommandFlag(Flags.Fun)]
+    [HelpSummary("That thing you rest your head on? Yeah, that. At high speed.")]
     public class PillowCommand : ProtectedTargetedFunCommandBase
     {
         public PillowCommand(
@@ -39,7 +41,7 @@ namespace Helpmebot.Commands.Commands.FunCommands.Commands
         {
         }
 
-        [Help(new[] {"", "<user>"}, "That thing you rest your head on? Yeah, that.")]
+        [Help("[user]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.GetResponse("funcommands.command.pillow");
