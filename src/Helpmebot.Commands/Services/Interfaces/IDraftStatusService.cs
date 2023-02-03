@@ -8,7 +8,7 @@ namespace Helpmebot.Commands.Services.Interfaces
     public interface IDraftStatusService
     {
         DraftStatus GetDraftStatus(IMediaWikiApi mediaWikiApi, string page);
-        DateTime? GetOldestDraft(IMediaWikiApi mediaWikiApi);
+        (DateTime? date, int categorySize) GetOldestDraft(IMediaWikiApi mediaWikiApi);
         int GetPendingDraftCount(IMediaWikiApi mediaWikiApi);
     }
 }

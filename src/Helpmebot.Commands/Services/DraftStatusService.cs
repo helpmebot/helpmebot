@@ -27,7 +27,7 @@ namespace Helpmebot.Commands.Services
         public DraftStatus GetDraftStatus(IMediaWikiApi mediaWikiApi, string page)
         {
             var status = new DraftStatus(page);
-            
+
             // retrieve the categories of the page
             var categorySet = mediaWikiApi.GetCategoriesOfPage(page);
 
@@ -56,7 +56,7 @@ namespace Helpmebot.Commands.Services
 
                 status.SubmissionInArticleSpace = true;
             }
-            
+
             if (this.IsPendingReview(categorySet))
             {
                 status.StatusCode = status.StatusCode == DraftStatusCode.Unknown
@@ -114,38 +114,41 @@ namespace Helpmebot.Commands.Services
             {
                 categoryName = categoryName.Substring("Category:".Length);
             }
-            
+
             var categorySize = mediaWikiApi.GetCategorySize(categoryName);
 
             return categorySize;
         }
 
-        public DateTime? GetOldestDraft(IMediaWikiApi mediaWikiApi)
+        public (DateTime? date, int categorySize) GetOldestDraft(IMediaWikiApi mediaWikiApi)
         {
+            var categorySize = this.GetPendingDraftCount(mediaWikiApi);
+            var ninetyFifthPercentileWait = (int)Math.Floor(categorySize * 0.05);
+
             var pagesInCategory = mediaWikiApi.GetPagesInCategory(
                 this.categoryConfiguration.PendingCategories.First().Key,
-                "max",
-                true);
-            
+                ninetyFifthPercentileWait.ToString(CultureInfo.InvariantCulture),
+                false);
+
             var pendingDated = pagesInCategory.Values
                 .Where(x => x.StartsWith("P") && x.Length >= 9)
                 .Select(x => x.Substring(1, 8))
                 .ToList();
 
-            var expectedDuration = pendingDated.Skip((int)Math.Floor(pendingDated.Count * 0.05)).FirstOrDefault();
+            var expectedDuration = pendingDated.Last();
 
             if (expectedDuration == null)
             {
-                return null;
+                return (null, categorySize);
             }
 
-            return DateTime.ParseExact(expectedDuration, "yyyyMMdd", CultureInfo.InvariantCulture);
+            return (DateTime.ParseExact(expectedDuration, "yyyyMMdd", CultureInfo.InvariantCulture), categorySize);
         }
         
         private DateTime? GetSubmissionDate(IDictionary<string, PageCategoryProperties> categorySet)
         {
             var datedCategoryPrefix = "Category:AfC submissions by date/";
-            
+
             var dateStrings = categorySet
                 .Where(x => x.Key.StartsWith(datedCategoryPrefix))
                 .Select(x => x.Key.Substring(datedCategoryPrefix.Length));
@@ -221,7 +224,7 @@ namespace Helpmebot.Commands.Services
                 .Intersect(this.categoryConfiguration.DeclinedCategories.Keys.ToList())
                 .ToList();
         }
-        
+
         private IList<string> GetSpeedyCategories(IDictionary<string, PageCategoryProperties> categorySet)
         {
             return categorySet.Keys

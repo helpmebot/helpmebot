@@ -190,20 +190,18 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
                 if (draftStatus.SubmissionDate.HasValue && draftStatus.StatusCode == DraftStatusCode.Pending)
                 {
-                    var oldestDraft = this.draftStatusService.GetOldestDraft(mediaWikiApi);
+                    var (oldestDraft, categorySize) = this.draftStatusService.GetOldestDraft(mediaWikiApi);
 
                     var extraDataComment = string.Empty;
 
                     if (oldestDraft.HasValue)
                     {
-                        var draftCount = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
-
                         var totalDays = (DateTime.UtcNow - oldestDraft.Value).TotalDays;
                         var oldestDuration = this.DescribeDuration(totalDays);
                         extraDataComment = string.Format(
                             " Please be patient - review may take more than {0}. There are currently {1} drafts awaiting review by volunteers; drafts are not reviewed in any particular order.",
                             oldestDuration,
-                            draftCount);
+                            categorySize);
                     }
 
                     var response = string.Format(
