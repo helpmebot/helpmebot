@@ -6,7 +6,6 @@ namespace Helpmebot.CoreServices.Services.Interfaces
     public interface IMediaWikiApiHelper
     {
         IMediaWikiApi GetApi(MediaWikiSite site);
-        IMediaWikiApi GetApi(string apiUrl, string username, string password);
         void Release(IMediaWikiApi api);
     }
 }

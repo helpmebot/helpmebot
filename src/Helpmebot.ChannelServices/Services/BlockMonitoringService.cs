@@ -170,37 +170,68 @@ namespace Helpmebot.ChannelServices.Services
             }
 
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-            
-            var ip = this.GetIpAddress(joinedUser);
-            if (ip == null)
+            try
             {
-                this.logger.DebugFormat("Could not detect IP address for user {0}", joinedUser);
-            }
-            else
-            {
-                var org = "";
-                var queryParameters = new NameValueCollection
+                var ip = this.GetIpAddress(joinedUser);
+                if (ip == null)
                 {
-                    {"fields", "org,as,status"}
-                };
-
-                var lookupUrl = string.Format("http://ip-api.com/line/{0}", ip);
-
-                var httpResponseData = this.webServiceClient.DoApiCall(
-                    queryParameters,
-                    lookupUrl,
-                    this.botConfiguration.UserAgent);
-
-                var textResult = new StreamReader(httpResponseData).ReadToEnd();
-                var resultData = textResult.Split('\r', '\n');
-                if (resultData.FirstOrDefault() == "success")
+                    this.logger.DebugFormat("Could not detect IP address for user {0}", joinedUser);
+                }
+                else
                 {
-                    org = resultData[1];
+                    var org = "";
+                    var queryParameters = new NameValueCollection
+                    {
+                        { "fields", "org,as,status" }
+                    };
+
+                    var lookupUrl = string.Format("http://ip-api.com/line/{0}", ip);
+
+                    var httpResponseData = this.webServiceClient.DoApiCall(
+                        queryParameters,
+                        lookupUrl,
+                        this.botConfiguration.UserAgent);
+
+                    var textResult = new StreamReader(httpResponseData).ReadToEnd();
+                    var resultData = textResult.Split('\r', '\n');
+                    if (resultData.FirstOrDefault() == "success")
+                    {
+                        org = resultData[1];
+                    }
+
+                    var blockInformationData = mediaWikiApi.GetBlockInformation(ip.ToString());
+
+                    foreach (var blockInformation in blockInformationData)
+                    {
+                        var url = this.linkerService.ConvertWikilinkToUrl(
+                            joinedChannel,
+                            "Special:Contributions/" + blockInformation.Target);
+                        url = this.urlShorteningService.Shorten(url);
+
+                        yield return new BlockData
+                        {
+                            Nickname = joinedUser.Nickname,
+                            Channel = joinedChannel,
+                            Ip = ip,
+                            BlockInformation = blockInformation,
+                            ContribsUrl = url,
+                            IpOrg = org,
+                            RegisteredUser = false
+                        };
+
+                        if (blockInformation.BlockReason.ToLower().Contains("blocked proxy")
+                            || blockInformation.BlockReason.ToLower().Contains("colocation"))
+                        {
+                            if (joinedChannel == "#wikipedia-en-help")
+                            {
+                                this.trollMonitoringService.ForceAddTracking(joinedUser, this);
+                            }
+                        }
+                    }
                 }
 
-                var blockInformationData = mediaWikiApi.GetBlockInformation(ip.ToString());
-
-                foreach (var blockInformation in blockInformationData)
+                var userBlockInfo = mediaWikiApi.GetBlockInformation(joinedUser.Nickname);
+                foreach (var blockInformation in userBlockInfo)
                 {
                     var url = this.linkerService.ConvertWikilinkToUrl(
                         joinedChannel,
@@ -210,45 +241,23 @@ namespace Helpmebot.ChannelServices.Services
                     yield return new BlockData
                     {
                         Nickname = joinedUser.Nickname,
-                        Channel = joinedChannel, 
-                        Ip = ip, 
-                        BlockInformation = blockInformation, 
+                        Channel = joinedChannel,
+                        Ip = null,
+                        BlockInformation = blockInformation,
                         ContribsUrl = url,
-                        IpOrg = org, 
-                        RegisteredUser = false
+                        IpOrg = null,
+                        RegisteredUser = true
                     };
 
-                    if (blockInformation.BlockReason.ToLower().Contains("blocked proxy") || blockInformation.BlockReason.ToLower().Contains("colocation"))
+                    if (joinedChannel == "#wikipedia-en-help")
                     {
-                        if (joinedChannel == "#wikipedia-en-help")
-                        {
-                            this.trollMonitoringService.ForceAddTracking(joinedUser, this);
-                        }
+                        this.trollMonitoringService.ForceAddTracking(joinedUser, this);
                     }
                 }
             }
-
-            var userBlockInfo = mediaWikiApi.GetBlockInformation(joinedUser.Nickname);
-            foreach (var blockInformation in userBlockInfo)
+            finally
             {
-                var url = this.linkerService.ConvertWikilinkToUrl(joinedChannel, "Special:Contributions/" + blockInformation.Target);
-                url = this.urlShorteningService.Shorten(url);
-
-                yield return new BlockData
-                {
-                    Nickname = joinedUser.Nickname,
-                    Channel = joinedChannel, 
-                    Ip = null, 
-                    BlockInformation = blockInformation, 
-                    ContribsUrl = url,
-                    IpOrg = null, 
-                    RegisteredUser = true
-                };
-
-                if (joinedChannel == "#wikipedia-en-help")
-                {
-                    this.trollMonitoringService.ForceAddTracking(joinedUser, this);
-                }
+                this.apiHelper.Release(mediaWikiApi);
             }
         }
 

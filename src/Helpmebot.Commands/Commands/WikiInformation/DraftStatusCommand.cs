@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Castle.Core.Logging;
     using Helpmebot.Commands.Model;
@@ -71,140 +72,169 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 throw new CommandErrorException(
                     "This command is only supported on channels configured for the English Wikipedia.");
             }
-
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-
-            // T1961 - add a fuzzy search to this
-            var page = this.OriginalArguments;
-
-            var draftStatus = this.draftStatusService.GetDraftStatus(mediaWikiApi, page);
-
-            var reportedDecline = false;
-            var reportedRejected = false;
-
-            var draftLink = string.Format(
-                "( {0} ) ",
-                this.urlShorteningService.Shorten(
-                    this.linkerService.ConvertWikilinkToUrl(this.CommandSource, draftStatus.Page)));
             
-            switch (draftStatus.StatusCode)
+            var stopwatch = Stopwatch.StartNew();
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            try
             {
-                case DraftStatusCode.Unknown:
-                    // Umm?
-                    yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {1}is not currently submitted for review.", draftStatus.Page, draftLink)};
-                    yield break;
+                // T1961 - add a fuzzy search to this
+                var page = this.OriginalArguments;
 
-                case DraftStatusCode.Draft:
-                    yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {1}is not currently submitted for review.", draftStatus.Page, draftLink)};
-                    break;
-                case DraftStatusCode.Pending:
-                    yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {1}has been submitted for review.", draftStatus.Page, draftLink)};
-                    break;
-                case DraftStatusCode.InReviewNow:
-                    yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {1}is currently being reviewed.", draftStatus.Page, draftLink)};
-                    break;
-                
-                case DraftStatusCode.SpeedyDeletion:
-                    var speedyReason = this.GetMessageFromCategorySet(
-                        this.categoryConfiguration.SpeedyDeletionCategories,
-                        draftStatus.SpeedyDeletionCategories,
-                        "nominated for speedy deletion");
-                    
-                    yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {2}has been {1}", draftStatus.Page, speedyReason, draftLink)};
-                    break;
-                
-                case DraftStatusCode.Rejected:
-                    var rejectReason = this.GetMessageFromCategorySet(
+                var draftStatus = this.draftStatusService.GetDraftStatus(mediaWikiApi, page);
+
+                var reportedDecline = false;
+                var reportedRejected = false;
+
+                var draftLink = string.Format(
+                    "( {0} ) ",
+                    this.urlShorteningService.Shorten(
+                        this.linkerService.ConvertWikilinkToUrl(this.CommandSource, draftStatus.Page)));
+
+                switch (draftStatus.StatusCode)
+                {
+                    case DraftStatusCode.Unknown:
+                        // Umm?
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format("[[{0}]] {1}is not currently submitted for review.", draftStatus.Page, draftLink)
+                        };
+                        yield break;
+
+                    case DraftStatusCode.Draft:
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format("[[{0}]] {1}is not currently submitted for review.", draftStatus.Page, draftLink)
+                        };
+                        break;
+                    case DraftStatusCode.Pending:
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format("[[{0}]] {1}has been submitted for review.", draftStatus.Page, draftLink)
+                        };
+                        break;
+                    case DraftStatusCode.InReviewNow:
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format("[[{0}]] {1}is currently being reviewed.", draftStatus.Page, draftLink)
+                        };
+                        break;
+
+                    case DraftStatusCode.SpeedyDeletion:
+                        var speedyReason = this.GetMessageFromCategorySet(
+                            this.categoryConfiguration.SpeedyDeletionCategories,
+                            draftStatus.SpeedyDeletionCategories,
+                            "nominated for speedy deletion");
+
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format( "[[{0}]] {2}has been {1}", draftStatus.Page, speedyReason, draftLink)
+                        };
+                        break;
+
+                    case DraftStatusCode.Rejected:
+                        var rejectReason = this.GetMessageFromCategorySet(
+                            this.categoryConfiguration.RejectedCategories,
+                            draftStatus.RejectionCategories,
+                            "rejected");
+
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format(
+                                "[[{0}]] {2}has been {1}",
+                                draftStatus.Page,
+                                rejectReason,
+                                draftLink)
+                        };
+                        reportedRejected = true;
+                        break;
+
+                    case DraftStatusCode.Declined:
+                        var declineReason = this.GetMessageFromCategorySet(
+                            this.categoryConfiguration.DeclinedCategories,
+                            draftStatus.DeclineCategories,
+                            "declined");
+
+                        yield return new CommandResponse
+                        {
+                            Message = string.Format("[[{0}]] {2}has been {1}", draftStatus.Page, declineReason, draftLink)
+                        };
+                        reportedDecline = true;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+
+                if (!reportedRejected && draftStatus.RejectionCategories.Any())
+                {
+                    var declineReason = this.GetMessageFromCategorySet(
                         this.categoryConfiguration.RejectedCategories,
                         draftStatus.RejectionCategories,
                         "rejected");
 
                     yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {2}has been {1}", draftStatus.Page, rejectReason, draftLink)};
-                    reportedRejected = true;
-                    break;
-                
-                case DraftStatusCode.Declined:
+                        { Message = string.Format("This draft has also been {0}", declineReason) };
+                }
+
+                if (!reportedDecline && draftStatus.DeclineCategories.Any())
+                {
                     var declineReason = this.GetMessageFromCategorySet(
                         this.categoryConfiguration.DeclinedCategories,
                         draftStatus.DeclineCategories,
                         "declined");
-                    
+
                     yield return new CommandResponse
-                        {Message = string.Format("[[{0}]] {2}has been {1}", draftStatus.Page, declineReason, draftLink)};
-                    reportedDecline = true;
-                    break;
-                
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            
-            if (!reportedRejected && draftStatus.RejectionCategories.Any())
-            {
-                var declineReason = this.GetMessageFromCategorySet(
-                    this.categoryConfiguration.RejectedCategories,
-                    draftStatus.RejectionCategories,
-                    "rejected");
-                
-                yield return new CommandResponse
-                    {Message = string.Format("This draft has also been {0}", declineReason)};
-            }
-            
-            if (!reportedDecline && draftStatus.DeclineCategories.Any())
-            {
-                var declineReason = this.GetMessageFromCategorySet(
-                    this.categoryConfiguration.DeclinedCategories,
-                    draftStatus.DeclineCategories,
-                    "declined");
-                
-                yield return new CommandResponse
-                    {Message = string.Format("This draft has also been {0}", declineReason)};
-            }
-
-            if (draftStatus.SubmissionDate.HasValue && draftStatus.StatusCode == DraftStatusCode.Pending)
-            {
-                var oldestDraft = this.draftStatusService.GetOldestDraft(mediaWikiApi);
-
-                var extraDataComment = string.Empty;
-                
-                if (oldestDraft.HasValue)
-                {
-                    var draftCount = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
-
-                    var totalDays = (DateTime.UtcNow - oldestDraft.Value).TotalDays;
-                    var oldestDuration = this.DescribeDuration(totalDays);
-                    extraDataComment = string.Format(
-                        " Please be patient - review may take more than {0}. There are currently {1} drafts awaiting review by volunteers; drafts are not reviewed in any particular order.",
-                        oldestDuration,
-                        draftCount);
+                        { Message = string.Format("This draft has also been {0}", declineReason) };
                 }
 
-                var response = string.Format(
-                    "This submission was submitted on {0:yyyy-MM-dd} ({1} ago).{2}",
-                    draftStatus.SubmissionDate,
-                    this.DescribeDuration((DateTime.UtcNow - draftStatus.SubmissionDate.Value).TotalDays),
-                    extraDataComment);
-                
-                yield return new CommandResponse {Message = response};
-            }
-            
-            
-            if (draftStatus.SubmissionInArticleSpace)
-            {
-                yield return new CommandResponse {Message = "This submission is in the article namespace."};
-            }
-            
-            if (draftStatus.DuplicatesExistingArticle)
-            {
-                yield return new CommandResponse {Message = "This draft has the same name as an existing article."};
-            }
+                if (draftStatus.SubmissionDate.HasValue && draftStatus.StatusCode == DraftStatusCode.Pending)
+                {
+                    var oldestDraft = this.draftStatusService.GetOldestDraft(mediaWikiApi);
 
+                    var extraDataComment = string.Empty;
+
+                    if (oldestDraft.HasValue)
+                    {
+                        var draftCount = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
+
+                        var totalDays = (DateTime.UtcNow - oldestDraft.Value).TotalDays;
+                        var oldestDuration = this.DescribeDuration(totalDays);
+                        extraDataComment = string.Format(
+                            " Please be patient - review may take more than {0}. There are currently {1} drafts awaiting review by volunteers; drafts are not reviewed in any particular order.",
+                            oldestDuration,
+                            draftCount);
+                    }
+
+                    var response = string.Format(
+                        "This submission was submitted on {0:yyyy-MM-dd} ({1} ago).{2}",
+                        draftStatus.SubmissionDate,
+                        this.DescribeDuration((DateTime.UtcNow - draftStatus.SubmissionDate.Value).TotalDays),
+                        extraDataComment);
+
+                    yield return new CommandResponse { Message = response };
+                }
+
+
+                if (draftStatus.SubmissionInArticleSpace)
+                {
+                    yield return new CommandResponse { Message = "This submission is in the article namespace." };
+                }
+
+                if (draftStatus.DuplicatesExistingArticle)
+                {
+                    yield return new CommandResponse
+                        { Message = "This draft has the same name as an existing article." };
+                }
+
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+                
+                stopwatch.Stop();
+                this.Logger.Debug($"draftstatus command exec finished in {stopwatch.ElapsedMilliseconds}ms");
+            }
         }
 
         private string DescribeDuration(double totalDays)
