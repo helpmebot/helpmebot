@@ -19,45 +19,16 @@ namespace Helpmebot.Model
 {
     using Helpmebot.Persistence;
 
-    /// <summary>
-    /// The media wiki site.
-    /// </summary>
     public class MediaWikiSite : EntityBase
     {
-        #region Public Properties
-
-        /// <summary>
-        /// Gets or sets the API.
-        /// </summary>
         public virtual string Api { get; set; }
 
-        /// <summary>
-        /// Gets or sets the database.
-        /// </summary>
-        public virtual string Database { get; set; }
-
-        /// <summary>
-        /// Gets or sets the main page.
-        /// </summary>
-        public virtual string MainPage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the password.
-        /// </summary>
         public virtual string Password { get; set; }
 
-        /// <summary>
-        /// Gets or sets the shard.
-        /// </summary>
-        public virtual string Shard { get; set; }
-
-        /// <summary>
-        /// Gets or sets the username.
-        /// </summary>
         public virtual string Username { get; set; }
-        
+
         public virtual bool IsDefault { get; set; }
 
-        #endregion
+        public virtual string WikiId { get; set; }
     }
 }

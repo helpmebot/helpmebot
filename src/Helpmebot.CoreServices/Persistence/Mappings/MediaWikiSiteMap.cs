@@ -35,13 +35,11 @@ namespace Helpmebot.Persistence.Mappings
         {
             this.Table("site");
             this.Id(x => x.Id, "site_id");
-            this.Map(x => x.MainPage, "site_mainpage");
-            this.Map(x => x.Username, "site_username");
-            this.Map(x => x.Password, "site_password");
-            this.Map(x => x.Database, "site_database");
-            this.Map(x => x.Shard, "site_dbserver");
-            this.Map(x => x.Api, "site_api");
+            this.Map(x => x.Username, "username");
+            this.Map(x => x.Password, "password");
+            this.Map(x => x.Api, "api");
             this.Map(x => x.IsDefault, "isdefault");
+            this.Map(x => x.WikiId, "wiki_id");
         }
 
         #endregion
