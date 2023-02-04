@@ -24,7 +24,7 @@
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
         <PackageReference Include="Mono.Options" Version="6.12.0.148" />
         <PackageReference Include="NHibernate" Version="5.3.11" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.3.95" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.3.96" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.2.50" />
     </ItemGroup>
 
