@@ -3,36 +3,45 @@
     using System;
     using System.Data;
     using System.Linq;
+    using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
+    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
 
-    public class ChannelManagementService : IChannelManagementService
+    public class ChannelManagementService : IChannelManagementService, ISilentModeConfiguration
     {
         private readonly ISession session;
         private readonly IIrcClient client;
         private readonly IFlagService flagService;
         private readonly IAccessLogService accessLogService;
+        private readonly ILogger logger;
 
         public ChannelManagementService(
             ISession session,
             IIrcClient client,
             IFlagService flagService,
-            IAccessLogService accessLogService)
+            IAccessLogService accessLogService,
+            ILogger logger,
+            ICommandHandler commandHandler
+        )
         {
             this.session = session;
             this.client = client;
             this.flagService = flagService;
             this.accessLogService = accessLogService;
+            this.logger = logger;
 
             this.client.InviteReceivedEvent += this.OnInvite;
             this.client.WasKickedEvent += this.OnKicked;
+            
+            commandHandler.SilentModeConfiguration = this;
         }
 
         public void JoinChannel(string channelName)
@@ -46,12 +55,11 @@
 
                 if (channel == null)
                 {
-                    
                     var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
                         .Add(Restrictions.Eq("IsDefault", true))
                         .List<MediaWikiSite>()
                         .FirstOrDefault();
-                    
+
                     channel = new Channel
                     {
                         Name = channelName,
@@ -172,9 +180,9 @@
                 }
             }
         }
-        
+
         public void ConfigureSilence(string channelName, bool state)
-        {            
+        {
             using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 try
@@ -204,9 +212,9 @@
                 }
             }
         }
-        
+
         public void ConfigureFunCommands(string channelName, bool disabled)
-        {            
+        {
             using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 try
@@ -236,9 +244,9 @@
                 }
             }
         }
-        
+
         public bool FunCommandsDisabled(string channelName)
-        {            
+        {
             var channel = this.session.CreateCriteria<Channel>()
                 .Add(Restrictions.Eq("Name", channelName))
                 .List<Channel>()
@@ -258,7 +266,7 @@
                 .Add(Restrictions.Eq("Name", channelName))
                 .List<Channel>()
                 .FirstOrDefault();
-            
+
             if (channel == null)
             {
                 return false;
@@ -266,14 +274,14 @@
 
             return channel.AutoLink;
         }
-        
+
         public bool IsSilenced(string channelName)
         {
             var channel = this.session.CreateCriteria<Channel>()
                 .Add(Restrictions.Eq("Name", channelName))
                 .List<Channel>()
                 .FirstOrDefault();
-            
+
             if (channel == null)
             {
                 return false;
@@ -281,7 +289,7 @@
 
             return channel.Silenced;
         }
-        
+
         [Obsolete]
         public Channel GetChannel(string channelName)
         {
@@ -289,6 +297,24 @@
                 .Add(Restrictions.Eq("Name", channelName))
                 .List<Channel>()
                 .FirstOrDefault();
+        }
+
+        bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
+        {
+            if (!destination.StartsWith("#"))
+            {
+                return false;
+            }
+
+            try
+            {
+                return this.IsSilenced(destination);
+            }
+            catch (Exception ex)
+            {
+                this.logger.ErrorFormat(ex, "Error encountered determining silence configuration for {0}", destination);
+                return false;
+            }
         }
     }
 }

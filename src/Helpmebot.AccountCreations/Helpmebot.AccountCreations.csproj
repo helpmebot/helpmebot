@@ -23,7 +23,7 @@
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
         <PackageReference Include="NHibernate" Version="5.3.11" />
         <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.3.96" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="16.3.104" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="4.2.50" />
         <PackageReference Include="System.Text.Json" Version="5.0.2" />
     </ItemGroup>
