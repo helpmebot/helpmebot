@@ -10,6 +10,7 @@
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
+    using NHibernate.Criterion;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
@@ -203,8 +204,11 @@
             // fetch category information    
             List<string> pagesInCategory;
 
+            var mwSite = this.session.CreateCriteria<MediaWikiSite>()
+                .Add(Restrictions.Eq(nameof(MediaWikiSite.WikiId), category.BaseWikiId))
+                .UniqueResult<MediaWikiSite>();
             
-            var mediaWikiApi = this.apiHelper.GetApi(category.BaseWiki);
+            var mediaWikiApi = this.apiHelper.GetApi(mwSite);
             try
             {
                 pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();

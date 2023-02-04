@@ -22,8 +22,8 @@ namespace Helpmebot.Model
     public class WatchedCategory : EntityBase
     {
         public virtual string Category { get; set; }
-        public virtual string Keyword { get; set; }        
-        public virtual MediaWikiSite BaseWiki { get; set; }
+        public virtual string Keyword { get; set; }
+        public virtual string BaseWikiId { get; set; }
         
         public virtual IList<CategoryWatcherChannel> Channels { get; set; }
         public virtual IList<CategoryItem> CategoryItems { get; set; }

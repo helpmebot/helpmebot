@@ -37,7 +37,7 @@ namespace Helpmebot.Persistence.Mappings
 
             this.Map(x => x.Category, "category");
             this.Map(x => x.Keyword, "keyword");
-            this.References(x => x.BaseWiki, "basewiki");
+            this.Map(x => x.BaseWikiId, "base_wiki_id");
 
             this.HasMany(x => x.Channels).Cascade.AllDeleteOrphan().Table("channelwatchers").Inverse();
             this.HasMany(x => x.CategoryItems).Cascade.AllDeleteOrphan().Table("categoryitems").Inverse();
