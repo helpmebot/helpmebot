@@ -40,6 +40,7 @@ namespace Helpmebot.CoreServices.Services
         private readonly ILogger logger;
         private readonly IChannelManagementService channelManagementService;
         private readonly Dictionary<string, string> lastLink;
+        private readonly Dictionary<string, string> articlePathCache;
 
         /// <summary>
         /// Initialises a new instance of the <see cref="LinkerService"/> class.
@@ -56,6 +57,7 @@ namespace Helpmebot.CoreServices.Services
             this.client = client;
             this.logger = logger;
             this.channelManagementService = channelManagementService;
+            this.articlePathCache = new Dictionary<string, string>();
             this.lastLink = new Dictionary<string, string>();
         }
 
@@ -91,17 +93,6 @@ namespace Helpmebot.CoreServices.Services
             }
             
             return resultString;
-        }
-
-        private string GetWikiArticleBasePath(string destination)
-        {
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(destination);
-
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-            var url = mediaWikiApi.GetArticlePath();
-
-            this.apiHelper.Release(mediaWikiApi);
-            return url;
         }
 
         public string GetLastLinkForChannel(string destination)
@@ -148,18 +139,36 @@ namespace Helpmebot.CoreServices.Services
 
         #region Methods
 
-        /// <summary>
-        /// The anti-space.
-        /// </summary>
-        /// <param name="source">
-        /// The source.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        /// <remarks>
-        /// FIXME: UrlEncode?
-        /// </remarks>
+        private string GetWikiArticleBasePath(string destination)
+        {
+            lock (this.articlePathCache)
+            {
+                if (this.articlePathCache.ContainsKey(destination))
+                {
+                    return this.articlePathCache[destination];
+                }
+            }
+
+            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(destination);
+
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var url = mediaWikiApi.GetArticlePath();
+
+            this.apiHelper.Release(mediaWikiApi);
+
+            lock (this.articlePathCache)
+            {
+                if (this.articlePathCache.ContainsKey(destination))
+                {
+                    this.articlePathCache.Remove(destination);
+                }
+
+                this.articlePathCache.Add(destination, url);
+            }
+
+            return url;
+        }
+        
         private string Antispace(string source)
         {
             return source.Replace(' ', '_')
@@ -183,15 +192,8 @@ namespace Helpmebot.CoreServices.Services
                 .Replace("?", "%3F").Replace("#", "%23").Replace("[", "%5B").Replace("]", "%5D");
         }
 
-        /// <summary>
-        /// The IRC private message event.
-        /// </summary>
-        /// <param name="sender">
-        /// The IRC client sending this event.
-        /// </param>
-        /// <param name="e">
-        /// The event args from the IRC event
-        /// </param>
+        #endregion
+        
         public void IrcPrivateMessageEvent(object sender, MessageReceivedEventArgs e)
         {
             var newLink = this.ParseMessageForLinks(e.Message);
@@ -221,8 +223,6 @@ namespace Helpmebot.CoreServices.Services
                 e.Client.SendMessage(messageTarget, string.Join(", ", links));
             }
         }
-
-        #endregion
         
         public void Start()
         {
