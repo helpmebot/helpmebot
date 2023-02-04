@@ -49,14 +49,14 @@
             using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", channelName))
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .List<Channel>()
                     .FirstOrDefault();
 
                 if (channel == null)
                 {
                     var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
-                        .Add(Restrictions.Eq("IsDefault", true))
+                        .Add(Restrictions.Eq(nameof(MediaWikiSite.IsDefault), true))
                         .List<MediaWikiSite>()
                         .FirstOrDefault();
 
@@ -82,7 +82,7 @@
             using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", channelName))
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .List<Channel>()
                     .FirstOrDefault();
 
@@ -133,7 +133,7 @@
             using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", e.Channel))
+                    .Add(Restrictions.Eq(nameof(Channel.Name), e.Channel))
                     .List<Channel>()
                     .FirstOrDefault();
 
@@ -156,7 +156,7 @@
                 try
                 {
                     var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq("Name", channelName))
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                         .List<Channel>()
                         .FirstOrDefault();
 
@@ -188,7 +188,7 @@
                 try
                 {
                     var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq("Name", channelName))
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                         .List<Channel>()
                         .FirstOrDefault();
 
@@ -220,7 +220,7 @@
                 try
                 {
                     var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq("Name", channelName))
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                         .List<Channel>()
                         .FirstOrDefault();
 
@@ -248,7 +248,7 @@
         public bool FunCommandsDisabled(string channelName)
         {
             var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                 .List<Channel>()
                 .FirstOrDefault();
 
@@ -263,7 +263,7 @@
         public bool AutoLinkEnabled(string channelName)
         {
             var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                 .List<Channel>()
                 .FirstOrDefault();
 
@@ -278,7 +278,7 @@
         public bool IsSilenced(string channelName)
         {
             var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                 .List<Channel>()
                 .FirstOrDefault();
 
@@ -294,7 +294,7 @@
         public Channel GetChannel(string channelName)
         {
             return this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", channelName))
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                 .List<Channel>()
                 .FirstOrDefault();
         }

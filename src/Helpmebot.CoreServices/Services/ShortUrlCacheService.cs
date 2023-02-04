@@ -45,7 +45,7 @@ namespace Helpmebot.CoreServices.Services
             {
                 this.logger.DebugFormat("Searching cache for {0}", longUrl);
                 var shortUrlCacheEntry = this.session.CreateCriteria<ShortUrlCacheEntry>()
-                    .Add(Restrictions.Eq("LongUrl", longUrl))
+                    .Add(Restrictions.Eq(nameof(ShortUrlCacheEntry.LongUrl), longUrl))
                     .List<ShortUrlCacheEntry>()
                     .FirstOrDefault();
 

@@ -162,7 +162,7 @@ namespace Helpmebot.ChannelServices.Services
             using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 mediaWikiSite = this.globalSession.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq("Name", joinedChannel))
+                    .Add(Restrictions.Eq(nameof(Channel.Name), joinedChannel))
                     .UniqueResult<Channel>()
                     .BaseWiki;
 
@@ -291,8 +291,8 @@ namespace Helpmebot.ChannelServices.Services
                     var deleteList = databaseSession.CreateCriteria<BlockMonitor>()
                         .Add(
                             Restrictions.And(
-                                Restrictions.Eq("MonitorChannel", monitorChannel),
-                                Restrictions.Eq("ReportChannel", reportChannel)
+                                Restrictions.Eq(nameof(BlockMonitor.MonitorChannel), monitorChannel),
+                                Restrictions.Eq(nameof(BlockMonitor.ReportChannel), reportChannel)
                             ))
                         .List<BlockMonitor>();
 

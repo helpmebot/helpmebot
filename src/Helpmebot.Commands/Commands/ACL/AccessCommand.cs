@@ -64,7 +64,7 @@ namespace Helpmebot.Commands.Commands.ACL
                 var flagGroupName = this.Arguments[2];
 
                 var flagGroup = this.session.CreateCriteria<FlagGroup>()
-                    .Add(Restrictions.Eq("Name", flagGroupName))
+                    .Add(Restrictions.Eq(nameof(FlagGroup.Name), flagGroupName))
                     .UniqueResult<FlagGroup>();
 
                 if (flagGroup == null)
@@ -101,7 +101,7 @@ namespace Helpmebot.Commands.Commands.ACL
                 var flagGroupName = this.Arguments[2];
 
                 var flagGroup = this.session.CreateCriteria<FlagGroup>()
-                    .Add(Restrictions.Eq("Name", flagGroupName))
+                    .Add(Restrictions.Eq(nameof(FlagGroup.Name), flagGroupName))
                     .UniqueResult<FlagGroup>();
 
                 if (flagGroup == null)

@@ -55,7 +55,7 @@ namespace Helpmebot.Brain.Services
                     name = name.ToLower();
                     
                     var deleteList = this.session.CreateCriteria<Keyword>()
-                        .Add(Restrictions.Eq("Name", name))
+                        .Add(Restrictions.Eq(nameof(Keyword.Name), name))
                         .List<Keyword>();
 
                     foreach (var model in deleteList)
@@ -89,7 +89,7 @@ namespace Helpmebot.Brain.Services
                     
                     var existing =
                         this.session.CreateCriteria<Keyword>()
-                            .Add(Restrictions.Eq("Name", name))
+                            .Add(Restrictions.Eq(nameof(Keyword.Name), name))
                             .List<Keyword>()
                             .FirstOrDefault() ?? new Keyword();
 
@@ -122,7 +122,7 @@ namespace Helpmebot.Brain.Services
                 // force to lowercase
                 name = name.ToLower();
                 
-                existing = this.session.CreateCriteria<Keyword>().Add(Restrictions.Eq("Name", name)).List<Keyword>();
+                existing = this.session.CreateCriteria<Keyword>().Add(Restrictions.Eq(nameof(Keyword.Name), name)).List<Keyword>();
             }
 
             return existing.FirstOrDefault();

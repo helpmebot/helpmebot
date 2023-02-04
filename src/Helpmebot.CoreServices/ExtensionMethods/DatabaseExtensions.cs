@@ -11,7 +11,7 @@ namespace Helpmebot.CoreServices.ExtensionMethods
         public static Channel GetChannelObject(this ISession session, string commandSource)
         {
             return session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq("Name", commandSource))
+                .Add(Restrictions.Eq(nameof(Channel.Name), commandSource))
                 .UniqueResult<Channel>();
         } 
         
@@ -25,7 +25,7 @@ namespace Helpmebot.CoreServices.ExtensionMethods
             }
 
             return session.CreateCriteria<MediaWikiSite>()
-                .Add(Restrictions.Eq("IsDefault", true))
+                .Add(Restrictions.Eq(nameof(MediaWikiSite.IsDefault), true))
                 .UniqueResult<MediaWikiSite>();
         }
     }

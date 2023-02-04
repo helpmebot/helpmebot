@@ -42,11 +42,11 @@ namespace Helpmebot.ChannelServices.Services
                 .Add(
                     Restrictions.Or(
                         Restrictions.Or(
-                            Restrictions.Eq("FrontendChannel", frontend),
-                            Restrictions.Eq("FrontendChannel", backend)),
+                            Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend),
+                            Restrictions.Eq(nameof(CrossChannel.FrontendChannel), backend)),
                         Restrictions.Or(
-                            Restrictions.Eq("BackendChannel", frontend),
-                            Restrictions.Eq("BackendChannel", backend))
+                            Restrictions.Eq(nameof(CrossChannel.BackendChannel), frontend),
+                            Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                     ))
                 .List<CrossChannel>();
 
@@ -70,7 +70,7 @@ namespace Helpmebot.ChannelServices.Services
         public void Deconfigure(Channel backend, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", backend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -89,7 +89,7 @@ namespace Helpmebot.ChannelServices.Services
         public void SetNotificationStatus(Channel backend, bool status, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", backend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -129,7 +129,7 @@ namespace Helpmebot.ChannelServices.Services
         public bool GetNotificationStatus(Channel backend, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", backend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -143,7 +143,7 @@ namespace Helpmebot.ChannelServices.Services
         public void SetNotificationMessage(Channel backend, string message, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", backend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -164,7 +164,7 @@ namespace Helpmebot.ChannelServices.Services
         public void SetNotificationKeyword(Channel backend, string keyword, ISession localSession)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", backend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -190,7 +190,7 @@ namespace Helpmebot.ChannelServices.Services
         public void Notify(Channel frontend, string message, ISession localSession, IIrcClient client, IUser user)
         {
             var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("FrontendChannel", frontend))
+                .Add(Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend))
                 .UniqueResult<CrossChannel>();
 
             if (existing == null)
@@ -216,7 +216,7 @@ namespace Helpmebot.ChannelServices.Services
             lock (this.sessionLock)
             {
                 itemsToRegister = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(Restrictions.Eq("NotifyEnabled", true))
+                    .Add(Restrictions.Eq(nameof(CrossChannel.NotifyEnabled), true))
                     .List<CrossChannel>();
             }
 

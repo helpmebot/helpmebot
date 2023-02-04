@@ -29,7 +29,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             this.logger.DebugFormat("Creating flag group {0} with flags {1}", name, flags);
 
             var rowcount = session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", name))
+                .Add(Restrictions.Eq(nameof(FlagGroup.Name), name))
                 .SetProjection(Projections.RowCount())
                 .UniqueResult<int>();
 
@@ -60,7 +60,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         public void ModifyFlagGroup(string name, string flagChanges, ISession session)
         {
             var item = session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", name))
+                .Add(Restrictions.Eq(nameof(FlagGroup.Name), name))
                 .UniqueResult<FlagGroup>();
 
             if (item == null)
@@ -98,7 +98,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         public void SetFlagGroupFlags(string name, string flags, ISession session)
         {
             var item = session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", name))
+                .Add(Restrictions.Eq(nameof(FlagGroup.Name), name))
                 .UniqueResult<FlagGroup>();
 
             if (item == null)
@@ -131,7 +131,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         public void SetFlagGroupMode(string name, bool granting, ISession session)
         {
             var item = session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", name))
+                .Add(Restrictions.Eq(nameof(FlagGroup.Name), name))
                 .UniqueResult<FlagGroup>();
 
             if (item == null)
@@ -160,7 +160,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             this.logger.DebugFormat("Deleting flag group {0}", name);
 
             var item = session.CreateCriteria<FlagGroup>()
-                .Add(Restrictions.Eq("Name", name))
+                .Add(Restrictions.Eq(nameof(FlagGroup.Name), name))
                 .UniqueResult<FlagGroup>();
 
             if (item == null)
@@ -188,8 +188,8 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             this.logger.DebugFormat("Granting group {0} to [{1}, {2}] globally", group, user.Mask, user.Account);
 
             var existing = session.CreateCriteria<FlagGroupUser>()
-                .Add(Restrictions.Eq("User", user))
-                .Add(Restrictions.Eq("FlagGroup", group))
+                .Add(Restrictions.Eq(nameof(FlagGroupUser.User), user))
+                .Add(Restrictions.Eq(nameof(FlagGroupUser.FlagGroup), group))
                 .UniqueResult<FlagGroupUser>();
 
             if (existing == null)
@@ -204,8 +204,8 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             this.logger.DebugFormat("Revoking group {0} from [{1}, {2}] globally", group, user.Mask, user.Account);
 
             var existing = session.CreateCriteria<FlagGroupUser>()
-                .Add(Restrictions.Eq("User", user))
-                .Add(Restrictions.Eq("FlagGroup", group))
+                .Add(Restrictions.Eq(nameof(FlagGroupUser.User), user))
+                .Add(Restrictions.Eq(nameof(FlagGroupUser.FlagGroup), group))
                 .UniqueResult<FlagGroupUser>();
 
             if (existing != null)
@@ -238,8 +238,8 @@ namespace Helpmebot.CoreServices.Services.AccessControl
             }
 
             var user = session.CreateCriteria<User>()
-                .Add(Restrictions.Eq("Account", account))
-                .Add(Restrictions.Eq("Mask", mask))
+                .Add(Restrictions.Eq(nameof(User.Account), account))
+                .Add(Restrictions.Eq(nameof(User.Mask), mask))
                 .UniqueResult<User>();
 
             if (user != null)

@@ -108,7 +108,7 @@ namespace Helpmebot.CoreServices.Startup
 
             using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                var channels = this.globalSession.CreateCriteria<Channel>().Add(Restrictions.Eq("Enabled", true)).List<Channel>();
+                var channels = this.globalSession.CreateCriteria<Channel>().Add(Restrictions.Eq(nameof(Channel.Enabled), true)).List<Channel>();
                 tx.Rollback();
                 
                 // join the necessary channels

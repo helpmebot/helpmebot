@@ -59,7 +59,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             }
             
             var crossChannelConfig = this.session.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq("BackendChannel", this.CommandSource))
+                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), this.CommandSource))
                 .List<CrossChannel>();
 
             if (crossChannelConfig.Count == 1)

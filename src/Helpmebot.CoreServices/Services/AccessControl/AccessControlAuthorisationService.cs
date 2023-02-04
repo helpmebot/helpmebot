@@ -90,7 +90,7 @@ namespace Helpmebot.CoreServices.Services.AccessControl
         public void Refresh(User u)
         {
             // ensure this is from the correct session
-            u = this.session.CreateCriteria<User>().Add(Restrictions.Eq("Id", u.Id)).UniqueResult<User>();
+            u = this.session.CreateCriteria<User>().Add(Restrictions.Eq(nameof(User.Id), u.Id)).UniqueResult<User>();
             
             this.session.Refresh(u);
         }
