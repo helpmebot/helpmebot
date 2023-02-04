@@ -21,7 +21,9 @@ namespace Helpmebot.CoreServices.ExtensionMethods
 
             if (channelObject != null)
             {
-                return channelObject.BaseWiki;
+                return session.CreateCriteria<MediaWikiSite>()
+                    .Add(Restrictions.Eq(nameof(MediaWikiSite.WikiId), channelObject.BaseWikiId))
+                    .UniqueResult<MediaWikiSite>();
             }
 
             return session.CreateCriteria<MediaWikiSite>()

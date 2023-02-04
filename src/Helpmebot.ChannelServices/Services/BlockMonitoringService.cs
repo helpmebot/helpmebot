@@ -161,10 +161,7 @@ namespace Helpmebot.ChannelServices.Services
             MediaWikiSite mediaWikiSite;
             using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                mediaWikiSite = this.globalSession.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq(nameof(Channel.Name), joinedChannel))
-                    .UniqueResult<Channel>()
-                    .BaseWiki;
+                mediaWikiSite = this.globalSession.GetMediaWikiSiteObject(joinedChannel);
 
                 tx.Rollback();
             }

@@ -60,11 +60,17 @@
                         .List<MediaWikiSite>()
                         .FirstOrDefault();
 
+                    if (mediaWikiSite == null)
+                    {
+                        throw new Exception("Cannot find default MW configuration");
+                    }
+
                     channel = new Channel
                     {
                         Name = channelName,
                         Enabled = true,
-                        BaseWiki = mediaWikiSite
+                        
+                        BaseWikiId = mediaWikiSite.WikiId
                     };
                 }
 
@@ -302,7 +308,11 @@
                 throw new NullReferenceException("Channel object not found");
             }
 
-            return channel.BaseWiki;
+            var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
+                .Add(Restrictions.Eq(nameof(MediaWikiSite.WikiId), channel.BaseWikiId))
+                .UniqueResult<MediaWikiSite>();
+
+            return mediaWikiSite;
         }
 
         [Obsolete]

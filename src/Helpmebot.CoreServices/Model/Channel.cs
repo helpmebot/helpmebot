@@ -45,7 +45,7 @@ namespace Helpmebot.Model
         
         public virtual string WelcomerFlag { get; set; }
         
-        public virtual MediaWikiSite BaseWiki { get; set; }
+        public virtual string BaseWikiId { get; set; }
 
         /// <summary>
         /// The to string.
