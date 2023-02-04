@@ -28,6 +28,9 @@ dataset:
   channelservices.command.autolink.disabled:
     - - Autolinking disabled in this channel.
 
+  channelservices.command.basewiki:
+    - - "{0} is configured to use {1} ({2}) as it's default wiki."
+
   channelservices.command.silence.enabled:
     - - Silent mode enabled in this channel.
   channelservices.command.silence.disabled:

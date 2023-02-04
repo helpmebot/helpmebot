@@ -290,6 +290,21 @@
             return channel.Silenced;
         }
 
+        public MediaWikiSite GetBaseWiki(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+
+            if (channel == null)
+            {
+                throw new NullReferenceException("Channel object not found");
+            }
+
+            return channel.BaseWiki;
+        }
+
         [Obsolete]
         public Channel GetChannel(string channelName)
         {
