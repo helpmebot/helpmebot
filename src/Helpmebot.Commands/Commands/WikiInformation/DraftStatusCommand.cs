@@ -73,7 +73,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                     "This command is only supported on channels configured for the English Wikipedia.");
             }
             
-            var stopwatch = Stopwatch.StartNew();
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             try
             {
@@ -229,9 +228,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             finally
             {
                 this.apiHelper.Release(mediaWikiApi);
-                
-                stopwatch.Stop();
-                this.Logger.Debug($"draftstatus command exec finished in {stopwatch.ElapsedMilliseconds}ms");
             }
         }
 
