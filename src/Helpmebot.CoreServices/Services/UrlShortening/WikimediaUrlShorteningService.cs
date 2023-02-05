@@ -5,6 +5,7 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
     using System.Linq;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using ExtensionMethods;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.TypedFactories;
@@ -26,7 +27,8 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
             IMediaWikiApiTypedFactory apiTypedFactory,
             BotConfiguration configuration,
             IUrlShorteningService secondaryShortener,
-            WikimediaUrlShortnerConfiguration shortenerConfiguration)
+            WikimediaUrlShortnerConfiguration shortenerConfiguration,
+            MediaWikiSiteConfiguration mediaWikiSiteConfiguration)
             : base(logger, shortUrlCacheService)
         {
             this.logger = logger;
@@ -44,12 +46,20 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
                     return null;
                 }
             }).Where(x => x != null).ToList();
-            
-            this.mediaWikiConfig = new MediaWikiConfiguration(
-                shortenerConfiguration.MediaWikiApiEndpoint,
-                configuration.UserAgent,
-                shortenerConfiguration.MediaWikiApiUsername,
-                shortenerConfiguration.MediaWikiApiPassword);
+
+            if (string.IsNullOrWhiteSpace(shortenerConfiguration.MediaWikiInstance))
+            {
+                this.mediaWikiConfig = new MediaWikiConfiguration(
+                    shortenerConfiguration.MediaWikiApiEndpoint,
+                    configuration.UserAgent,
+                    shortenerConfiguration.MediaWikiApiUsername,
+                    shortenerConfiguration.MediaWikiApiPassword);
+            }
+            else
+            {
+                var instanceConfig = mediaWikiSiteConfiguration.Sites[shortenerConfiguration.MediaWikiInstance];
+                this.mediaWikiConfig = instanceConfig.ToMediaWikiConfiguration(configuration.UserAgent);
+            }
         }
 
         protected internal override string GetShortUrl(string longUrl)

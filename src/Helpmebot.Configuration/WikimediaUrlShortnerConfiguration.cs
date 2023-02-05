@@ -7,6 +7,7 @@ namespace Helpmebot.Configuration
         public string MediaWikiApiEndpoint { get; set; }
         public string MediaWikiApiUsername { get; set; }
         public string MediaWikiApiPassword { get; set; }
+        public string MediaWikiInstance { get; set; }
         public List<string> AllowedDomains { get; set; }
     }
 }
