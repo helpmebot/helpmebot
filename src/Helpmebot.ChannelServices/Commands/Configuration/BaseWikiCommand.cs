@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -22,6 +23,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     {
         private readonly IResponder responder;
         private readonly IChannelManagementService channelManagementService;
+        private readonly MediaWikiSiteConfiguration mwConfig;
 
         public BaseWikiCommand(
             string commandSource,
@@ -32,7 +34,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IResponder responder,
-            IChannelManagementService channelManagementService) : base(
+            IChannelManagementService channelManagementService,
+            MediaWikiSiteConfiguration mwConfig) : base(
             commandSource,
             user,
             arguments,
@@ -43,6 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             this.responder = responder;
             this.channelManagementService = channelManagementService;
+            this.mwConfig = mwConfig;
         }
 
         [Help("", "Retrieves the base wiki this channel is configured to use")]
@@ -54,11 +58,12 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             try
             {
                 var mediaWikiSite = this.channelManagementService.GetBaseWiki(target);
+                var wikiSite = this.mwConfig.GetSite(mediaWikiSite, true);
 
                 return this.responder.Respond(
                     "channelservices.command.basewiki",
                     this.CommandSource,
-                    new object[] { target, mediaWikiSite.WikiId, mediaWikiSite.Api });
+                    new object[] { target, wikiSite.WikiId, wikiSite.Api });
             }
             catch (NullReferenceException)
             {

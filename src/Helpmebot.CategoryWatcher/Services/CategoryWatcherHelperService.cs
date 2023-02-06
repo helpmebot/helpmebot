@@ -203,12 +203,8 @@
 
             // fetch category information    
             List<string> pagesInCategory;
-
-            var mwSite = this.session.CreateCriteria<MediaWikiSite>()
-                .Add(Restrictions.Eq(nameof(MediaWikiSite.WikiId), category.BaseWikiId))
-                .UniqueResult<MediaWikiSite>();
             
-            var mediaWikiApi = this.apiHelper.GetApi(mwSite);
+            var mediaWikiApi = this.apiHelper.GetApi(category.BaseWikiId);
             try
             {
                 pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();

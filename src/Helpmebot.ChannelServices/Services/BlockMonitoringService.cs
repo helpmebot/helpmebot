@@ -70,6 +70,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly IWebServiceClient webServiceClient;
         private readonly IIrcClient client;
         private readonly ITrollMonitoringService trollMonitoringService;
+        private readonly IChannelManagementService channelManagementService;
 
         private readonly Dictionary<string, HashSet<string>> monitors = new Dictionary<string, HashSet<string>>();
 
@@ -82,7 +83,8 @@ namespace Helpmebot.ChannelServices.Services
             BotConfiguration botConfiguration,
             IWebServiceClient webServiceClient,
             IIrcClient client,
-            ITrollMonitoringService trollMonitoringService)
+            ITrollMonitoringService trollMonitoringService,
+            IChannelManagementService channelManagementService)
         {
             this.logger = logger;
             this.linkerService = linkerService;
@@ -93,7 +95,8 @@ namespace Helpmebot.ChannelServices.Services
             this.webServiceClient = webServiceClient;
             this.client = client;
             this.trollMonitoringService = trollMonitoringService;
-            
+            this.channelManagementService = channelManagementService;
+
             this.trollMonitoringService.BlockMonitoringService = this;
 
             // initialise the store
@@ -158,15 +161,9 @@ namespace Helpmebot.ChannelServices.Services
 
         public IEnumerable<BlockData> GetBlockData(IUser joinedUser, string joinedChannel)
         {
-            MediaWikiSite mediaWikiSite;
-            using (var tx = this.globalSession.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                mediaWikiSite = this.globalSession.GetMediaWikiSiteObject(joinedChannel);
+            var baseWikiId = this.channelManagementService.GetBaseWiki(joinedChannel);
+            var mediaWikiApi = this.apiHelper.GetApi(baseWikiId);
 
-                tx.Rollback();
-            }
-
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             try
             {
                 var ip = this.GetIpAddress(joinedUser);

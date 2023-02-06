@@ -46,9 +46,19 @@ namespace Helpmebot.CoreServices.Services
             public Guid Id { get; }
         } 
         
+        [Obsolete("Legacy MW site database config; use CMS.GetBaseWiki() and MWAPIHelper.")]
         public IMediaWikiApi GetApi(MediaWikiSite site)
         {
-            return this.GetApiInternal(site.ToConfigurationType());
+            return this.GetApiInternal(new MediaWikiSiteConfiguration.MediaWikiSite
+            {
+                Api = site.Api,
+                Credentials = new MediaWikiSiteConfiguration.MediaWikiCredentials
+                {
+                    Username = site.Username,
+                    Password = site.Password
+                },
+                WikiId = site.WikiId
+            });
         }
 
         public IMediaWikiApi GetApi(string siteId, bool fallback = false)
@@ -114,12 +124,12 @@ namespace Helpmebot.CoreServices.Services
                 }
                 else
                 {
-                    var mwConfig = new MediaWikiConfiguration(
+                    var conf = new MediaWikiConfiguration(
                         site.Api,
                         this.botConfig.UserAgent,
                         site.Credentials.Username,
                         site.Credentials.Password);
-                    var mediaWikiApi = this.factory.Create<IMediaWikiApi>(mwConfig);
+                    var mediaWikiApi = this.factory.Create<IMediaWikiApi>(conf);
 
                     var id = Guid.NewGuid();
                     var cacheEntry = new CacheEntry(mediaWikiApi);

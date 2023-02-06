@@ -15,6 +15,7 @@ namespace Helpmebot.CoreServices.ExtensionMethods
                 .UniqueResult<Channel>();
         } 
         
+        [Obsolete("Legacy MW site database config; use CMS.GetBaseWiki() and MWAPIHelper.")]
         public static MediaWikiSite GetMediaWikiSiteObject(this ISession session, string commandSource)
         {
             var channelObject = session.GetChannelObject(commandSource);

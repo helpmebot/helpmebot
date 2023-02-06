@@ -19,6 +19,6 @@
         bool FunCommandsDisabled(string channelName);
         bool AutoLinkEnabled(string channelName);
         bool IsSilenced(string channelName);
-        MediaWikiSite GetBaseWiki(string channelName);
+        string GetBaseWiki(string channelName);
     }
 }

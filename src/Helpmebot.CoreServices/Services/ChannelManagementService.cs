@@ -4,6 +4,7 @@
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using Configuration;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
@@ -22,6 +23,7 @@
         private readonly IFlagService flagService;
         private readonly IAccessLogService accessLogService;
         private readonly ILogger logger;
+        private readonly MediaWikiSiteConfiguration mwConfig;
 
         public ChannelManagementService(
             ISession session,
@@ -29,7 +31,8 @@
             IFlagService flagService,
             IAccessLogService accessLogService,
             ILogger logger,
-            ICommandHandler commandHandler
+            ICommandHandler commandHandler,
+            MediaWikiSiteConfiguration mwConfig
         )
         {
             this.session = session;
@@ -37,6 +40,7 @@
             this.flagService = flagService;
             this.accessLogService = accessLogService;
             this.logger = logger;
+            this.mwConfig = mwConfig;
 
             this.client.InviteReceivedEvent += this.OnInvite;
             this.client.WasKickedEvent += this.OnKicked;
@@ -55,22 +59,11 @@
 
                 if (channel == null)
                 {
-                    var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
-                        .Add(Restrictions.Eq(nameof(MediaWikiSite.IsDefault), true))
-                        .List<MediaWikiSite>()
-                        .FirstOrDefault();
-
-                    if (mediaWikiSite == null)
-                    {
-                        throw new Exception("Cannot find default MW configuration");
-                    }
-
                     channel = new Channel
                     {
                         Name = channelName,
                         Enabled = true,
-                        
-                        BaseWikiId = mediaWikiSite.WikiId
+                        BaseWikiId = this.mwConfig.Default
                     };
                 }
 
@@ -296,7 +289,7 @@
             return channel.Silenced;
         }
 
-        public MediaWikiSite GetBaseWiki(string channelName)
+        public string GetBaseWiki(string channelName)
         {
             var channel = this.session.CreateCriteria<Channel>()
                 .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
@@ -308,11 +301,7 @@
                 throw new NullReferenceException("Channel object not found");
             }
 
-            var mediaWikiSite = this.session.CreateCriteria<MediaWikiSite>()
-                .Add(Restrictions.Eq(nameof(MediaWikiSite.WikiId), channel.BaseWikiId))
-                .UniqueResult<MediaWikiSite>();
-
-            return mediaWikiSite;
+            return channel.BaseWikiId;
         }
 
         [Obsolete]
