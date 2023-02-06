@@ -3,12 +3,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -22,9 +20,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandFlag(Flags.Info)]
     public class UserRightsCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public UserRightsCommand(
             string commandSource,
@@ -34,9 +32,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -45,9 +43,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("[username]", "Returns the list of groups you or the specified user currently hold")]
@@ -59,7 +57,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 username = this.User.Nickname;
             }
 
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             
             try

@@ -7,12 +7,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Web;
     using Castle.Core.Logging;
     using Helpmebot.Commands.ExtensionMethods;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -25,11 +23,11 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandFlag(Flags.Info)]
     public class UserInfoCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShortener;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public UserInfoCommand(
             string commandSource,
@@ -39,11 +37,11 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
             ILinkerService linkerService,
             IUrlShorteningService urlShortener,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -52,18 +50,17 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.linkerService = linkerService;
             this.urlShortener = urlShortener;
             this.apiHelper = apiHelper;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("[username]", "Gives a batch of information on the specified user.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiSiteObject = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
             var username = string.Join(" ", this.Arguments);
             if (this.Arguments.Count == 0)

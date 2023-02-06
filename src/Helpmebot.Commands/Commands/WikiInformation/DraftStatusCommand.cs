@@ -2,19 +2,16 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Services;
     using Helpmebot.Commands.Model;
     using Helpmebot.Commands.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Exceptions;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -28,7 +25,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     {
         private readonly AfcCategoryConfiguration categoryConfiguration;
         private readonly IMediaWikiApiHelper apiHelper;
-        private readonly ISession databaseSession;
         private readonly IDraftStatusService draftStatusService;
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
@@ -43,8 +39,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IIrcClient client,
             AfcCategoryConfiguration categoryConfiguration,
             IMediaWikiApiHelper apiHelper,
-            ISession databaseSession,
-            IDraftStatusService draftStatusService, ILinkerService linkerService, IUrlShorteningService urlShorteningService) : base(
+            IDraftStatusService draftStatusService,
+            ILinkerService linkerService,
+            IUrlShorteningService urlShorteningService) : base(
             commandSource,
             user,
             arguments,
@@ -55,7 +52,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             this.categoryConfiguration = categoryConfiguration;
             this.apiHelper = apiHelper;
-            this.databaseSession = databaseSession;
             this.draftStatusService = draftStatusService;
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
@@ -65,15 +61,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            // check current channel is enwiki-capable
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            if (!mediaWikiSite.Api.Contains("en.wikipedia"))
-            {
-                throw new CommandErrorException(
-                    "This command is only supported on channels configured for the English Wikipedia.");
-            }
-            
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var mediaWikiApi = this.apiHelper.GetApi(MediaWikiApiHelper.WikipediaEnglish, false);
             try
             {
                 // T1961 - add a fuzzy search to this

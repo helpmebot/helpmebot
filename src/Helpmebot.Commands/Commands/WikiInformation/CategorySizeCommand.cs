@@ -3,11 +3,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,9 +17,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("categorysize")]
     public class CategorySizeCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public CategorySizeCommand(
             string commandSource,
@@ -31,9 +29,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -42,9 +40,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [RequiredArguments(1)]
@@ -52,8 +50,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         protected override IEnumerable<CommandResponse> Execute()
         {
             var categoryName = string.Join(" ", this.Arguments).Trim();
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
             try
             {

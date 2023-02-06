@@ -3,13 +3,12 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Services;
     using Helpmebot.Commands.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Newtonsoft.Json;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -22,7 +21,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("afcbacklog")]
     public class AfcCountCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IDraftStatusService draftStatusService;
         private readonly IResponder responder;
@@ -35,7 +33,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
             IDraftStatusService draftStatusService,
             IResponder responder
@@ -48,7 +45,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
             this.draftStatusService = draftStatusService;
             this.responder = responder;
@@ -57,8 +53,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         [Help("", "Returns the number of AfC submissions awaiting review")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(string.Empty);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var mediaWikiApi = this.apiHelper.GetApi(MediaWikiApiHelper.WikipediaEnglish, false);
             
             var categorySize = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
 

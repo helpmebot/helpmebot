@@ -3,11 +3,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,8 +16,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("blockinfo")]
     public class BlockInformationCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
+        private readonly IChannelManagementService channelManagementService;
 
         public BlockInformationCommand(
             string commandSource,
@@ -30,8 +27,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
-            IMediaWikiApiHelper apiHelper) : base(
+            IMediaWikiApiHelper apiHelper,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -40,15 +37,14 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("<target>", "Returns information about active blocks on the provided target")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiSiteObject = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
             var blockInfoResult = mediaWikiApi.GetBlockInformation(string.Join(" ", this.Arguments));
 

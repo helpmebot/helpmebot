@@ -3,11 +3,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -20,9 +18,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     public class PageInfoCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
-        private readonly ISession databaseSession;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public PageInfoCommand(
             string commandSource,
@@ -33,9 +31,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ILinkerService linkerService,
-            ISession databaseSession,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -45,9 +43,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             client)
         {
             this.linkerService = linkerService;
-            this.databaseSession = databaseSession;
             this.apiHelper = apiHelper;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("<page title>", "Provides basic information on the provided page")]
@@ -55,7 +53,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             var pageTitle = this.GetPageTitle();
             
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);
             
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             try

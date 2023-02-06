@@ -3,12 +3,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Web;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Exceptions;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -21,10 +19,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandFlag(Flags.Info)]
     public class EditCountCommand : CommandBase
     {
-        private readonly ISession databaseSession;
         private readonly IUrlShorteningService urlShorteningService;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
 
         public EditCountCommand(
             string commandSource,
@@ -34,10 +32,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ISession databaseSession,
             IUrlShorteningService urlShorteningService,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder) : base(
+            IResponder responder, 
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -46,10 +44,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             configurationProvider,
             client)
         {
-            this.databaseSession = databaseSession;
             this.urlShorteningService = urlShorteningService;
             this.apiHelper = apiHelper;
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
         }
 
         [Help("[username]", "Returns your edit count or the edit count for the specified user")]
@@ -61,8 +59,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 username = this.User.Nickname;
             }
 
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
             int editCount;
             try

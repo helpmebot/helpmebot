@@ -4,16 +4,16 @@ namespace Helpmebot.CoreServices.Services
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
-    using ExtensionMethods;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
     using Helpmebot.TypedFactories;
     using Stwalkerster.Bot.MediaWikiLib.Configuration;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
     public class MediaWikiApiHelper : IMediaWikiApiHelper
     {
+        public const string WikipediaEnglish = "enwiki";
+        
         private readonly BotConfiguration botConfig;
         private readonly IMediaWikiApiTypedFactory factory;
         private readonly ILogger logger;
@@ -44,24 +44,9 @@ namespace Helpmebot.CoreServices.Services
             public DateTime LastCheck { get; set; }
             public int CheckoutCount { get; set; }
             public Guid Id { get; }
-        } 
-        
-        [Obsolete("Legacy MW site database config; use CMS.GetBaseWiki() and MWAPIHelper.")]
-        public IMediaWikiApi GetApi(MediaWikiSite site)
-        {
-            return this.GetApiInternal(new MediaWikiSiteConfiguration.MediaWikiSite
-            {
-                Api = site.Api,
-                Credentials = new MediaWikiSiteConfiguration.MediaWikiCredentials
-                {
-                    Username = site.Username,
-                    Password = site.Password
-                },
-                WikiId = site.WikiId
-            });
         }
 
-        public IMediaWikiApi GetApi(string siteId, bool fallback = false)
+        public IMediaWikiApi GetApi(string siteId, bool fallback = true)
         {
             MediaWikiSiteConfiguration.MediaWikiSite site;
             

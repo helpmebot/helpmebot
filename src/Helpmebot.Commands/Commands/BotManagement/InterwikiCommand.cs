@@ -3,7 +3,6 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Attributes;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -25,6 +24,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
         private readonly IInterwikiService interwikiService;
+        private readonly IChannelManagementService channelManagementService;
 
         public InterwikiCommand(
             string commandSource,
@@ -37,7 +37,8 @@ namespace Helpmebot.Commands.Commands.BotManagement
             ISession session,
             IMediaWikiApiHelper apiHelper,
             IResponder responder,
-            IInterwikiService interwikiService) : base(
+            IInterwikiService interwikiService,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -50,6 +51,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
             this.apiHelper = apiHelper;
             this.responder = responder;
             this.interwikiService = interwikiService;
+            this.channelManagementService = channelManagementService;
         }
         
         [Help("<interwiki> <url>", "Adds or updates the specified interwiki entry")]
@@ -91,7 +93,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
         [SubcommandInvocation("import")]
         protected IEnumerable<CommandResponse> Import()
         {
-            var mediaWikiSiteObject = this.session.GetMediaWikiSiteObject(this.CommandSource);
+            var mediaWikiSiteObject = this.channelManagementService.GetBaseWiki(this.CommandSource);
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
 
             var (upToDateIw, createdIw, updatedIw, deletedIw) = this.interwikiService.Import(mediaWikiApi);

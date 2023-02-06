@@ -18,14 +18,11 @@ namespace Helpmebot.CoreServices.Services
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
-    using NHibernate.Criterion;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -149,7 +146,7 @@ namespace Helpmebot.CoreServices.Services
                 }
             }
 
-            var mediaWikiSite = this.databaseSession.GetMediaWikiSiteObject(destination);
+            var mediaWikiSite = this.channelManagementService.GetBaseWiki(destination);
 
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             var url = mediaWikiApi.GetArticlePath();
