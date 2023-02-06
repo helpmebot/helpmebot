@@ -57,7 +57,7 @@ namespace Helpmebot.CoreServices.Services.UrlShortening
             }
             else
             {
-                var instanceConfig = mediaWikiSiteConfiguration.Sites[shortenerConfiguration.MediaWikiInstance];
+                var instanceConfig = mediaWikiSiteConfiguration.GetSite(shortenerConfiguration.MediaWikiInstance);
                 this.mediaWikiConfig = instanceConfig.ToMediaWikiConfiguration(configuration.UserAgent);
             }
         }

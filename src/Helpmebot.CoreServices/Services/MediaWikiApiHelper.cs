@@ -4,6 +4,7 @@ namespace Helpmebot.CoreServices.Services
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using ExtensionMethods;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
@@ -13,17 +14,19 @@ namespace Helpmebot.CoreServices.Services
 
     public class MediaWikiApiHelper : IMediaWikiApiHelper
     {
-        private readonly BotConfiguration config;
+        private readonly BotConfiguration botConfig;
         private readonly IMediaWikiApiTypedFactory factory;
         private readonly ILogger logger;
+        private readonly MediaWikiSiteConfiguration mwConfig;
 
         private readonly Dictionary<string, CacheEntry> cache;
 
-        public MediaWikiApiHelper(BotConfiguration config, IMediaWikiApiTypedFactory factory, ILogger logger)
+        public MediaWikiApiHelper(BotConfiguration botConfig, IMediaWikiApiTypedFactory factory, ILogger logger, MediaWikiSiteConfiguration mwConfig)
         {
-            this.config = config;
+            this.botConfig = botConfig;
             this.factory = factory;
             this.logger = logger;
+            this.mwConfig = mwConfig;
             this.cache = new Dictionary<string, CacheEntry>();
         }
 
@@ -31,19 +34,61 @@ namespace Helpmebot.CoreServices.Services
         {
             public CacheEntry(IMediaWikiApi api)
             {
-                this.API = api;
+                this.Api = api;
                 this.LastCheck = DateTime.UtcNow;
                 this.CheckoutCount = 0;
-                this.ID = Guid.NewGuid();
+                this.Id = Guid.NewGuid();
             }
 
-            public IMediaWikiApi API { get; set; }
+            public IMediaWikiApi Api { get; }
             public DateTime LastCheck { get; set; }
             public int CheckoutCount { get; set; }
-            public Guid ID { get; }
+            public Guid Id { get; }
         } 
         
         public IMediaWikiApi GetApi(MediaWikiSite site)
+        {
+            return this.GetApiInternal(site.ToConfigurationType());
+        }
+
+        public IMediaWikiApi GetApi(string siteId, bool fallback = false)
+        {
+            MediaWikiSiteConfiguration.MediaWikiSite site;
+            
+            if (string.IsNullOrWhiteSpace(siteId))
+            {
+                site = this.mwConfig.GetSite(null, true);
+            }
+            else
+            {
+                site = this.mwConfig.GetSite(siteId, fallback);
+            }
+
+            if (site == null)
+            {
+                throw new NullReferenceException("Unable to retrieve API configuration");
+            }
+            
+            return this.GetApiInternal(site);
+        }
+        
+        public void Release(IMediaWikiApi api)
+        {
+            lock (this.cache)
+            {
+                var keyValuePair = this.cache.First(x => x.Value.Api.Equals(api));
+                var valueTuple = keyValuePair.Value;
+                valueTuple.CheckoutCount--;
+                this.logger.DebugFormat(
+                    "Returned MWAPI ID {1}, new checkoutcount {0}",
+                    valueTuple.CheckoutCount,
+                    valueTuple.Id);
+            }
+
+            //this.factory.Release(api);
+        }
+        
+        private IMediaWikiApi GetApiInternal(MediaWikiSiteConfiguration.MediaWikiSite site)
         {
             lock (this.cache)
             {
@@ -53,8 +98,8 @@ namespace Helpmebot.CoreServices.Services
 
                     if ((DateTime.UtcNow - cachedValue.LastCheck).Minutes > 30)
                     {
-                        this.logger.DebugFormat("Refreshing login for MWAPI ID {0}", cachedValue.ID);
-                        cachedValue.API.Login();
+                        this.logger.DebugFormat("Refreshing login for MWAPI ID {0}", cachedValue.Id);
+                        cachedValue.Api.Login();
                         cachedValue.LastCheck = DateTime.UtcNow;
                     }
 
@@ -63,17 +108,17 @@ namespace Helpmebot.CoreServices.Services
                     this.logger.DebugFormat(
                         "Checking out MWAPI ID {1}, new checkoutcount {0}",
                         cachedValue.CheckoutCount,
-                        cachedValue.ID);
+                        cachedValue.Id);
 
-                    return cachedValue.API;
+                    return cachedValue.Api;
                 }
                 else
                 {
                     var mwConfig = new MediaWikiConfiguration(
                         site.Api,
-                        this.config.UserAgent,
-                        site.Username,
-                        site.Password);
+                        this.botConfig.UserAgent,
+                        site.Credentials.Username,
+                        site.Credentials.Password);
                     var mediaWikiApi = this.factory.Create<IMediaWikiApi>(mwConfig);
 
                     var id = Guid.NewGuid();
@@ -86,22 +131,6 @@ namespace Helpmebot.CoreServices.Services
                     return mediaWikiApi;
                 }
             }
-        }
-
-        public void Release(IMediaWikiApi api)
-        {
-            lock (this.cache)
-            {
-                var keyValuePair = this.cache.First(x => x.Value.API.Equals(api));
-                var valueTuple = keyValuePair.Value;
-                valueTuple.CheckoutCount--;
-                this.logger.DebugFormat(
-                    "Returned MWAPI ID {1}, new checkoutcount {0}",
-                    valueTuple.CheckoutCount,
-                    valueTuple.ID);
-            }
-
-            //this.factory.Release(api);
         }
     }
 }
