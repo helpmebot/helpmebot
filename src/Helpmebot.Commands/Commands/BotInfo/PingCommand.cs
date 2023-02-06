@@ -43,7 +43,6 @@ namespace Helpmebot.Commands.Commands.BotInfo
         protected override IEnumerable<CommandResponse> Execute()
         {
             string name;
-            string message;
 
             if (this.Arguments.Count == 0)
             {

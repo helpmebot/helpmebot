@@ -68,7 +68,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 username = this.User.Nickname;
             }
             
-            string message;
             try
             {
                 var userPage = this.linkerService.ConvertWikilinkToUrl(
