@@ -42,6 +42,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         }
 
         [Help("<target>", "Returns information about active blocks on the provided target")]
+        [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
