@@ -70,7 +70,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 catch (MissingUserException e)
                 {
                     this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
-                    return this.responder.Respond("commands.command.userrights.missing", this.CommandSource, username);
+                    return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
                 }
                 catch (MediawikiApiException e)
                 {

@@ -11,6 +11,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Exceptions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -65,6 +66,10 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             try
             {
                 editCount = mediaWikiApi.GetEditCount(username);
+            }
+            catch (MissingUserException)
+            {
+                return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
             }
             catch (MediawikiApiException e)
             {

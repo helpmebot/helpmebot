@@ -115,8 +115,6 @@ dataset:
   commands.command.registration:
     - - "[[User:{0}]] registered on {1:u} ({2}y {3:d\\d\\ hh\\:mm\\:ss} ago)"
       
-  commands.command.userinfo.missing:
-    - - "The specified user does not exist."
   commands.command.userinfo.blocked:
     - - "| BLOCKED"
   commands.command.userinfo.user:
@@ -124,11 +122,10 @@ dataset:
   commands.command.userinfo.ip:
     - - "User: {0} | Talk: {1} | Contribs: {2} | BlockLog: {3} {9}"
 
-  commands.command.userrights.missing:
-    - - "The user [[User:{username}]] does not appear to exist on-wiki."
   commands.command.userrights.no-rights:
     - - "[[User:{0}]] has no rights assigned."
   commands.command.userrights:
     - - "[[User:{0}]] has the following rights: {1}"
   
-  
+  commands.common.missing-user:
+    - - "The user [[User:{0}]] does not appear to exist on-wiki."

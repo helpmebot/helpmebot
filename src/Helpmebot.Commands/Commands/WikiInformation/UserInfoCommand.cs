@@ -143,7 +143,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             {
                 if (ex.Message == "Missing user")
                 {
-                    return this.responder.Respond("commands.command.userinfo.missing", this.CommandSource, username);
+                    return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
                 }
 
                 throw;
