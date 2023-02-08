@@ -21,5 +21,7 @@ namespace Helpmebot.CoreServices.Services
         {
             get { return this.botConfig.DebugChannel; }
         }
+
+        public bool AllowQuotedStrings { get; } = false;
     }
 }
