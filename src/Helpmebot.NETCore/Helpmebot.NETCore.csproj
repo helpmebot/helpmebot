@@ -24,7 +24,7 @@
       <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
       <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
       <PackageReference Include="Castle.Windsor" Version="4.1.1" />
-      <PackageReference Include="DnsClient" Version="1.6.0" />
+      <PackageReference Include="DnsClient" Version="1.7.0" />
       <PackageReference Include="FluentNHibernate" Version="3.1.0" />
       <PackageReference Include="IPNetwork2" Version="2.5.386" />
       <PackageReference Include="MaxMind.Db" Version="3.0.0" />
@@ -33,7 +33,7 @@
       <PackageReference Include="Mono.Options" Version="6.12.0.148" />
       <PackageReference Include="MySql.Data" Version="8.0.28" />
       <PackageReference Include="NetMQ" Version="4.0.1.8" />
-      <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
+      <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
       <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.113" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.55" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
