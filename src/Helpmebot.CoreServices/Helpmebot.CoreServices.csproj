@@ -21,7 +21,7 @@
         <PackageReference Include="MaxMind.Db" Version="3.0.0" />
         <PackageReference Include="MaxMind.GeoIP2" Version="4.0.1" />
         <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
-        <PackageReference Include="MySql.Data" Version="8.0.28" />
+        <PackageReference Include="MySql.Data" Version="8.0.31" />
         <PackageReference Include="NHibernate" Version="5.4.1" />
         <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.113" />
