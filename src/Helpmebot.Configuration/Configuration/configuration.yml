@@ -49,7 +49,21 @@ database:
   # port: 3306
   # charset: utf8mb4
 
-
+########################################################################################################
+# MediaWiki sites
+# 
+mediaWikiSites:
+  default: enwiki
+  sites:
+    - wikiId: enwiki
+      api: https://en.wikipedia.org/w/api.php
+      credentials: &wikimediaCredentials
+        username: username@botname
+        password: changeme
+    - wikiId: metawiki
+      api: https://meta.wikimedia.org/w/api.php
+      credentials: *wikimediaCredentials
+      
 ########################################################################################################
 # Modules
 #
@@ -86,9 +100,7 @@ modules:
 # Wikimedia URL shortener configuration (w.wiki)
 #
 wikimediaShortener:
-  mediaWikiApiEndpoint: https://meta.wikimedia.org/w/api.php
-  mediaWikiApiUsername:
-  mediaWikiApiPassword:
+  mediaWikiInstance: metawiki
   allowedDomains:
     - ^.*\.wikipedia\.org$
     - ^.*\.wiktionary\.org$
