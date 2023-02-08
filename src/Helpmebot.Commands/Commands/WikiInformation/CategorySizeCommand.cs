@@ -10,6 +10,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Exceptions;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -57,9 +58,12 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             {
                 var categorySize = mediaWikiApi.GetCategorySize(categoryName);
 
-                return this.responder.Respond("commands.command.catsize", this.CommandSource, new object[] { categoryName, categorySize });
+                return this.responder.Respond(
+                    "commands.command.catsize",
+                    this.CommandSource,
+                    new object[] { categoryName, categorySize });
             }
-            catch (ArgumentException)
+            catch (GeneralMediaWikiApiException ex) when (ex.Message.Contains("not found"))
             {
                 return this.responder.Respond("commands.command.catsize.missing", this.CommandSource, categoryName);
             }
