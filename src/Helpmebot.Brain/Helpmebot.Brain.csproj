@@ -21,7 +21,7 @@
     <ItemGroup>
         <PackageReference Include="Castle.Core" Version="4.4.1" />
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
-        <PackageReference Include="NHibernate" Version="5.3.11" />
+        <PackageReference Include="NHibernate" Version="5.4.1" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.113" />
     </ItemGroup>
 

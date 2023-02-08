@@ -192,10 +192,10 @@
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="Mono.Options" Version="6.12.0.148" />
     <PackageReference Include="MySql.Data" Version="8.0.28" />
-    <PackageReference Include="NetMQ" Version="4.0.1.8" />
+    <PackageReference Include="NetMQ" Version="4.0.1.10" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="NHibernate" Version="5.3.11" />
+    <PackageReference Include="NHibernate" Version="5.4.1" />
     <PackageReference Include="prometheus-net" Version="5.0.2" />
     <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
