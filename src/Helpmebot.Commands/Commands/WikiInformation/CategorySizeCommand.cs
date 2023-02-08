@@ -16,6 +16,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandFlag(Flags.Info)]
     [CommandInvocation("categorysize")]
+    [CommandInvocation("catsize")]
     public class CategorySizeCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
