@@ -67,7 +67,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             {
                 editCount = mediaWikiApi.GetEditCount(username);
             }
-            catch (MissingUserException)
+            catch (MissingObjectException)
             {
                 return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
             }

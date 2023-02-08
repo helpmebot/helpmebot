@@ -1,6 +1,5 @@
 namespace Helpmebot.Commands.Commands.WikiInformation
 {
-    using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
     using Helpmebot.CoreServices.Model;
@@ -64,7 +63,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                     this.CommandSource,
                     new object[] { categoryName, categorySize });
             }
-            catch (GeneralMediaWikiApiException ex) when (ex.Message.Contains("not found"))
+            catch (MissingObjectException)
             {
                 return this.responder.Respond("commands.command.catsize.missing", this.CommandSource, categoryName);
             }

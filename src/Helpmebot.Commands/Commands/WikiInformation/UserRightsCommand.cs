@@ -67,7 +67,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 {
                     rights = string.Join(", ", mediaWikiApi.GetUserGroups(username).Where(x => x != "*"));
                 }
-                catch (MissingUserException e)
+                catch (MissingObjectException e)
                 {
                     this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
                     return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);

@@ -67,7 +67,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             {
                 mediaWikiApi.GetRegistrationDate(user);
             }
-            catch (MissingUserException)
+            catch (MissingObjectException)
             {
                 exists = false;
             }

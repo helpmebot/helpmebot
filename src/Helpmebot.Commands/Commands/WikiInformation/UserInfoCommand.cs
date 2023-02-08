@@ -139,14 +139,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 
                 return this.responder.Respond(format, this.CommandSource, parameters);
             }
-            catch (GeneralMediaWikiApiException ex) 
+            catch (MissingObjectException ex) 
             {
-                if (ex.Message == "Missing user")
-                {
-                    return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
-                }
-
-                throw;
+                return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
             }
             catch (MediawikiApiException ex)
             {
