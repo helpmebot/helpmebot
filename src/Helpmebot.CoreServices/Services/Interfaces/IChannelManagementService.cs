@@ -16,5 +16,6 @@
         bool AutoLinkEnabled(string channelName);
         bool IsSilenced(string channelName);
         string GetBaseWiki(string channelName);
+        void SetBaseWiki(string target, string wikiWikiId);
     }
 }

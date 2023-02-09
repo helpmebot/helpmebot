@@ -29,7 +29,13 @@ dataset:
     - - Autolinking disabled in this channel.
 
   channelservices.command.basewiki:
-    - - "{0} is configured to use {1} ({2}) as it's default wiki."
+    - - "{0} is configured to use {1} ({2}) as the wiki for commands."
+  channelservices.command.basewiki.set:
+    - - "{0} is now configured to use {1} ({2}) as the wiki for commands."
+  channelservices.command.basewiki.wikis.item:
+    - - "{0} ({1})"
+  channelservices.command.basewiki.notfound:
+    - - "{0} is not a configured wiki on this bot."
 
   channelservices.command.silence.enabled:
     - - Silent mode enabled in this channel.
