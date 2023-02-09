@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.WebApi", "Helpmeb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.WebUI", "Helpmebot.WebUI\Helpmebot.WebUI.csproj", "{0D2171C5-19AD-42F7-AE7B-07DA55DCC1FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.Tests", "Helpmebot.Tests\Helpmebot.Tests.csproj", "{A9FBF28A-4192-4CDC-9CC8-8874AAFDD726}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{0D2171C5-19AD-42F7-AE7B-07DA55DCC1FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D2171C5-19AD-42F7-AE7B-07DA55DCC1FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D2171C5-19AD-42F7-AE7B-07DA55DCC1FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9FBF28A-4192-4CDC-9CC8-8874AAFDD726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9FBF28A-4192-4CDC-9CC8-8874AAFDD726}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9FBF28A-4192-4CDC-9CC8-8874AAFDD726}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9FBF28A-4192-4CDC-9CC8-8874AAFDD726}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{94222F2D-D046-486B-9AF6-9DC9795D573E} = {543DD283-A93C-4F48-A026-D41B10A6AB1D}
