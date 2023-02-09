@@ -1,7 +1,9 @@
 namespace Helpmebot.CategoryWatcher.Commands
 {
     using System.Collections.Generic;
+    using Attributes;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
@@ -15,6 +17,9 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.Info)]
+    [ForceDocumented(promoteAliases:true)]
+    [HelpSummary("Retrieves the current items in the associated category.")]
+    [HelpCategory("CatWatcher")]
     public class ForceUpdateCommand : CommandBase
     {
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
@@ -41,7 +46,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             this.categoryWatcherService = categoryWatcherService;
             this.databaseSession = databaseSession;
         }
-
+        
         protected override IEnumerable<CommandResponse> Execute()
         {
             var channel = this.databaseSession.GetChannelObject(this.CommandSource);

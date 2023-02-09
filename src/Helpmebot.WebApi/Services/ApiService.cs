@@ -124,119 +124,182 @@ namespace Helpmebot.WebApi.Services
             var commandList = new List<CommandInfo>();
             foreach (var commandClass in types)
             {
-                var commandInfo = new CommandInfo();
                 
                 var undocumentedAttribute = commandClass.GetCustomAttributes(typeof(UndocumentedAttribute), false);
                 var commandInvocationAttribute = commandClass.GetCustomAttributes(typeof(CommandInvocationAttribute), false);
+                var forceDocumentedAttribute = commandClass.GetCustomAttributes(typeof(ForceDocumentedAttribute), false);
 
-                if (undocumentedAttribute.Length > 0 || commandInvocationAttribute.Length == 0)
+                if (undocumentedAttribute.Length > 0 && forceDocumentedAttribute.Length > 0)
+                {
+                    this.logger.Warn("Command should not be both documented and undocumented!");
+                }
+                
+                if (undocumentedAttribute.Length > 0)
+                {
+                    this.logger.DebugFormat("Skipping command {0}; undocumented", commandClass);
+                    continue;
+                }
+
+                if (commandInvocationAttribute.Length == 0 && forceDocumentedAttribute.Length == 0)
+                {
+                    this.logger.DebugFormat("Skipping command {0}; no registered invocations", commandClass);
+                    continue;
+                }
+
+                if (commandInvocationAttribute.Length > 0)
+                {
+                    // Name and aliases
+                    var canonicalName = ((CommandInvocationAttribute)commandInvocationAttribute.First()).CommandName;
+                    var aliases = commandInvocationAttribute
+                        .Select(x => ((CommandInvocationAttribute)x).CommandName)
+                        .Where(x => x != canonicalName)
+                        .ToList();
+
+                    var commandInfo = this.ConstructCommandInfo(canonicalName, aliases, commandClass);
+
+                    commandList.Add(commandInfo);
+                }
+                else
+                {
+                    // not undoc, no invocations, thus forcedoc.
+                    var fd = forceDocumentedAttribute[0] as ForceDocumentedAttribute;
+
+                    var registeredInvocations = new HashSet<string>();
+                    foreach (var registrationInfoValue in registrationInfo)
+                    {
+                        foreach (var reg in registrationInfoValue.Value.Keys)
+                        {
+                            if (reg.Type == commandClass && reg.Channel == null)
+                            {
+                                registeredInvocations.Add(registrationInfoValue.Key);
+                            }
+                        }
+                    }
+
+                    if (fd.PromoteAliases)
+                    {
+                        foreach (var invocation in registeredInvocations)
+                        {
+                            var commandInfo = this.ConstructCommandInfo(invocation, new List<string>(), commandClass);
+                            commandList.Add(commandInfo);
+                        }
+                    }
+                    else
+                    {
+                        var canonicalName = registeredInvocations.First();
+                        var aliases = registeredInvocations.Skip(1).ToList();
+                        var commandInfo = this.ConstructCommandInfo(canonicalName, aliases, commandClass);
+
+                        commandList.Add(commandInfo);
+                    }
+                }
+            }
+
+            return commandList;
+        }
+
+        private CommandInfo ConstructCommandInfo(string canonicalName, List<string> aliases, Type commandClass)
+        {
+            var commandInfo = new CommandInfo();
+            commandInfo.CanonicalName = canonicalName;
+            commandInfo.Aliases = aliases;
+
+            // Help summary
+            commandInfo.HelpSummary = commandClass.GetCustomAttributes(typeof(HelpSummaryAttribute), false)
+                .Cast<HelpSummaryAttribute>()
+                .FirstOrDefault()
+                ?.Description;
+
+            // Help category
+            commandInfo.HelpCategory = commandClass.GetCustomAttributes(typeof(HelpCategoryAttribute), true)
+                .Select(x => (HelpCategoryAttribute)x)
+                .FirstOrDefault()
+                ?.Category ?? "Default";
+
+            // Main command flags
+            commandInfo.Flags = commandClass.GetCustomAttributes(typeof(CommandFlagAttribute), false)
+                .Cast<CommandFlagAttribute>()
+                .Select(x => new CommandInfo.CommandFlag { Flag = x.Flag, GlobalOnly = x.GlobalOnly })
+                .ToList();
+
+            commandInfo.Type = commandClass.FullName;
+
+            var methodInfos = commandClass.GetMethods(
+                BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+
+            if (File.Exists($"Documentation/{commandClass.FullName}.md"))
+            {
+                commandInfo.ExtendedHelp = File.ReadAllText($"Documentation/{commandClass.FullName}.md");
+            }
+
+            foreach (var info in methodInfos)
+            {
+                var subcommandInfo = new CommandInfo.SubcommandInfo();
+
+                if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
                 {
                     continue;
                 }
-                
-                // Name and aliases
-                commandInfo.CanonicalName = ((CommandInvocationAttribute) commandInvocationAttribute.First()).CommandName;
-                commandInfo.Aliases = commandInvocationAttribute.Select(x => ((CommandInvocationAttribute) x).CommandName)
-                    .Where(x => x != commandInfo.CanonicalName )
-                    .ToList();
-                
-                // Help summary
-                commandInfo.HelpSummary = commandClass.GetCustomAttributes(typeof(HelpSummaryAttribute), false)
-                    .Cast<HelpSummaryAttribute>()
-                    .FirstOrDefault()?.Description;
-                
-                // Help category
-                commandInfo.HelpCategory = commandClass.GetCustomAttributes(typeof(HelpCategoryAttribute), true)
-                    .Select(x => (HelpCategoryAttribute) x)
-                    .FirstOrDefault()?.Category ?? "Default";
 
-                // Main command flags
-                commandInfo.Flags = commandClass.GetCustomAttributes(typeof(CommandFlagAttribute), false)
+                var undocumented = info.GetCustomAttributes(typeof(UndocumentedAttribute), false);
+                if (undocumented.Length > 0)
+                {
+                    continue;
+                }
+
+                var invocations = info.GetCustomAttributes(typeof(SubcommandInvocationAttribute), false)
+                    .Cast<SubcommandInvocationAttribute>()
+                    .ToList();
+                if (invocations.Count == 0 && info.Name != "Execute")
+                {
+                    continue;
+                }
+
+                var helpAttr = info.GetAttribute<HelpAttribute>();
+                if (helpAttr == null)
+                {
+                    continue;
+                }
+
+                subcommandInfo.CanonicalName = commandInfo.CanonicalName;
+                subcommandInfo.Aliases = new List<string>();
+
+                if (info.Name != "Execute")
+                {
+                    subcommandInfo.CanonicalName += " " + invocations.FirstOrDefault()?.CommandName;
+
+                    foreach (var invoke in invocations.Skip(1))
+                    {
+                        subcommandInfo.Aliases.Add(commandInfo.CanonicalName + " " + invoke.CommandName);
+                    }
+                }
+
+                subcommandInfo.Parameters = new List<CommandInfo.Parameter>();
+                var optionSet = info.ParseOptionSet((x, y, z) => { }, (x, y) => { });
+                foreach (var option in optionSet)
+                {
+                    subcommandInfo.Parameters.Add(
+                        new CommandInfo.Parameter
+                        {
+                            Description = option.Description,
+                            Hidden = option.Hidden,
+                            Names = option.GetNames(),
+                            ValueType = (CommandInfo.ParameterValueType)option.OptionValueType
+                        });
+                }
+
+                subcommandInfo.Syntax = helpAttr.HelpMessage.Syntax.ToList();
+                subcommandInfo.HelpText = helpAttr.HelpMessage.Text.ToList();
+
+                subcommandInfo.Flags = info.GetCustomAttributes(typeof(CommandFlagAttribute), false)
                     .Cast<CommandFlagAttribute>()
                     .Select(x => new CommandInfo.CommandFlag { Flag = x.Flag, GlobalOnly = x.GlobalOnly })
                     .ToList();
 
-                commandInfo.Type = commandClass.FullName;
-
-                var methodInfos = commandClass.GetMethods(
-                    BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
-
-                if (File.Exists($"Documentation/{commandClass.FullName}.md"))
-                {
-                    commandInfo.ExtendedHelp = File.ReadAllText($"Documentation/{commandClass.FullName}.md");
-                }
-                
-                foreach (var info in methodInfos)
-                {
-                    var subcommandInfo = new CommandInfo.SubcommandInfo();
-                    
-                    if (info.IsAbstract || info.IsConstructor || info.IsPrivate)
-                    {
-                        continue;
-                    }
-
-                    var undocumented = info.GetCustomAttributes(typeof(UndocumentedAttribute), false);
-                    if (undocumented.Length > 0)
-                    {
-                        continue;
-                    }
-                    
-                    var invocations = info.GetCustomAttributes(typeof(SubcommandInvocationAttribute), false)
-                        .Cast<SubcommandInvocationAttribute>()
-                        .ToList();
-                    if (invocations.Count == 0 && info.Name != "Execute")
-                    {
-                        continue;
-                    }
-                    
-                    var helpAttr = info.GetAttribute<HelpAttribute>();
-                    if (helpAttr == null)
-                    {
-                        continue;
-                    }
-                    
-                    subcommandInfo.CanonicalName = commandInfo.CanonicalName;
-                    subcommandInfo.Aliases = new List<string>();
-                    
-                    if (info.Name != "Execute")
-                    {
-                        subcommandInfo.CanonicalName += " " + invocations.FirstOrDefault()?.CommandName;
-                        
-                        foreach (var invoke in invocations.Skip(1))
-                        {
-                            subcommandInfo.Aliases.Add(commandInfo.CanonicalName + " " + invoke.CommandName);
-                        }
-                    }
-
-                    subcommandInfo.Parameters = new List<CommandInfo.Parameter>();
-                    var optionSet = info.ParseOptionSet((x, y, z) => { }, (x, y) => { });
-                    foreach (var option in optionSet)
-                    {
-                        subcommandInfo.Parameters.Add(
-                            new CommandInfo.Parameter
-                            {
-                                Description = option.Description,
-                                Hidden = option.Hidden,
-                                Names = option.GetNames(),
-                                ValueType = (CommandInfo.ParameterValueType)option.OptionValueType
-                            });
-                    }
-
-                    subcommandInfo.Syntax = helpAttr.HelpMessage.Syntax.ToList();
-                    subcommandInfo.HelpText = helpAttr.HelpMessage.Text.ToList();
-
-                    subcommandInfo.Flags = info.GetCustomAttributes(typeof(CommandFlagAttribute), false)
-                        .Cast<CommandFlagAttribute>()
-                        .Select(x => new CommandInfo.CommandFlag { Flag = x.Flag, GlobalOnly = x.GlobalOnly })
-                        .ToList();
-                    
-                    commandInfo.Subcommands.Add(subcommandInfo);
-                }
-                
-                commandList.Add(commandInfo);
+                commandInfo.Subcommands.Add(subcommandInfo);
             }
 
-            return commandList;
+            return commandInfo;
         }
 
         public Dictionary<string, Tuple<string, string>> GetFlagHelp()
