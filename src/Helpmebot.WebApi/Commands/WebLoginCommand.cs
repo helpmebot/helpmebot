@@ -3,6 +3,7 @@ namespace Helpmebot.WebApi.Commands
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.WebApi.Services.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.WebApi.Commands
     
     [CommandFlag(Flags.Standard)]
     [CommandInvocation("weblogin")]
+    [Undocumented]
     public class WebLoginCommand : CommandBase
     {
         private readonly ILoginTokenService loginTokenService;

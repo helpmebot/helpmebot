@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.Commands.ACL
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -51,12 +52,14 @@ namespace Helpmebot.Commands.Commands.ACL
             this.responder = responder;
         }
 
+        [Undocumented]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return this.ListMode();
         }
 
         [SubcommandInvocation("list")]
+        [SubcommandInvocation("")]
         [Help("", "Lists the currently configured flag groups")]
         // ReSharper disable once MemberCanBePrivate.Global
         protected IEnumerable<CommandResponse> ListMode()

@@ -58,7 +58,9 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
         
         [SubcommandInvocation("topic")]
-        [CommandFlag("z")]
+        [CommandFlag(Flags.Owner)]
+        [RequiredArguments(1)]
+        [Help("<topic>", "Replaces the channel topic with the specified value")]
         protected IEnumerable<CommandResponse> TopicCommand()
         {
             this.modeMonitoringService.PerformAsOperator(

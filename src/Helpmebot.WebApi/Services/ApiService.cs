@@ -255,11 +255,7 @@ namespace Helpmebot.WebApi.Services
                     continue;
                 }
 
-                var helpAttr = info.GetAttribute<HelpAttribute>();
-                if (helpAttr == null)
-                {
-                    continue;
-                }
+                var helpAttr = info.GetAttribute<HelpAttribute>() ?? new HelpAttribute("", Array.Empty<string>());
 
                 subcommandInfo.CanonicalName = commandInfo.CanonicalName;
                 subcommandInfo.Aliases = new List<string>();

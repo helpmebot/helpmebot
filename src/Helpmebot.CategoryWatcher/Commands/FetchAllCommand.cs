@@ -3,7 +3,9 @@ namespace Helpmebot.CategoryWatcher.Commands
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Attributes;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
@@ -19,6 +21,8 @@ namespace Helpmebot.CategoryWatcher.Commands
 
     [CommandInvocation("fetchall")]
     [CommandFlag(Flags.Protected)]
+    [HelpCategory("CatWatcher")]
+    [HelpSummary("Returns the current state of all category watchers configured in the current channel.")]
     public class FetchAllCommand : CommandBase
     {
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
@@ -49,7 +53,6 @@ namespace Helpmebot.CategoryWatcher.Commands
             this.responder = responder;
         }
 
-        [Help("[--all]", "Returns the current state of all category watchers configured in the current channel.")]
         [CommandParameter(
             "all",
             "Return the current state of all category watchers configured on the bot.",
