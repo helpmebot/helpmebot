@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IgnoredPageMap.cs" company="Helpmebot Development Team">
+// <copyright file="WatchedCategory.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,30 +14,18 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
-
-namespace Helpmebot.Persistence.Mappings
+namespace Helpmebot.Model
 {
-    using FluentNHibernate.Mapping;
+    using System.Collections.Generic;
+    using Helpmebot.Persistence;
 
-    using Helpmebot.Model;
-
-    /// <summary>
-    /// The ignored page map.
-    /// </summary>
-    public class IgnoredPageMap : ClassMap<IgnoredPage>
+    public class CategoryWatcher : EntityBase
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="IgnoredPageMap"/> class.
-        /// </summary>
-        public IgnoredPageMap()
-        {
-            this.Table("ignoredpages");
-            this.Id(x => x.Id, "ip_id");
-            this.Map(x => x.Title, "ip_title");
-        }
-
-        #endregion
+        public virtual string Category { get; set; }
+        public virtual string Keyword { get; set; }
+        public virtual string BaseWikiId { get; set; }
+        
+        public virtual IList<CategoryWatcherChannel> Channels { get; set; }
+        public virtual IList<CategoryWatcherItem> CategoryItems { get; set; }
     }
 }

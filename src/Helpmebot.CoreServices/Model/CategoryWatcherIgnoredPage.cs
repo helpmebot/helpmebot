@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="WatchedCategory.cs" company="Helpmebot Development Team">
+// <copyright file="IgnoredPage.cs" company="Helpmebot Development Team">
 //   Helpmebot is free software: you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License as published by
 //   the Free Software Foundation, either version 3 of the License, or
@@ -14,18 +14,23 @@
 //   along with Helpmebot.  If not, see http://www.gnu.org/licenses/ .
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+
 namespace Helpmebot.Model
 {
-    using System.Collections.Generic;
     using Helpmebot.Persistence;
 
-    public class WatchedCategory : EntityBase
+    /// <summary>
+    /// The ignored page.
+    /// </summary>
+    public class CategoryWatcherIgnoredPage : EntityBase
     {
-        public virtual string Category { get; set; }
-        public virtual string Keyword { get; set; }
-        public virtual string BaseWikiId { get; set; }
-        
-        public virtual IList<CategoryWatcherChannel> Channels { get; set; }
-        public virtual IList<CategoryItem> CategoryItems { get; set; }
+        #region Public Properties
+
+        /// <summary>
+        /// Gets or sets the title.
+        /// </summary>
+        public virtual string Title { get; set; }
+
+        #endregion
     }
 }

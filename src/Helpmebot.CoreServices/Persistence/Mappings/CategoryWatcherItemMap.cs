@@ -3,11 +3,11 @@
     using FluentNHibernate.Mapping;
     using Helpmebot.Model;
     
-    public class CategoryItemMap : ClassMap<CategoryItem>
+    public class CategoryWatcherItemMap : ClassMap<CategoryWatcherItem>
     {
-        public CategoryItemMap()
+        public CategoryWatcherItemMap()
         {
-            this.Table("categoryitems");
+            this.Table("catwatcher_item");
             this.Id(x => x.Id, "id");
             this.Map(x => x.Title, "title");
             this.Map(x => x.InsertTime, "inserttime");

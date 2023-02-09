@@ -7,9 +7,9 @@
     public interface ICategoryWatcherHelperService
     {
         string ConstructDefaultMessage(
-            WatchedCategory category,
+            CategoryWatcher category,
             CategoryWatcherChannel categoryChannel,
-            IReadOnlyCollection<CategoryItem> items,
+            IReadOnlyCollection<CategoryWatcherItem> items,
             bool isNew,
             bool describeEmptySet);
 
@@ -18,9 +18,9 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns>Tuple of (added, removed)</returns>
-        Tuple<List<CategoryItem>, List<CategoryItem>> UpdateCategoryItems(WatchedCategory category);
+        Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>> UpdateCategoryItems(CategoryWatcher category);
 
         IEnumerable<string> GetValidWatcherKeys { get; }
-        IReadOnlyList<WatchedCategory> WatchedCategories { get; }
+        IReadOnlyList<CategoryWatcher> WatchedCategories { get; }
     }
 }

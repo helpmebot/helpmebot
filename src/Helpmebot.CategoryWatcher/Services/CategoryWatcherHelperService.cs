@@ -31,7 +31,7 @@
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
 
-        private readonly IList<WatchedCategory> watchedCategories;
+        private readonly IList<CategoryWatcher> watchedCategories;
         private readonly IList<string> ignoredPages;
 
         public CategoryWatcherHelperService(
@@ -52,10 +52,10 @@
 
             lock (this.session)
             {
-                this.watchedCategories = this.session.CreateCriteria<WatchedCategory>().List<WatchedCategory>();
+                this.watchedCategories = this.session.CreateCriteria<CategoryWatcher>().List<CategoryWatcher>();
 
-                this.ignoredPages = this.session.CreateCriteria<IgnoredPage>()
-                    .List<IgnoredPage>()
+                this.ignoredPages = this.session.CreateCriteria<CategoryWatcherIgnoredPage>()
+                    .List<CategoryWatcherIgnoredPage>()
                     .Select(x => x.Title)
                     .ToList();
             }
@@ -72,15 +72,15 @@
             get { return this.watchedCategories.Select(x => x.Keyword); }
         }
 
-        public IReadOnlyList<WatchedCategory> WatchedCategories
+        public IReadOnlyList<CategoryWatcher> WatchedCategories
         {
-            get { return new List<WatchedCategory>(this.watchedCategories); }
+            get { return new List<CategoryWatcher>(this.watchedCategories); }
         }
 
         public string ConstructDefaultMessage(
-            WatchedCategory category,
+            CategoryWatcher category,
             CategoryWatcherChannel categoryChannel,
-            IReadOnlyCollection<CategoryItem> items,
+            IReadOnlyCollection<CategoryWatcherItem> items,
             bool isNew,
             bool describeEmptySet)
         {
@@ -196,10 +196,10 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns>Tuple of (added, removed)</returns>
-        public Tuple<List<CategoryItem>, List<CategoryItem>> UpdateCategoryItems(WatchedCategory category)
+        public Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>> UpdateCategoryItems(CategoryWatcher category)
         {
-            var added = new List<CategoryItem>();
-            List<CategoryItem> removed;
+            var added = new List<CategoryWatcherItem>();
+            List<CategoryWatcherItem> removed;
 
             // fetch category information    
             List<string> pagesInCategory;
@@ -245,7 +245,7 @@
 
                     foreach (var item in addedTitles)
                     {
-                        var catItem = new CategoryItem
+                        var catItem = new CategoryWatcherItem
                         {
                             InsertTime = DateTime.Now,
                             Title = item,
@@ -277,7 +277,7 @@
                 }
             }
 
-            var result = new Tuple<List<CategoryItem>, List<CategoryItem>>(added, removed);
+            var result = new Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>>(added, removed);
             return result;
         }
     }

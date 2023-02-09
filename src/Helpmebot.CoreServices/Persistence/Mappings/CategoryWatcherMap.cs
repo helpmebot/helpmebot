@@ -23,17 +23,17 @@ namespace Helpmebot.Persistence.Mappings
     /// <summary>
     ///     The category watcher map.
     /// </summary>
-    public class WatchedCategoryMap : ClassMap<WatchedCategory>
+    public class CategoryWatcherMap : ClassMap<CategoryWatcher>
     {
         #region Constructors and Destructors
 
         /// <summary>
-        ///     Initialises a new instance of the <see cref="WatchedCategoryMap" /> class.
+        ///     Initialises a new instance of the <see cref="CategoryWatcherMap" /> class.
         /// </summary>
-        public WatchedCategoryMap()
+        public CategoryWatcherMap()
         {
-            this.Table("watcher");
-            this.Id(x => x.Id, "watcher_id");
+            this.Table("catwatcher");
+            this.Id(x => x.Id, "id");
 
             this.Map(x => x.Category, "category");
             this.Map(x => x.Keyword, "keyword");

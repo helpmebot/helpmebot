@@ -7,7 +7,7 @@
     {
         public CategoryWatcherChannelMap()
         {
-            this.Table("channelwatchers");
+            this.Table("catwatcher_channel");
 
             this.Id(x => x.Id, "id");
             this.References(x => x.Channel, "channel");
