@@ -304,15 +304,6 @@
             return channel.BaseWikiId;
         }
 
-        [Obsolete]
-        public Channel GetChannel(string channelName)
-        {
-            return this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-        }
-
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
         {
             if (!destination.StartsWith("#"))
