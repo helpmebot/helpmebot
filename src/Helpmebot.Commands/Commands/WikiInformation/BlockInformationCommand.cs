@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Linq;
     using Castle.Core.Logging;
     using CoreServices.Attributes;
+    using CoreServices.Services.Messages.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -20,6 +21,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     {
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IChannelManagementService channelManagementService;
+        private readonly IResponder responder;
 
         public BlockInformationCommand(
             string commandSource,
@@ -30,7 +32,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             IMediaWikiApiHelper apiHelper,
-            IChannelManagementService channelManagementService) : base(
+            IChannelManagementService channelManagementService,
+            IResponder responder) : base(
             commandSource,
             user,
             arguments,
@@ -41,6 +44,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             this.apiHelper = apiHelper;
             this.channelManagementService = channelManagementService;
+            this.responder = responder;
         }
 
         [Help("<target>")]
@@ -49,9 +53,15 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
-            var blockInfoResult = mediaWikiApi.GetBlockInformation(string.Join(" ", this.Arguments));
+            var username = string.Join(" ", this.Arguments);
+            var blockInfoResult = mediaWikiApi.GetBlockInformation(username).ToList();
 
-            return blockInfoResult.Select(x => new CommandResponse {Message = x.ToString()});
+            if (blockInfoResult.Any())
+            {
+                return blockInfoResult.Select(x => new CommandResponse { Message = x.ToString() });
+            }
+
+            return this.responder.Respond("commands.command.blockinfo.none", this.CommandSource, username);
         }
     }
 }

@@ -74,7 +74,10 @@ dataset:
 
   commands.command.afccount:
     - - There are {0} drafts pending review - {1}
-      
+  
+  commands.command.blockinfo.none:
+    - - No blocks found for {0}.
+  
   commands.command.catsize: &commands.command.catsize
     - - "[[Category:{0}]] has {1} items"
   commands.command.catsize.missing:
