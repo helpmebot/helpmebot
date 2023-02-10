@@ -18,6 +18,7 @@ namespace Helpmebot.WebApi.Commands
     [CommandFlag(Flags.Standard)]
     [CommandInvocation("weblogin")]
     [Undocumented]
+    [HelpSummary("Completes a login to the web interface.")]
     public class WebLoginCommand : CommandBase
     {
         private readonly ILoginTokenService loginTokenService;
@@ -46,7 +47,7 @@ namespace Helpmebot.WebApi.Commands
         }
 
         [RequiredArguments(1)]
-        [Help("<token>", "Completes a login to the web interface.")]    
+        [Help("<token>")]    
         protected override IEnumerable<CommandResponse> Execute()
         {
             if (string.IsNullOrWhiteSpace(this.User.Account))

@@ -6,6 +6,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Net;
     using System.Web;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -21,6 +22,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandInvocation("userinfo")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Gives a batch of information on the specified user.")]
     public class UserInfoCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
@@ -57,7 +59,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("[username]", "Gives a batch of information on the specified user.")]
+        [Help("[username]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));

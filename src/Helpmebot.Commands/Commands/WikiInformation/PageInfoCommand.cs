@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -15,6 +16,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandInvocation("page")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Provides basic information on the provided page")]
     public class PageInfoCommand : CommandBase
     {
         private readonly ILinkerService linkerService;
@@ -48,7 +50,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("<page title>", "Provides basic information on the provided page")]
+        [Help("<page title>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var pageTitle = this.GetPageTitle();

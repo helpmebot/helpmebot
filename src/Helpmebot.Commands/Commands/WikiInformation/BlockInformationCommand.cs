@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandFlag(Flags.Info)]
     [CommandInvocation("blockinfo")]
+    [HelpSummary("Returns information about active blocks on the provided target")]
     public class BlockInformationCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -41,7 +43,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("<target>", "Returns information about active blocks on the provided target")]
+        [Help("<target>")]
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {

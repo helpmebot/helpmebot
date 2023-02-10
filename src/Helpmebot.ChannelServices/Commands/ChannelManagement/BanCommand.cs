@@ -18,6 +18,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("kb")]
+    [HelpSummary("Kickbans the specified user.")]
     [Undocumented]
     public class BanCommand : CommandBase
     {
@@ -44,6 +45,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [RequiredArguments(1)]
+        [Help("<nickname>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

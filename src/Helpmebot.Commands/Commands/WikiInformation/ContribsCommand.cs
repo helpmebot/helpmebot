@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandInvocation("contribs")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns information on the last contribution for this user")]
     public class ContribsCommand : CommandBase
     {
         private readonly IUrlShorteningService urlShorteningService;
@@ -53,7 +55,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         }
 
         [RequiredArguments(1)]
-        [Help("<username>", "Returns information on the last contribution for this user")]
+        [Help("<username>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);

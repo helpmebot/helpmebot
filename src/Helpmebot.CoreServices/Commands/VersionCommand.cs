@@ -7,6 +7,7 @@ namespace Helpmebot.CoreServices.Commands
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using Attributes;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
@@ -25,6 +26,7 @@ namespace Helpmebot.CoreServices.Commands
     [CommandInvocation("version")]
     [CommandFlag(Flags.Standard)]
     [HelpCategory("Diagnostics")]
+    [HelpSummary("Provides the current version of the bot and the key libraries")]
     public class VersionCommand : CommandBase
     {
         public static string BotVersion
@@ -65,7 +67,6 @@ namespace Helpmebot.CoreServices.Commands
             this.moduleLoader = moduleLoader;
         }
 
-        [Help("", "Provides the current version of the bot and the key libraries")]
         [CommandParameter("modules", "Include the versions of all loaded modules", "modules", typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {

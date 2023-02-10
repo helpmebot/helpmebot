@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using CoreServices.Services;
     using Helpmebot.Commands.Model;
     using Helpmebot.Commands.Services.Interfaces;
@@ -21,6 +22,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("draftstatus")]
     [CommandInvocation("draft")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Provides the current status of a draft")]
     public class DraftStatusCommand : CommandBase
     {
         private readonly AfcCategoryConfiguration categoryConfiguration;
@@ -57,7 +59,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.urlShorteningService = urlShorteningService;
         }
 
-        [Help("<draft>", "Provides the current status of a draft")]
+        [Help("<draft>")]
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {

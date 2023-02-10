@@ -4,6 +4,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Linq;
     using System.Net;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using DnsClient;
     using DnsClient.Protocol;
     using Helpmebot.CoreServices.Model;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.Commands.Information
     [CommandInvocation("resolve")]
     [CommandInvocation("dns")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Performs a DNS lookup on the requested address")]
     public class DnsResolveCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -46,7 +48,7 @@ namespace Helpmebot.Commands.Commands.Information
         }
 
         [RequiredArguments(1)]
-        [Help(new[] {"<ip>", "<hostname>"}, "Performs a DNS lookup on the requested address")]
+        [Help(new[] {"<ip>", "<hostname>"})]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var query = this.Arguments.First();

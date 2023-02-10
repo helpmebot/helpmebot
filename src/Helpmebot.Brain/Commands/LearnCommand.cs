@@ -3,6 +3,7 @@ namespace Helpmebot.Brain.Commands
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
@@ -20,6 +21,7 @@ namespace Helpmebot.Brain.Commands
     [CommandInvocation("learn")]
     [CommandInvocation("teach")]
     [HelpCategory("Brain")]
+    [HelpSummary("Creates a new learnt command")]
     public class LearnCommand : CommandBase
     {
         private readonly IKeywordService keywordService;

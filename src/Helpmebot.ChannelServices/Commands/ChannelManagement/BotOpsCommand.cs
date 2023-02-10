@@ -2,6 +2,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -14,6 +15,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("botops")]
+    [HelpSummary("Commands to manage the bot's use of chanop privileges")]
     public class BotOpsCommand : CommandBase
     {
         private readonly IPersistentChanOpsService persistentChanOpsService;

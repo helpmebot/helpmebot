@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Web;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("editcount")]
     [CommandInvocation("count")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns your edit count or the edit count for the specified user")]
     public class EditCountCommand : CommandBase
     {
         private readonly IUrlShorteningService urlShorteningService;
@@ -51,7 +53,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("[username]", "Returns your edit count or the edit count for the specified user")]
+        [Help("[username]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var username = string.Join(" ", this.Arguments);

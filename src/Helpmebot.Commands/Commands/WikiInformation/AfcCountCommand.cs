@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using CoreServices.Services;
     using Helpmebot.Commands.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
@@ -19,6 +20,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandFlag(Flags.Info)]
     [CommandInvocation("afccount")]
     [CommandInvocation("afcbacklog")]
+    [HelpSummary("Returns the number of AfC submissions awaiting review")]
     public class AfcCountCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -49,8 +51,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.draftStatusService = draftStatusService;
             this.responder = responder;
         }
-
-        [Help("", "Returns the number of AfC submissions awaiting review")]
+        
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiApi = this.apiHelper.GetApi(MediaWikiApiHelper.WikipediaEnglish, false);

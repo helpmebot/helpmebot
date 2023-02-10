@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -15,6 +16,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
 
     [CommandInvocation("ping")]
     [CommandFlag(Flags.Standard)]
+    [HelpSummary("Replies to a ping with a pong")]
     public class PingCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -39,7 +41,7 @@ namespace Helpmebot.Commands.Commands.BotInfo
             this.responder = responder;
         }
 
-        [Help("[username]", "Replies to a ping with a pong")]
+        [Help("[username]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             string name;

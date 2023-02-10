@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.Model;
@@ -19,6 +20,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     [CommandInvocation("forcewelcome")]
     [CommandInvocation("fwelcome")]
     [CommandInvocation("welcomef")]
+    [HelpSummary("Forces the welcomer to trigger for the provided nickname, giving them the standard welcome message.")]
     public class ForceWelcomeCommand : CommandBase
     {
         private readonly IJoinMessageService joinMessageService;
@@ -47,7 +49,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [RequiredArguments(1)]
-        [Help("<nickname>", "Forces the welcomer to trigger for the provided nickname, giving them the standard welcome message.")]
+        [Help("<nickname>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             if (this.Client.Channels[this.CommandSource].Users.ContainsKey(this.Arguments[0]))

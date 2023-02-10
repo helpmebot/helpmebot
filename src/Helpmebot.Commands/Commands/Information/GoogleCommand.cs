@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Collections.Generic;
     using System.Web;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.Information
 
     [CommandInvocation("google")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns a message with a link to a google search result")]
     public class GoogleCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -40,7 +42,7 @@ namespace Helpmebot.Commands.Commands.Information
         }
 
         [RequiredArguments(1)]
-        [Help("<search>", "Returns a message with a link to a google search result")]
+        [Help("<search>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var arguments = HttpUtility.UrlEncode(string.Join(" ", this.Arguments));

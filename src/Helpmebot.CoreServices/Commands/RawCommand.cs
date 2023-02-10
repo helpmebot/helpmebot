@@ -1,6 +1,7 @@
 namespace Helpmebot.CoreServices.Commands
 {
     using System.Collections.Generic;
+    using Attributes;
     using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
@@ -15,6 +16,7 @@ namespace Helpmebot.CoreServices.Commands
     [CommandFlag(Flags.Owner)]
     [CommandInvocation("raw")]
     [HelpCategory("Diagnostics")]
+    [HelpSummary("Injects the specified message directly onto the IRC network socket")]
     public class RawCommand : CommandBase
     {
         public RawCommand(
@@ -35,7 +37,7 @@ namespace Helpmebot.CoreServices.Commands
         {
         }
 
-        [Help("<IRC protocol message>", "Injects the specified message directly onto the IRC network socket")]
+        [Help("<IRC protocol message>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var client = (IrcClient) this.Client;

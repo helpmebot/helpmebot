@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -18,6 +19,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("rights")]
     [CommandInvocation("userrights")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns the list of groups you or the specified user currently hold")]
     public class UserRightsCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -48,7 +50,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("[username]", "Returns the list of groups you or the specified user currently hold")]
+        [Help("[username]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var username = string.Join(" ", this.Arguments);

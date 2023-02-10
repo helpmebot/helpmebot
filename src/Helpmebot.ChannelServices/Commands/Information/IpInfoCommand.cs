@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
     using System.Collections.Generic;
     using System.Net;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.ExtensionMethods;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
@@ -20,6 +21,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
     [CommandInvocation("geolocate")]
     [CommandInvocation("whois")]
     [CommandFlag(Flags.Protected)]
+    [HelpSummary("Returns the controlling organisation and the real-world location for the provided IP address")]
     public class IpInfoCommand : CommandBase
     {
         private readonly IWhoisService whoisService;
@@ -51,9 +53,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
         }
         
         [RequiredArguments(1)]
-        [Help(
-            new[] {"<ip>", "<hexstring>", "<nickname>"},
-            "Returns the controlling organisation and the real-world location for the provided IP address")]
+        [Help(new[] {"<ip>", "<hexstring>", "<nickname>"})]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

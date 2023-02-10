@@ -21,6 +21,7 @@ namespace Helpmebot.Commands.Commands.ACL
     [CommandFlag(Flags.Standard)]
     // ReSharper disable once StringLiteralTypo
     [CommandInvocation("flaggroup")]
+    [HelpSummary("Manages bot user access control groups")]
     // ReSharper disable once UnusedMember.Global
     public class FlagGroupCommand : CommandBase
     {

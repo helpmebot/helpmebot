@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandInvocation("maxlag")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns the maximum replication lag on the channel's MediaWiki instance")]
     public class MaxLagCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -44,7 +46,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("", "Returns the maximum replication lag on the channel's MediaWiki instance")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSiteObject = this.channelManagementService.GetBaseWiki(this.CommandSource);

@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.Diagnostics
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -16,6 +17,7 @@ namespace Helpmebot.Commands.Commands.Diagnostics
     [CommandFlag(Flags.Owner)]
     [CommandInvocation("rawctcp")]
     [HelpCategory("Diagnostics")]
+    [HelpSummary("Sends a CTCP command to the specified destination")]
     public class RawCtcpCommand : CommandBase
     {
         public RawCtcpCommand(
@@ -36,7 +38,7 @@ namespace Helpmebot.Commands.Commands.Diagnostics
         {
         }
 
-        [Help("<CTCP command> <destination> [content]", "Sends a CTCP command to the specified destination")]
+        [Help("<CTCP command> <destination> [content]")]
         [RequiredArguments(2)]
         protected override IEnumerable<CommandResponse> Execute()
         {

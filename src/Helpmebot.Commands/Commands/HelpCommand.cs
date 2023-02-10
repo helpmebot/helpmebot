@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -11,6 +12,7 @@ namespace Helpmebot.Commands.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandFlag(Flags.Standard)]
+    [HelpSummary("Provides help on commands.")]
     public class HelpCommand : Stwalkerster.Bot.CommandLib.Commands.HelpCommand
     {
         private readonly IResponder responder;
@@ -32,6 +34,7 @@ namespace Helpmebot.Commands.Commands
 
         // Not redundant - needed by the reflection-based command parser.
         // ReSharper disable once RedundantOverriddenMember
+        [Help("[command]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             return base.Execute();

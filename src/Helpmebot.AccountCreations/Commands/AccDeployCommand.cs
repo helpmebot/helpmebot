@@ -5,6 +5,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Collections.Specialized;
     using System.IO;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
@@ -21,6 +22,7 @@ namespace Helpmebot.AccountCreations.Commands
     [CommandInvocation("accdeploy")]
     [CommandFlag(Flags.Acc)]
     [HelpCategory("ACC")]
+    [HelpSummary("Utility command for ACC tool development deployment")]
     public class AccDeployCommand : CommandBase
     {
         private readonly IResponder responder;

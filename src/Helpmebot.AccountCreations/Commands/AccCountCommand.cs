@@ -7,6 +7,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Net;
     using System.Xml.XPath;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
@@ -22,6 +23,7 @@ namespace Helpmebot.AccountCreations.Commands
     [CommandFlag(Flags.Acc)]
     [CommandInvocation("acccount")]
     [HelpCategory("ACC")]
+    [HelpSummary("Provides statistics on the number of ACC requests closed")]
     public class AccCountCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -52,7 +54,7 @@ namespace Helpmebot.AccountCreations.Commands
             this.botConfiguration = botConfiguration;
         }
 
-        [Help("[username]", "Provides statistics on the number of ACC requests closed by the provided user")]
+        [Help("[username]", "Returns stats for the given user, or the nickname of the current user if not specified")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             string[] args = this.Arguments.ToArray();

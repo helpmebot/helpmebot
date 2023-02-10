@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Stwalkerster.Bot.CommandLib.Attributes;
@@ -17,6 +18,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     [CommandInvocation("isgd")]
     [CommandInvocation("hmbim")]
     [CommandFlag(Flags.Standard)]
+    [HelpSummary("Shortens the provided URL")]
     public class ShortenUrlCommand : CommandBase
     {
         private readonly IUrlShorteningService urlShorteningService;
@@ -41,7 +43,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
             this.urlShorteningService = urlShorteningService;
         }
 
-        [Help("<url>", "Shortens the provided URL")]
+        [Help("<url>")]
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {

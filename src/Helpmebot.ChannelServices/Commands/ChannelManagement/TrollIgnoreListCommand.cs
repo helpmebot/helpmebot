@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandInvocation("untrack")]
     [CommandFlag(Flags.Protected)]
+    [HelpSummary("Prevents the provided nickname from triggering tracking alerts. This safe-listing will only last until they leave the channel, and only gives a reprieve from bot-initiated violence by reducing the user's current score by a large value. Sufficient additional hits will result in the user being added back to tracking.")]
     public class TrollIgnoreListCommand : CommandBase
     {
         private readonly ITrollMonitoringService trollMonitoringService;
@@ -44,7 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [RequiredArguments(1)]
-        [Help("<nickname>", "Prevents the provided nickname from triggering tracking alerts. This safe-listing will only last until they leave the channel, and only gives a reprieve from bot-initiated violence by reducing the user's current score by a large value. Sufficient additional hits will result in the user being added back to tracking.")]
+        [Help("<nickname>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

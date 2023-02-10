@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandFlag(Flags.Info)]
     [CommandInvocation("categorysize")]
     [CommandInvocation("catsize")]
+    [HelpSummary("Returns the number of items in the provided category")]
     public class CategorySizeCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -47,7 +49,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         }
 
         [RequiredArguments(1)]
-        [Help("<category>", "Returns the number of items in the provided category")]
+        [Help("<category>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var categoryName = string.Join(" ", this.Arguments).Trim();

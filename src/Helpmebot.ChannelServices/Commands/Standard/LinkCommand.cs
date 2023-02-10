@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     using System.Linq;
     using NHibernate;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
@@ -17,6 +18,7 @@ namespace Helpmebot.ChannelServices.Commands.Standard
     [CommandFlag(Flags.Standard)]
     [CommandInvocation("link")]
     [CommandInvocation("l")]
+    [HelpSummary("Convert a wikilink into a clickable URL")]
     public class LinkCommand : CommandBase
     {
         private readonly ILinkerService linkerService;

@@ -2,6 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -14,6 +15,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandFlag(Flags.Info)]
     [CommandInvocation("gancount")]
+    [HelpSummary("Returns the number of GAN submissions awaiting review")]
     public class GanCountCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -43,8 +45,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.responder = responder;
             this.channelManagementService = channelManagementService;
         }
-
-        [Help("", "Returns the number of GAN submissions awaiting review")]
+        
         protected override IEnumerable<CommandResponse> Execute()
         {
             var categoryName = "Good article nominees awaiting review";

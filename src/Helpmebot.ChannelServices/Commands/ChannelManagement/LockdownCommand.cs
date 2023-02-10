@@ -16,6 +16,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("ld")]
+    [HelpSummary("Enables channel lockdown mode, quieting all unregistered users and exempting as configured in the welcomer.")]
     [Undocumented]
     public class LockdownCommand : CommandBase
     {
@@ -41,7 +42,6 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.modeMonitoringService = modeMonitoringService;
         }
 
-        [Help("", "Enables channel lockdown mode, quieting all unregistered users and exempting as configured in the welcomer.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

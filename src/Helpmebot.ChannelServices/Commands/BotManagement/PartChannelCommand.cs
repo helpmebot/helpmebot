@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -19,6 +20,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
     [CommandInvocation("part")]
     [CommandFlag(Flags.BotManagement, true)]
     [CommandFlag(Flags.LocalConfiguration)]
+    [HelpSummary("Leave an IRC channel")]
     public class PartChannelCommand : CommandBase
     {
         private readonly IChannelManagementService channelManagementService;
@@ -46,7 +48,7 @@ namespace Helpmebot.ChannelServices.Commands.BotManagement
             this.responder = responder;
         }
 
-        [Help(new[]{"","<channel>"}, new[]{"Leaves the current channel", "Leaves the specified channel"})]
+        [Help("[channel]", "Leaves the specified channel, or the current channel if no channel is specified.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var channel = this.CommandSource;

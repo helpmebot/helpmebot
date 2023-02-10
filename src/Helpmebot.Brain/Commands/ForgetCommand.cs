@@ -2,6 +2,7 @@ namespace Helpmebot.Brain.Commands
 {
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
@@ -16,6 +17,7 @@ namespace Helpmebot.Brain.Commands
     [CommandFlag(Flags.Brain)]
     [CommandInvocation("forget")]
     [HelpCategory("Brain")]
+    [HelpSummary("Removes the provided keywords from the learnt command list.")]
     public class ForgetCommand : CommandBase
     {
         private readonly IKeywordService keywordService;
@@ -44,7 +46,7 @@ namespace Helpmebot.Brain.Commands
         }
 
         [RequiredArguments(1)]
-        [Help("<keyword> [keyword...]", "Removes the provided keywords from the learnt command list.")]
+        [Help("<keyword> [keyword...]", new[]{"Provide the keyword(s) to remove as parameters.", "At least one keyword is required."})]
         protected override IEnumerable<CommandResponse> Execute()
         {
             foreach (var argument in this.Arguments)

@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -15,7 +16,8 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("track")]
-    [CommandFlag(Flags.Owner)]
+    [CommandFlag(Flags.ChanOp)]
+    [HelpSummary("Adds a user to tracking")]
     public class TrackCommand : CommandBase
     {
         private readonly ITrollMonitoringService trollMonitoringService;
@@ -44,7 +46,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [RequiredArguments(1)]
-        [Help("<nickname>", "Adds a user to tracking")]
+        [Help("<nickname>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -17,6 +18,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandFlag(Flags.Protected)]
     [CommandInvocation("idlehelpees")]
+    [HelpSummary("Returns a list of helpees and their in-channel idle time, including the last-active helpers")]
     public class IdleHelpeesCommand :CommandBase
     {
         private readonly IHelpeeManagementService helpeeManagementService;
@@ -38,7 +40,6 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.responder = responder;
         }
 
-        [Help("", "Returns a list of helpees and their in-channel idle time, including the last-active helpers")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var helpees = this.helpeeManagementService.Helpees

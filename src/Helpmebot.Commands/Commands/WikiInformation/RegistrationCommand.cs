@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -19,6 +20,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     [CommandInvocation("reg")]
     [CommandInvocation("age")]
     [CommandFlag(Flags.Info)]
+    [HelpSummary("Returns the registration date and account age of the specified user")]
     public class RegistrationCommand : CommandBase
     {
         private readonly IMediaWikiApiHelper apiHelper;
@@ -49,8 +51,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             this.channelManagementService = channelManagementService;
         }
 
-        [Help("<username>", "Returns the registration date and account age of the specified user")]
-        
+        [Help("<username>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));

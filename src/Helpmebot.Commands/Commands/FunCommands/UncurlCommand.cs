@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.Commands.Commands.FunCommands
 
     [CommandFlag(Flags.Uncurl)]
     [CommandInvocation("uncurl")]
+    [HelpSummary("Enables all fun commands in the current channel.")]
     public class UncurlCommand : CommandBase
     {
         private readonly IChannelManagementService channelManagementService;
@@ -43,7 +45,6 @@ namespace Helpmebot.Commands.Commands.FunCommands
             this.responder = responder;
         }
 
-        [Help("", "Enables all fun commands in the current channel.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             try

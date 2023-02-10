@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.ACL
     using System.Collections.Generic;
     using System.Data;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.AccessControl;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -19,6 +20,7 @@ namespace Helpmebot.Commands.Commands.ACL
 
     [CommandFlag(Flags.AccessControl)]
     [CommandInvocation("access")]
+    [HelpSummary("Manages user access to the bot")]
     // ReSharper disable once UnusedMember.Global
     public class AccessCommand : CommandBase
     {

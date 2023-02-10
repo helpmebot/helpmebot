@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System;
     using System.Collections.Generic;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -17,6 +18,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     [CommandFlag(Flags.LocalConfiguration)]
     [CommandFlag(Flags.Configuration, true)]
     [CommandInvocation("silence")]
+    [HelpSummary("Manages the bot's quiescent mode.")]
     public class SilenceCommand : CommandBase
     {
         private readonly IResponder responder;

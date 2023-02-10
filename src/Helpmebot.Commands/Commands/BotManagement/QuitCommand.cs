@@ -3,6 +3,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
@@ -15,6 +16,7 @@ namespace Helpmebot.Commands.Commands.BotManagement
     [CommandFlag(Flags.Owner)]
     [CommandInvocation("quit")]
     [CommandInvocation("die")]
+    [HelpSummary("Shuts down the bot.")]
     public class QuitCommand : CommandBase
     {
         private readonly IApplication application;

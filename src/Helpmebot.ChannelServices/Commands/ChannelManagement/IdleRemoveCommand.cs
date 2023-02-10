@@ -4,6 +4,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -20,6 +21,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
     [CommandFlag(Flags.ChanOp)]
     [CommandInvocation("idleremove")]
+    [HelpSummary("Removes idle helpees from the channel")]
     public class IdleRemoveCommand : CommandBase
     {
         private readonly IHelpeeManagementService helpeeManagementService;

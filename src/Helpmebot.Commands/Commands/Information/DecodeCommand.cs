@@ -5,6 +5,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -17,6 +18,7 @@ namespace Helpmebot.Commands.Commands.Information
 
     [CommandInvocation("decode")]
     [CommandFlag(Flags.Protected)]
+    [HelpSummary("Decodes a hexadecimal representation of an IP address.")]
     public class DecodeCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -42,7 +44,7 @@ namespace Helpmebot.Commands.Commands.Information
         }
 
         [RequiredArguments(1)]
-        [Help("<hex>", "Decodes a hexadecimal representation of an IP address.")]
+        [Help("<hex>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var validHexIp = new Regex("^[0-9A-Fa-f]{8}$");

@@ -6,6 +6,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Net;
     using System.Xml.XPath;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
     using Helpmebot.CoreServices.Model;
@@ -21,6 +22,7 @@ namespace Helpmebot.AccountCreations.Commands
     [CommandInvocation("accstatus")]
     [CommandFlag(Flags.Acc)]
     [HelpCategory("ACC")]
+    [HelpSummary("Reports the current status of the ACC tool")]
     public class AccStatusCommand : CommandBase
     {
         private readonly IResponder responder;
@@ -51,7 +53,6 @@ namespace Helpmebot.AccountCreations.Commands
             this.botConfiguration = botConfiguration;
         }
 
-        [Help("", "Reports the current status of the ACC tool")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var queryParameters = new NameValueCollection

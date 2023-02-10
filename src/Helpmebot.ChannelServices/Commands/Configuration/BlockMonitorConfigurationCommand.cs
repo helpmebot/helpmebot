@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Attributes;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -16,6 +17,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 
     [CommandInvocation("blockmonitor")]
     [CommandFlag(Flags.Configuration, true)]
+    [HelpSummary("Manages configuration of on-wiki block reporting")]
     public class BlockMonitorConfigurationCommand : CommandBase
     {
         private readonly IBlockMonitoringService blockMonitoringService;
