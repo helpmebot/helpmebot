@@ -6,6 +6,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     using System.Linq;
     using System.Text.RegularExpressions;
     using Castle.Core.Logging;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
@@ -28,6 +29,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
     {
         private readonly ISession databaseSession;
         private readonly IResponder responder;
+        private readonly IJoinMessageConfigurationService joinMessageConfigurationService;
+        private readonly IChannelManagementService channelManagementService;
 
         public WelcomerConfigurationCommand(
             string commandSource,
@@ -38,7 +41,9 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IJoinMessageConfigurationService joinMessageConfigurationService,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -49,6 +54,8 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             this.databaseSession = databaseSession;
             this.responder = responder;
+            this.joinMessageConfigurationService = joinMessageConfigurationService;
+            this.channelManagementService = channelManagementService;
         }
 
         protected override IEnumerable<CommandResponse> OnPreRun(out bool abort)
@@ -294,54 +301,26 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         protected IEnumerable<CommandResponse> WelcomerMode()
         {
             var target = this.Parameters.GetParameter("target", this.CommandSource);
+            var requestedMode = this.Arguments[0];
+            var flagName = (string)null;
 
-            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
-            try
+            if (requestedMode != "none")
             {
-                string flagName = null;
-
-                if (this.Arguments[0] != "none")
+                if (this.joinMessageConfigurationService.GetOverridesForChannel(target).Contains(requestedMode))
                 {
-                    Channel channelAlias = null;
-                    var welcomerOverride = this.databaseSession.QueryOver<WelcomerOverride>()
-                        .Inner.JoinAlias(x => x.Channel, () => channelAlias)
-                        .Where(x => x.ActiveFlag == this.Arguments[0])
-                        .And(x => channelAlias.Name == target)
-                        .SingleOrDefault();
-
-                    if (welcomerOverride == null)
-                    {
-                        return this.responder.Respond("channelservices.command.welcomer.override-not-found", this.CommandSource, this.Arguments[0]);
-                    }
-
-                    flagName = welcomerOverride.ActiveFlag;
+                    flagName = requestedMode;
                 }
-
-                var channel = this.databaseSession.QueryOver<Channel>()
-                    .Where(x => x.Name == target)
-                    .SingleOrDefault();
-                channel.WelcomerFlag = flagName;
-                this.databaseSession.SaveOrUpdate(channel);
-
-                this.databaseSession.Transaction.Commit();
-
-                return this.responder.Respond("common.done", this.CommandSource);
-            }
-            catch (Exception e)
-            {
-                this.Logger.Error("Error occurred during addition of welcome mask.", e);
-
-                this.databaseSession.Transaction.Rollback();
-
-                return new[] {new CommandResponse {Message = e.Message}};
-            }
-            finally
-            {
-                if (this.databaseSession.Transaction != null && this.databaseSession.Transaction.IsActive)
+                else
                 {
-                    this.databaseSession.Transaction.Rollback();
+                    return this.responder.Respond(
+                        "channelservices.command.welcomer.override-not-found",
+                        this.CommandSource,
+                        requestedMode);
                 }
             }
+
+            this.channelManagementService.SetWelcomerFlag(target, flagName);
+            return this.responder.Respond("common.done", this.CommandSource);
         }
     }
 }

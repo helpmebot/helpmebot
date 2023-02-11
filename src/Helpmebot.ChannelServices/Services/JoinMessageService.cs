@@ -60,6 +60,8 @@ namespace Helpmebot.ChannelServices.Services
         private readonly IGeolocationService geolocationService;
         private readonly IIrcClient client;
         private readonly IBlockMonitoringService blockMonitoringService;
+        private readonly IChannelManagementService channelManagementService;
+        private readonly IJoinMessageConfigurationService joinMessageConfigurationService;
 
         private readonly Dictionary<string, List<ExemptListEntry>> appliedExemptions =
             new Dictionary<string, List<ExemptListEntry>>();
@@ -71,7 +73,9 @@ namespace Helpmebot.ChannelServices.Services
             ModuleConfiguration configuration,
             IGeolocationService geolocationService,
             IIrcClient client,
-            IBlockMonitoringService blockMonitoringService)
+            IBlockMonitoringService blockMonitoringService,
+            IChannelManagementService channelManagementService,
+            IJoinMessageConfigurationService joinMessageConfigurationService)
         {
             this.logger = logger;
             this.responder = responder;
@@ -80,6 +84,8 @@ namespace Helpmebot.ChannelServices.Services
             this.geolocationService = geolocationService;
             this.client = client;
             this.blockMonitoringService = blockMonitoringService;
+            this.channelManagementService = channelManagementService;
+            this.joinMessageConfigurationService = joinMessageConfigurationService;
 
             this.blockMonitoringService.JoinMessageService = this;
         }
@@ -280,7 +286,7 @@ namespace Helpmebot.ChannelServices.Services
             if (welcomeOverride.BlockMessage != null)
             {
                 Regex blockMessageRegex = new Regex(welcomeOverride.BlockMessage, RegexOptions.IgnoreCase);
-                var blockDatas = this.blockMonitoringService.GetBlockData(networkUser, welcomeOverride.Channel.Name);
+                var blockDatas = this.blockMonitoringService.GetBlockData(networkUser, welcomeOverride.ChannelName);
                 matches &= blockDatas.Any(x => blockMessageRegex.IsMatch(x.BlockInformation.BlockReason));
             }
 
@@ -318,11 +324,11 @@ namespace Helpmebot.ChannelServices.Services
 
         public virtual WelcomerOverride GetOverride(string channel)
         {
-            Channel channelAlias = null;
+            var welcomerFlag = this.channelManagementService.GetWelcomerFlag(channel);
+
             var overrides = this.session.QueryOver<WelcomerOverride>()
-                .Inner.JoinAlias(x => x.Channel, () => channelAlias)
-                .Where(x => x.ActiveFlag == channelAlias.WelcomerFlag)
-                .And(() => channelAlias.Name == channel)
+                .Where(x => x.ActiveFlag == welcomerFlag)
+                .And(x => x.ChannelName == channel)
                 .List();
 
             return overrides.FirstOrDefault();

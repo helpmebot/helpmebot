@@ -17,5 +17,7 @@
         bool IsSilenced(string channelName);
         string GetBaseWiki(string channelName);
         void SetBaseWiki(string target, string wikiWikiId);
+        string GetWelcomerFlag(string channelName);
+        void SetWelcomerFlag(string channelName, string welcomerFlag);
     }
 }

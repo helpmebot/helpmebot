@@ -336,6 +336,53 @@
             }
         }
 
+        public string GetWelcomerFlag(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+
+            if (channel == null)
+            {
+                throw new NullReferenceException("Channel object not found");
+            }
+
+            return channel.WelcomerFlag;
+        }
+        
+        public void SetWelcomerFlag(string channelName, string welcomerFlag)
+        {
+            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    if (channel == null)
+                    {
+                        throw new NullReferenceException("Channel object not found");
+                    }
+
+                    channel.WelcomerFlag = welcomerFlag;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
+                    this.session.Flush();
+                }
+                finally
+                {
+                    if (txn.IsActive)
+                    {
+                        txn.Rollback();
+                    }
+                }
+            }
+        }
+
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
         {
             if (!destination.StartsWith("#"))
