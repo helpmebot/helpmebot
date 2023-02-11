@@ -9,12 +9,13 @@ namespace Helpmebot.Persistence.Mappings
         {
             this.Table("welcomeroverride");
             this.Id(x => x.Id, "id");
-            this.References(x => x.Channel, "channel");
+            this.References(x => x.Channel, "channel_id");
             this.Map(x => x.ActiveFlag);
             this.Map(x => x.Geolocation);
             this.Map(x => x.BlockMessage);
             this.Map(x => x.Message);
             this.Map(x => x.ExemptNonMatching);
+            this.Map(x => x.ChannelName, "channel_name");
         }
     }
 }

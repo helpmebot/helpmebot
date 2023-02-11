@@ -33,9 +33,9 @@ namespace Helpmebot.Persistence.Mappings
         {
             this.Table("channel");
             this.Id(x => x.Id, "channel_id");
-            this.Map(x => x.Name, "channel_name");
-            this.Map(x => x.Password, "channel_password");
-            this.Map(x => x.Enabled, "channel_enabled");
+            this.Map(x => x.Name, "name");
+            this.Map(x => x.Password, "password");
+            this.Map(x => x.Enabled, "enabled");
             this.Map(x => x.AutoLink, "autolink");
             this.Map(x => x.Silenced, "silence");
             this.Map(x => x.HedgehogMode, "hedgehog");
