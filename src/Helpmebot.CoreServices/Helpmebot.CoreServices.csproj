@@ -25,7 +25,7 @@
         <PackageReference Include="NHibernate" Version="5.3.11" />
         <PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.113" />
-        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.52" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.55" />
         <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
     </ItemGroup>
 

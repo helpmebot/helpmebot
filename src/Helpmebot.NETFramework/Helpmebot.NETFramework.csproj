@@ -201,8 +201,8 @@
     <PackageReference Include="Remotion.Linq" Version="2.2.0" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="2.2.0" />
     <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.113" />
-    <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.52" />
-    <PackageReference Include="Stwalkerster.IrcClient" Version="11.1.105" />
+    <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.55" />
+    <PackageReference Include="Stwalkerster.IrcClient" Version="11.1.116" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
