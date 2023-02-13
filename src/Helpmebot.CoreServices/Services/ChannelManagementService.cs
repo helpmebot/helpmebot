@@ -298,7 +298,7 @@
 
             if (channel == null)
             {
-                throw new NullReferenceException("Channel object not found");
+                return this.mwConfig.Default;
             }
 
             return channel.BaseWikiId;
