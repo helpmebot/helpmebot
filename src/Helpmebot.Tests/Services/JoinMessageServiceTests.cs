@@ -104,7 +104,10 @@ namespace Helpmebot.Tests.Services
                 new ModuleConfiguration{JoinMessageRateLimits = new RateLimitConfiguration{RateLimitMax = 1, RateLimitDuration = 10}},
                 this.geolocService.Object,
                 this.ircClient.Object,
-                this.blockMonitoringService.Object);
+                this.blockMonitoringService.Object,
+                new Mock<IChannelManagementService>().Object,
+                new Mock<IJoinMessageConfigurationService>().Object
+                );
 
             this.joinMessageService.Setup(x => x.GetWelcomeUsers("ab"))
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
