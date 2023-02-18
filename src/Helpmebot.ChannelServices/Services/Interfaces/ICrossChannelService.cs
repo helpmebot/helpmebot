@@ -15,5 +15,6 @@ namespace Helpmebot.ChannelServices.Services.Interfaces
         void SetNotificationKeyword(Channel backend, string keyword, ISession localSession);
         bool GetNotificationStatus(Channel backend, ISession localSession);
         void Notify(Channel frontend, string message, ISession localSession, IIrcClient client, IUser user);
+        string GetBackendChannelName(string frontend);
     }
 }

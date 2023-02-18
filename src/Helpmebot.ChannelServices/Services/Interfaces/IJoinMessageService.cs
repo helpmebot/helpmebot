@@ -20,22 +20,13 @@
 
 namespace Helpmebot.ChannelServices.Services.Interfaces
 {
-    using System.Collections.Generic;
     using Castle.Core;
-    using Helpmebot.Model;
     using Stwalkerster.IrcClient.Events;
-    using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     public interface IJoinMessageService : IStartable
     {
-        IList<WelcomeUser> GetExceptions(string channel);
-
-        IList<WelcomeUser> GetWelcomeUsers(string channel);
-
-        void OnJoinEvent(object sender, JoinEventArgs e);
-
-        void SendWelcome(IUser networkUser, string channel, IIrcClient client);
+        void SendWelcome(IUser networkUser, string channel);
         void RemoveExemption(string channel, IUser user, bool priority = false);
     }
 }

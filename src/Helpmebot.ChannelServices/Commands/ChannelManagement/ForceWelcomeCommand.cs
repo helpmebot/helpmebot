@@ -56,7 +56,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             {
                 var user = this.Client.Channels[this.CommandSource].Users[this.Arguments[0]];
                 
-                this.joinMessageService.SendWelcome(user.User, this.CommandSource, this.Client);
+                this.joinMessageService.SendWelcome(user.User, this.CommandSource);
                 yield break;
             }
             
@@ -71,7 +71,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 {
                     var user = this.Client.Channels[frontendChannelName].Users[this.Arguments[0]];
                 
-                    this.joinMessageService.SendWelcome(user.User, frontendChannelName, this.Client);
+                    this.joinMessageService.SendWelcome(user.User, frontendChannelName);
                     yield break;
                 }
             }

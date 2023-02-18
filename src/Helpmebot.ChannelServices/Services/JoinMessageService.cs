@@ -33,7 +33,6 @@ namespace Helpmebot.ChannelServices.Services
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
-    using NHibernate;
     using Prometheus;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -55,13 +54,13 @@ namespace Helpmebot.ChannelServices.Services
         private readonly Dictionary<string, Cache> rateLimitCache = new Dictionary<string, Cache>();
         private readonly ILogger logger;
         private readonly IResponder responder;
-        private readonly ISession session;
         private readonly RateLimitConfiguration configuration;
         private readonly IGeolocationService geolocationService;
         private readonly IIrcClient client;
         private readonly IBlockMonitoringService blockMonitoringService;
         private readonly IChannelManagementService channelManagementService;
         private readonly IJoinMessageConfigurationService joinMessageConfigurationService;
+        private readonly ICrossChannelService crossChannelService;
 
         private readonly Dictionary<string, List<ExemptListEntry>> appliedExemptions =
             new Dictionary<string, List<ExemptListEntry>>();
@@ -69,23 +68,23 @@ namespace Helpmebot.ChannelServices.Services
         public JoinMessageService(
             ILogger logger,
             IResponder responder,
-            ISession session,
             ModuleConfiguration configuration,
             IGeolocationService geolocationService,
             IIrcClient client,
             IBlockMonitoringService blockMonitoringService,
             IChannelManagementService channelManagementService,
-            IJoinMessageConfigurationService joinMessageConfigurationService)
+            IJoinMessageConfigurationService joinMessageConfigurationService,
+            ICrossChannelService crossChannelService)
         {
             this.logger = logger;
             this.responder = responder;
-            this.session = session;
             this.configuration = configuration.JoinMessageRateLimits;
             this.geolocationService = geolocationService;
             this.client = client;
             this.blockMonitoringService = blockMonitoringService;
             this.channelManagementService = channelManagementService;
             this.joinMessageConfigurationService = joinMessageConfigurationService;
+            this.crossChannelService = crossChannelService;
 
             this.blockMonitoringService.JoinMessageService = this;
         }
@@ -117,20 +116,20 @@ namespace Helpmebot.ChannelServices.Services
             }
 
             // status
-            bool match = false;
+            var match = false;
 
             this.logger.DebugFormat("Searching for welcome matches for {0} in {1}...", networkUser, channel);
 
-            var users = this.GetWelcomeUsers(channel);
+            var users = this.joinMessageConfigurationService.GetUsers(channel);
 
             if (users.Any())
             {
                 foreach (var welcomeUser in users)
                 {
-                    Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
-                    Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
-                    Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
-                    Match account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
+                    var nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
+                    var user = new Regex(welcomeUser.User).Match(networkUser.Username);
+                    var host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
+                    var account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
 
                     if (nick.Success && user.Success && host.Success && account.Success)
                     {
@@ -153,16 +152,16 @@ namespace Helpmebot.ChannelServices.Services
 
             this.logger.DebugFormat("Searching for exception matches for {0} in {1}...", networkUser, channel);
 
-            var exceptions = this.GetExceptions(channel);
+            var exceptions = this.joinMessageConfigurationService.GetExceptions(channel);
 
             if (exceptions.Any())
             {
                 foreach (var welcomeUser in exceptions)
                 {
-                    Match nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
-                    Match user = new Regex(welcomeUser.User).Match(networkUser.Username);
-                    Match host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
-                    Match account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
+                    var nick = new Regex(welcomeUser.Nick).Match(networkUser.Nickname);
+                    var user = new Regex(welcomeUser.User).Match(networkUser.Username);
+                    var host = new Regex(welcomeUser.Host).Match(networkUser.Hostname);
+                    var account = new Regex(welcomeUser.Account).Match(networkUser.Account ?? string.Empty);
 
                     if (nick.Success && user.Success && host.Success && account.Success)
                     {
@@ -177,10 +176,10 @@ namespace Helpmebot.ChannelServices.Services
                 }
             }
 
-            this.SendWelcome(networkUser, channel, this.client);
+            this.SendWelcome(networkUser, channel);
         }
 
-        public void SendWelcome(IUser networkUser, string channel, IIrcClient client)
+        public void SendWelcome(IUser networkUser, string channel)
         {
             var welcomeOverride = this.GetOverride(channel);
             var applyOverride  = false;
@@ -200,7 +199,7 @@ namespace Helpmebot.ChannelServices.Services
                     var welcomeMessage = this.responder.Respond(
                         welcomeOverride.Message,
                         channel,
-                        new[] {networkUser.Nickname, channel});
+                        new object[] {networkUser.Nickname, channel});
 
                     foreach (var message in welcomeMessage)
                     {
@@ -215,28 +214,7 @@ namespace Helpmebot.ChannelServices.Services
                 
                 if (welcomeOverride != null && welcomeOverride.ExemptNonMatching && client.Channels[channel].Users[client.Nickname].Operator)
                 {
-                    var modeTarget = $"*!*@{networkUser.Hostname}";
-
-                    lock (this.appliedExemptions)
-                    {
-                        if (!this.appliedExemptions.ContainsKey(channel))
-                        {
-                            this.appliedExemptions.Add(channel, new List<ExemptListEntry>());
-                        }
-
-                        this.appliedExemptions[channel]
-                            .Add(new ExemptListEntry { User = networkUser, Exemption = modeTarget });
-                    }
-                    
-                    client.Mode(channel, "+e " + modeTarget);
-
-                    var notificationTarget = this.GetCrossChannelNotificationTarget(channel);
-                    if (notificationTarget != null)
-                    {
-                        client.SendMessage(
-                            notificationTarget,
-                            $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {modeTarget}  )");
-                    }
+                    this.SetExemption(networkUser, channel);
                 }
 
                 var welcomeMessage = this.responder.Respond(
@@ -253,17 +231,43 @@ namespace Helpmebot.ChannelServices.Services
             WelcomerActivations.WithLabels(channel).Inc();
         }
 
+        private void SetExemption(IUser networkUser, string channel)
+        {
+            var modeTarget = $"*!*@{networkUser.Hostname}";
+
+            lock (this.appliedExemptions)
+            {
+                if (!this.appliedExemptions.ContainsKey(channel))
+                {
+                    this.appliedExemptions.Add(channel, new List<ExemptListEntry>());
+                }
+
+                this.appliedExemptions[channel]
+                    .Add(new ExemptListEntry { User = networkUser, Exemption = modeTarget });
+            }
+
+            this.client.Mode(channel, "+e " + modeTarget);
+
+            var notificationTarget = this.crossChannelService.GetBackendChannelName(channel);
+            if (notificationTarget != null)
+            {
+                this.client.SendMessage(
+                    notificationTarget,
+                    $"Auto-exempting {networkUser.Nickname}. Please alert ops if there are issues. (Ops:  /mode {channel} -e {modeTarget}  )");
+            }
+        }
+
         private bool DoesOverrideApply(IUser networkUser, WelcomerOverride welcomeOverride)
         {
-            bool matches = true;
+            var matches = true;
             
-            IPAddress clientip = null;
+            IPAddress clientIp = null;
                 
             var userMatch = Regex.Match(networkUser.Username, "^[a-fA-F0-9]{8}$");
             if (userMatch.Success)
             {
                 // We've got a hex-encoded IP.
-                clientip = networkUser.Username.GetIpAddressFromHex();
+                clientIp = networkUser.Username.GetIpAddressFromHex();
             }
 
             if (!networkUser.Hostname.Contains("/"))
@@ -272,68 +276,34 @@ namespace Helpmebot.ChannelServices.Services
                 var hostAddresses = Dns.GetHostAddresses(networkUser.Hostname);
                 if (hostAddresses.Length > 0)
                 {
-                    clientip = hostAddresses.First();
+                    clientIp = hostAddresses.First();
                 }
             }
             
             // checks
             
-            if (welcomeOverride.Geolocation != null && clientip != null)
+            if (welcomeOverride.Geolocation != null && clientIp != null)
             {
-                matches &= this.geolocationService.GetLocation(clientip).Country == welcomeOverride.Geolocation;
+                matches &= this.geolocationService.GetLocation(clientIp).Country == welcomeOverride.Geolocation;
             }
 
             if (welcomeOverride.BlockMessage != null)
             {
-                Regex blockMessageRegex = new Regex(welcomeOverride.BlockMessage, RegexOptions.IgnoreCase);
-                var blockDatas = this.blockMonitoringService.GetBlockData(networkUser, welcomeOverride.ChannelName);
-                matches &= blockDatas.Any(x => blockMessageRegex.IsMatch(x.BlockInformation.BlockReason));
+                var blockMessageRegex = new Regex(welcomeOverride.BlockMessage, RegexOptions.IgnoreCase);
+                var blockData = this.blockMonitoringService.GetBlockData(networkUser, welcomeOverride.ChannelName);
+                matches &= blockData.Any(x => blockMessageRegex.IsMatch(x.BlockInformation.BlockReason));
             }
 
             return matches;
         }
 
-        public virtual IList<WelcomeUser> GetExceptions(string channel)
-        {
-            var exceptions = this.session.QueryOver<WelcomeUser>()
-                .Where(x => x.Channel == channel && x.Exception)
-                .List();
-            return exceptions;
-        }
-
-        public virtual string GetCrossChannelNotificationTarget(string channel)
-        {
-            Channel frontendAlias = null, backendAlias = null;
-
-            var crossChannel = this.session.QueryOver<CrossChannel>()
-                .Inner.JoinAlias(x => x.FrontendChannel, () => frontendAlias)
-                .Inner.JoinAlias(x => x.BackendChannel, () => backendAlias)
-                .Where(x => frontendAlias.Name == channel)
-                .SingleOrDefault();
-            
-            return crossChannel?.BackendChannel?.Name;
-        }
-        
-        public virtual IList<WelcomeUser> GetWelcomeUsers(string channel)
-        {
-            var users = this.session.QueryOver<WelcomeUser>()
-                .Where(x => x.Channel == channel && x.Exception == false)
-                .List();
-            return users;
-        }
-
-        public virtual WelcomerOverride GetOverride(string channel)
+        private WelcomerOverride GetOverride(string channel)
         {
             var welcomerFlag = this.channelManagementService.GetWelcomerFlag(channel);
 
-            var overrides = this.session.QueryOver<WelcomerOverride>()
-                .Where(x => x.ActiveFlag == welcomerFlag)
-                .And(x => x.ChannelName == channel)
-                .List();
-
-            return overrides.FirstOrDefault();
+            return this.joinMessageConfigurationService.GetOverride(channel, welcomerFlag);
         }
-        
+
         public void ClearRateLimitCache()
         {
             lock (this.rateLimitCache)
@@ -346,14 +316,14 @@ namespace Helpmebot.ChannelServices.Services
         {
             if (string.IsNullOrEmpty(hostname) || string.IsNullOrEmpty(channel))
             {
-                // sanity check - this probably chanserv.
-                this.logger.Error("JoinMessage ratelimiting called with null channel or null hostname!");
+                // sanity check - this probably ChanServ.
+                this.logger.Error("JoinMessage rate-limiting called with null channel or null hostname!");
                 return true;
             }
 
             try
             {
-                // TODO: rate limiting needs to be tidyed up a bit
+                // TODO: rate limiting needs to be tidied up a bit
                 lock (this.rateLimitCache)
                 {
                     if (!this.rateLimitCache.ContainsKey(channel))
@@ -447,14 +417,15 @@ namespace Helpmebot.ChannelServices.Services
 
             foreach (var exemption in exemptions)
             {
-                var unexemptMessage = new Message("MODE", new[] { channel, "-e", exemption.Exemption });
+                var exemptRemoveMessage = new Message("MODE", new[] { channel, "-e", exemption.Exemption });
+                
                 if (priority)
                 {
-                    this.client.PrioritySend(unexemptMessage);
+                    this.client.PrioritySend(exemptRemoveMessage);
                 }
                 else
                 {
-                    this.client.Send(unexemptMessage);
+                    this.client.Send(exemptRemoveMessage);
                 }
             }
         }

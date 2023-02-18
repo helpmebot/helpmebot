@@ -76,21 +76,24 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             var target = this.Parameters.GetParameter("target", this.CommandSource);
 
-            var welcomeForChannel =
-                this.databaseSession.QueryOver<WelcomeUser>().Where(x => x.Channel == target).List();
+            var welcomeForChannel = this.joinMessageConfigurationService.GetUsers(target);
 
             if (welcomeForChannel.Count == 0)
             {
                 return this.responder.Respond("channelservices.command.welcomer.not-welcoming", this.CommandSource, target);
             }
-            
+
+            var allEntries = new List<WelcomeUser>();
+            allEntries.AddRange(welcomeForChannel);
+            allEntries.AddRange(this.joinMessageConfigurationService.GetExceptions(target));
+
             var commandResponses = this.responder.Respond(
-                "channelservices.command.welcomer.list.start",
-                this.CommandSource,
-                new object[] { target })
+                    "channelservices.command.welcomer.list.start",
+                    this.CommandSource,
+                    new object[] { target })
                 .ToList();
 
-            var listItems = welcomeForChannel.Select(
+            var listItems = allEntries.Select(
                 x => new CommandResponse
                 {
                     Message = this.responder.GetMessagePart(
@@ -98,9 +101,9 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                         this.CommandSource,
                         x.ToString())
                 });
-            
+
             commandResponses.AddRange(listItems);
-            
+
             return commandResponses;
         }
 
@@ -117,7 +120,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             var target = this.Parameters.GetParameter("target", this.CommandSource);
             var exception = this.Parameters.GetParameter("exception", false);
-            
+
             var host = this.Parameters.GetParameter("host", ".*");
             var nick = this.Parameters.GetParameter("nick", ".*");
             var user = this.Parameters.GetParameter("user", ".*");
@@ -128,8 +131,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             {
                 return responses;
             }
-            
-            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
+
             try
             {
                 var welcomeUser = new WelcomeUser
@@ -142,19 +144,13 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                     Channel = target,
                     Exception = exception
                 };
-                
-                this.databaseSession.Save(welcomeUser);
-                this.databaseSession.Transaction.Commit();
-                
+
+                this.joinMessageConfigurationService.AddWelcomeEntry(welcomeUser);
                 return this.responder.Respond("common.done", this.CommandSource);
             }
             catch (Exception e)
             {
-                this.Logger.Error("Error occurred during addition of welcome mask.", e);
-                
-                this.databaseSession.Transaction.Rollback();
-
-                return new[] {new CommandResponse {Message = e.Message}};
+                return new[] { new CommandResponse { Message = e.Message } };
             }
         }
 
@@ -168,7 +164,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         {
             var errors = new List<CommandResponse>();
             var valid = true;
-            
+
             try
             {
                 Regex.Match("", nick);
@@ -178,6 +174,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 valid = false;
                 errors.Add(new CommandResponse { Message = "Error validating nick field: " + ex.Message });
             }
+
             try
             {
                 Regex.Match("", user);
@@ -187,6 +184,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 valid = false;
                 errors.Add(new CommandResponse { Message = "Error validating user field: " + ex.Message });
             }
+
             try
             {
                 Regex.Match("", host);
@@ -196,6 +194,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 valid = false;
                 errors.Add(new CommandResponse { Message = "Error validating host field: " + ex.Message });
             }
+
             try
             {
                 Regex.Match("", account);
@@ -205,6 +204,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 valid = false;
                 errors.Add(new CommandResponse { Message = "Error validating account field: " + ex.Message });
             }
+
             try
             {
                 Regex.Match("", realname);
@@ -240,49 +240,39 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
             var user = this.Parameters.GetParameter("user", ".*");
             var account = this.Parameters.GetParameter("account", ".*");
             var realname = this.Parameters.GetParameter("realname", ".*");
-            
+
             if (!this.ValidateRegex(nick, user, host, account, realname, out var responses))
             {
                 return responses;
             }
-            
-            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
-            
+
             try
             {
-                this.Logger.Trace("Getting list of welcomeusers ready for deletion!");
+                Func<WelcomeUser, bool> searchPredicate = x =>
+                    x.Exception == exception &&
+                    x.Host == host &&
+                    x.User == user &&
+                    x.Nick == nick &&
+                    x.Account == account &&
+                    x.RealName == realname;
 
-                var welcomeUsers =
-                    this.databaseSession.QueryOver<WelcomeUser>()
-                        .Where(
-                            x => x.Exception == exception 
-                                 && x.Host == host 
-                                 && x.User == user 
-                                 && x.Nick == nick
-                                 && x.Account == account
-                                 && x.RealName == realname
-                                 && x.Channel == target)
-                        .List();
+                var welcomeUsers = this.joinMessageConfigurationService.GetUsers(target).Where(searchPredicate);
+                var exceptions = this.joinMessageConfigurationService.GetExceptions(target).Where(searchPredicate);
 
                 this.Logger.Trace("Got list of WelcomeUsers, proceeding to Delete...");
 
-                foreach (var welcomeUser in welcomeUsers)
+                foreach (var welcomeUser in welcomeUsers.Union(exceptions))
                 {
-                    this.databaseSession.Delete(welcomeUser);
+                    this.joinMessageConfigurationService.RemoveWelcomeEntry(welcomeUser);
                 }
 
                 this.Logger.Trace("All done, cleaning up and sending message to IRC");
 
-                this.databaseSession.Transaction.Commit();
                 return this.responder.Respond("common.done", this.CommandSource);
             }
             catch (Exception e)
             {
-                this.Logger.Error("Error occurred during addition of welcome mask.", e);
-
-                this.databaseSession.Transaction.Rollback();
-                
-                return new[] {new CommandResponse {Message = e.Message}};
+                return new[] { new CommandResponse { Message = e.Message } };
             }
         }
 
@@ -291,7 +281,7 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
         [SubcommandInvocation("override")]
         [SubcommandInvocation("overridemode")]
         [Help(
-            new[] {"none", "<mode>"},
+            new[] { "none", "<mode>" },
             new[]
             {
                 "Sets the welcomer override mode",

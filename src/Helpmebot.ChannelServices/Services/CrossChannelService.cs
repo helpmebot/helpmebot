@@ -210,6 +210,26 @@ namespace Helpmebot.ChannelServices.Services
                 string.Format(existing.NotifyMessage, user.Nickname, frontend.Name, message));
         }
 
+        public string GetBackendChannelName(string frontend)
+        {
+            Channel frontendAlias = null;
+            
+            lock (this.sessionLock)
+            {
+                var crossChannel = this.databaseSession.QueryOver<CrossChannel>()
+                    .Inner.JoinAlias(x => x.FrontendChannel, () => frontendAlias)
+                    .Where(x => frontendAlias.Name == frontend)
+                    .SingleOrDefault();
+
+                if (crossChannel != null)
+                {
+                    return crossChannel.BackendChannel.Name;
+                }
+            }
+
+            return null;
+        }
+        
         protected override IList<CrossChannel> ItemsToRegister()
         {
             IList<CrossChannel> itemsToRegister;
