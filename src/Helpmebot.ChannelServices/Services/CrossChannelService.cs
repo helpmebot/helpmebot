@@ -36,194 +36,229 @@ namespace Helpmebot.ChannelServices.Services
             this.config = config.CrossChannelRateLimits;
         }
 
-        public void Configure(Channel frontend, Channel backend, ISession localSession)
+        public void Configure(string frontend, string backend)
         {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(
-                    Restrictions.Or(
+            lock (this.sessionLock)
+            {
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(
                         Restrictions.Or(
-                            Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend),
-                            Restrictions.Eq(nameof(CrossChannel.FrontendChannel), backend)),
-                        Restrictions.Or(
-                            Restrictions.Eq(nameof(CrossChannel.BackendChannel), frontend),
-                            Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                    ))
-                .List<CrossChannel>();
+                            Restrictions.Or(
+                                Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend),
+                                Restrictions.Eq(nameof(CrossChannel.FrontendChannel), backend)),
+                            Restrictions.Or(
+                                Restrictions.Eq(nameof(CrossChannel.BackendChannel), frontend),
+                                Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                        ))
+                    .List<CrossChannel>();
 
-            if (existing.Any())
-            {
-                throw new Exception(
-                    "At least one of the channels requested is already involved in a cross-channel configuration.");
-            }
+                if (existing.Any())
+                {
+                    throw new Exception(
+                        "At least one of the channels requested is already involved in a cross-channel configuration.");
+                }
 
-            var cc = new CrossChannel
-            {
-                FrontendChannel = frontend,
-                BackendChannel = backend,
-                NotifyEnabled = false,
-                ForwardEnabled = false
-            };
+                var cc = new CrossChannel
+                {
+                    FrontendChannel = frontend,
+                    BackendChannel = backend,
+                    NotifyEnabled = false,
+                    ForwardEnabled = false
+                };
 
-            localSession.Save(cc);
-        }
-
-        public void Deconfigure(Channel backend, ISession localSession)
-        {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
-            {
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
-
-            if (existing.NotifyEnabled)
-            {
-                this.UnregisterCommand(existing);
-            }
-
-            localSession.Delete(existing);
-        }
-
-        public void SetNotificationStatus(Channel backend, bool status, ISession localSession)
-        {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
-            {
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
-
-            if (existing.NotifyEnabled == status)
-            {
-                // no-op
-                return;
-            }
-
-            if (status && string.IsNullOrWhiteSpace(existing.NotifyKeyword))
-            {
-                throw new Exception("Cannot enable notifications before keyword is configured.");
-            }
-
-            if (status && string.IsNullOrWhiteSpace(existing.NotifyMessage))
-            {
-                throw new Exception("Cannot enable notifications before message is configured.");
-            }
-
-            existing.NotifyEnabled = status;
-            localSession.Update(existing);
-
-            if (status)
-            {
-                this.RegisterCommand(existing);
-            }
-            else
-            {
-                this.UnregisterCommand(existing);
+                this.databaseSession.Save(cc);
             }
         }
 
-        public bool GetNotificationStatus(Channel backend, ISession localSession)
+        public void Deconfigure(string backend)
         {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
+            lock (this.sessionLock)
             {
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                    .UniqueResult<CrossChannel>();
 
-            return existing.NotifyEnabled;
+                if (existing == null)
+                {
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
+
+                if (existing.NotifyEnabled)
+                {
+                    this.UnregisterCommand(existing);
+                }
+
+                this.databaseSession.Delete(existing);
+            }
         }
 
-        public void SetNotificationMessage(Channel backend, string message, ISession localSession)
+        public void SetNotificationStatus(string backend, bool status)
         {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
+            lock (this.sessionLock)
             {
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                    .UniqueResult<CrossChannel>();
 
-            if (existing.NotifyMessage == message)
-            {
-                // no-op
-                return;
-            }
+                if (existing == null)
+                {
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
 
-            existing.NotifyMessage = message;
-            localSession.Update(existing);
+                if (existing.NotifyEnabled == status)
+                {
+                    // no-op
+                    return;
+                }
+
+                if (status && string.IsNullOrWhiteSpace(existing.NotifyKeyword))
+                {
+                    throw new Exception("Cannot enable notifications before keyword is configured.");
+                }
+
+                if (status && string.IsNullOrWhiteSpace(existing.NotifyMessage))
+                {
+                    throw new Exception("Cannot enable notifications before message is configured.");
+                }
+
+                existing.NotifyEnabled = status;
+                this.databaseSession.Update(existing);
+                
+                if (status)
+                {
+                    this.RegisterCommand(existing);
+                }
+                else
+                {
+                    this.UnregisterCommand(existing);
+                }
+            }
         }
 
-        public void SetNotificationKeyword(Channel backend, string keyword, ISession localSession)
+        public bool GetNotificationStatus(string backend)
         {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
+            lock (this.sessionLock)
             {
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                    .UniqueResult<CrossChannel>();
 
-            if (existing.NotifyKeyword == keyword)
-            {
-                // no-op
-                return;
-            }
+                if (existing == null)
+                {
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
 
-            if (existing.NotifyEnabled)
-            {
-                throw new Exception("Cannot change notification keyword while notifications are enabled.");
+                return existing.NotifyEnabled;
             }
-
-            existing.NotifyKeyword = keyword;
-            localSession.Update(existing);
         }
 
-        public void Notify(Channel frontend, string message, ISession localSession, IIrcClient client, IUser user)
+        public void SetNotificationMessage(string backend, string message)
         {
-            var existing = localSession.CreateCriteria<CrossChannel>()
-                .Add(Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend))
-                .UniqueResult<CrossChannel>();
-
-            if (existing == null)
+            lock (this.sessionLock)
             {
-                this.Logger.ErrorFormat("Attempted notification for non-existent configuration.");
-                throw new Exception("Cannot find cross-channel configuration for this channel.");
-            }
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                    .UniqueResult<CrossChannel>();
 
-            if (this.RateLimit(user, existing.Id))
-            {
-                this.Logger.InfoFormat("Rate limited notification response for {0} in {1}", user, frontend);
-                return;
+                if (existing == null)
+                {
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
+
+                if (existing.NotifyMessage == message)
+                {
+                    // no-op
+                    return;
+                }
+
+                existing.NotifyMessage = message;
+                this.databaseSession.Update(existing);
             }
+        }
+        
+        public void SetNotificationKeyword(string backend, string keyword)
+        {
+            lock (this.sessionLock)
+            {
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                    .UniqueResult<CrossChannel>();
+
+                if (existing == null)
+                {
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
+
+                if (existing.NotifyKeyword == keyword)
+                {
+                    // no-op
+                    return;
+                }
+
+                if (existing.NotifyEnabled)
+                {
+                    throw new Exception("Cannot change notification keyword while notifications are enabled.");
+                }
+
+                existing.NotifyKeyword = keyword;
+                this.databaseSession.Update(existing);
+            }
+        }
+
+        public void Notify(string frontend, string message, IIrcClient client, IUser user)
+        {
+            lock (this.sessionLock)
+            {
+                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                    .Add(Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend))
+                    .UniqueResult<CrossChannel>();
+
+                if (existing == null)
+                {
+                    this.Logger.ErrorFormat("Attempted notification for non-existent configuration.");
+                    throw new Exception("Cannot find cross-channel configuration for this channel.");
+                }
+
+                if (this.RateLimit(user, existing.Id))
+                {
+                    this.Logger.InfoFormat("Rate limited notification response for {0} in {1}", user, frontend);
+                    return;
+                }
             
-            client.SendNotice(
-                existing.BackendChannel.Name,
-                string.Format(existing.NotifyMessage, user.Nickname, frontend.Name, message));
+                client.SendNotice(
+                    existing.BackendChannel,
+                    string.Format(existing.NotifyMessage, user.Nickname, frontend, message));
+            }
         }
 
         public string GetBackendChannelName(string frontend)
         {
-            Channel frontendAlias = null;
-            
             lock (this.sessionLock)
             {
                 var crossChannel = this.databaseSession.QueryOver<CrossChannel>()
-                    .Inner.JoinAlias(x => x.FrontendChannel, () => frontendAlias)
-                    .Where(x => frontendAlias.Name == frontend)
+                    .Where(x => x.FrontendChannel == frontend)
                     .SingleOrDefault();
 
                 if (crossChannel != null)
                 {
-                    return crossChannel.BackendChannel.Name;
+                    return crossChannel.BackendChannel;
+                }
+            }
+
+            return null;
+        }
+
+        public string GetFrontendChannelName(string backend)
+        {
+            lock (this.sessionLock)
+            {
+                var crossChannel = this.databaseSession.QueryOver<CrossChannel>()
+                    .Where(x => x.BackendChannel == backend)
+                    .SingleOrDefault();
+
+                if (crossChannel != null)
+                {
+                    return crossChannel.FrontendChannel;
                 }
             }
 

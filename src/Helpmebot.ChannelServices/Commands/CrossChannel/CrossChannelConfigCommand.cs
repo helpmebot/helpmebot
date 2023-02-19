@@ -74,7 +74,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.Arguments.First()));
                 }
 
-                this.crossChannelService.Configure(frontend, backend, this.databaseSession);
+                this.crossChannelService.Configure(frontend.Name, backend.Name);
                 
                 this.databaseSession.Transaction.Commit();
                 
@@ -102,7 +102,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
-                this.crossChannelService.Deconfigure(backend, this.databaseSession);
+                this.crossChannelService.Deconfigure(backend.Name);
                 
                 this.databaseSession.Transaction.Commit();
                 
@@ -137,7 +137,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                 
                 if (!status.HasValue)
                 {
-                    var currentStatus = this.crossChannelService.GetNotificationStatus(backend, this.databaseSession);
+                    var currentStatus = this.crossChannelService.GetNotificationStatus(backend.Name);
                     this.databaseSession.Transaction.Rollback();
                     
                     return this.responder.Respond(
@@ -147,7 +147,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                 }
                 else
                 {
-                    this.crossChannelService.SetNotificationStatus(backend, status.Value, this.databaseSession);
+                    this.crossChannelService.SetNotificationStatus(backend.Name, status.Value);
 
                     this.databaseSession.Transaction.Commit();
                 
@@ -177,7 +177,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                     throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
                 }
                 
-                this.crossChannelService.SetNotificationKeyword(backend, this.Arguments.First(), this.databaseSession);
+                this.crossChannelService.SetNotificationKeyword(backend.Name, this.Arguments.First());
                 
                 this.databaseSession.Transaction.Commit();
                 
@@ -207,9 +207,8 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
                 }
 
                 this.crossChannelService.SetNotificationMessage(
-                    backend,
-                    string.Join(" ", this.Arguments),
-                    this.databaseSession);
+                    backend.Name,
+                    string.Join(" ", this.Arguments));
                 
                 this.databaseSession.Transaction.Commit();
                 

@@ -6,7 +6,6 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -19,7 +18,6 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     public class CrossChannelNotifyCommand : CommandBase
     {
         private readonly ICrossChannelService crossChannelService;
-        private readonly ISession databaseSession;
 
         public CrossChannelNotifyCommand(
             string commandSource,
@@ -29,8 +27,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ICrossChannelService crossChannelService,
-            ISession databaseSession) : base(
+            ICrossChannelService crossChannelService) : base(
             commandSource,
             user,
             arguments,
@@ -40,23 +37,15 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             client)
         {
             this.crossChannelService = crossChannelService;
-            this.databaseSession = databaseSession;
         }
 
         protected override IEnumerable<CommandResponse> Execute()
         {
-            this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
-
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
             this.crossChannelService.Notify(
-                channel,
+                this.CommandSource,
                 this.OriginalArguments,
-                this.databaseSession,
                 this.Client,
                 this.User);
-            
-            this.databaseSession.Transaction.Commit();
             
             yield break;
         }

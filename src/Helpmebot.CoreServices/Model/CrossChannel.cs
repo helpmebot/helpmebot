@@ -5,21 +5,15 @@ namespace Helpmebot.Model
 
     public class CrossChannel : EntityBase, ICommandParserEntity
     {
-        public virtual Channel FrontendChannel { get; set; }
-        public virtual Channel BackendChannel { get; set; }
+        public virtual string FrontendChannel { get; set; }
+        public virtual string BackendChannel { get; set; }
         public virtual bool NotifyEnabled { get; set; }
         public virtual string NotifyKeyword { get; set; }
         public virtual string NotifyMessage { get; set; }
         public virtual bool ForwardEnabled { get; set; }
 
-        public virtual string CommandKeyword
-        {
-            get { return this.NotifyKeyword; }
-        }
+        public virtual string CommandKeyword => this.NotifyKeyword;
 
-        public virtual string CommandChannel
-        {
-            get { return this.FrontendChannel.Name; }
-        }
+        public virtual string CommandChannel => this.FrontendChannel;
     }
 }
