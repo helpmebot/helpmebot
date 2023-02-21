@@ -3,6 +3,7 @@ namespace Helpmebot.ChannelServices.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Data;
     using Castle.Core.Logging;
     using Helpmebot.ChannelServices.Commands.CrossChannel;
     using Helpmebot.ChannelServices.Configuration;
@@ -40,33 +41,37 @@ namespace Helpmebot.ChannelServices.Services
         {
             lock (this.sessionLock)
             {
-                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(
-                        Restrictions.Or(
-                            Restrictions.Or(
-                                Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend),
-                                Restrictions.Eq(nameof(CrossChannel.FrontendChannel), backend)),
-                            Restrictions.Or(
-                                Restrictions.Eq(nameof(CrossChannel.BackendChannel), frontend),
-                                Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                        ))
-                    .List<CrossChannel>();
-
-                if (existing.Any())
+                using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    throw new Exception(
-                        "At least one of the channels requested is already involved in a cross-channel configuration.");
+                    var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                        .Add(
+                            Restrictions.Or(
+                                Restrictions.Or(
+                                    Restrictions.Eq(nameof(CrossChannel.FrontendChannel), frontend),
+                                    Restrictions.Eq(nameof(CrossChannel.FrontendChannel), backend)),
+                                Restrictions.Or(
+                                    Restrictions.Eq(nameof(CrossChannel.BackendChannel), frontend),
+                                    Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                            ))
+                        .List<CrossChannel>();
+
+                    if (existing.Any())
+                    {
+                        throw new Exception(
+                            "At least one of the channels requested is already involved in a cross-channel configuration.");
+                    }
+
+                    var cc = new CrossChannel
+                    {
+                        FrontendChannel = frontend,
+                        BackendChannel = backend,
+                        NotifyEnabled = false,
+                        ForwardEnabled = false
+                    };
+
+                    this.databaseSession.Save(cc);
+                    txn.Commit();
                 }
-
-                var cc = new CrossChannel
-                {
-                    FrontendChannel = frontend,
-                    BackendChannel = backend,
-                    NotifyEnabled = false,
-                    ForwardEnabled = false
-                };
-
-                this.databaseSession.Save(cc);
             }
         }
 
@@ -74,21 +79,25 @@ namespace Helpmebot.ChannelServices.Services
         {
             lock (this.sessionLock)
             {
-                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                    .UniqueResult<CrossChannel>();
-
-                if (existing == null)
+                using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    throw new Exception("Cannot find cross-channel configuration for this channel.");
-                }
+                    var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                        .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                        .UniqueResult<CrossChannel>();
 
-                if (existing.NotifyEnabled)
-                {
-                    this.UnregisterCommand(existing);
-                }
+                    if (existing == null)
+                    {
+                        throw new Exception("Cannot find cross-channel configuration for this channel.");
+                    }
 
-                this.databaseSession.Delete(existing);
+                    if (existing.NotifyEnabled)
+                    {
+                        this.UnregisterCommand(existing);
+                    }
+
+                    this.databaseSession.Delete(existing);
+                    txn.Commit();
+                }
             }
         }
 
@@ -96,41 +105,45 @@ namespace Helpmebot.ChannelServices.Services
         {
             lock (this.sessionLock)
             {
-                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                    .UniqueResult<CrossChannel>();
+                using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
+                {
+                    var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                        .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                        .UniqueResult<CrossChannel>();
 
-                if (existing == null)
-                {
-                    throw new Exception("Cannot find cross-channel configuration for this channel.");
-                }
+                    if (existing == null)
+                    {
+                        throw new Exception("Cannot find cross-channel configuration for this channel.");
+                    }
 
-                if (existing.NotifyEnabled == status)
-                {
-                    // no-op
-                    return;
-                }
+                    if (existing.NotifyEnabled == status)
+                    {
+                        // no-op
+                        return;
+                    }
 
-                if (status && string.IsNullOrWhiteSpace(existing.NotifyKeyword))
-                {
-                    throw new Exception("Cannot enable notifications before keyword is configured.");
-                }
+                    if (status && string.IsNullOrWhiteSpace(existing.NotifyKeyword))
+                    {
+                        throw new Exception("Cannot enable notifications before keyword is configured.");
+                    }
 
-                if (status && string.IsNullOrWhiteSpace(existing.NotifyMessage))
-                {
-                    throw new Exception("Cannot enable notifications before message is configured.");
-                }
+                    if (status && string.IsNullOrWhiteSpace(existing.NotifyMessage))
+                    {
+                        throw new Exception("Cannot enable notifications before message is configured.");
+                    }
 
-                existing.NotifyEnabled = status;
-                this.databaseSession.Update(existing);
-                
-                if (status)
-                {
-                    this.RegisterCommand(existing);
-                }
-                else
-                {
-                    this.UnregisterCommand(existing);
+                    existing.NotifyEnabled = status;
+                    this.databaseSession.Update(existing);
+                    txn.Commit();
+
+                    if (status)
+                    {
+                        this.RegisterCommand(existing);
+                    }
+                    else
+                    {
+                        this.UnregisterCommand(existing);
+                    }
                 }
             }
         }
@@ -156,23 +169,27 @@ namespace Helpmebot.ChannelServices.Services
         {
             lock (this.sessionLock)
             {
-                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                    .UniqueResult<CrossChannel>();
-
-                if (existing == null)
+                using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    throw new Exception("Cannot find cross-channel configuration for this channel.");
-                }
+                    var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                        .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                        .UniqueResult<CrossChannel>();
 
-                if (existing.NotifyMessage == message)
-                {
-                    // no-op
-                    return;
-                }
+                    if (existing == null)
+                    {
+                        throw new Exception("Cannot find cross-channel configuration for this channel.");
+                    }
 
-                existing.NotifyMessage = message;
-                this.databaseSession.Update(existing);
+                    if (existing.NotifyMessage == message)
+                    {
+                        // no-op
+                        return;
+                    }
+
+                    existing.NotifyMessage = message;
+                    this.databaseSession.Update(existing);
+                    txn.Commit();
+                }
             }
         }
         
@@ -180,28 +197,32 @@ namespace Helpmebot.ChannelServices.Services
         {
             lock (this.sessionLock)
             {
-                var existing = this.databaseSession.CreateCriteria<CrossChannel>()
-                    .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
-                    .UniqueResult<CrossChannel>();
-
-                if (existing == null)
+                using (var txn = this.databaseSession.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    throw new Exception("Cannot find cross-channel configuration for this channel.");
-                }
+                    var existing = this.databaseSession.CreateCriteria<CrossChannel>()
+                        .Add(Restrictions.Eq(nameof(CrossChannel.BackendChannel), backend))
+                        .UniqueResult<CrossChannel>();
 
-                if (existing.NotifyKeyword == keyword)
-                {
-                    // no-op
-                    return;
-                }
+                    if (existing == null)
+                    {
+                        throw new Exception("Cannot find cross-channel configuration for this channel.");
+                    }
 
-                if (existing.NotifyEnabled)
-                {
-                    throw new Exception("Cannot change notification keyword while notifications are enabled.");
-                }
+                    if (existing.NotifyKeyword == keyword)
+                    {
+                        // no-op
+                        return;
+                    }
 
-                existing.NotifyKeyword = keyword;
-                this.databaseSession.Update(existing);
+                    if (existing.NotifyEnabled)
+                    {
+                        throw new Exception("Cannot change notification keyword while notifications are enabled.");
+                    }
+
+                    existing.NotifyKeyword = keyword;
+                    this.databaseSession.Update(existing);
+                    txn.Commit();
+                }
             }
         }
 
