@@ -54,7 +54,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 
         [RequiredArguments(1)]
         [SubcommandInvocation("configure")]
-        [Help("<channel>", "Sets up cross-channel notifications from the provided channel to this channel.")]
+        [Help("<channel>", new[]{"Sets up cross-channel notifications from the provided (\"frontend\") channel to this (\"backend\") channel.","This command should be run in the desired backend channel."})]
         protected IEnumerable<CommandResponse> ConfigureMode()
         {
             this.databaseSession.BeginTransaction(IsolationLevel.RepeatableRead);
@@ -87,7 +87,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             }
         }
         
-        [Help("", "Removes cross-channel notification configuration from this channel.")]
+        [Help("", new[]{"Removes cross-channel notification configuration from this channel.","This command should be run in the backend channel."})]
         [SubcommandInvocation("deconfigure")]
         protected IEnumerable<CommandResponse> DeconfigureMode()
         {
@@ -191,7 +191,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         }
         
         [SubcommandInvocation("notifymessage")]
-        [Help("<message>", "Sets the message used for the notification")]
+        [Help("<message>", "Sets the message used for the notification.")]
         [RequiredArguments(1)]
         protected IEnumerable<CommandResponse> NotifyMessageMode()
         {
