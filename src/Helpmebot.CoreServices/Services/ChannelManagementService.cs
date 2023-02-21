@@ -383,6 +383,21 @@
             }
         }
 
+        public bool IsEnabled(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                .List<Channel>()
+                .FirstOrDefault();
+
+            if (channel == null)
+            {
+                return false;
+            }
+
+            return channel.Enabled;
+        }
+
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
         {
             if (!destination.StartsWith("#"))

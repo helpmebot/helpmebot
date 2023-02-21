@@ -1,16 +1,12 @@
 namespace Helpmebot.ChannelServices.Commands.CrossChannel
 {
-    using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using Mono.Options;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -25,8 +21,8 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
     public class CrossChannelConfigCommand : CommandBase
     {
         private readonly IResponder responder;
+        private readonly IChannelManagementService channelManagementService;
         private readonly ICrossChannelService crossChannelService;
-        private readonly ISession databaseSession;
 
         public CrossChannelConfigCommand(
             string commandSource,
@@ -37,8 +33,8 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ICrossChannelService crossChannelService,
-            ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -48,8 +44,8 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
             client)
         {
             this.responder = responder;
+            this.channelManagementService = channelManagementService;
             this.crossChannelService = crossChannelService;
-            this.databaseSession = databaseSession;
         }
 
         [RequiredArguments(1)]
@@ -57,21 +53,20 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         [Help("<channel>", new[]{"Sets up cross-channel notifications from the provided (\"frontend\") channel to this (\"backend\") channel.","This command should be run in the desired backend channel."})]
         protected IEnumerable<CommandResponse> ConfigureMode()
         {
-            var backend = this.databaseSession.GetChannelObject(this.CommandSource);
-            var frontend = this.databaseSession.GetChannelObject(this.Arguments.First());
+            var backendName = this.CommandSource;
+            var frontendName = this.Arguments.First();
 
-            if (backend == null)
+            if (!this.channelManagementService.IsEnabled(backendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, backendName));
             }
             
-            if (frontend == null)
+            if (!this.channelManagementService.IsEnabled(frontendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.Arguments.First()));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, frontendName));
             }
 
-            this.crossChannelService.Configure(frontend.Name, backend.Name);
-            
+            this.crossChannelService.Configure(frontendName, backendName);
             
             return this.responder.Respond("common.done", this.CommandSource);
         }
@@ -80,14 +75,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         [SubcommandInvocation("deconfigure")]
         protected IEnumerable<CommandResponse> DeconfigureMode()
         {
-            var backend = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (backend == null)
+            var backendName = this.CommandSource;
+            
+            if (!this.channelManagementService.IsEnabled(backendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, backendName));
             }
             
-            this.crossChannelService.Deconfigure(backend.Name);
+            this.crossChannelService.Deconfigure(backendName);
             
             return this.responder.Respond("common.done", this.CommandSource);
         }
@@ -101,24 +96,23 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         {
             var status = this.Parameters.GetParameter("enable", (bool?)null);
             
-            var backend = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (backend == null)
+            var backendName = this.CommandSource;
+            if (!this.channelManagementService.IsEnabled(backendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, backendName));
             }
             
             if (!status.HasValue)
             {
-                var currentStatus = this.crossChannelService.GetNotificationStatus(backend.Name);
+                var currentStatus = this.crossChannelService.GetNotificationStatus(backendName);
                 
                 return this.responder.Respond(
                     "channelservices.command.crosschannel." + (currentStatus ? "enabled" : "disabled"),
                     this.CommandSource,
-                    backend.Name);
+                    backendName);
             }
 
-            this.crossChannelService.SetNotificationStatus(backend.Name, status.Value);
+            this.crossChannelService.SetNotificationStatus(backendName, status.Value);
                 
             return this.responder.Respond("common.done", this.CommandSource);
         }
@@ -128,14 +122,14 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         [RequiredArguments(1)]
         protected IEnumerable<CommandResponse> NotifyKeywordMode()
         {
-            var backend = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (backend == null)
+            var backendName = this.CommandSource;
+            
+            if (!this.channelManagementService.IsEnabled(backendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, backendName));
             }
 
-            this.crossChannelService.SetNotificationKeyword(backend.Name, this.Arguments.First());
+            this.crossChannelService.SetNotificationKeyword(backendName, this.Arguments.First());
 
             return this.responder.Respond("common.done", this.CommandSource);
         }
@@ -145,21 +139,18 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
         [RequiredArguments(1)]
         protected IEnumerable<CommandResponse> NotifyMessageMode()
         {
-            var backend = this.databaseSession.GetChannelObject(this.CommandSource);
+            var backendName = this.CommandSource;
 
-            if (backend == null)
+            if (!this.channelManagementService.IsEnabled(backendName))
             {
-                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, this.CommandSource));
+                throw new CommandErrorException(this.responder.GetMessagePart("common.channel-not-found", this.CommandSource, backendName));
             }
 
             this.crossChannelService.SetNotificationMessage(
-                backend.Name,
+                backendName,
                 string.Join(" ", this.Arguments));
 
             return this.responder.Respond("common.done", this.CommandSource);
-           
         }
-        
-        
     }
 }

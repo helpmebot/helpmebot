@@ -19,5 +19,7 @@
         void SetBaseWiki(string target, string wikiWikiId);
         string GetWelcomerFlag(string channelName);
         void SetWelcomerFlag(string channelName, string welcomerFlag);
+
+        bool IsEnabled(string channelName);
     }
 }
