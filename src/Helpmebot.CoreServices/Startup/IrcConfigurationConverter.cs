@@ -19,6 +19,7 @@ namespace Helpmebot.CoreServices.Startup
                 config.ServerPassword,
                 config.ServicesUsername,
                 config.ServicesPassword,
+                config.ServicesCertificate,
                 config.RestartOnHeavyLag.GetValueOrDefault(true),
                 config.ReclaimNickFromServices.GetValueOrDefault(true),
                 config.PingInterval.GetValueOrDefault(15),

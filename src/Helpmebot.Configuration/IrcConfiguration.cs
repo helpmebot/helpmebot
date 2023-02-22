@@ -16,6 +16,7 @@ namespace Helpmebot.Configuration
         public bool? ReclaimNickFromServices { get; set; }
         public string ServicesUsername { get;  set;}
         public string ServicesPassword { get;  set;}
+        public string ServicesCertificate { get; set; }
         public int? PingInterval { get;  set;}
         public int? MissedPingLimit { get;  set;}
     }
