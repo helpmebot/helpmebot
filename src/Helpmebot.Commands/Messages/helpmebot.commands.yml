@@ -129,6 +129,9 @@ dataset:
     - - "[[User:{0}]] has no rights assigned."
   commands.command.userrights:
     - - "[[User:{0}]] has the following rights: {1}"
+      
+  commands.command.message.reset-to-default:
+    - - "The last alternative for this message has been removed, so it has been reset to the default."
   
   commands.common.missing-user:
     - - "The user [[User:{0}]] does not appear to exist on-wiki."

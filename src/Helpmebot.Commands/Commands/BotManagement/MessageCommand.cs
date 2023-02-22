@@ -125,13 +125,13 @@ namespace Helpmebot.Commands.Commands.BotManagement
             if (responses.Count > 0)
             {
                 this.responseManager.Set(key, contextType?.ContextType, context, responses);
+                return this.responder.Respond("common.done", this.CommandSource);
             }
             else
             {
                 this.responseManager.Remove(key, contextType?.ContextType, context);
+                return this.responder.Respond("commands.command.message.reset-to-default", this.CommandSource);
             }
-
-            return this.responder.Respond("common.done", this.CommandSource);
         }
         
     }
