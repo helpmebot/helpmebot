@@ -54,7 +54,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         [Help("<username>")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
 
             var username = string.Join(" ", this.Arguments);
             if (this.Arguments.Count == 0)
@@ -62,7 +61,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 username = this.User.Nickname;
             }
 
-            DateTime? registrationDate;
+            DateTime? registrationDate;       
+            
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
             try
             {
                 registrationDate = mediaWikiApi.GetRegistrationDate(username);

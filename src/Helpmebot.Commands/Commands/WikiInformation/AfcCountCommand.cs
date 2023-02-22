@@ -54,14 +54,20 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         
         protected override IEnumerable<CommandResponse> Execute()
         {
+            int categorySize;
+            string pageContent;
+            
             var mediaWikiApi = this.apiHelper.GetApi(MediaWikiApiHelper.WikipediaEnglish, false);
-            
-            var categorySize = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
+            try
+            {
+                categorySize = this.draftStatusService.GetPendingDraftCount(mediaWikiApi);
+                pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out _);
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
 
-            var pageContent = mediaWikiApi.GetPageContent("User:Stwalkerster/hmb-afc-backlog.json", out _);
-            
-            this.apiHelper.Release(mediaWikiApi);
-            
             var mapping = JsonConvert.DeserializeObject<Dictionary<int, string>>(pageContent);
             var item = mapping.Where(x => categorySize >= x.Key).Max(x => x.Key);
 

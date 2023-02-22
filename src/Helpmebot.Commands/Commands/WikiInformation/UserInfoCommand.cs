@@ -62,14 +62,13 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         [Help("[username]")]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
-
             var username = string.Join(" ", this.Arguments);
             if (this.Arguments.Count == 0)
             {
                 username = this.User.Nickname;
             }
             
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
             try
             {
                 var userPage = this.linkerService.ConvertWikilinkToUrl(

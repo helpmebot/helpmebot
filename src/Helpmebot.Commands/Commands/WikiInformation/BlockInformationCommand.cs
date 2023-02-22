@@ -11,6 +11,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -51,10 +52,18 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         [RequiredArguments(1)]
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
-
             var username = string.Join(" ", this.Arguments);
-            var blockInfoResult = mediaWikiApi.GetBlockInformation(username).ToList();
+            List<BlockInformation> blockInfoResult;
+            
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
+            try
+            {
+                blockInfoResult = mediaWikiApi.GetBlockInformation(username).ToList();
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
 
             if (blockInfoResult.Any())
             {

@@ -60,8 +60,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             }
 
             var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             try
             {
                 string rights;

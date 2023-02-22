@@ -23,6 +23,7 @@ namespace Helpmebot.CoreServices.Services
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
+    using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
 
@@ -148,10 +149,18 @@ namespace Helpmebot.CoreServices.Services
 
             var mediaWikiSite = this.channelManagementService.GetBaseWiki(destination);
 
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-            var url = mediaWikiApi.GetArticlePath();
-
-            this.apiHelper.Release(mediaWikiApi);
+            IMediaWikiApi mediaWikiApi = null;
+            string url;
+            
+            try
+            {
+                mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
+                url = mediaWikiApi.GetArticlePath();
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
 
             lock (this.articlePathCache)
             {

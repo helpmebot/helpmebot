@@ -95,8 +95,19 @@ namespace Helpmebot.Commands.Commands.BotManagement
         {
             var mediaWikiSiteObject = this.channelManagementService.GetBaseWiki(this.CommandSource);
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSiteObject);
-
-            var (upToDateIw, createdIw, updatedIw, deletedIw) = this.interwikiService.Import(mediaWikiApi);
+            
+            int upToDateIw;
+            int createdIw;
+            int updatedIw;
+            int deletedIw;
+            try
+            {
+                (upToDateIw, createdIw, updatedIw, deletedIw) = this.interwikiService.Import(mediaWikiApi);
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
 
             return this.responder.Respond(
                 "commands.command.iw.imported",

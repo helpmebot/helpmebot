@@ -55,7 +55,6 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             var categoryName = string.Join(" ", this.Arguments).Trim();
 
             var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
-
             try
             {
                 var categorySize = mediaWikiApi.GetCategorySize(categoryName);

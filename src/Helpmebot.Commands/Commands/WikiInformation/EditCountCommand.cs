@@ -62,9 +62,9 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 username = this.User.Nickname;
             }
 
-            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
-
             int editCount;
+
+            var mediaWikiApi = this.apiHelper.GetApi(this.channelManagementService.GetBaseWiki(this.CommandSource));
             try
             {
                 editCount = mediaWikiApi.GetEditCount(username);

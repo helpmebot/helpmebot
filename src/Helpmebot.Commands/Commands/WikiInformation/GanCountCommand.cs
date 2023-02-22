@@ -50,9 +50,17 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         {
             var categoryName = "Good article nominees awaiting review";
             var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);
+            int categorySize;
+            
             var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
-            var categorySize = mediaWikiApi.GetCategorySize(categoryName);
-            this.apiHelper.Release(mediaWikiApi);
+            try
+            {
+                categorySize = mediaWikiApi.GetCategorySize(categoryName);
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
 
             return this.responder.Respond(
                 "commands.command.gancount",

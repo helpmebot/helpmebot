@@ -12,6 +12,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Exceptions;
+    using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
@@ -59,23 +60,31 @@ namespace Helpmebot.Commands.Commands.WikiInformation
         protected override IEnumerable<CommandResponse> Execute()
         {
             var mediaWikiSite = this.channelManagementService.GetBaseWiki(this.CommandSource);
-            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
 
             var user = this.OriginalArguments;
             var contribsLink = this.linkerService.ConvertWikilinkToUrl(this.CommandSource, "Special:Contribs/" + user);
-
+            List<Contribution> contribs;
             var exists = true;
+            
+            var mediaWikiApi = this.apiHelper.GetApi(mediaWikiSite);
             try
             {
-                mediaWikiApi.GetRegistrationDate(user);
+                try
+                {
+                    mediaWikiApi.GetRegistrationDate(user);
+                }
+                catch (MissingObjectException)
+                {
+                    exists = false;
+                }
+
+                contribs = mediaWikiApi.GetContributions(user, 1).ToList();
             }
-            catch (MissingObjectException)
+            finally
             {
-                exists = false;
+                this.apiHelper.Release(mediaWikiApi);
             }
-            
-            var contribs = mediaWikiApi.GetContributions(user, 1).ToList();
-            
+
             var lastContrib = "";
             if (contribs.Any())
             {
