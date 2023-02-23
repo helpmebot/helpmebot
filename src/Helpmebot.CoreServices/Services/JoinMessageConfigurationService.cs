@@ -58,15 +58,15 @@ namespace Helpmebot.CoreServices.Services
 
         public void AddWelcomeEntry(WelcomeUser welcomeUser)
         {
-            this.database.BeginTransaction(IsolationLevel.RepeatableRead);
+            var tx = this.database.BeginTransaction(IsolationLevel.RepeatableRead);
             try
             {
                 this.database.Save(welcomeUser);
-                this.database.GetCurrentTransaction().Commit();
+                tx.Commit();
             }
             catch (Exception e)
             {
-                this.database.GetCurrentTransaction().Rollback();
+                tx.Rollback();
                 this.logger.Error("Error occurred during addition of welcome mask.", e);
                 throw;
             }
@@ -74,15 +74,15 @@ namespace Helpmebot.CoreServices.Services
 
         public void RemoveWelcomeEntry(WelcomeUser user)
         {
-            this.database.BeginTransaction(IsolationLevel.RepeatableRead);
+            var tx = this.database.BeginTransaction(IsolationLevel.RepeatableRead);
             try
             {
                 this.database.Delete(user);
-                this.database.GetCurrentTransaction().Commit();
+                tx.Commit();
             }
             catch (Exception e)
             {
-                this.database.GetCurrentTransaction().Rollback();
+                tx.Rollback();
                 this.logger.Error("Error occurred during removal of welcome mask.", e);
                 throw;
             }
