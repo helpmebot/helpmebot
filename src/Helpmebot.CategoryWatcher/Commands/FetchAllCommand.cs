@@ -28,6 +28,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
         private readonly ISession databaseSession;
         private readonly IResponder responder;
+        private readonly IWatcherConfigurationService watcherConfigurationService;
 
         public FetchAllCommand(
             string commandSource,
@@ -39,7 +40,8 @@ namespace Helpmebot.CategoryWatcher.Commands
             IIrcClient client,
             ICategoryWatcherBackgroundService categoryWatcherService,
             ISession databaseSession,
-            IResponder responder) : base(
+            IResponder responder,
+            IWatcherConfigurationService watcherConfigurationService) : base(
             commandSource,
             user,
             arguments,
@@ -51,6 +53,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             this.categoryWatcherService = categoryWatcherService;
             this.databaseSession = databaseSession;
             this.responder = responder;
+            this.watcherConfigurationService = watcherConfigurationService;
         }
 
         [CommandParameter(
@@ -71,7 +74,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             List<string> validKeywords;
             if (allKeywords)
             {
-                validKeywords = this.categoryWatcherService.GetValidWatcherKeys().ToList();
+                validKeywords = this.watcherConfigurationService.GetValidWatcherKeys().ToList();
             }
             else
             {

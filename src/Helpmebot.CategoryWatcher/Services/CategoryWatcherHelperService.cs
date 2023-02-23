@@ -10,7 +10,6 @@
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
     using NHibernate;
-    using NHibernate.Criterion;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 
@@ -30,9 +29,8 @@
         private readonly ILogger logger;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
-
-        private readonly IList<CategoryWatcher> watchedCategories;
-        private readonly IList<string> ignoredPages;
+        private readonly IWatcherConfigurationService watcherConfig;
+        private readonly IItemPersistenceService watcherItemPersistence;
 
         public CategoryWatcherHelperService(
             ILinkerService linkerService,
@@ -41,7 +39,9 @@
             ILogger logger,
             ICommandParser commandParser,
             IMediaWikiApiHelper apiHelper,
-            IResponder responder)
+            IResponder responder,
+            IWatcherConfigurationService watcherConfig,
+            IItemPersistenceService watcherItemPersistence)
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
@@ -49,33 +49,17 @@
             this.logger = logger;
             this.apiHelper = apiHelper;
             this.responder = responder;
-
-            lock (this.session)
-            {
-                this.watchedCategories = this.session.CreateCriteria<CategoryWatcher>().List<CategoryWatcher>();
-
-                this.ignoredPages = this.session.CreateCriteria<CategoryWatcherIgnoredPage>()
-                    .List<CategoryWatcherIgnoredPage>()
-                    .Select(x => x.Title)
-                    .ToList();
-            }
+            this.watcherConfig = watcherConfig;
+            this.watcherItemPersistence = watcherItemPersistence;
 
             logger.DebugFormat("Registering CategoryWatcher keys in CommandParser");
-            foreach (var category in this.watchedCategories)
+            foreach (var category in this.watcherConfig.GetWatchers())
             {
                 commandParser.RegisterCommand(category.Keyword, typeof(ForceUpdateCommand));
             }
         }
+        
 
-        public IEnumerable<string> GetValidWatcherKeys
-        {
-            get { return this.watchedCategories.Select(x => x.Keyword); }
-        }
-
-        public IReadOnlyList<CategoryWatcher> WatchedCategories
-        {
-            get { return new List<CategoryWatcher>(this.watchedCategories); }
-        }
 
         public string ConstructDefaultMessage(
             CategoryWatcher category,
@@ -208,7 +192,7 @@
             try
             {
                 pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();
-                pagesInCategory.RemoveAll(x => this.ignoredPages.Contains(x));
+                pagesInCategory.RemoveAll(x => this.watcherItemPersistence.GetIgnoredPages().Contains(x));
 
                 CategoryWatcherCount.WithLabels(category.Keyword).Set(pagesInCategory.Count);
             }

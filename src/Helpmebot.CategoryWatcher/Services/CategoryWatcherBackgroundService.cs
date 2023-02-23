@@ -27,7 +27,8 @@
 
         private readonly IIrcClient ircClient;
         private readonly ICategoryWatcherHelperService helperService;
-       
+        private readonly IWatcherConfigurationService watcherConfig;
+
         /// <summary>
         /// Stores the time the next alert should be sent.
         /// catchannel ID => next alert time 
@@ -43,12 +44,14 @@
             ILogger logger,
             CategoryWatcherConfiguration configuration,
             IIrcClient ircClient,
-            ICategoryWatcherHelperService helperService)
+            ICategoryWatcherHelperService helperService,
+            IWatcherConfigurationService watcherConfig)
             : base(logger, configuration.UpdateFrequency * 1000, configuration.Enabled)
         {
             this.crossoverTimeout = configuration.CrossoverTimeout;
             this.ircClient = ircClient;
             this.helperService = helperService;
+            this.watcherConfig = watcherConfig;
         }
 
         protected override void OnStart()
@@ -63,14 +66,14 @@
 
         public IEnumerable<string> GetWatchedCategories(Channel destination)
         {
-            return this.helperService.WatchedCategories
+            return this.watcherConfig.GetWatchers()
                 .Where(x => x.Channels.Select(y => y.Id).Contains(destination.Id))
                 .Select(x => x.Keyword);
         }
 
         public IEnumerable<string> GetValidWatcherKeys()
         {
-            return new List<string>(this.helperService.GetValidWatcherKeys);
+            return new List<string>(this.watcherConfig.GetValidWatcherKeys());
         }
         
         public void ForceUpdate(string key, Channel destination)
@@ -82,7 +85,7 @@
 
             try
             {
-                var watcher = this.helperService.WatchedCategories.FirstOrDefault(x => x.Keyword == key);
+                var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == key);
                 if (watcher == null)
                 {
                     throw new ArgumentOutOfRangeException("key");
@@ -152,7 +155,7 @@
                     return;
                 }
 
-                foreach (var category in this.helperService.WatchedCategories.Where(x => x.Channels.Any()))
+                foreach (var category in this.watcherConfig.GetWatchers().Where(x => x.Channels.Any()))
                 {
                     var result = this.helperService.UpdateCategoryItems(category);
                     var additions = result.Item1;

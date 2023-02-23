@@ -19,8 +19,5 @@
         /// <param name="category"></param>
         /// <returns>Tuple of (added, removed)</returns>
         Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>> UpdateCategoryItems(CategoryWatcher category);
-
-        IEnumerable<string> GetValidWatcherKeys { get; }
-        IReadOnlyList<CategoryWatcher> WatchedCategories { get; }
     }
 }
