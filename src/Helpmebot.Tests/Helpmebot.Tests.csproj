@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Helpmebot.CategoryWatcher\Helpmebot.CategoryWatcher.csproj" />
         <ProjectReference Include="..\Helpmebot.ChannelServices\Helpmebot.ChannelServices.csproj" />
         <ProjectReference Include="..\Helpmebot.Commands\Helpmebot.Commands.csproj" />
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />

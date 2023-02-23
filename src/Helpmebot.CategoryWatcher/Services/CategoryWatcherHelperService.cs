@@ -59,7 +59,7 @@
             }
         }
         
-
+        #region Legacy stuff
 
         public string ConstructDefaultMessage(
             CategoryWatcher category,
@@ -263,6 +263,71 @@
 
             var result = new Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>>(added, removed);
             return result;
+        }
+        #endregion
+        
+        public static (List<string> added, List<string> removed) CalculateListDelta(
+            List<string> originalItems,
+            List<string> newItems)
+        {
+            var removed = originalItems.Except(newItems).ToList();
+            var added = newItems.Except(originalItems).ToList();
+            
+            return (added, removed);
+        }
+
+        public (List<CategoryWatcherItem> allItems, IList<CategoryWatcherItem> addedItems, List<CategoryWatcherItem> removedItems) SyncItemsToDatabase(List<string> currentTitles, int watcherId)
+        {
+            var persistedItems = this.watcherItemPersistence.GetItems(watcherId).ToList();
+
+            var (added, removed) = CalculateListDelta(persistedItems.Select(x => x.Title).ToList(), currentTitles);
+            
+            var addedItems = this.watcherItemPersistence.AddNewItems(watcherId, added);
+            var removedItems = removed.Select(x => persistedItems.FirstOrDefault(y => y.Title == x)).ToList();
+
+            this.watcherItemPersistence.RemoveDeletedItems(watcherId, removed);
+            
+            persistedItems = persistedItems.Where(x => !removed.Contains(x.Title)).ToList();
+            persistedItems.AddRange(addedItems);
+
+            return (persistedItems, addedItems, removedItems);
+        }
+
+        public IList<string> FetchCategoryItems(int watcherId)
+        {
+            var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Id == watcherId);
+            return this.FetchCategoryItemsInternal(watcher);
+        }
+
+        public IList<string> FetchCategoryItems(string keyword)
+        {
+            var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == keyword);
+            return this.FetchCategoryItemsInternal(watcher);
+        }
+
+        private IList<string> FetchCategoryItemsInternal(CategoryWatcher watcher)
+        {
+            List<string> pagesInCategory;
+
+            var mediaWikiApi = this.apiHelper.GetApi(watcher.BaseWikiId);
+            try
+            {
+                pagesInCategory = mediaWikiApi.GetPagesInCategory(watcher.Category).ToList();
+                pagesInCategory.RemoveAll(x => this.watcherItemPersistence.GetIgnoredPages().Contains(x));
+
+                CategoryWatcherCount.WithLabels(watcher.Keyword).Set(pagesInCategory.Count);
+            }
+            catch (Exception e)
+            {
+                this.logger.WarnFormat(e, "Exception while retrieving category information for {0}", watcher.Keyword);
+                throw;
+            }
+            finally
+            {
+                this.apiHelper.Release(mediaWikiApi);
+            }
+
+            return pagesInCategory;
         }
     }
 }

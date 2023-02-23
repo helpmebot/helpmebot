@@ -27,19 +27,21 @@ namespace Helpmebot.CategoryWatcher.Services
                 .List<CategoryWatcherItem>();
         }
 
-        public void AddNewItems(int watcherId, IEnumerable<string> newItems)
+        public IList<CategoryWatcherItem> AddNewItems(int watcherId, IEnumerable<string> newItems)
         {
             var existing = this.GetItems(watcherId);
-
+            var insertTime = DateTime.UtcNow;
+            
             var newRecords = newItems
                 .Where(x => existing.All(i => i.Title != x))
                 .Select(
                     x => new CategoryWatcherItem
                     {
-                        InsertTime = DateTime.UtcNow,
+                        InsertTime = insertTime,
                         Title = x,
                         WatcherId = watcherId
-                    });
+                    })
+                .ToList();
 
             using (var txn = this.databaseSession.BeginTransaction())
             {
@@ -50,6 +52,8 @@ namespace Helpmebot.CategoryWatcher.Services
 
                 txn.Commit();
             }
+
+            return newRecords;
         }
 
         public void RemoveDeletedItems(int watcherId, IEnumerable<string> deletedItems)

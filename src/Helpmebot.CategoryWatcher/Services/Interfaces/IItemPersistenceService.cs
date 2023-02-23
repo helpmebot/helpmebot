@@ -6,7 +6,7 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
     public interface IItemPersistenceService
     {
         IList<CategoryWatcherItem> GetItems(int watcherId);
-        void AddNewItems(int watcherId, IEnumerable<string> newItems);
+        IList<CategoryWatcherItem> AddNewItems(int watcherId, IEnumerable<string> newItems);
         void RemoveDeletedItems(int watcherId, IEnumerable<string> deletedItems);
 
         IList<string> GetIgnoredPages();
