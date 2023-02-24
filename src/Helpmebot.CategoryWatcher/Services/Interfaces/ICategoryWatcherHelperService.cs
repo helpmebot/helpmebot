@@ -10,7 +10,7 @@
             CategoryWatcher category,
             CategoryWatcherChannel categoryChannel,
             IReadOnlyCollection<CategoryWatcherItem> items,
-            bool isNew,
+            bool describeNewItems,
             bool describeEmptySet);
 
         /// <summary>

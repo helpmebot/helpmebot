@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Services.Messages;
     using Helpmebot.CategoryWatcher.Commands;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -60,120 +61,25 @@
         }
         
         #region Legacy stuff
-
+        
+        [Obsolete]
         public string ConstructDefaultMessage(
             CategoryWatcher category,
             CategoryWatcherChannel categoryChannel,
             IReadOnlyCollection<CategoryWatcherItem> items,
-            bool isNew,
+            bool describeNewItems,
             bool describeEmptySet)
         {
             var destination = categoryChannel.Channel.Name;
-            var pluralString = this.responder.GetMessagePart(
-                $"catwatcher.item.{category.Keyword}.plural",
-                destination);
-
-            if (pluralString == null)
-            {
-                pluralString = this.responder.GetMessagePart(
-                    $"catwatcher.item.default.plural",
-                    destination);
-            }
+            var categoryKeyword = category.Keyword;
+            var showItemLinks = categoryChannel.ShowLink;
+            var showWaitTime = categoryChannel.ShowWaitTime;
+            var categoryChannelMinWaitTime = categoryChannel.MinWaitTime;
             
-            if (items.Any())
-            {
-                var textItems = new List<string>();
-
-                foreach (var item in items)
-                {
-                    // Display an http URL to the page, if desired
-                    var urlData = string.Empty;
-                    if (categoryChannel.ShowLink)
-                    {
-                        var pageUrl = this.linkerService.ConvertWikilinkToUrl(destination, item.Title);
-                        urlData = " " + this.urlShorteningService.Shorten(pageUrl);
-                    }
-
-                    // show the waiting time for the request
-                    var waitTimeData = string.Empty;
-                    if (categoryChannel.ShowWaitTime)
-                    {
-                        var waitingTime = DateTime.Now - item.InsertTime;
-
-                        if (waitingTime >= new TimeSpan(0, 0, 0, categoryChannel.MinWaitTime))
-                        {
-                            var waitTimeFormat = string.Format(
-                                " (waiting {{0:{0}hh\\:mm}})",
-                                waitingTime.TotalDays > 1 ? "d\\d\\ " : string.Empty);
-
-                            waitTimeData = string.Format(waitTimeFormat, waitingTime);
-                        }
-                    }
-
-                    textItems.Add(string.Format("[[{0}]]{1}{2}", item.Title, urlData, waitTimeData));
-                }
-                
-                if (items.Count == 1)
-                {
-                    pluralString = this.responder.GetMessagePart(
-                        $"catwatcher.item.{category.Keyword}.singular",
-                        destination);
-
-                    if (pluralString == null)
-                    {
-                        pluralString = this.responder.GetMessagePart(
-                            $"catwatcher.item.default.singular",
-                            destination);
-                    }
-                }
-
-                object[] messageParams =
-                {
-                    items.Count,
-                    pluralString,
-                    string.Join(" , ", textItems)
-                };
-
-                var keySuffix = "hasitems";
-                if (isNew)
-                {
-                    keySuffix = "newitems";
-                }
-                
-                var message = this.responder.GetMessagePart(
-                    $"catwatcher.item.{category.Keyword}.{keySuffix}",
-                    destination, messageParams);
-
-                if (message == null)
-                {
-                    message = this.responder.GetMessagePart(
-                        $"catwatcher.item.default.{keySuffix}",
-                        destination, messageParams);
-                }
-
-                return message;
-            }
-
-            if (!describeEmptySet)
-            {
-                return null;
-            }
-
-            var noitems = this.responder.GetMessagePart(
-                $"catwatcher.item.{category.Keyword}.noitems",
-                destination,
-                pluralString
-            );
-
-            if (noitems == null)
-            {
-                noitems = this.responder.GetMessagePart(
-                    $"catwatcher.item.default.noitems",
-                    destination, pluralString);
-            }
-
-            return noitems;
+            return this.ConstructResultMessage(items, categoryKeyword, destination, describeNewItems, describeEmptySet, showItemLinks, showWaitTime, categoryChannelMinWaitTime);
         }
+
+        
 
         /// <summary>
         /// Takes a category, and returns the added/removed items for that category, updating the category in the process
@@ -328,6 +234,101 @@
             }
 
             return pagesInCategory;
+        }
+
+        public string GetMessagePart(string watcherKey, string messageKey, string context, object[] arguments = null, Context contextType = null)
+        {
+            var fullMessageKey = $"catwatcher.item.{watcherKey}.{messageKey}";
+            var defaultMessageKey = $"catwatcher.item.default.{messageKey}";
+
+            var response = this.responder.GetMessagePart(fullMessageKey, context, arguments, contextType);
+
+            if (response == null)
+            {
+                response = this.responder.GetMessagePart(defaultMessageKey, context, arguments, contextType);
+            }
+
+            return response;
+        }
+        
+        public string GetMessagePart(string watcherKey, string messageKey, string context, object argument)
+        {
+            return this.GetMessagePart(watcherKey, messageKey, context, new[] { argument });
+        }
+        
+        public string ConstructResultMessage(
+            IReadOnlyCollection<CategoryWatcherItem> items,
+            string categoryKeyword,
+            string destination,
+            bool describeNewItems,
+            bool describeEmptySet,
+            bool showItemLinks,
+            bool showWaitTime,
+            int categoryChannelMinWaitTime)
+        {
+            var pluralString = this.GetMessagePart(categoryKeyword, "plural", destination);
+
+            if (items.Any())
+            {
+                var textItems = new List<string>();
+
+                foreach (var item in items)
+                {
+                    // Display an http URL to the page, if desired
+                    var urlData = string.Empty;
+                    if (showItemLinks)
+                    {
+                        var pageUrl = this.linkerService.ConvertWikilinkToUrl(destination, item.Title);
+                        urlData = " " + this.urlShorteningService.Shorten(pageUrl);
+                    }
+
+                    // show the waiting time for the request
+                    var waitTimeData = string.Empty;
+
+                    if (showWaitTime)
+                    {
+                        var waitingTime = DateTime.UtcNow - item.InsertTime;
+
+                        if (waitingTime >= new TimeSpan(0, 0, 0, categoryChannelMinWaitTime))
+                        {
+                            var waitTimeFormat = string.Format(
+                                " (waiting {{0:{0}hh\\:mm}})",
+                                waitingTime.TotalDays > 1 ? "d\\d\\ " : string.Empty);
+
+                            waitTimeData = string.Format(waitTimeFormat, waitingTime);
+                        }
+                    }
+
+                    textItems.Add(string.Format("[[{0}]]{1}{2}", item.Title, urlData, waitTimeData));
+                }
+
+                if (items.Count == 1)
+                {
+                    pluralString = this.GetMessagePart(categoryKeyword, "singular", destination);
+                }
+
+                object[] messageParams =
+                {
+                    items.Count,
+                    pluralString,
+                    string.Join(" , ", textItems)
+                };
+
+                var keySuffix = "hasitems";
+                if (describeNewItems)
+                {
+                    keySuffix = "newitems";
+                }
+
+                return this.GetMessagePart(categoryKeyword, keySuffix, destination, messageParams);
+            }
+
+            if (!describeEmptySet)
+            {
+                return null;
+            }
+
+            return this.GetMessagePart(categoryKeyword, "noitems", destination, pluralString);
         }
     }
 }
