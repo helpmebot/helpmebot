@@ -199,6 +199,12 @@ public class CategoryWatcherMessageTests : TestBase
                 new List<CategoryWatcherItem>{foo, bar}, false, false, true, true, 60, "There are 2 pages: [[foo]] https://enwp.org/foo , [[bar]] https://enwp.org/bar"
             };
             
+            // return multiple new items
+            yield return new object?[]
+            {
+                new List<CategoryWatcherItem>{foo, bar}, true, false, true, true, 60, "There are 2 new pages: [[foo]] https://enwp.org/foo , [[bar]] https://enwp.org/bar"
+            };
+            
             // return old item
             yield return new object?[]
             {

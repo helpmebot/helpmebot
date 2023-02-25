@@ -79,8 +79,6 @@
             return this.ConstructResultMessage(items, categoryKeyword, destination, describeNewItems, describeEmptySet, showItemLinks, showWaitTime, categoryChannelMinWaitTime);
         }
 
-        
-
         /// <summary>
         /// Takes a category, and returns the added/removed items for that category, updating the category in the process
         /// </summary>
