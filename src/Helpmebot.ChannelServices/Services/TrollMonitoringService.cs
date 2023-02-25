@@ -447,7 +447,6 @@ namespace Helpmebot.ChannelServices.Services
             try
             {
                 this.trackedUsers.Add(user, new TrackedUser(0, user) { CheckFirstMessage = true });
-                this.SendIrcPrivateAlert($"Tracked user {user} in -en-help per request of {sender}");
             }
             catch(Exception ex)
             {
