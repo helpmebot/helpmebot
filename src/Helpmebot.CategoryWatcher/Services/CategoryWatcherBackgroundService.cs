@@ -64,18 +64,6 @@
             this.TimerOnElapsed(null, null);
         }
 
-        public IEnumerable<string> GetWatchedCategories(Channel destination)
-        {
-            return this.watcherConfig.GetWatchers()
-                .Where(x => x.Channels.Select(y => y.Id).Contains(destination.Id))
-                .Select(x => x.Keyword);
-        }
-
-        public IEnumerable<string> GetValidWatcherKeys()
-        {
-            return new List<string>(this.watcherConfig.GetValidWatcherKeys());
-        }
-        
         public void ForceUpdate(string key, Channel destination)
         {
             this.Logger.DebugFormat("Force-update was triggered for {0} in {1}", key, destination.Name);

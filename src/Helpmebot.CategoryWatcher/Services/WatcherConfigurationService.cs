@@ -34,6 +34,13 @@ namespace Helpmebot.CategoryWatcher.Services
             return new List<CategoryWatcher>(this.watchedCategories);
         }
 
+        public IEnumerable<string> GetWatchersForChannel(string channelName)
+        {
+            return this.channels
+                .Where(x => x.Channel.Name == channelName)
+                .Select(x => x.Watcher.Keyword);
+        }
+
         public void CreateWatcher(string category, string keyword, string baseWiki)
         {
             if (this.watchedCategories.Any(x => x.Category == category && x.BaseWikiId == baseWiki))

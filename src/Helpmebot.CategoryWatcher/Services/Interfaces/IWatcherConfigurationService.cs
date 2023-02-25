@@ -8,5 +8,6 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         IReadOnlyList<CategoryWatcher> GetWatchers();
         void CreateWatcher(string category, string keyword, string baseWiki);
         IEnumerable<string> GetValidWatcherKeys();
+        IEnumerable<string> GetWatchersForChannel(string channelName);
     }
 }

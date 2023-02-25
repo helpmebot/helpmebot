@@ -78,7 +78,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             }
             else
             {
-                validKeywords = this.categoryWatcherService.GetWatchedCategories(channelObject).ToList();
+                validKeywords = this.watcherConfigurationService.GetWatchersForChannel(this.CommandSource).ToList();
             }
 
             foreach (var flag in validKeywords)

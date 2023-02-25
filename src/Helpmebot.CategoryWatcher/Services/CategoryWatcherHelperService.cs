@@ -170,9 +170,9 @@
         }
         #endregion
         
-        public static (List<string> added, List<string> removed) CalculateListDelta(
-            List<string> originalItems,
-            List<string> newItems)
+        public static (IList<string> added, IList<string> removed) CalculateListDelta(
+            IList<string> originalItems,
+            IList<string> newItems)
         {
             var removed = originalItems.Except(newItems).ToList();
             var added = newItems.Except(originalItems).ToList();
@@ -180,7 +180,7 @@
             return (added, removed);
         }
 
-        public (List<CategoryWatcherItem> allItems, IList<CategoryWatcherItem> addedItems, List<CategoryWatcherItem> removedItems) SyncItemsToDatabase(List<string> currentTitles, int watcherId)
+        public (IList<CategoryWatcherItem> allItems, IList<CategoryWatcherItem> addedItems, IList<CategoryWatcherItem> removedItems) SyncItemsToDatabase(IList<string> currentTitles, int watcherId)
         {
             var persistedItems = this.watcherItemPersistence.GetItems(watcherId).ToList();
 
