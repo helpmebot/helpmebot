@@ -101,12 +101,16 @@
 
                 this.helperService.UpdateCategoryItems(watcher);
 
-                var message = this.helperService.ConstructDefaultMessage(
-                    watcher,
-                    channel,
+                var message = this.helperService.ConstructResultMessage(
                     watcher.CategoryItems.ToList(),
+                    watcher.Keyword,
+                    channel.Channel.Name,
                     false,
-                    true);
+                    true,
+                    channel.ShowLink,
+                    channel.ShowWaitTime,
+                    channel.MinWaitTime
+                );
 
                 if (message != null)
                 {
@@ -190,12 +194,16 @@
                             this.alertTimeoutCache[categoryChannel.Id] =
                                 DateTime.Now.AddSeconds(categoryChannel.SleepTime);
 
-                            var message = this.helperService.ConstructDefaultMessage(
-                                category,
-                                categoryChannel,
+                            var message = this.helperService.ConstructResultMessage(
                                 category.CategoryItems.ToList(),
+                                category.Keyword,
+                                categoryChannel.Channel.Name,
                                 false,
-                                false);
+                                false,
+                                categoryChannel.ShowLink,
+                                categoryChannel.ShowWaitTime,
+                                categoryChannel.MinWaitTime
+                            );
 
                             if (message != null)
                             {
@@ -206,13 +214,17 @@
                         {
                             if (categoryChannel.AlertForAdditions && additions.Any())
                             {
-                                var message = this.helperService.ConstructDefaultMessage(
-                                    category,
-                                    categoryChannel,
+                                var message = this.helperService.ConstructResultMessage(
                                     additions,
+                                    category.Keyword,
+                                    categoryChannel.Channel.Name,
                                     true,
-                                    false);
-
+                                    false,
+                                    categoryChannel.ShowLink,
+                                    categoryChannel.ShowWaitTime,
+                                    categoryChannel.MinWaitTime
+                                );
+                                
                                 if (message != null)
                                 {
                                     this.ircClient.SendMessage(categoryChannel.Channel.Name, message);

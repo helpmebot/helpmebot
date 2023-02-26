@@ -61,23 +61,6 @@
         }
         
         #region Legacy stuff
-        
-        [Obsolete]
-        public string ConstructDefaultMessage(
-            CategoryWatcher category,
-            CategoryWatcherChannel categoryChannel,
-            IReadOnlyCollection<CategoryWatcherItem> items,
-            bool describeNewItems,
-            bool describeEmptySet)
-        {
-            var destination = categoryChannel.Channel.Name;
-            var categoryKeyword = category.Keyword;
-            var showItemLinks = categoryChannel.ShowLink;
-            var showWaitTime = categoryChannel.ShowWaitTime;
-            var categoryChannelMinWaitTime = categoryChannel.MinWaitTime;
-            
-            return this.ConstructResultMessage(items, categoryKeyword, destination, describeNewItems, describeEmptySet, showItemLinks, showWaitTime, categoryChannelMinWaitTime);
-        }
 
         /// <summary>
         /// Takes a category, and returns the added/removed items for that category, updating the category in the process
