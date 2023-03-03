@@ -12,8 +12,6 @@
             this.Map(x => x.Title, "title");
             this.Map(x => x.InsertTime, "inserttime");
             this.Map(x => x.WatcherId, "watcher");
-            
-            this.References(x => x.Watcher, "watcher");
         }
     }
 }

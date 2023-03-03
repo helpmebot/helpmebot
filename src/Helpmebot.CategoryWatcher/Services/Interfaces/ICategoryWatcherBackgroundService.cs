@@ -5,6 +5,6 @@
 
     public interface ICategoryWatcherBackgroundService : ITimerBackgroundService
     {
-        void ForceUpdate(string key, Channel destination);
+        void ForceUpdate(string key, string channelName);
     }
 }

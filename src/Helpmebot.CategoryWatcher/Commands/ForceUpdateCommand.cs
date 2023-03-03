@@ -56,7 +56,7 @@ namespace Helpmebot.CategoryWatcher.Commands
                 throw new CommandErrorException("Could not retrieve channel configuration.");
             }
             
-            this.categoryWatcherService.ForceUpdate(this.InvokedAs, channel);
+            this.categoryWatcherService.ForceUpdate(this.InvokedAs, this.CommandSource);
             
             return null;
         }

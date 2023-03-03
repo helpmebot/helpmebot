@@ -83,7 +83,7 @@ namespace Helpmebot.CategoryWatcher.Commands
 
             foreach (var flag in validKeywords)
             {
-                this.categoryWatcherService.ForceUpdate(flag, channelObject);
+                this.categoryWatcherService.ForceUpdate(flag, this.CommandSource);
             }
 
             return Array.Empty<CommandResponse>();

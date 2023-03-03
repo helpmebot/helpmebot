@@ -120,7 +120,7 @@
                         {
                             InsertTime = DateTime.Now,
                             Title = item,
-                            Watcher = category
+                            WatcherId = category.Id
                         };
 
                         added.Add(catItem);

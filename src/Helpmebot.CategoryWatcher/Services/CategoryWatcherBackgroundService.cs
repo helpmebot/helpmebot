@@ -64,9 +64,9 @@
             this.TimerOnElapsed(null, null);
         }
 
-        public void ForceUpdate(string key, Channel destination)
+        public void ForceUpdate(string key, string channelName)
         {
-            this.Logger.DebugFormat("Force-update was triggered for {0} in {1}", key, destination.Name);
+            this.Logger.DebugFormat("Force-update was triggered for {0} in {1}", key, channelName);
             
             // Locks!
             this.timerSemaphore.WaitOne();
@@ -81,16 +81,16 @@
 
                 this.Logger.DebugFormat("Found watcher {0} for {1}", key, watcher.Category);
 
-                var channel = watcher.Channels.FirstOrDefault(x => x.Channel == destination);
+                var channel = watcher.Channels.FirstOrDefault(x => x.Channel.Name == channelName);
                 if (channel == null)
                 {
-                    this.Logger.DebugFormat("Faking channelconfig for {0}", destination);
+                    this.Logger.DebugFormat("Faking channelconfig for {0}", channelName);
 
                     channel = new CategoryWatcherChannel
                     {
                         AlertForAdditions = false,
                         AlertForRemovals = false,
-                        Channel = destination,
+                        Channel = null,
                         MinWaitTime = 3600,
                         ShowWaitTime = true,
                         ShowLink = true,
@@ -104,7 +104,7 @@
                 var message = this.helperService.ConstructResultMessage(
                     watcher.CategoryItems.ToList(),
                     watcher.Keyword,
-                    channel.Channel.Name,
+                    channelName,
                     false,
                     true,
                     channel.ShowLink,
@@ -114,12 +114,12 @@
 
                 if (message != null)
                 {
-                    this.ircClient.SendMessage(destination.Name, message);
+                    this.ircClient.SendMessage(channelName, message);
                 }
             }
             catch (WebException ex)
             {
-                this.ircClient.SendMessage(destination.Name, "Could not retrieve category items due to Wikimedia API error");
+                this.ircClient.SendMessage(channelName, "Could not retrieve category items due to Wikimedia API error");
                 this.Logger.Warn("Error during API fetch", ex);
             }
             catch (Exception ex)
