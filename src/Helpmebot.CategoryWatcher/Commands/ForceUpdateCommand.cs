@@ -4,10 +4,9 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Attributes;
     using Castle.Core.Logging;
     using CoreServices.Attributes;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -23,7 +22,7 @@ namespace Helpmebot.CategoryWatcher.Commands
     public class ForceUpdateCommand : CommandBase
     {
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
-        private readonly ISession databaseSession;
+        private readonly IChannelManagementService channelManagementService;
 
         public ForceUpdateCommand(
             string commandSource,
@@ -34,7 +33,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ICategoryWatcherBackgroundService categoryWatcherService,
-            ISession databaseSession) : base(
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -44,14 +43,12 @@ namespace Helpmebot.CategoryWatcher.Commands
             client)
         {
             this.categoryWatcherService = categoryWatcherService;
-            this.databaseSession = databaseSession;
+            this.channelManagementService = channelManagementService;
         }
         
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var channel = this.databaseSession.GetChannelObject(this.CommandSource);
-
-            if (channel == null)
+            if (!this.channelManagementService.IsEnabled(this.CommandSource))
             {
                 throw new CommandErrorException("Could not retrieve channel configuration.");
             }

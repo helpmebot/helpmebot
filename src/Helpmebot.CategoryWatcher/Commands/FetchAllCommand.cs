@@ -6,11 +6,10 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Attributes;
     using Castle.Core.Logging;
     using CoreServices.Attributes;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
-    using NHibernate;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
@@ -26,9 +25,9 @@ namespace Helpmebot.CategoryWatcher.Commands
     public class FetchAllCommand : CommandBase
     {
         private readonly ICategoryWatcherBackgroundService categoryWatcherService;
-        private readonly ISession databaseSession;
         private readonly IResponder responder;
         private readonly IWatcherConfigurationService watcherConfigurationService;
+        private readonly IChannelManagementService channelManagementService;
 
         public FetchAllCommand(
             string commandSource,
@@ -39,9 +38,9 @@ namespace Helpmebot.CategoryWatcher.Commands
             IConfigurationProvider configurationProvider,
             IIrcClient client,
             ICategoryWatcherBackgroundService categoryWatcherService,
-            ISession databaseSession,
             IResponder responder,
-            IWatcherConfigurationService watcherConfigurationService) : base(
+            IWatcherConfigurationService watcherConfigurationService,
+            IChannelManagementService channelManagementService) : base(
             commandSource,
             user,
             arguments,
@@ -51,9 +50,9 @@ namespace Helpmebot.CategoryWatcher.Commands
             client)
         {
             this.categoryWatcherService = categoryWatcherService;
-            this.databaseSession = databaseSession;
             this.responder = responder;
             this.watcherConfigurationService = watcherConfigurationService;
+            this.channelManagementService = channelManagementService;
         }
 
         [CommandParameter(
@@ -65,8 +64,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         {
             var allKeywords = this.Parameters.GetParameter("all", false);
 
-            var channelObject = this.databaseSession.GetChannelObject(this.CommandSource);
-            if (channelObject == null && !allKeywords)
+            if (!this.channelManagementService.IsEnabled(this.CommandSource) && !allKeywords)
             {
                 return this.responder.Respond("catwatcher.command.fetchall.must-run-in-channel", this.CommandSource);
             }
