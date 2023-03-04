@@ -216,10 +216,20 @@ namespace Helpmebot.WebApi.Services
             commandInfo.Aliases = aliases;
 
             // Help summary
-            commandInfo.HelpSummary = commandClass.GetCustomAttributes(typeof(HelpSummaryAttribute), false)
-                .Cast<HelpSummaryAttribute>()
-                .FirstOrDefault()
-                ?.Description;
+            var summaryMethodAttributes = commandClass.GetCustomAttributes(typeof(HelpSummaryMethodAttribute), false);
+            if (summaryMethodAttributes.Any())
+            {
+                var methodName = summaryMethodAttributes.Cast<HelpSummaryMethodAttribute>().First().MethodName;
+                var result = commandClass.GetMethod(methodName)?.Invoke(null, new object[] { canonicalName });
+                commandInfo.HelpSummary = (string)result;
+            }
+            else
+            {
+                commandInfo.HelpSummary = commandClass.GetCustomAttributes(typeof(HelpSummaryAttribute), false)
+                    .Cast<HelpSummaryAttribute>()
+                    .FirstOrDefault()
+                    ?.Description;
+            }
 
             // Help category
             commandInfo.HelpCategory = commandClass.GetCustomAttributes(typeof(HelpCategoryAttribute), true)

@@ -1,0 +1,1 @@
+For more information on the category watchers, see [the category watcher information](/catwatchers) page.

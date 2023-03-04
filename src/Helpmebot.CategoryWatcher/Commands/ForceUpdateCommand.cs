@@ -15,7 +15,7 @@ namespace Helpmebot.CategoryWatcher.Commands
 
     [CommandFlag(Flags.Info)]
     [ForceDocumented(promoteAliases:true)]
-    [HelpSummary("Retrieves the current items in the associated category.")]
+    [HelpSummaryMethod(nameof(HelpSummary))]
     [HelpCategory("CatWatcher")]
     public class ForceUpdateCommand : CommandBase
     {
@@ -46,6 +46,11 @@ namespace Helpmebot.CategoryWatcher.Commands
             var suppressNonConfiguredWarning = this.Client.Nickname == this.CommandSource;
             
             return this.helperService.DoForcedUpdate(this.InvokedAs, this.CommandSource, suppressNonConfiguredWarning);
+        }
+
+        public static string HelpSummary(string invokedAs)
+        {
+            return $"Retrieves the current items for the {invokedAs} category watcher.";
         }
     }
 }
