@@ -54,7 +54,10 @@ namespace Helpmebot.CategoryWatcher.Services
                 {
                     yield return new CommandResponse
                     {
-                        Message = "FIXME: not configured in this channel.",
+                        Message = this.responder.GetMessagePart(
+                            "catwatcher.command.forceupdate.not-configured-in-channel",
+                            channelName,
+                            new object[] { categoryKeyword, channelName }),
                         Destination = CommandResponseDestination.PrivateMessage,
                         IgnoreRedirection = true
                     };
@@ -97,7 +100,7 @@ namespace Helpmebot.CategoryWatcher.Services
                 if (!validKeywords.Any())
                 {
                     return this.responder.Respond(
-                        "catwatcher.command.fetchall.no-configured",
+                        "catwatcher.command.fetchall.none-configured",
                         channelName,
                         Array.Empty<object>());
                 }
@@ -109,7 +112,7 @@ namespace Helpmebot.CategoryWatcher.Services
                 if (!validKeywords.Any())
                 {
                     return this.responder.Respond(
-                        "catwatcher.command.fetchall.no-configured-in-channel",
+                        "catwatcher.command.fetchall.none-configured-in-channel",
                         channelName,
                         channelName);
                 }

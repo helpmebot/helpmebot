@@ -141,8 +141,7 @@
             if (!this.alertTimeoutCache.ContainsKey(categoryChannel.Id))
             {
                 this.alertTimeoutCache.Add(categoryChannel.Id, DateTime.MinValue);
-                // FIXME: report correct values
-                this.Logger.DebugFormat("Adding timeout cache entry for {0}/{1}/{2}", categoryChannel.Id, "", "" /*channelName, watcher.Keyword*/);
+                this.Logger.DebugFormat("Adding timeout cache entry for {0}/{1}/{2}", categoryChannel.Id, categoryChannel.Channel, categoryChannel.Watcher);
             }
         }
         
