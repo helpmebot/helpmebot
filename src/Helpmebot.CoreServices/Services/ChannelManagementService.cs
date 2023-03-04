@@ -1,6 +1,7 @@
 ﻿namespace Helpmebot.CoreServices.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using Castle.Core.Logging;
@@ -24,6 +25,11 @@
         private readonly IAccessLogService accessLogService;
         private readonly ILogger logger;
         private readonly MediaWikiSiteConfiguration mwConfig;
+
+        private Dictionary<string, bool> silenceCache = new Dictionary<string, bool>();
+        private Dictionary<string, bool> autolinkCache = new Dictionary<string, bool>();
+        private Dictionary<string, string> basewikiCache = new Dictionary<string, string>();
+        private Dictionary<string, string> welcomerFlagCache = new Dictionary<string, string>();
 
         public ChannelManagementService(
             ISession session,
@@ -50,27 +56,30 @@
 
         public void JoinChannel(string channelName)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                    .List<Channel>()
-                    .FirstOrDefault();
-
-                if (channel == null)
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    channel = new Channel
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    if (channel == null)
                     {
-                        Name = channelName,
-                        Enabled = true,
-                        BaseWikiId = this.mwConfig.Default
-                    };
+                        channel = new Channel
+                        {
+                            Name = channelName,
+                            Enabled = true,
+                            BaseWikiId = this.mwConfig.Default
+                        };
+                    }
+
+                    channel.Enabled = true;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
                 }
-
-                channel.Enabled = true;
-
-                this.session.SaveOrUpdate(channel);
-                txn.Commit();
             }
 
             this.client.JoinChannel(channelName);
@@ -78,24 +87,27 @@
 
         public void PartChannel(string channelName, string message)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                    .List<Channel>()
-                    .FirstOrDefault();
-
-                this.client.PartChannel(channelName, message);
-
-                if (channel == null)
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    return;
+                    var channel = this.session.CreateCriteria<Channel>()
+                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                        .List<Channel>()
+                        .FirstOrDefault();
+
+                    this.client.PartChannel(channelName, message);
+
+                    if (channel == null)
+                    {
+                        return;
+                    }
+
+                    channel.Enabled = false;
+
+                    this.session.SaveOrUpdate(channel);
+                    txn.Commit();
                 }
-
-                channel.Enabled = false;
-
-                this.session.SaveOrUpdate(channel);
-                txn.Commit();
             }
         }
 
@@ -129,52 +141,67 @@
 
         public void OnKicked(object sender, KickedEventArgs e)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                var channel = this.session.CreateCriteria<Channel>()
-                    .Add(Restrictions.Eq(nameof(Channel.Name), e.Channel))
-                    .List<Channel>()
-                    .FirstOrDefault();
-
-                if (channel == null)
-                {
-                    return;
-                }
-
-                channel.Enabled = false;
-
-                this.session.Save(channel);
-                txn.Commit();
-            }
-        }
-
-        public void ConfigureAutolink(string channelName, bool state)
-        {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                try
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
                     var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                        .Add(Restrictions.Eq(nameof(Channel.Name), e.Channel))
                         .List<Channel>()
                         .FirstOrDefault();
 
                     if (channel == null)
                     {
-                        throw new NullReferenceException("Channel object not found");
+                        return;
                     }
 
-                    channel.AutoLink = state;
+                    channel.Enabled = false;
 
-                    this.session.SaveOrUpdate(channel);
+                    this.session.Save(channel);
                     txn.Commit();
-                    this.session.Flush();
                 }
-                finally
+            }
+        }
+
+        public void ConfigureAutolink(string channelName, bool state)
+        {
+            lock (this.session)
+            {
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    if (txn.IsActive)
+                    try
                     {
-                        txn.Rollback();
+                        var channel = this.session.CreateCriteria<Channel>()
+                            .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                            .List<Channel>()
+                            .FirstOrDefault();
+
+                        if (channel == null)
+                        {
+                            throw new NullReferenceException("Channel object not found");
+                        }
+
+                        channel.AutoLink = state;
+
+                        this.session.SaveOrUpdate(channel);
+                        txn.Commit();
+                        this.session.Flush();
+                        
+                        if (!this.autolinkCache.ContainsKey(channelName))
+                        {
+                            this.autolinkCache.Add(channelName, state);
+                        }
+                        else
+                        {
+                            this.autolinkCache[channelName] = state;
+                        }
+                    }
+                    finally
+                    {
+                        if (txn.IsActive)
+                        {
+                            txn.Rollback();
+                        }
                     }
                 }
             }
@@ -182,31 +209,43 @@
 
         public void ConfigureSilence(string channelName, bool state)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                try
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                        .List<Channel>()
-                        .FirstOrDefault();
-
-                    if (channel == null)
+                    try
                     {
-                        throw new NullReferenceException("Channel object not found");
+                        var channel = this.session.CreateCriteria<Channel>()
+                            .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                            .List<Channel>()
+                            .FirstOrDefault();
+
+                        if (channel == null)
+                        {
+                            throw new NullReferenceException("Channel object not found");
+                        }
+
+                        channel.Silenced = state;
+
+                        this.session.SaveOrUpdate(channel);
+                        txn.Commit();
+                        this.session.Flush();
+                        
+                        if (!this.silenceCache.ContainsKey(channelName))
+                        {
+                            this.silenceCache.Add(channelName, state);
+                        }
+                        else
+                        {
+                            this.silenceCache[channelName] = state;
+                        }
                     }
-
-                    channel.Silenced = state;
-
-                    this.session.SaveOrUpdate(channel);
-                    txn.Commit();
-                    this.session.Flush();
-                }
-                finally
-                {
-                    if (txn.IsActive)
+                    finally
                     {
-                        txn.Rollback();
+                        if (txn.IsActive)
+                        {
+                            txn.Rollback();
+                        }
                     }
                 }
             }
@@ -214,31 +253,34 @@
 
         public void ConfigureFunCommands(string channelName, bool disabled)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                try
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                        .List<Channel>()
-                        .FirstOrDefault();
-
-                    if (channel == null)
+                    try
                     {
-                        throw new NullReferenceException("Channel object not found");
+                        var channel = this.session.CreateCriteria<Channel>()
+                            .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                            .List<Channel>()
+                            .FirstOrDefault();
+
+                        if (channel == null)
+                        {
+                            throw new NullReferenceException("Channel object not found");
+                        }
+
+                        channel.HedgehogMode = disabled;
+
+                        this.session.SaveOrUpdate(channel);
+                        txn.Commit();
+                        this.session.Flush();
                     }
-
-                    channel.HedgehogMode = disabled;
-
-                    this.session.SaveOrUpdate(channel);
-                    txn.Commit();
-                    this.session.Flush();
-                }
-                finally
-                {
-                    if (txn.IsActive)
+                    finally
                     {
-                        txn.Rollback();
+                        if (txn.IsActive)
+                        {
+                            txn.Rollback();
+                        }
                     }
                 }
             }
@@ -246,91 +288,130 @@
 
         public bool FunCommandsDisabled(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            lock (this.session)
             {
-                return true;
-            }
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
 
-            return channel.HedgehogMode;
+                if (channel == null)
+                {
+                    return true;
+                }
+
+                return channel.HedgehogMode;
+            }
         }
 
         public bool AutoLinkEnabled(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            lock (this.session)
             {
-                return false;
-            }
+                if (this.autolinkCache.ContainsKey(channelName))
+                {
+                    return this.autolinkCache[channelName];
+                }
+                
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
 
-            return channel.AutoLink;
+                if (channel == null)
+                {
+                    return false;
+                }
+
+                return channel.AutoLink;
+            }
         }
 
         public bool IsSilenced(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            lock (this.session)
             {
-                return false;
-            }
+                if (this.silenceCache.ContainsKey(channelName))
+                {
+                    return this.silenceCache[channelName];
+                }
+                
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
 
-            return channel.Silenced;
+                if (channel == null)
+                {
+                    return false;
+                }
+
+                return channel.Silenced;
+            }
         }
 
         public string GetBaseWiki(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            lock (this.session)
             {
-                return this.mwConfig.Default;
-            }
+                if (this.basewikiCache.ContainsKey(channelName))
+                {
+                    return this.basewikiCache[channelName];
+                }
+                
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
 
-            return channel.BaseWikiId;
+                if (channel == null)
+                {
+                    return this.mwConfig.Default;
+                }
+
+                return channel.BaseWikiId;
+            }
         }
 
         public void SetBaseWiki(string channelName, string wikiId)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                try
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                        .List<Channel>()
-                        .FirstOrDefault();
-
-                    if (channel == null)
+                    try
                     {
-                        throw new NullReferenceException("Channel object not found");
+                        var channel = this.session.CreateCriteria<Channel>()
+                            .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                            .List<Channel>()
+                            .FirstOrDefault();
+
+                        if (channel == null)
+                        {
+                            throw new NullReferenceException("Channel object not found");
+                        }
+
+                        channel.BaseWikiId = wikiId;
+
+                        this.session.SaveOrUpdate(channel);
+                        txn.Commit();
+                        this.session.Flush();
+                        
+                        if (!this.basewikiCache.ContainsKey(channelName))
+                        {
+                            this.basewikiCache.Add(channelName, wikiId);
+                        }
+                        else
+                        {
+                            this.basewikiCache[channelName] = wikiId;
+                        }
                     }
-
-                    channel.BaseWikiId = wikiId;
-
-                    this.session.SaveOrUpdate(channel);
-                    txn.Commit();
-                    this.session.Flush();
-                }
-                finally
-                {
-                    if (txn.IsActive)
+                    finally
                     {
-                        txn.Rollback();
+                        if (txn.IsActive)
+                        {
+                            txn.Rollback();
+                        }
                     }
                 }
             }
@@ -338,46 +419,66 @@
 
         public string GetWelcomerFlag(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
-
-            if (channel == null)
+            lock (this.session)
             {
-                throw new NullReferenceException("Channel object not found");
-            }
+                if (this.welcomerFlagCache.ContainsKey(channelName))
+                {
+                    return this.welcomerFlagCache[channelName];
+                }
+                
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .List<Channel>()
+                    .FirstOrDefault();
 
-            return channel.WelcomerFlag;
+                if (channel == null)
+                {
+                    throw new NullReferenceException("Channel object not found");
+                }
+
+                return channel.WelcomerFlag;
+            }
         }
         
         public void SetWelcomerFlag(string channelName, string welcomerFlag)
         {
-            using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
+            lock (this.session)
             {
-                try
+                using (var txn = this.session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
-                    var channel = this.session.CreateCriteria<Channel>()
-                        .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                        .List<Channel>()
-                        .FirstOrDefault();
-
-                    if (channel == null)
+                    try
                     {
-                        throw new NullReferenceException("Channel object not found");
+                        var channel = this.session.CreateCriteria<Channel>()
+                            .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                            .List<Channel>()
+                            .FirstOrDefault();
+
+                        if (channel == null)
+                        {
+                            throw new NullReferenceException("Channel object not found");
+                        }
+
+                        channel.WelcomerFlag = welcomerFlag;
+
+                        this.session.SaveOrUpdate(channel);
+                        txn.Commit();
+                        this.session.Flush();
+
+                        if (!this.welcomerFlagCache.ContainsKey(channelName))
+                        {
+                            this.welcomerFlagCache.Add(channelName, welcomerFlag);
+                        }
+                        else
+                        {
+                            this.welcomerFlagCache[channelName] = welcomerFlag;
+                        }
                     }
-
-                    channel.WelcomerFlag = welcomerFlag;
-
-                    this.session.SaveOrUpdate(channel);
-                    txn.Commit();
-                    this.session.Flush();
-                }
-                finally
-                {
-                    if (txn.IsActive)
+                    finally
                     {
-                        txn.Rollback();
+                        if (txn.IsActive)
+                        {
+                            txn.Rollback();
+                        }
                     }
                 }
             }
@@ -385,11 +486,14 @@
 
         public bool IsEnabled(string channelName)
         {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .UniqueResult<Channel>();
+            lock (this.session)
+            {
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                    .UniqueResult<Channel>();
 
-            return channel != null && channel.Enabled;
+                return channel != null && channel.Enabled;
+            }
         }
 
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
@@ -408,24 +512,6 @@
                 this.logger.ErrorFormat(ex, "Error encountered determining silence configuration for {0}", destination);
                 return false;
             }
-        }
-
-        public string GetNameFromId(int channelId)
-        {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Id), channelId))
-                .UniqueResult<Channel>();
-
-            return channel?.Name;
-        }
-        
-        public int? GetIdFromName(string channelName)
-        {
-            var channel = this.session.CreateCriteria<Channel>()
-                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .UniqueResult<Channel>();
-
-            return channel?.Id;
         }
     }
 }
