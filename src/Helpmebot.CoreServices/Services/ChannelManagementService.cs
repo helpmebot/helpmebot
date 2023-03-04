@@ -10,6 +10,7 @@
     using Helpmebot.CoreServices.Services.Interfaces;
     using NHibernate;
     using NHibernate.Criterion;
+    using Prometheus;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
     using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
@@ -19,6 +20,15 @@
 
     public class ChannelManagementService : IChannelManagementService, ISilentModeConfiguration
     {
+        private static readonly Counter ChannelManagementCacheMisses = Metrics.CreateCounter(
+            "helpmebot_channelmanagement_cache_miss_count",
+            "The number of pages in the catwatcher category",
+            new CounterConfiguration
+            {
+                LabelNames = new[] { "silence", "autolink", "basewiki", "welcomerflag" }
+            });
+
+        
         private readonly ISession session;
         private readonly IIrcClient client;
         private readonly IFlagService flagService;
@@ -290,6 +300,8 @@
         {
             lock (this.session)
             {
+                ChannelManagementCacheMisses.WithLabels("funcommands").Inc();
+                
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .List<Channel>()
@@ -312,6 +324,8 @@
                 {
                     return this.autolinkCache[channelName];
                 }
+                
+                ChannelManagementCacheMisses.WithLabels("autolink").Inc();
                 
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
@@ -336,6 +350,8 @@
                     return this.silenceCache[channelName];
                 }
                 
+                ChannelManagementCacheMisses.WithLabels("silence").Inc();
+                
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .List<Channel>()
@@ -358,6 +374,8 @@
                 {
                     return this.basewikiCache[channelName];
                 }
+                
+                ChannelManagementCacheMisses.WithLabels("basewiki").Inc();
                 
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
@@ -426,6 +444,8 @@
                     return this.welcomerFlagCache[channelName];
                 }
                 
+                ChannelManagementCacheMisses.WithLabels("welcomerflag").Inc();
+                
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .List<Channel>()
@@ -491,6 +511,8 @@
                 var channel = this.session.CreateCriteria<Channel>()
                     .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
                     .UniqueResult<Channel>();
+                
+                ChannelManagementCacheMisses.WithLabels("enabled").Inc();
 
                 return channel != null && channel.Enabled;
             }
