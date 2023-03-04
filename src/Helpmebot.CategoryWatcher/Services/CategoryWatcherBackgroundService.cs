@@ -105,6 +105,12 @@
                         // check if it's time to report everything
                         if (this.alertTimeoutCache[config.Id] <= DateTime.UtcNow)
                         {
+                            if (!this.ircClient.Channels.ContainsKey(channelName))
+                            {
+                                this.Logger.WarnFormat("Timeout reached for {0}/{1}/{2} but not in channel!", config.Id, channelName, watcher.Keyword);
+                                continue;
+                            }
+                            
                             this.Logger.DebugFormat("Timeout reached for {0}/{1}/{2}", config.Id, channelName, watcher.Keyword);
                             this.alertTimeoutCache[config.Id] = DateTime.UtcNow.AddSeconds(config.SleepTime);
 
