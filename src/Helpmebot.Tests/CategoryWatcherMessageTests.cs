@@ -57,7 +57,6 @@ public class CategoryWatcherMessageTests : TestBase
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            null,
             this.Logger.Object,
             null,
             null,
@@ -95,7 +94,6 @@ public class CategoryWatcherMessageTests : TestBase
             .Returns("nope!");
         
         var service = new CategoryWatcherHelperService(
-            null,
             null,
             null,
             this.Logger.Object,
@@ -148,7 +146,6 @@ public class CategoryWatcherMessageTests : TestBase
         var service = new CategoryWatcherHelperService(
             this.linker.Object,
             this.urlShorteningService.Object,
-            null,
             this.Logger.Object,
             null,
             null,

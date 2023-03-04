@@ -4,7 +4,7 @@
 
     public class CategoryWatcherChannel : EntityBase
     {
-        public virtual Channel Channel { get; set; }
+        public virtual int ChannelId { get; set; }
         public virtual CategoryWatcher Watcher { get; set; }
         public virtual int SleepTime { get; set; }
         public virtual bool ShowWaitTime { get; set; }

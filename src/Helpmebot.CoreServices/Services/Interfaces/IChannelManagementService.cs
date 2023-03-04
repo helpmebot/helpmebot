@@ -21,5 +21,8 @@
         void SetWelcomerFlag(string channelName, string welcomerFlag);
 
         bool IsEnabled(string channelName);
+
+        string GetNameFromId(int channelId);
+        int? GetIdFromName(string channelName);
     }
 }

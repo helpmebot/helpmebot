@@ -10,9 +10,10 @@
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
-    using NHibernate;
     using Prometheus;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
+    
+    using ItemList = System.Collections.Generic.IList<Model.CategoryWatcherItem>;
 
     public class CategoryWatcherHelperService : ICategoryWatcherHelperService
     {
@@ -26,7 +27,6 @@
         
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
-        private readonly ISession session;
         private readonly ILogger logger;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
@@ -36,7 +36,6 @@
         public CategoryWatcherHelperService(
             ILinkerService linkerService,
             IUrlShorteningService urlShorteningService,
-            ISession session,
             ILogger logger,
             ICommandParser commandParser,
             IMediaWikiApiHelper apiHelper,
@@ -46,7 +45,6 @@
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
-            this.session = session;
             this.logger = logger;
             this.apiHelper = apiHelper;
             this.responder = responder;
@@ -60,100 +58,7 @@
             }
         }
         
-        #region Legacy stuff
-
-        /// <summary>
-        /// Takes a category, and returns the added/removed items for that category, updating the category in the process
-        /// </summary>
-        /// <param name="category"></param>
-        /// <returns>Tuple of (added, removed)</returns>
-        public Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>> UpdateCategoryItems(CategoryWatcher category)
-        {
-            var added = new List<CategoryWatcherItem>();
-            List<CategoryWatcherItem> removed;
-
-            // fetch category information    
-            List<string> pagesInCategory;
-            
-            var mediaWikiApi = this.apiHelper.GetApi(category.BaseWikiId);
-            try
-            {
-                pagesInCategory = mediaWikiApi.GetPagesInCategory(category.Category).ToList();
-                pagesInCategory.RemoveAll(x => this.watcherItemPersistence.GetIgnoredPages().Contains(x));
-
-                CategoryWatcherCount.WithLabels(category.Keyword).Set(pagesInCategory.Count);
-            }
-            catch (Exception e)
-            {
-                this.logger.WarnFormat(e, "Exception while retrieving category information for {0}", category.Keyword);
-                throw;
-            }
-            finally
-            {
-                this.apiHelper.Release(mediaWikiApi);
-            }
-            
-            // update categoryinto database
-            lock (this.session)
-            {
-                ITransaction txn = null;
-
-                try
-                {
-                    txn = this.session.BeginTransaction();
-
-                    // reload the category's info
-                    this.session.Refresh(category);
-
-                    removed = category.CategoryItems.Where(x => !pagesInCategory.Contains(x.Title)).ToList();
-                    var addedTitles = pagesInCategory.Where(x => category.CategoryItems.All(y => y.Title != x))
-                        .ToList();
-
-                    foreach (var item in removed)
-                    {
-                        category.CategoryItems.Remove(item);
-                    }
-
-                    foreach (var item in addedTitles)
-                    {
-                        var catItem = new CategoryWatcherItem
-                        {
-                            InsertTime = DateTime.Now,
-                            Title = item,
-                            WatcherId = category.Id
-                        };
-
-                        added.Add(catItem);
-                        category.CategoryItems.Add(catItem);
-                    }
-
-                    this.session.Update(category);
-
-                    txn.Commit();
-                }
-                catch (Exception ex)
-                {
-                    this.logger.ErrorFormat(
-                        ex,
-                        "Error encountered during catwatcher database txn for {0}",
-                        category.Keyword);
-                    throw;
-                }
-                finally
-                {
-                    if (txn != null && txn.IsActive)
-                    {
-                        txn.Rollback();
-                    }
-                }
-            }
-
-            var result = new Tuple<List<CategoryWatcherItem>, List<CategoryWatcherItem>>(added, removed);
-            return result;
-        }
-        #endregion
-        
-        public static (IList<string> added, IList<string> removed) CalculateListDelta(
+        internal static (IList<string> added, IList<string> removed) CalculateListDelta(
             IList<string> originalItems,
             IList<string> newItems)
         {
@@ -163,7 +68,20 @@
             return (added, removed);
         }
 
-        public (IList<CategoryWatcherItem> allItems, IList<CategoryWatcherItem> addedItems, IList<CategoryWatcherItem> removedItems) SyncItemsToDatabase(IList<string> currentTitles, int watcherId)
+        public (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncCategoryItems(string keyword)
+        {
+            var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == keyword);
+            if (watcher == null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(keyword));
+            }
+            
+            var items = this.FetchCategoryItemsInternal(watcher);
+
+            return SyncItemsToDatabase(items, watcher.Id);
+        }
+        
+        internal (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncItemsToDatabase(IList<string> currentTitles, int watcherId)
         {
             var persistedItems = this.watcherItemPersistence.GetItems(watcherId).ToList();
 
@@ -180,13 +98,8 @@
             return (persistedItems, addedItems, removedItems);
         }
 
-        public IList<string> FetchCategoryItems(int watcherId)
-        {
-            var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Id == watcherId);
-            return this.FetchCategoryItemsInternal(watcher);
-        }
-
-        public IList<string> FetchCategoryItems(string keyword)
+        [Obsolete("Only used by tests")]
+        internal IList<string> FetchCategoryItems(string keyword)
         {
             var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == keyword);
             return this.FetchCategoryItemsInternal(watcher);
@@ -217,7 +130,7 @@
             return pagesInCategory;
         }
 
-        public string GetMessagePart(string watcherKey, string messageKey, string context, object[] arguments = null, Context contextType = null)
+        private string GetMessagePart(string watcherKey, string messageKey, string context, object[] arguments = null, Context contextType = null)
         {
             var fullMessageKey = $"catwatcher.item.{watcherKey}.{messageKey}";
             var defaultMessageKey = $"catwatcher.item.default.{messageKey}";
@@ -232,13 +145,13 @@
             return response;
         }
         
-        public string GetMessagePart(string watcherKey, string messageKey, string context, object argument)
+        internal string GetMessagePart(string watcherKey, string messageKey, string context, object argument)
         {
             return this.GetMessagePart(watcherKey, messageKey, context, new[] { argument });
         }
         
         public string ConstructResultMessage(
-            IReadOnlyCollection<CategoryWatcherItem> items,
+            IList<CategoryWatcherItem> items,
             string categoryKeyword,
             string destination,
             bool describeNewItems,
@@ -310,6 +223,19 @@
             }
 
             return this.GetMessagePart(categoryKeyword, "noitems", destination, pluralString);
+        }
+
+
+        public string ConstructRemovalMessage(
+            IList<CategoryWatcherItem> removed,
+            string categoryKeyword,
+            string destination
+        )
+        {               
+            var removalList = string.Join(", ", removed.Select(x => $"[[{x.Title}]]"));
+            var message = this.GetMessagePart(categoryKeyword, "handled", destination, removalList);
+
+            return message;
         }
     }
 }

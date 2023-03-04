@@ -3,10 +3,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading;
     using System.Timers;
     using Castle.Core.Logging;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.Background;
     using Helpmebot.CategoryWatcher.Configuration;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
@@ -28,6 +28,7 @@
         private readonly IIrcClient ircClient;
         private readonly ICategoryWatcherHelperService helperService;
         private readonly IWatcherConfigurationService watcherConfig;
+        private readonly IChannelManagementService channelManagementService;
 
         /// <summary>
         /// Stores the time the next alert should be sent.
@@ -45,13 +46,15 @@
             CategoryWatcherConfiguration configuration,
             IIrcClient ircClient,
             ICategoryWatcherHelperService helperService,
-            IWatcherConfigurationService watcherConfig)
+            IWatcherConfigurationService watcherConfig,
+            IChannelManagementService channelManagementService)
             : base(logger, configuration.UpdateFrequency * 1000, configuration.Enabled)
         {
             this.crossoverTimeout = configuration.CrossoverTimeout;
             this.ircClient = ircClient;
             this.helperService = helperService;
             this.watcherConfig = watcherConfig;
+            this.channelManagementService = channelManagementService;
         }
 
         protected override void OnStart()
@@ -64,79 +67,9 @@
             this.TimerOnElapsed(null, null);
         }
 
-        public void ForceUpdate(string key, string channelName)
-        {
-            this.Logger.DebugFormat("Force-update was triggered for {0} in {1}", key, channelName);
-            
-            // Locks!
-            this.timerSemaphore.WaitOne();
-
-            try
-            {
-                var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == key);
-                if (watcher == null)
-                {
-                    throw new ArgumentOutOfRangeException("key");
-                }
-
-                this.Logger.DebugFormat("Found watcher {0} for {1}", key, watcher.Category);
-
-                var channel = watcher.Channels.FirstOrDefault(x => x.Channel.Name == channelName);
-                if (channel == null)
-                {
-                    this.Logger.DebugFormat("Faking channelconfig for {0}", channelName);
-
-                    channel = new CategoryWatcherChannel
-                    {
-                        AlertForAdditions = false,
-                        AlertForRemovals = false,
-                        Channel = null,
-                        MinWaitTime = 3600,
-                        ShowWaitTime = true,
-                        ShowLink = true,
-                        SleepTime = 10000,
-                        Watcher = watcher
-                    };
-                }
-
-                this.helperService.UpdateCategoryItems(watcher);
-
-                var message = this.helperService.ConstructResultMessage(
-                    watcher.CategoryItems.ToList(),
-                    watcher.Keyword,
-                    channelName,
-                    false,
-                    true,
-                    channel.ShowLink,
-                    channel.ShowWaitTime,
-                    channel.MinWaitTime
-                );
-
-                if (message != null)
-                {
-                    this.ircClient.SendMessage(channelName, message);
-                }
-            }
-            catch (WebException ex)
-            {
-                this.ircClient.SendMessage(channelName, "Could not retrieve category items due to Wikimedia API error");
-                this.Logger.Warn("Error during API fetch", ex);
-            }
-            catch (Exception ex)
-            {
-                this.Logger.ErrorFormat(ex, "Error encountered updating catwatcher for {0}", key);
-                throw;
-            }
-            finally
-            {
-                this.timerSemaphore.Release();
-            }
-        }
-
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
             this.Logger.TraceFormat("CatWatcher timer elapsed");
-            
             try
             {
                 if (!this.timerSemaphore.WaitOne(new TimeSpan(0, 0, 0, this.crossoverTimeout)))
@@ -147,96 +80,44 @@
                     return;
                 }
 
-                foreach (var category in this.watcherConfig.GetWatchers().Where(x => x.Channels.Any()))
+                foreach (var watcher in this.watcherConfig.GetWatchers())
                 {
-                    var result = this.helperService.UpdateCategoryItems(category);
-                    var additions = result.Item1;
-                    var removals = result.Item2;
+                    var (allItems, added, removed) = this.helperService.SyncCategoryItems(watcher.Keyword);
 
-                    foreach (var categoryChannel in category.Channels)
+                    var watcherChannels = this.watcherConfig.GetChannelsForWatcher(watcher.Keyword);
+
+                    foreach (var channelName in watcherChannels)
                     {
-                        if (categoryChannel.Channel.Silenced)
+                        var config = this.watcherConfig.GetWatcherConfiguration(watcher.Keyword, channelName);
+
+                        this.InitialiseTimer(config);
+
+                        if (this.channelManagementService.IsSilenced(channelName))
                         {
-                            this.Logger.InfoFormat(
-                                "Not reporting to {0}, bot is silenced",
-                                categoryChannel.Channel.Name);
+                            this.Logger.InfoFormat("Not reporting to {0}, bot is silenced", channelName);
                             continue;
                         }
 
-                        if (categoryChannel.AlertForRemovals && removals.Any())
+                        var responses = new List<string>();
+
+                        responses.AddRange(this.AlertRemovals(removed, watcher.Keyword, config));
+                        
+                        // check if it's time to report everything
+                        if (this.alertTimeoutCache[config.Id] <= DateTime.UtcNow)
                         {
-                            var removalList = string.Join(
-                                ", ",
-                                removals.Select(x => string.Format("[[{0}]]", x.Title)));
-                            this.ircClient.SendMessage(
-                                categoryChannel.Channel.Name,
-                                string.Format("Handled: {0}", removalList));
-                        }
+                            this.Logger.DebugFormat("Timeout reached for {0}/{1}/{2}", config.Id, channelName, watcher.Keyword);
+                            this.alertTimeoutCache[config.Id] = DateTime.UtcNow.AddSeconds(config.SleepTime);
 
-                        if (!this.alertTimeoutCache.ContainsKey(categoryChannel.Id))
-                        {
-                            this.alertTimeoutCache.Add(categoryChannel.Id, DateTime.MinValue);
-                            this.Logger.DebugFormat(
-                                "Adding timeout cache entry for {0}/{1}/{2}",
-                                categoryChannel.Id,
-                                categoryChannel.Channel.Name,
-                                category.Keyword);
-                        }
-
-                        if (this.alertTimeoutCache[categoryChannel.Id] <= DateTime.Now)
-                        {
-                            this.Logger.DebugFormat(
-                                "Timeout reached for {0}/{1}/{2}",
-                                categoryChannel.Id,
-                                categoryChannel.Channel.Name,
-                                category.Keyword);
-
-                            this.alertTimeoutCache[categoryChannel.Id] =
-                                DateTime.Now.AddSeconds(categoryChannel.SleepTime);
-
-                            var message = this.helperService.ConstructResultMessage(
-                                category.CategoryItems.ToList(),
-                                category.Keyword,
-                                categoryChannel.Channel.Name,
-                                false,
-                                false,
-                                categoryChannel.ShowLink,
-                                categoryChannel.ShowWaitTime,
-                                categoryChannel.MinWaitTime
-                            );
-
-                            if (message != null)
-                            {
-                                this.ircClient.SendMessage(categoryChannel.Channel.Name, message);
-                            }
+                            responses.AddRange(this.AlertAllItems(allItems, watcher.Keyword, config));
                         }
                         else
                         {
-                            if (categoryChannel.AlertForAdditions && additions.Any())
-                            {
-                                var message = this.helperService.ConstructResultMessage(
-                                    additions,
-                                    category.Keyword,
-                                    categoryChannel.Channel.Name,
-                                    true,
-                                    false,
-                                    categoryChannel.ShowLink,
-                                    categoryChannel.ShowWaitTime,
-                                    categoryChannel.MinWaitTime
-                                );
-                                
-                                if (message != null)
-                                {
-                                    this.ircClient.SendMessage(categoryChannel.Channel.Name, message);
-                                }
-                            }
+                            responses.AddRange(this.AlertAdditions(added, watcher.Keyword, config));
                         }
+
+                        responses.ForEach(x => this.ircClient.SendMessage(channelName, x));
                     }
                 }
-            }
-            catch (WebException ex)
-            {
-                this.Logger.Warn("Error during fetch from API", ex);
             }
             catch (Exception ex)
             {
@@ -246,6 +127,80 @@
             finally
             {
                 this.timerSemaphore.Release();
+            }
+        }
+
+        private void InitialiseTimer(CategoryWatcherChannel categoryChannel)
+        {
+            if (!this.alertTimeoutCache.ContainsKey(categoryChannel.Id))
+            {
+                this.alertTimeoutCache.Add(categoryChannel.Id, DateTime.MinValue);
+                // FIXME: report correct values
+                this.Logger.DebugFormat("Adding timeout cache entry for {0}/{1}/{2}", categoryChannel.Id, "", "" /*channelName, watcher.Keyword*/);
+            }
+        }
+        
+        private IEnumerable<string> AlertAllItems(
+            IList<CategoryWatcherItem> allItems,
+            string watcherKeyword,
+            CategoryWatcherChannel categoryChannel)
+        {
+            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
+            
+            var message = this.helperService.ConstructResultMessage(
+                allItems,
+                watcherKeyword,
+                channelName,
+                false,
+                false,
+                categoryChannel.ShowLink,
+                categoryChannel.ShowWaitTime,
+                categoryChannel.MinWaitTime
+            );
+
+            if (message != null)
+            {
+                yield return message;
+            }
+        }
+        
+        private IEnumerable<string> AlertAdditions(
+            IList<CategoryWatcherItem> added,
+            string watcherKeyword,
+            CategoryWatcherChannel categoryChannel)
+        {
+            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
+            
+            if (categoryChannel.AlertForAdditions && added.Any())
+            {
+                var message = this.helperService.ConstructResultMessage(
+                    added,
+                    watcherKeyword,
+                    channelName,
+                    true,
+                    false,
+                    categoryChannel.ShowLink,
+                    categoryChannel.ShowWaitTime,
+                    categoryChannel.MinWaitTime
+                );
+
+                if (message != null)
+                {
+                    yield return message;
+                }
+            }
+        }
+        
+        private IEnumerable<string> AlertRemovals(
+            IList<CategoryWatcherItem> removed,
+            string watcherKeyword,
+            CategoryWatcherChannel categoryChannel)
+        {
+            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
+            
+            if (categoryChannel.AlertForRemovals && removed.Any())
+            {
+                yield return this.helperService.ConstructRemovalMessage(removed, watcherKeyword, channelName);
             }
         }
     }

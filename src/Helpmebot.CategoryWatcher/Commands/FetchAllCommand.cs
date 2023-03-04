@@ -1,8 +1,6 @@
 namespace Helpmebot.CategoryWatcher.Commands
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Attributes;
     using Castle.Core.Logging;
     using CoreServices.Attributes;
@@ -24,10 +22,9 @@ namespace Helpmebot.CategoryWatcher.Commands
     [HelpSummary("Returns the current state of all category watchers configured in the current channel.")]
     public class FetchAllCommand : CommandBase
     {
-        private readonly ICategoryWatcherBackgroundService categoryWatcherService;
         private readonly IResponder responder;
-        private readonly IWatcherConfigurationService watcherConfigurationService;
         private readonly IChannelManagementService channelManagementService;
+        private readonly IForcedUpdateHelper helper;
 
         public FetchAllCommand(
             string commandSource,
@@ -37,10 +34,9 @@ namespace Helpmebot.CategoryWatcher.Commands
             IFlagService flagService,
             IConfigurationProvider configurationProvider,
             IIrcClient client,
-            ICategoryWatcherBackgroundService categoryWatcherService,
             IResponder responder,
-            IWatcherConfigurationService watcherConfigurationService,
-            IChannelManagementService channelManagementService) : base(
+            IChannelManagementService channelManagementService,
+            IForcedUpdateHelper helper) : base(
             commandSource,
             user,
             arguments,
@@ -49,10 +45,9 @@ namespace Helpmebot.CategoryWatcher.Commands
             configurationProvider,
             client)
         {
-            this.categoryWatcherService = categoryWatcherService;
             this.responder = responder;
-            this.watcherConfigurationService = watcherConfigurationService;
             this.channelManagementService = channelManagementService;
+            this.helper = helper;
         }
 
         [CommandParameter(
@@ -69,22 +64,7 @@ namespace Helpmebot.CategoryWatcher.Commands
                 return this.responder.Respond("catwatcher.command.fetchall.must-run-in-channel", this.CommandSource);
             }
 
-            List<string> validKeywords;
-            if (allKeywords)
-            {
-                validKeywords = this.watcherConfigurationService.GetValidWatcherKeys().ToList();
-            }
-            else
-            {
-                validKeywords = this.watcherConfigurationService.GetWatchersForChannel(this.CommandSource).ToList();
-            }
-
-            foreach (var flag in validKeywords)
-            {
-                this.categoryWatcherService.ForceUpdate(flag, this.CommandSource);
-            }
-
-            return Array.Empty<CommandResponse>();
+            return this.helper.BulkForcedUpdate(allKeywords, this.CommandSource);
         }
     }
 }

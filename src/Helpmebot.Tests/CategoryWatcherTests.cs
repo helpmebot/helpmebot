@@ -154,7 +154,6 @@ public class CategoryWatcherTests : TestBase
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            null,
             this.Logger.Object,
             null,
             null,
@@ -176,43 +175,6 @@ public class CategoryWatcherTests : TestBase
     }
 
     [Test]
-    public void ShouldFetchItemsByWatcherId()
-    {
-        // arrange
-        this.persistenceService.Setup(x => x.GetIgnoredPages()).Returns(new List<string>());
-        
-        this.watcherConfig.Setup(x => x.GetWatchers())
-            .Returns(new List<CategoryWatcher> { this.catWatcher.Object });
-
-        this.api.Setup(x => x.GetPagesInCategory(It.IsAny<string>()))
-            .Returns(new List<string> { "foo", "bar" });
-
-        this.apiHelper.Setup(x => x.GetApi(It.IsAny<string>(), It.IsAny<bool>())).Returns(this.api.Object);
-
-        var service = new CategoryWatcherHelperService(
-            null,
-            null,
-            null,
-            this.Logger.Object,
-            this.commandParser.Object,
-            this.apiHelper.Object,
-            null,
-            this.watcherConfig.Object,
-            this.persistenceService.Object
-        );
-
-        // act
-        var items = service.FetchCategoryItems(1);
-
-        // assert
-        this.api.Verify(x => x.GetPagesInCategory("potato"), Times.Once);
-        this.apiHelper.Verify(x => x.GetApi("potato", true), Times.Once);
-        this.apiHelper.Verify(x => x.Release(this.api.Object), Times.Once);
-
-        Assert.That(items, Has.Count.EqualTo(2));
-    }    
-    
-    [Test]
     public void ShouldFetchItemsByWatcherName()
     {
         // arrange
@@ -227,7 +189,6 @@ public class CategoryWatcherTests : TestBase
         this.apiHelper.Setup(x => x.GetApi(It.IsAny<string>(), It.IsAny<bool>())).Returns(this.api.Object);
 
         var service = new CategoryWatcherHelperService(
-            null,
             null,
             null,
             this.Logger.Object,
@@ -263,7 +224,6 @@ public class CategoryWatcherTests : TestBase
         this.apiHelper.Setup(x => x.GetApi(It.IsAny<string>(), It.IsAny<bool>())).Returns(this.api.Object);
 
         var service = new CategoryWatcherHelperService(
-            null,
             null,
             null,
             this.Logger.Object,

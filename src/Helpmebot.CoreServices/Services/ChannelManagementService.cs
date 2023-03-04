@@ -7,7 +7,6 @@
     using Configuration;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.Model;
     using NHibernate;
     using NHibernate.Criterion;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Models;
@@ -15,6 +14,7 @@
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Events;
     using Stwalkerster.IrcClient.Interfaces;
+    using Channel = Helpmebot.Model.Channel;
 
     public class ChannelManagementService : IChannelManagementService, ISilentModeConfiguration
     {
@@ -387,15 +387,9 @@
         {
             var channel = this.session.CreateCriteria<Channel>()
                 .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
-                .List<Channel>()
-                .FirstOrDefault();
+                .UniqueResult<Channel>();
 
-            if (channel == null)
-            {
-                return false;
-            }
-
-            return channel.Enabled;
+            return channel != null && channel.Enabled;
         }
 
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
@@ -414,6 +408,24 @@
                 this.logger.ErrorFormat(ex, "Error encountered determining silence configuration for {0}", destination);
                 return false;
             }
+        }
+
+        public string GetNameFromId(int channelId)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq(nameof(Channel.Id), channelId))
+                .UniqueResult<Channel>();
+
+            return channel?.Name;
+        }
+        
+        public int? GetIdFromName(string channelName)
+        {
+            var channel = this.session.CreateCriteria<Channel>()
+                .Add(Restrictions.Eq(nameof(Channel.Name), channelName))
+                .UniqueResult<Channel>();
+
+            return channel?.Id;
         }
     }
 }

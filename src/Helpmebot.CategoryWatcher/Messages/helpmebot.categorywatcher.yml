@@ -14,3 +14,5 @@ dataset:
     - - "There are {0} {1}: {2}"
   catwatcher.item.default.noitems:
     - - There are no {0}.
+  catwatcher.item.default.handled:
+    - - "Handled: {0}"
