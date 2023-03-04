@@ -136,6 +136,28 @@ namespace Helpmebot.WebUI.Services.Api
                     }
                 }
             });
+            
+            list.Add(new CatWatcherStatus
+            {
+                Category = "Category:X9",
+                Link = "https://enwp.org/Category:X9",
+                Keyword = "x9",
+                Items = new List<CatWatcherStatus.CatWatcherItemStatus>
+                {
+                    new()
+                    {
+                        Link = "https://enwp.org/potato",
+                        Page = "Potato",
+                        WaitingSince = DateTime.UtcNow
+                    },
+                    new()
+                    {
+                        Link = "https://enwp.org/carrot",
+                        Page = "Carrot",
+                        WaitingSince = DateTime.UtcNow.Subtract(new TimeSpan(1, 3, 5))
+                    }
+                }
+            });
 
             return list;
         }

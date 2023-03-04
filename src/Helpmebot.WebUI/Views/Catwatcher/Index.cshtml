@@ -1,0 +1,52 @@
+@model List<Helpmebot.WebApi.TransportModels.CatWatcherStatus>
+@{
+    ViewData["Title"] = "Category Watchers";
+    ViewData["advanced"] = true;
+}
+
+
+<div class="container-fluid">
+    <div class="row border-bottom mb-4">
+        <div class="col">
+            <h1>Category Watchers</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>
+                Helpmebot keeps a close eye on some categories on Wikipedia. The categories which are watched appear below.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-hover table-highlightable">
+                <thead>
+                <tr>
+                    <th>Watcher flag</th>
+                    <th>Watched category</th>
+                    <th>Current items</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var watcher in Model)
+                {
+                    <tr id="watcher-@watcher.Keyword">
+                        <td class="font-monospace">@watcher.Keyword</td>
+                        <td class=""><a href="@watcher.Link" target="_blank">@watcher.Category</a></td>
+                        <td class="">
+                            <ul class="list-unstyled">
+                                @foreach (var i in watcher.Items.OrderBy(x => x.WaitingSince))
+                                {
+                                    <li><a href="@i.Link" target="_blank">@i.Page</a> (waiting @((DateTime.UtcNow - i.WaitingSince).ToString("d\\d\\ hh\\:mm")))</li>
+                                }
+                            </ul>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
