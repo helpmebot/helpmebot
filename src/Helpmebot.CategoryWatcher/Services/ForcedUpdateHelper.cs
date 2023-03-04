@@ -1,11 +1,14 @@
 namespace Helpmebot.CategoryWatcher.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Castle.Core.Logging;
+    using CoreServices.Services.Messages.Interfaces;
     using Interfaces;
     using Model;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Array = System.Array;
 
     public class ForcedUpdateHelper : IForcedUpdateHelper
     {
@@ -13,31 +16,49 @@ namespace Helpmebot.CategoryWatcher.Services
         private readonly IWatcherConfigurationService watcherConfig;
         private readonly ICategoryWatcherHelperService helper;
         private readonly IWatcherConfigurationService watcherConfigurationService;
+        private readonly IResponder responder;
 
         public ForcedUpdateHelper(
             ILogger logger,
             IWatcherConfigurationService watcherConfig,
             ICategoryWatcherHelperService helper,
-            IWatcherConfigurationService watcherConfigurationService)
+            IWatcherConfigurationService watcherConfigurationService,
+            IResponder responder)
         {
             this.logger = logger;
             this.watcherConfig = watcherConfig;
             this.helper = helper;
             this.watcherConfigurationService = watcherConfigurationService;
+            this.responder = responder;
         }
 
-        public IEnumerable<CommandResponse> DoForcedUpdate(string categoryKeyword, string channelName)
+        public IEnumerable<CommandResponse> DoForcedUpdate(
+            string categoryKeyword,
+            string channelName,
+            bool suppressWarning)
         {
-            var config = this.watcherConfig.GetWatcherConfiguration(categoryKeyword, channelName);
+            CategoryWatcherChannel config = null;
+
+            try
+            {
+                config = this.watcherConfig.GetWatcherConfiguration(categoryKeyword, channelName);
+            }
+            catch (ArgumentOutOfRangeException ex) when (ex.ParamName == "channel")
+            {
+                // squelch. the channel probably doesn't exist (or this is being done via PM)
+            }
 
             if (config == null)
             {
-                yield return new CommandResponse
+                if (!suppressWarning)
                 {
-                    Message = "FIXME: not configured in this channel.",
-                    Destination = CommandResponseDestination.PrivateMessage,
-                    IgnoreRedirection = true
-                };
+                    yield return new CommandResponse
+                    {
+                        Message = "FIXME: not configured in this channel.",
+                        Destination = CommandResponseDestination.PrivateMessage,
+                        IgnoreRedirection = true
+                    };
+                }
 
                 config = new CategoryWatcherChannel
                 {
@@ -72,16 +93,32 @@ namespace Helpmebot.CategoryWatcher.Services
             if (all)
             {
                 validKeywords = this.watcherConfigurationService.GetValidWatcherKeys().ToList();
+                
+                if (!validKeywords.Any())
+                {
+                    return this.responder.Respond(
+                        "catwatcher.command.fetchall.no-configured",
+                        channelName,
+                        Array.Empty<object>());
+                }
             }
             else
             {
                 validKeywords = this.watcherConfigurationService.GetWatchersForChannel(channelName).ToList();
+
+                if (!validKeywords.Any())
+                {
+                    return this.responder.Respond(
+                        "catwatcher.command.fetchall.no-configured-in-channel",
+                        channelName,
+                        channelName);
+                }
             }
 
             var responses = new List<CommandResponse>();
             foreach (var keyword in validKeywords)
             {
-                responses.AddRange(this.DoForcedUpdate(keyword, channelName));
+                responses.AddRange(this.DoForcedUpdate(keyword, channelName, true));
             }
 
             return responses;

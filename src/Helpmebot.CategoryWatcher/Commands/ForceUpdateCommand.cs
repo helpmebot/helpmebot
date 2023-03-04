@@ -43,7 +43,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         
         protected override IEnumerable<CommandResponse> Execute()
         {
-            return this.helperService.DoForcedUpdate(this.InvokedAs, this.CommandSource);
+            return this.helperService.DoForcedUpdate(this.InvokedAs, this.CommandSource, false);
         }
     }
 }

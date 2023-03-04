@@ -60,6 +60,7 @@ namespace Helpmebot.CategoryWatcher.Services
             return this.channels.Where(x => x.Watcher.Id == watcher.Id).Select(x => this.channelManagementService.GetNameFromId(x.ChannelId)).ToList();
         }
 
+        /// <remarks>Note that the "channel" argument name is referenced in an exception handler as a string.</remarks>
         public CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel)
         {
             var watcher = this.watchedCategories.SingleOrDefault(x => x.Keyword == keyword);

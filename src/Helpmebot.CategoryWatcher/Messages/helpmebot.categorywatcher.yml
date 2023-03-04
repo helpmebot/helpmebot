@@ -3,6 +3,10 @@ format: 1
 dataset:
   catwatcher.command.fetchall.must-run-in-channel:
     - - This command must be run in-channel, or with the --all flag
+  catwatcher.command.fetchall.no-configured-in-channel:
+    - - There are no category watchers configured in this channel.
+  catwatcher.command.fetchall.no-configured:
+    - - There are no category watchers configured.
       
   catwatcher.item.default.singular:
     - - page
