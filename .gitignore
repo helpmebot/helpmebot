@@ -37,3 +37,4 @@ src/.idea/*
 src/*.iml
 
 /src/Helpmebot.WebUI/wwwroot/scss/base.css
+src/Helpmebot.WebUI/appsettings.Production.json
