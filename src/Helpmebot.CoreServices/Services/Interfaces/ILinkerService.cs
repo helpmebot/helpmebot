@@ -1,5 +1,6 @@
 ﻿namespace Helpmebot.CoreServices.Services.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using Castle.Core;
 
@@ -18,5 +19,6 @@
 
         IList<string> ParseMessageForLinks(string message);
         string ConvertWikilinkToUrl(string destination, string link);
+        string ConvertWikilinkToUrl(Func<string> getWikiBasePath, string link);
     }
 }

@@ -111,6 +111,35 @@ namespace Helpmebot.WebUI.Services.Api
             };
         }
 
+        public List<CatWatcherStatus> GetCatWatchers()
+        {
+            var list = new List<CatWatcherStatus>();
+            
+            list.Add(new CatWatcherStatus
+            {
+                Category = "Category:Wikipedians looking for help",
+                Link = "https://enwp.org/Category:Wikipedians_looking_for_help",
+                Keyword = "helpme",
+                Items = new List<CatWatcherStatus.CatWatcherItemStatus>
+                {
+                    new()
+                    {
+                        Link = "https://enwp.org/potato",
+                        Page = "Potato",
+                        WaitingSince = DateTime.UtcNow
+                    },
+                    new()
+                    {
+                        Link = "https://enwp.org/carrot",
+                        Page = "Carrot",
+                        WaitingSince = DateTime.UtcNow.Subtract(new TimeSpan(1, 3, 5))
+                    }
+                }
+            });
+
+            return list;
+        }
+
         public TokenResponse GetAuthToken(string loginToken)
         {
             return new TokenResponse { IrcAccount = "fakeuser", Token = loginToken };

@@ -82,5 +82,10 @@ namespace Helpmebot.WebUI.Services.Api
         {
             return this.transportService.RemoteProcedureCall<object, List<Response>>(MethodBase.GetCurrentMethod(), null);
         }
+
+        public List<CatWatcherStatus> GetCatWatchers()
+        {
+            return this.transportService.RemoteProcedureCall<object, List<CatWatcherStatus>>(MethodBase.GetCurrentMethod(), null);
+        }
     }
 }

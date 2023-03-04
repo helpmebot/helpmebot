@@ -7,6 +7,8 @@ namespace Helpmebot.WebApi.Services
     using System.Reflection;
     using Castle.Core.Internal;
     using Castle.Core.Logging;
+    using CategoryWatcher.Services.Interfaces;
+    using CoreServices.Services.Interfaces;
     using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.Configuration;
@@ -36,6 +38,9 @@ namespace Helpmebot.WebApi.Services
         private readonly ILoginTokenService loginTokenService;
         private readonly ISessionFactory sessionFactory;
         private readonly IResponseManager responseManager;
+        private readonly IWatcherConfigurationService catWatcherConfig;
+        private readonly IItemPersistenceService catWatcherItems;
+        private readonly ILinkerService linker;
 
         public ApiService(
             ILogger logger,
@@ -45,7 +50,10 @@ namespace Helpmebot.WebApi.Services
             IIrcConfiguration ircConfiguration,
             ILoginTokenService loginTokenService,
             ISessionFactory sessionFactory,
-            IResponseManager responseManager)
+            IResponseManager responseManager,
+            IWatcherConfigurationService catWatcherConfig,
+            IItemPersistenceService catWatcherItems,
+            ILinkerService linker)
         {
             this.logger = logger;
             this.client = client;
@@ -55,6 +63,9 @@ namespace Helpmebot.WebApi.Services
             this.loginTokenService = loginTokenService;
             this.sessionFactory = sessionFactory;
             this.responseManager = responseManager;
+            this.catWatcherConfig = catWatcherConfig;
+            this.catWatcherItems = catWatcherItems;
+            this.linker = linker;
         }
 
         public IKeywordService BrainKeywordService { get; set; }
@@ -378,6 +389,36 @@ namespace Helpmebot.WebApi.Services
             }
 
             return list;
+        }
+
+        public List<CatWatcherStatus> GetCatWatchers()
+        {
+            var watchers = new List<CatWatcherStatus>();
+                
+            foreach (var w in this.catWatcherConfig.GetWatchers())
+            {
+                var status = new CatWatcherStatus
+                {
+                    Category = w.Category,
+                    Link = this.linker.ConvertWikilinkToUrl("Helpmebot", w.Category),
+                    Keyword = w.Keyword,
+                    Items = new List<CatWatcherStatus.CatWatcherItemStatus>()
+                };
+                
+                status.Items.AddRange(
+                    this.catWatcherItems.GetItems(status.Keyword)
+                        .Select(
+                            x => new CatWatcherStatus.CatWatcherItemStatus
+                            {
+                                Page = x.Title,
+                                WaitingSince = x.InsertTime,
+                                Link = this.linker.ConvertWikilinkToUrl("Helpmebot", x.Title),
+                            }));
+                
+                watchers.Add(status);
+            }
+            
+            return watchers;
         }
     }
 }

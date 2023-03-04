@@ -16,6 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.CoreServices.Services
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -63,6 +64,11 @@ namespace Helpmebot.CoreServices.Services
 
         public string ConvertWikilinkToUrl(string destination, string link)
         {
+            return this.ConvertWikilinkToUrl(() => this.GetWikiArticleBasePath(destination), link);
+        }
+       
+        public string ConvertWikilinkToUrl(Func<string> getWikiBasePath, string link)
+        {
             var iwprefix = link.Split(':')[0];
 
             var prefix = this.databaseSession.QueryOver<InterwikiPrefix>()
@@ -76,7 +82,7 @@ namespace Helpmebot.CoreServices.Services
             
             if (link.Split(':').Length == 1 || url == string.Empty)
             {
-                url = this.GetWikiArticleBasePath(destination);
+                url = getWikiBasePath();
             }
             else
             {
@@ -132,11 +138,11 @@ namespace Helpmebot.CoreServices.Services
 
             return newLinks;
         }
-
+ 
         #endregion
 
         #region Methods
-
+        
         private string GetWikiArticleBasePath(string destination)
         {
             lock (this.articlePathCache)

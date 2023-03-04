@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Helpmebot.Brain\Helpmebot.Brain.csproj" />
+        <ProjectReference Include="..\Helpmebot.CategoryWatcher\Helpmebot.CategoryWatcher.csproj" />
         <ProjectReference Include="..\Helpmebot.Configuration\Helpmebot.Configuration.csproj" />
         <ProjectReference Include="..\Helpmebot.CoreServices\Helpmebot.CoreServices.csproj" />
     </ItemGroup>
