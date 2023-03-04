@@ -10,8 +10,8 @@
             this.Table("catwatcher_channel");
 
             this.Id(x => x.Id, "id");
-            this.Map(x => x.ChannelId, "channel");
-            this.References(x => x.Watcher, "watcher");
+            this.Map(x => x.Channel, "channel_name");
+            this.Map(x => x.Watcher, "watcher_keyword");
             this.Map(x => x.SleepTime, "sleeptime");
             this.Map(x => x.ShowWaitTime, "showwait");
             this.Map(x => x.MinWaitTime, "minwait");

@@ -19,17 +19,17 @@ namespace Helpmebot.CategoryWatcher.Services
             this.databaseSession = databaseSession;
             this.logger = logger;
         }
-
-        public IList<CategoryWatcherItem> GetItems(int watcherId)
+        
+        public IList<CategoryWatcherItem> GetItems(string watcherKeyword)
         {
             return this.databaseSession.CreateCriteria<CategoryWatcherItem>()
-                .Add(Restrictions.Eq(nameof(CategoryWatcherItem.WatcherId), watcherId))
+                .Add(Restrictions.Eq(nameof(CategoryWatcherItem.Watcher), watcherKeyword))
                 .List<CategoryWatcherItem>();
         }
 
-        public IList<CategoryWatcherItem> AddNewItems(int watcherId, IEnumerable<string> newItems)
+        public IList<CategoryWatcherItem> AddNewItems(string watcherKeyword, IEnumerable<string> newItems)
         {
-            var existing = this.GetItems(watcherId);
+            var existing = this.GetItems(watcherKeyword);
             var insertTime = DateTime.UtcNow;
             
             var newRecords = newItems
@@ -39,7 +39,7 @@ namespace Helpmebot.CategoryWatcher.Services
                     {
                         InsertTime = insertTime,
                         Title = x,
-                        WatcherId = watcherId
+                        Watcher = watcherKeyword
                     })
                 .ToList();
 
@@ -56,7 +56,7 @@ namespace Helpmebot.CategoryWatcher.Services
             return newRecords;
         }
 
-        public void RemoveDeletedItems(int watcherId, IEnumerable<string> deletedItems)
+        public void RemoveDeletedItems(string watcherKeyword, IEnumerable<string> deletedItems)
         {
             using (var txn = this.databaseSession.BeginTransaction())
             {
@@ -64,7 +64,7 @@ namespace Helpmebot.CategoryWatcher.Services
                 {
                     var obj = this.databaseSession.CreateCriteria<CategoryWatcherItem>()
                         .Add(Restrictions.Eq(nameof(CategoryWatcherItem.Title), itemTitle))
-                        .Add(Restrictions.Eq(nameof(CategoryWatcherItem.WatcherId), watcherId))
+                        .Add(Restrictions.Eq(nameof(CategoryWatcherItem.Watcher), watcherKeyword))
                         .UniqueResult<CategoryWatcherItem>();
 
                     if (obj == null)

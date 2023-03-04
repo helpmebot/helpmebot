@@ -11,7 +11,7 @@
             this.Id(x => x.Id, "id");
             this.Map(x => x.Title, "title");
             this.Map(x => x.InsertTime, "inserttime");
-            this.Map(x => x.WatcherId, "watcher");
+            this.Map(x => x.Watcher, "watcher_keyword");
         }
     }
 }

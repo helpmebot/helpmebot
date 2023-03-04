@@ -137,7 +137,7 @@ public class CategoryWatcherTests : TestBase
     public void ShouldUpdateItemPersistence()
     {
         //arrange
-        this.persistenceService.Setup(x => x.GetItems(It.IsAny<int>()))
+        this.persistenceService.Setup(x => x.GetItems(It.IsAny<string>()))
             .Returns(
                 new List<CategoryWatcherItem>
                 {
@@ -146,7 +146,7 @@ public class CategoryWatcherTests : TestBase
                     new() { Title = "quux" }
                 })
             .Verifiable();
-        this.persistenceService.Setup(x => x.AddNewItems(It.IsAny<int>(), It.IsAny<List<string>>()))
+        this.persistenceService.Setup(x => x.AddNewItems(It.IsAny<string>(), It.IsAny<List<string>>()))
             .Returns(new List<CategoryWatcherItem> { new() { Title = "baz" } });
 
         this.watcherConfig.Setup(x => x.GetWatchers()).Returns(new List<CategoryWatcher>());
@@ -163,14 +163,14 @@ public class CategoryWatcherTests : TestBase
         );
 
         //act
-        service.SyncItemsToDatabase(new List<string> { "foo", "bar", "baz" }, 1);
+        service.SyncItemsToDatabase(new List<string> { "foo", "bar", "baz" }, "foo");
 
         //assert
         this.persistenceService.Verify(
-            x => x.AddNewItems(1, It.Is<List<string>>(list => list.Count == 1 && list[0] == "baz")),
+            x => x.AddNewItems("foo", It.Is<List<string>>(list => list.Count == 1 && list[0] == "baz")),
             Times.Once());
         this.persistenceService.Verify(
-            x => x.RemoveDeletedItems(1, It.Is<List<string>>(list => list.Count == 1 && list[0] == "quux")),
+            x => x.RemoveDeletedItems("foo", It.Is<List<string>>(list => list.Count == 1 && list[0] == "quux")),
             Times.Once);
     }
 

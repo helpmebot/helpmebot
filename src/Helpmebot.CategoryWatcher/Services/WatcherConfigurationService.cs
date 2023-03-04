@@ -40,43 +40,33 @@ namespace Helpmebot.CategoryWatcher.Services
 
         public IEnumerable<string> GetWatchersForChannel(string channelName)
         {
-            // FIXME: remove temp hack
-            var id = this.channelManagementService.GetIdFromName(channelName);
-            
             return this.channels
-                .Where(x => id != null && x.ChannelId == id)
-                .Select(x => x.Watcher.Keyword);
+                .Where(x => x.Channel == channelName)
+                .Select(x => x.Watcher);
         }
 
         public IEnumerable<string> GetChannelsForWatcher(string keyword)
         {
-            var watcher = this.watchedCategories.SingleOrDefault(x => x.Keyword == keyword);
-
-            if (watcher == null)
-            {
-                return Array.Empty<string>();
-            }
-
-            return this.channels.Where(x => x.Watcher.Id == watcher.Id).Select(x => this.channelManagementService.GetNameFromId(x.ChannelId)).ToList();
+            return this.channels.Where(x => x.Watcher == keyword).Select(x => x.Channel).ToList();
         }
 
         /// <remarks>Note that the "channel" argument name is referenced in an exception handler as a string.</remarks>
         public CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel)
         {
             var watcher = this.watchedCategories.SingleOrDefault(x => x.Keyword == keyword);
-            var channelId = this.channelManagementService.GetIdFromName(channel);
+            var channelEnabled = this.channelManagementService.IsEnabled(channel);
             
             if (watcher == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(keyword));
             }
 
-            if (channelId == null)
+            if (!channelEnabled)
             {
                 throw new ArgumentOutOfRangeException(nameof(channel));
             }
 
-            return this.channels.SingleOrDefault(x => x.Watcher.Id == watcher.Id && x.ChannelId == channelId);
+            return this.channels.SingleOrDefault(x => x.Watcher == keyword && x.Channel == channel);
         }
         
         public void CreateWatcher(string category, string keyword, string baseWiki)

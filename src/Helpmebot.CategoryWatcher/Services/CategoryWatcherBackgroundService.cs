@@ -151,12 +151,10 @@
             string watcherKeyword,
             CategoryWatcherChannel categoryChannel)
         {
-            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
-            
             var message = this.helperService.ConstructResultMessage(
                 allItems,
                 watcherKeyword,
-                channelName,
+                categoryChannel.Channel,
                 false,
                 false,
                 categoryChannel.ShowLink,
@@ -175,14 +173,12 @@
             string watcherKeyword,
             CategoryWatcherChannel categoryChannel)
         {
-            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
-            
             if (categoryChannel.AlertForAdditions && added.Any())
             {
                 var message = this.helperService.ConstructResultMessage(
                     added,
                     watcherKeyword,
-                    channelName,
+                    categoryChannel.Channel,
                     true,
                     false,
                     categoryChannel.ShowLink,
@@ -202,11 +198,9 @@
             string watcherKeyword,
             CategoryWatcherChannel categoryChannel)
         {
-            var channelName = this.channelManagementService.GetNameFromId(categoryChannel.ChannelId);
-            
             if (categoryChannel.AlertForRemovals && removed.Any())
             {
-                yield return this.helperService.ConstructRemovalMessage(removed, watcherKeyword, channelName);
+                yield return this.helperService.ConstructRemovalMessage(removed, watcherKeyword, categoryChannel.Channel);
             }
         }
     }

@@ -78,19 +78,19 @@
             
             var items = this.FetchCategoryItemsInternal(watcher);
 
-            return SyncItemsToDatabase(items, watcher.Id);
+            return SyncItemsToDatabase(items, watcher.Keyword);
         }
         
-        internal (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncItemsToDatabase(IList<string> currentTitles, int watcherId)
+        internal (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncItemsToDatabase(IList<string> currentTitles, string watcherKeyword)
         {
-            var persistedItems = this.watcherItemPersistence.GetItems(watcherId).ToList();
+            var persistedItems = this.watcherItemPersistence.GetItems(watcherKeyword).ToList();
 
             var (added, removed) = CalculateListDelta(persistedItems.Select(x => x.Title).ToList(), currentTitles);
             
-            var addedItems = this.watcherItemPersistence.AddNewItems(watcherId, added);
+            var addedItems = this.watcherItemPersistence.AddNewItems(watcherKeyword, added);
             var removedItems = removed.Select(x => persistedItems.FirstOrDefault(y => y.Title == x)).ToList();
 
-            this.watcherItemPersistence.RemoveDeletedItems(watcherId, removed);
+            this.watcherItemPersistence.RemoveDeletedItems(watcherKeyword, removed);
             
             persistedItems = persistedItems.Where(x => !removed.Contains(x.Title)).ToList();
             persistedItems.AddRange(addedItems);
