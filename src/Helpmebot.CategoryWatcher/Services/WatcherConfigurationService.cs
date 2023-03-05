@@ -9,6 +9,7 @@ namespace Helpmebot.CategoryWatcher.Services
     using Interfaces;
     using Model;
     using NHibernate;
+    using NHibernate.Criterion;
 
     public class WatcherConfigurationService : IWatcherConfigurationService
     {
@@ -69,7 +70,7 @@ namespace Helpmebot.CategoryWatcher.Services
             return this.channels.SingleOrDefault(x => x.Watcher == keyword && x.Channel == channel);
         }
         
-        public void CreateWatcher(string category, string keyword, string baseWiki)
+        public CategoryWatcher CreateWatcher(string category, string keyword, string baseWiki)
         {
             if (this.watchedCategories.Any(x => x.Category == category && x.BaseWikiId == baseWiki))
             {
@@ -90,6 +91,25 @@ namespace Helpmebot.CategoryWatcher.Services
             }
             
             this.watchedCategories.Add(watcher);
+
+            return watcher;
+        }
+
+        public void DeleteWatcher(string keyword)
+        {
+            using (var txn = this.databaseSession.BeginTransaction())
+            {
+                var watcher = this.databaseSession.CreateCriteria<CategoryWatcher>()
+                    .Add(Restrictions.Eq(nameof(CategoryWatcher.Keyword), keyword))
+                    .UniqueResult<CategoryWatcher>();
+
+                var localWatcher = this.watchedCategories.First(x => x.Keyword == keyword);
+
+                this.databaseSession.Delete(watcher);
+                txn.Commit();
+
+                this.watchedCategories.Remove(localWatcher);
+            }
         }
     }
 }

@@ -5,5 +5,7 @@
 
     public interface ICategoryWatcherBackgroundService : ITimerBackgroundService
     {
+        void Suspend();
+        void Resume();
     }
 }

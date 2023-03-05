@@ -21,23 +21,13 @@ namespace Helpmebot.Persistence.Mappings
 
     using Helpmebot.Model;
 
-    /// <summary>
-    /// The ignored page map.
-    /// </summary>
     public class CategoryWatcherIgnoredPageMap : ClassMap<CategoryWatcherIgnoredPage>
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initialises a new instance of the <see cref="CategoryWatcherIgnoredPageMap"/> class.
-        /// </summary>
         public CategoryWatcherIgnoredPageMap()
         {
             this.Table("catwatcher_ignoredpage");
             this.Id(x => x.Id, "id");
             this.Map(x => x.Title, "title");
         }
-
-        #endregion
     }
 }

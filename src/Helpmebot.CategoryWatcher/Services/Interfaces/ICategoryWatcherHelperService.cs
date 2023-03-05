@@ -22,5 +22,8 @@
             string categoryKeyword,
             string destination
         );
+
+        void RegisterWatcher(CategoryWatcher watcher);
+        void DeregisterWatcher(string keyword);
     }
 }

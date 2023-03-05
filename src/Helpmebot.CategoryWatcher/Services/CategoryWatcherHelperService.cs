@@ -28,6 +28,7 @@
         private readonly ILinkerService linkerService;
         private readonly IUrlShorteningService urlShorteningService;
         private readonly ILogger logger;
+        private readonly ICommandParser commandParser;
         private readonly IMediaWikiApiHelper apiHelper;
         private readonly IResponder responder;
         private readonly IWatcherConfigurationService watcherConfig;
@@ -46,6 +47,7 @@
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
             this.logger = logger;
+            this.commandParser = commandParser;
             this.apiHelper = apiHelper;
             this.responder = responder;
             this.watcherConfig = watcherConfig;
@@ -236,6 +238,23 @@
             var message = this.GetMessagePart(categoryKeyword, "handled", destination, removalList);
 
             return message;
+        }
+
+        public void RegisterWatcher(CategoryWatcher watcher)
+        {
+            this.commandParser.RegisterCommand(watcher.Keyword, typeof(ForceUpdateCommand));
+        }
+
+        public void DeregisterWatcher(string keyword)
+        {
+            if (this.watcherConfig.GetWatchers().Any(x => x.Keyword == keyword))
+            {
+                this.commandParser.UnregisterCommand(keyword);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(keyword));
+            }
         }
     }
 }

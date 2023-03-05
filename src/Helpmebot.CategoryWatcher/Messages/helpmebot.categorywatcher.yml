@@ -13,9 +13,14 @@ dataset:
   catwatcher.command.catwatcher.list.start:
     - - "The following category watchers are configured:"
   catwatcher.command.catwatcher.list.item:
-    - - "- {0} ([[{1}]])"
-
-      
+    - - "- {0} for category [[{1}]]"
+  catwatcher.command.catwatcher.delete.in-use:
+    - - "This category watcher is currently configured in channels, and cannot be removed."
+  catwatcher.command.catwatcher.delete.non-existent:
+    - - "This category watcher does not appear to exist."
+  
+  
+  
   catwatcher.item.default.singular:
     - - page
   catwatcher.item.default.plural:

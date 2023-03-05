@@ -24,8 +24,5 @@ namespace Helpmebot.Model
         public virtual string Category { get; set; }
         public virtual string Keyword { get; set; }
         public virtual string BaseWikiId { get; set; }
-        
-        public virtual IList<CategoryWatcherChannel> Channels { get; set; }
-        public virtual IList<CategoryWatcherItem> CategoryItems { get; set; }
     }
 }

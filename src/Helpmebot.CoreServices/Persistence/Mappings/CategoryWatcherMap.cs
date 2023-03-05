@@ -19,17 +19,9 @@ namespace Helpmebot.Persistence.Mappings
     using FluentNHibernate.Mapping;
 
     using Helpmebot.Model;
-
-    /// <summary>
-    ///     The category watcher map.
-    /// </summary>
+    
     public class CategoryWatcherMap : ClassMap<CategoryWatcher>
     {
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///     Initialises a new instance of the <see cref="CategoryWatcherMap" /> class.
-        /// </summary>
         public CategoryWatcherMap()
         {
             this.Table("catwatcher");
@@ -38,11 +30,6 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Category, "category");
             this.Map(x => x.Keyword, "keyword");
             this.Map(x => x.BaseWikiId, "base_wiki_id");
-
-            this.HasMany(x => x.Channels).Cascade.AllDeleteOrphan().Table("channelwatchers").Inverse();
-            this.HasMany(x => x.CategoryItems).Cascade.AllDeleteOrphan().Table("categoryitems").Inverse();
         }
-
-        #endregion
     }
 }

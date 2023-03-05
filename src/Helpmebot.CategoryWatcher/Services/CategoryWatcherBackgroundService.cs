@@ -57,6 +57,16 @@
             this.channelManagementService = channelManagementService;
         }
 
+        public void Suspend()
+        {
+            this.timerSemaphore.WaitOne();
+        }
+
+        public void Resume()
+        {
+            this.timerSemaphore.Release();
+        }
+        
         protected override void OnStart()
         {
             this.Logger.DebugFormat("Starting CatWatcher");
@@ -69,7 +79,7 @@
 
         protected override void TimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
-            this.Logger.TraceFormat("CatWatcher timer elapsed");
+            this.Logger.DebugFormat("CatWatcher timer elapsed");
             try
             {
                 if (!this.timerSemaphore.WaitOne(new TimeSpan(0, 0, 0, this.crossoverTimeout)))
@@ -134,6 +144,7 @@
             {
                 this.timerSemaphore.Release();
             }
+            this.Logger.DebugFormat("CatWatcher timer done");
         }
 
         private void InitialiseTimer(CategoryWatcherChannel categoryChannel)
