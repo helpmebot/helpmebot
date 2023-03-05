@@ -25,7 +25,7 @@
             "The number of pages in the catwatcher category",
             new CounterConfiguration
             {
-                LabelNames = new[] { "silence", "autolink", "basewiki", "welcomerflag" }
+                LabelNames = new[] { "cache" }
             });
 
         
