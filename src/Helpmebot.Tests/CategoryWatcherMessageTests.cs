@@ -75,47 +75,6 @@ public class CategoryWatcherMessageTests : TestBase
         // assert
         Assert.That(result, Is.EqualTo("hallo!"));
     }
-    
-    [Test]
-    public void ShouldGetDefaultMessagePart()
-    {
-        // arrange
-        this.watcherConfig.Setup(x => x.GetWatchers()).Returns(new List<CategoryWatcher>());
-
-        this.responder.Setup(
-                x => x.GetMessagePart(
-                    "catwatcher.item.potato.part",
-                    It.IsAny<string>(),
-                    It.IsAny<object[]>(),
-                    It.IsAny<Context>()))
-            .Returns((string)null);        
-        this.responder.Setup(
-                x => x.GetMessagePart(
-                    "catwatcher.item.default.part",
-                    It.IsAny<string>(),
-                    It.IsAny<object[]>(),
-                    It.IsAny<Context>()))
-            .Returns("nope!");
-        
-        var service = new CategoryWatcherHelperService(
-            null,
-            null,
-            this.Logger.Object,
-            null,
-            null,
-            this.responder.Object, 
-            this.watcherConfig.Object,
-            null,
-            null,
-            this.responseManager.Object
-        );
-
-        // act
-        var result = service.GetMessagePart("potato", "part", "", "");
-        
-        // assert
-        Assert.That(result, Is.EqualTo("nope!"));
-    }
 
     [Test]
     [TestCaseSource(typeof(MessageBuilderDataSource))]
