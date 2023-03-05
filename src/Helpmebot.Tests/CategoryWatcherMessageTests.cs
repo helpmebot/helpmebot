@@ -17,6 +17,7 @@ public class CategoryWatcherMessageTests : TestBase
     private Mock<IResponder> responder;
     private Mock<ILinkerService> linker;
     private Mock<IUrlShorteningService> urlShorteningService;
+    private Mock<IResponseManager> responseManager;
 
     [SetUp]
     public void Setup()
@@ -31,6 +32,7 @@ public class CategoryWatcherMessageTests : TestBase
         this.responder = new Mock<IResponder>();
         this.linker = new Mock<ILinkerService>();
         this.urlShorteningService = new Mock<IUrlShorteningService>();
+        this.responseManager = new Mock<IResponseManager>();
     }
 
     [Test]
@@ -62,7 +64,9 @@ public class CategoryWatcherMessageTests : TestBase
             null,
             this.responder.Object, 
             this.watcherConfig.Object,
-            null
+            null,
+            null,
+            this.responseManager.Object
         );
 
         // act
@@ -101,7 +105,9 @@ public class CategoryWatcherMessageTests : TestBase
             null,
             this.responder.Object, 
             this.watcherConfig.Object,
-            null
+            null,
+            null,
+            this.responseManager.Object
         );
 
         // act
@@ -151,7 +157,9 @@ public class CategoryWatcherMessageTests : TestBase
             null,
             this.responder.Object,
             this.watcherConfig.Object,
-            null
+            null,
+            null,
+            this.responseManager.Object
         );
 
         // act

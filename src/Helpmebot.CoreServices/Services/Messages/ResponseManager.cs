@@ -41,6 +41,20 @@ namespace Helpmebot.CoreServices.Services.Messages
 
         }
 
+        public void RegisterRepository(IMessageRepository repository)
+        {
+            this.messageRepositories.Add(repository);
+            
+            this.logger.Info($"Precaching responses for new {repository.RepositoryType} repository...");
+            var sw = Stopwatch.StartNew();
+            foreach (var key in repository.GetAllKeys())
+            {
+                this.FindMessage(key, null, null);
+            }
+            sw.Stop();
+            this.logger.InfoFormat("Done precaching responses; elapsed {0}ms", sw.ElapsedMilliseconds);
+        }
+
         public IEnumerable<CommandResponse> Respond(string messageKey, string channel, object argument)
         {
             return this.Respond(messageKey, channel, new[] { argument }, contextType: Context.Channel);

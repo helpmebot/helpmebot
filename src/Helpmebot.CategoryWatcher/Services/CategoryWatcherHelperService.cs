@@ -42,7 +42,9 @@
             IMediaWikiApiHelper apiHelper,
             IResponder responder,
             IWatcherConfigurationService watcherConfig,
-            IItemPersistenceService watcherItemPersistence)
+            IItemPersistenceService watcherItemPersistence,
+            ICategoryWatcherMessageService messageService,
+            IResponseManager responseManager)
         {
             this.linkerService = linkerService;
             this.urlShorteningService = urlShorteningService;
@@ -53,6 +55,8 @@
             this.watcherConfig = watcherConfig;
             this.watcherItemPersistence = watcherItemPersistence;
 
+            responseManager.RegisterRepository(messageService);
+            
             logger.DebugFormat("Registering CategoryWatcher keys in CommandParser");
             foreach (var category in this.watcherConfig.GetWatchers())
             {
@@ -135,16 +139,7 @@
         private string GetMessagePart(string watcherKey, string messageKey, string context, object[] arguments = null, Context contextType = null)
         {
             var fullMessageKey = $"catwatcher.item.{watcherKey}.{messageKey}";
-            var defaultMessageKey = $"catwatcher.item.default.{messageKey}";
-
-            var response = this.responder.GetMessagePart(fullMessageKey, context, arguments, contextType);
-
-            if (response == null)
-            {
-                response = this.responder.GetMessagePart(defaultMessageKey, context, arguments, contextType);
-            }
-
-            return response;
+            return this.responder.GetMessagePart(fullMessageKey, context, arguments, contextType);
         }
         
         internal string GetMessagePart(string watcherKey, string messageKey, string context, object argument)

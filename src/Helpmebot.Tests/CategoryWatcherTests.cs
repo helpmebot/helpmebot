@@ -3,6 +3,7 @@ namespace Helpmebot.Tests;
 using CategoryWatcher.Services;
 using CategoryWatcher.Services.Interfaces;
 using CoreServices.Services.Interfaces;
+using CoreServices.Services.Messages.Interfaces;
 using Helpmebot.Model;
 using Moq;
 using NUnit.Framework;
@@ -17,6 +18,7 @@ public class CategoryWatcherTests : TestBase
     private Mock<IWatcherConfigurationService> watcherConfig;
     private Mock<IMediaWikiApi> api;
     private Mock<IMediaWikiApiHelper> apiHelper;
+    private Mock<IResponseManager> responseManager;
 
     [SetUp]
     public void Setup()
@@ -32,6 +34,7 @@ public class CategoryWatcherTests : TestBase
         this.watcherConfig = new Mock<IWatcherConfigurationService>();
         this.api = new Mock<IMediaWikiApi>();
         this.apiHelper = new Mock<IMediaWikiApiHelper>();
+        this.responseManager = new Mock<IResponseManager>();
     }
 
     [Test]
@@ -159,7 +162,9 @@ public class CategoryWatcherTests : TestBase
             null,
             null,
             this.watcherConfig.Object,
-            this.persistenceService.Object
+            this.persistenceService.Object,
+            null,
+            this.responseManager.Object
         );
 
         //act
@@ -196,7 +201,9 @@ public class CategoryWatcherTests : TestBase
             this.apiHelper.Object,
             null,
             this.watcherConfig.Object,
-            this.persistenceService.Object
+            this.persistenceService.Object,
+            null,
+            this.responseManager.Object
         );
 
         // act
@@ -231,7 +238,9 @@ public class CategoryWatcherTests : TestBase
             this.apiHelper.Object,
             null,
             this.watcherConfig.Object,
-            this.persistenceService.Object
+            this.persistenceService.Object,
+            null,
+            this.responseManager.Object
         );
 
         // act

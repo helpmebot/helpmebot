@@ -11,5 +11,7 @@ namespace Helpmebot.CoreServices.Services.Messages.Interfaces
         void Remove(string messageKey, string contextType, string context);
 
         List<string> GetAllKeys();
+
+        void RegisterRepository(IMessageRepository repository);
     }
 }

@@ -58,7 +58,7 @@
                                 {                               
                                     <span class="badge bg-info text-dark" title="This message has been customised in the database.">database</span>
                                 }
-                                @if (response.Repository == "file")
+                                @if (response.Repository is "file" or "catwatcher")
                                 {
                                     <span class="badge bg-secondary text-white" title="This message is unchanged from the bot's defaults">default</span>
                                 }
