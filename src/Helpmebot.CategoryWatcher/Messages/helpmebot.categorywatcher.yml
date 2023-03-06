@@ -29,9 +29,9 @@ dataset:
   catwatcher.command.catwatcher.status.watcher-status:
     - - "{0} ([[{1}]]) - Reporting: {2}, reporting interval: {3} seconds, additions: {4}, removals: {5}, show links: {6}, show wait time: {7}, minimum wait time: {8} seconds"
   catwatcher.command.catwatcher.status.disabled:
-    - - "04Disabled"
+    - - "4Disabled"
   catwatcher.command.catwatcher.status.enabled:
-    - - "03Enabled"
+    - - "3Enabled"
   
   
   

@@ -108,6 +108,15 @@ namespace Helpmebot.WebUI.Services.Api
                         new() { "test a", "test 1" },
                     }
                 },
+                new()
+                {
+                    Key = new ResponseKey { MessageKey = "stw.example3" },
+                    Repository = "wiki",
+                    Responses = new List<List<string>>
+                    {
+                        new() { "4Disabled", "3Enabled" },
+                    }
+                },
             };
         }
 
