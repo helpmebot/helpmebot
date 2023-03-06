@@ -23,6 +23,15 @@ dataset:
     - - "Category watchers must be configured in the channel in which they are used."
   catwatcher.command.catwatcher.configure.not-changed:
     - - "No changes have been made to the configuration."
+
+  catwatcher.command.catwatcher.status.not-via-pm:
+    - - "Cannot get status of the current channel's category watcher configuration via PM."
+  catwatcher.command.catwatcher.status.watcher-status:
+    - - "{0} ([[{1}]]) - Reporting: {2}, reporting interval: {3} seconds, additions: {4}, removals: {5}, show links: {6}, show wait time: {7}, minimum wait time: {8} seconds"
+  catwatcher.command.catwatcher.status.disabled:
+    - - "04Disabled"
+  catwatcher.command.catwatcher.status.enabled:
+    - - "03Enabled"
   
   
   

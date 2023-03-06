@@ -267,7 +267,49 @@ namespace Helpmebot.CategoryWatcher.Commands
             
             return this.responder.Respond("catwatcher.command.catwatcher.configure.not-changed", this.CommandSource);
         }
-        
-        
+
+        [SubcommandInvocation("status")]
+        [Help("", "Returns the current configuration of all the defined category watchers for this channel.")]
+        [CommandParameter("-a|--all", "Show status for all watchers", "all", typeof(bool))]
+        protected IEnumerable<CommandResponse> StatusMode()
+        {
+            if (this.CommandSource == this.Client.Nickname)
+            {
+                return this.responder.Respond("catwatcher.command.catwatcher.status.not-via-pm", this.CommandSource);
+            }
+
+            var watchers = this.catWatcherConfig.GetWatchers().ToDictionary(x => x.Keyword);
+            var watcherConfig = watchers
+                .Select(x => this.catWatcherConfig.GetWatcherConfiguration(x.Key, this.CommandSource, true))
+                .ToDictionary(x => x.Watcher);
+
+            var enabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.enabled", this.CommandSource);
+            var disabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.disabled", this.CommandSource);
+
+            var responses = new List<CommandResponse>(watchers.Keys.Count);
+            
+            foreach (var key in watchers.Keys)
+            {
+                responses.AddRange(
+                    this.responder.Respond(
+                        "catwatcher.command.catwatcher.status.watcher-status",
+                        this.CommandSource,
+                        new object[]
+                        {
+                            watchers[key].Keyword,
+                            watchers[key].Category,
+                            watcherConfig[key].Enabled ? enabled : disabled,
+                            watcherConfig[key].SleepTime,
+                            watcherConfig[key].AlertForAdditions ? enabled : disabled,
+                            watcherConfig[key].AlertForRemovals ? enabled : disabled,
+                            watcherConfig[key].ShowLink ? enabled : disabled,
+                            watcherConfig[key].ShowWaitTime ? enabled : disabled,
+                            watcherConfig[key].MinWaitTime
+                        })
+                );
+            }
+                
+            return responses;
+        }
     }
 }
