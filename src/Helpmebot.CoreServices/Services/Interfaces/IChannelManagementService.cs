@@ -1,5 +1,6 @@
 ﻿namespace Helpmebot.CoreServices.Services.Interfaces
 {
+    using System.Collections.Generic;
     using Stwalkerster.IrcClient.Events;
 
     public interface IChannelManagementService
@@ -21,5 +22,6 @@
         void SetWelcomerFlag(string channelName, string welcomerFlag);
 
         bool IsEnabled(string channelName);
+        IEnumerable<string> GetEnabledChannels();
     }
 }

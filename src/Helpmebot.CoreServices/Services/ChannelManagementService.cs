@@ -518,6 +518,18 @@
             }
         }
 
+        public IEnumerable<string> GetEnabledChannels()
+        {
+            lock (this.session)
+            {
+                var channel = this.session.CreateCriteria<Channel>()
+                    .Add(Restrictions.Eq(nameof(Channel.Enabled), true))
+                    .List<Channel>();
+                
+                return channel.Select(x => x.Name).ToList();
+            }
+        }
+
         bool ISilentModeConfiguration.BotIsSilent(string destination, CommandMessage message)
         {
             if (!destination.StartsWith("#"))
