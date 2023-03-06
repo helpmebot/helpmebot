@@ -1,7 +1,7 @@
 namespace Helpmebot.CategoryWatcher.Services.Interfaces
 {
     using System.Collections.Generic;
-    using Model;
+    using Helpmebot.Model;
 
     public interface IWatcherConfigurationService
     {
@@ -12,5 +12,6 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         IEnumerable<string> GetChannelsForWatcher(string keyword);
         CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel, bool defaultIfUnconfigured = false);
         void DeleteWatcher(string keyword);
+        void SaveWatcherConfiguration(CategoryWatcherChannel config);
     }
 }

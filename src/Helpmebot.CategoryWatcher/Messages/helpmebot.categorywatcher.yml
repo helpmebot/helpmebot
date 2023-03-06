@@ -16,6 +16,13 @@ dataset:
     - - "This category watcher is currently configured in channels, and cannot be removed."
   catwatcher.command.catwatcher.delete.non-existent:
     - - "This category watcher does not appear to exist."
+  catwatcher.command.catwatcher.configure.non-existent:
+    - - "This category watcher does not appear to exist."
+
+  catwatcher.command.catwatcher.configure.not-via-pm:
+    - - "Category watchers must be configured in the channel in which they are used."
+  catwatcher.command.catwatcher.configure.not-changed:
+    - - "No changes have been made to the configuration."
   
   
   

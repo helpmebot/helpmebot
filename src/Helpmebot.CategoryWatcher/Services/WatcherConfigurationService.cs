@@ -69,6 +69,9 @@ namespace Helpmebot.CategoryWatcher.Services
 
             var defaultConfig = new CategoryWatcherChannel
             {
+                Channel = channel,
+                Watcher = keyword,
+                
                 AlertForAdditions = false,
                 AlertForRemovals = false,
                 MinWaitTime = 0,
@@ -95,12 +98,15 @@ namespace Helpmebot.CategoryWatcher.Services
                 Keyword = keyword
             };
 
-            using (var txn = this.databaseSession.BeginTransaction())
+            lock (this.databaseSession)
             {
-                this.databaseSession.Save(watcher);
-                txn.Commit();
+                using (var txn = this.databaseSession.BeginTransaction())
+                {
+                    this.databaseSession.Save(watcher);
+                    txn.Commit();
+                }
             }
-            
+
             this.watchedCategories.Add(watcher);
 
             return watcher;
@@ -108,18 +114,68 @@ namespace Helpmebot.CategoryWatcher.Services
 
         public void DeleteWatcher(string keyword)
         {
-            using (var txn = this.databaseSession.BeginTransaction())
+            lock (this.databaseSession)
             {
-                var watcher = this.databaseSession.CreateCriteria<CategoryWatcher>()
-                    .Add(Restrictions.Eq(nameof(CategoryWatcher.Keyword), keyword))
-                    .UniqueResult<CategoryWatcher>();
+                using (var txn = this.databaseSession.BeginTransaction())
+                {
+                    var watcher = this.databaseSession.CreateCriteria<CategoryWatcher>()
+                        .Add(Restrictions.Eq(nameof(CategoryWatcher.Keyword), keyword))
+                        .UniqueResult<CategoryWatcher>();
+                    
+                    this.databaseSession.Delete(watcher);
+                    txn.Commit();
+                }
+            }
 
-                var localWatcher = this.watchedCategories.First(x => x.Keyword == keyword);
+            var localWatcher = this.watchedCategories.First(x => x.Keyword == keyword);
+            this.watchedCategories.Remove(localWatcher);
+        }
 
-                this.databaseSession.Delete(watcher);
-                txn.Commit();
+        public void SaveWatcherConfiguration(CategoryWatcherChannel config)
+        {
+            var existing =
+                this.channels.FirstOrDefault(x => x.Channel == config.Channel && x.Watcher == config.Watcher);
 
-                this.watchedCategories.Remove(localWatcher);
+            if (existing == null)
+            {
+                lock (this.databaseSession)
+                {
+                    using (var txn = this.databaseSession.BeginTransaction())
+                    {
+                        this.databaseSession.Save(config);
+                        txn.Commit();
+                    }
+                    
+                    this.channels.Add(config);
+                }    
+            }
+            else
+            {
+                lock (this.databaseSession)
+                {
+                    this.channels.Remove(existing);
+                    
+                    using (var txn = this.databaseSession.BeginTransaction())
+                    {
+                        var existingDb = this.databaseSession.CreateCriteria<CategoryWatcherChannel>()
+                            .Add(Restrictions.Eq(nameof(CategoryWatcherChannel.Channel), config.Channel))
+                            .Add(Restrictions.Eq(nameof(CategoryWatcherChannel.Watcher), config.Watcher))
+                            .UniqueResult<CategoryWatcherChannel>();
+
+                        existingDb.Enabled = config.Enabled;
+                        existingDb.SleepTime = config.SleepTime;
+                        existingDb.ShowWaitTime = config.ShowWaitTime;
+                        existingDb.MinWaitTime = config.MinWaitTime;
+                        existingDb.ShowLink = config.ShowLink;
+                        existingDb.AlertForAdditions = config.AlertForAdditions;
+                        existingDb.AlertForRemovals = config.AlertForRemovals;
+                        
+                        this.databaseSession.Update(existingDb);
+                        txn.Commit();
+
+                        this.channels.Add(existingDb);
+                    }
+                }
             }
         }
     }

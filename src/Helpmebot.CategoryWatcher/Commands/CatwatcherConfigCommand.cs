@@ -13,6 +13,7 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.Bot.CommandLib.Exceptions;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
@@ -172,5 +173,105 @@ namespace Helpmebot.CategoryWatcher.Commands
                 this.backgroundService.Resume();
             }
         }
+        
+        
+        [SubcommandInvocation("configure")]
+        [SubcommandInvocation("config")]
+        [RequiredArguments(1)]
+        [Help("<flag>")]
+        [CommandFlag(Flags.Configuration, true)]
+        [CommandFlag(Flags.LocalConfiguration)]
+        [CommandParameter("enable", "Enable reporting in this channel", "enable", typeof(bool))]
+        [CommandParameter("disable", "Disable reporting in this channel", "enable", typeof(bool), booleanInverse:true)]
+        [CommandParameter("interval=", "Sets the interval (in seconds) between reporting category members to the channel", "interval", typeof(string))]
+        [CommandParameter("show-wait-time", "Show the wait time of each item", "showWait", typeof(bool))]
+        [CommandParameter("hide-wait-time", "Hide the wait time of each item", "showWait", typeof(bool), booleanInverse: true)]
+        [CommandParameter("min-wait-time=", "Set the minimum wait time of an item before the wait time is shown (if enabled)", "minWait", typeof(string))]
+        [CommandParameter("show-links", "Show the URL to each item as well as the wikilink", "showLink", typeof(bool))]
+        [CommandParameter("hide-links", "Hide the URL to each item, showing only the wikilink", "showLink", typeof(bool), booleanInverse: true)]
+        [CommandParameter("show-additions", "Report additions to the category as they are detected", "showAdditions", typeof(bool))]
+        [CommandParameter("hide-additions", "Don't report additions", "showAdditions", typeof(bool), booleanInverse: true)]
+        [CommandParameter("show-removals", "Report removals from the category as soon as they are detected", "showRemovals", typeof(bool))]
+        [CommandParameter("hide-removals", "Don't report removals", "showRemovals", typeof(bool), booleanInverse: true)]
+        protected IEnumerable<CommandResponse> ConfigureMode()
+        {
+            if (this.CommandSource == this.Client.Nickname)
+            {
+                return this.responder.Respond("catwatcher.command.catwatcher.configure.not-via-pm", this.CommandSource);
+            }
+            
+            var watcher = this.Arguments.First();
+
+            if (!this.catWatcherConfig.GetValidWatcherKeys().Contains(watcher))
+            {
+                return this.responder.Respond(
+                    "catwatcher.command.catwatcher.configure.non-existent",
+                    this.CommandSource);
+            }
+
+            var enabled = this.Parameters.GetParameter("enable", (bool?)null);
+            var interval = this.Parameters.GetParameter("interval", (string)null);
+            var showWaitTime = this.Parameters.GetParameter("showWait", (bool?)null);
+            var minWait = this.Parameters.GetParameter("minWait", (string)null);
+            var showLink = this.Parameters.GetParameter("showLink", (bool?)null);
+            var showAdditions = this.Parameters.GetParameter("showAdditions", (bool?)null);
+            var showRemovals = this.Parameters.GetParameter("showRemovals", (bool?)null);
+
+            var config = this.catWatcherConfig.GetWatcherConfiguration(watcher, this.CommandSource, true);
+
+            bool changed = false;
+            
+            if (enabled.HasValue)
+            {
+                config.Enabled = enabled.Value;
+                changed = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(interval) && int.TryParse(interval, out var intervalValue))
+            {
+                config.SleepTime = intervalValue;
+                changed = true;
+            }
+
+            if (showWaitTime.HasValue)
+            {
+                config.ShowWaitTime = showWaitTime.Value;
+                changed = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(minWait) && int.TryParse(minWait, out var minWaitValue))
+            {
+                config.MinWaitTime = minWaitValue;
+                changed = true;
+            }
+
+            if (showLink.HasValue)
+            {
+                config.ShowLink = showLink.Value;
+                changed = true;
+            }
+
+            if (showAdditions.HasValue)
+            {
+                config.AlertForAdditions = showAdditions.Value;
+                changed = true;
+            }
+
+            if (showRemovals.HasValue)
+            {
+                config.AlertForRemovals = showRemovals.Value;
+                changed = true;
+            }
+
+            if (changed)
+            {
+                this.catWatcherConfig.SaveWatcherConfiguration(config);
+                return this.responder.Respond("common.done", this.CommandSource);
+            }
+            
+            return this.responder.Respond("catwatcher.command.catwatcher.configure.not-changed", this.CommandSource);
+        }
+        
+        
     }
 }
