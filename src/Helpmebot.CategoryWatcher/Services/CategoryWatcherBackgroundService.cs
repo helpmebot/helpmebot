@@ -99,6 +99,11 @@
                     foreach (var channelName in watcherChannels)
                     {
                         var config = this.watcherConfig.GetWatcherConfiguration(watcher.Keyword, channelName);
+                        
+                        if (!config.Enabled)
+                        {
+                            continue;
+                        }
 
                         this.InitialiseTimer(config);
 

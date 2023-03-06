@@ -70,7 +70,8 @@ namespace Helpmebot.CategoryWatcher.Services
                     MinWaitTime = 0,
                     ShowLink = false,
                     ShowWaitTime = false,
-                    SleepTime = 20 * 60
+                    SleepTime = 20 * 60,
+                    Enabled = false
                 };
             }
 

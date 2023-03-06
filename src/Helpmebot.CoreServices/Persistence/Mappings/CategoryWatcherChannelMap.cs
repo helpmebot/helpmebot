@@ -18,6 +18,7 @@
             this.Map(x => x.ShowLink, "showlink");
             this.Map(x => x.AlertForAdditions, "alertadditions");
             this.Map(x => x.AlertForRemovals, "alertremovals");
+            this.Map(x => x.Enabled, "enabled");
         }
     }
 }
