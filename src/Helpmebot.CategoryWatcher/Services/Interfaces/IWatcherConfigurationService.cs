@@ -10,7 +10,7 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         IEnumerable<string> GetValidWatcherKeys();
         IEnumerable<string> GetWatchersForChannel(string channelName);
         IEnumerable<string> GetChannelsForWatcher(string keyword);
-        CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel);
+        CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel, bool defaultIfUnconfigured = false);
         void DeleteWatcher(string keyword);
     }
 }

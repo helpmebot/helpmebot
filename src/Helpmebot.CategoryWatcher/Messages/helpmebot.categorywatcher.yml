@@ -7,8 +7,6 @@ dataset:
     - - There are no category watchers configured in this channel.
   catwatcher.command.fetchall.none-configured:
     - - There are no category watchers configured.
-  catwatcher.command.forceupdate.not-configured-in-channel:
-    - - The category watcher for {0} is not configured to run in {1}. The default configuration will be used.
 
   catwatcher.command.catwatcher.list.start:
     - - "The following category watchers are configured:"

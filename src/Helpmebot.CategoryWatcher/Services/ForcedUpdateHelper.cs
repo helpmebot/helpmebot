@@ -32,49 +32,10 @@ namespace Helpmebot.CategoryWatcher.Services
             this.responder = responder;
         }
 
-        public IEnumerable<CommandResponse> DoForcedUpdate(
-            string categoryKeyword,
-            string channelName,
-            bool suppressWarning)
+        public IEnumerable<CommandResponse> DoForcedUpdate(string categoryKeyword, string channelName)
         {
-            CategoryWatcherChannel config = null;
-
-            try
-            {
-                config = this.watcherConfig.GetWatcherConfiguration(categoryKeyword, channelName);
-            }
-            catch (ArgumentOutOfRangeException ex) when (ex.ParamName == "channel")
-            {
-                // squelch. the channel probably doesn't exist (or this is being done via PM)
-            }
-
-            if (config == null)
-            {
-                if (!suppressWarning)
-                {
-                    yield return new CommandResponse
-                    {
-                        Message = this.responder.GetMessagePart(
-                            "catwatcher.command.forceupdate.not-configured-in-channel",
-                            channelName,
-                            new object[] { categoryKeyword, channelName }),
-                        Destination = CommandResponseDestination.PrivateMessage,
-                        IgnoreRedirection = true
-                    };
-                }
-
-                config = new CategoryWatcherChannel
-                {
-                    AlertForAdditions = false,
-                    AlertForRemovals = false,
-                    MinWaitTime = 0,
-                    ShowLink = false,
-                    ShowWaitTime = false,
-                    SleepTime = 20 * 60,
-                    Enabled = false
-                };
-            }
-
+            var config = this.watcherConfig.GetWatcherConfiguration(categoryKeyword, channelName, true);
+            
             var (allItems, added, removed) = this.helper.SyncCategoryItems(categoryKeyword);
 
             var message = this.helper.ConstructResultMessage(
@@ -122,7 +83,7 @@ namespace Helpmebot.CategoryWatcher.Services
             var responses = new List<CommandResponse>();
             foreach (var keyword in validKeywords)
             {
-                responses.AddRange(this.DoForcedUpdate(keyword, channelName, true));
+                responses.AddRange(this.DoForcedUpdate(keyword, channelName));
             }
 
             return responses;

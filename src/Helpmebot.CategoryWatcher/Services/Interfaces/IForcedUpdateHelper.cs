@@ -5,10 +5,7 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
 
     public interface IForcedUpdateHelper
     {
-        IEnumerable<CommandResponse> DoForcedUpdate(
-            string categoryKeyword,
-            string channelName,
-            bool suppressWarning);
+        IEnumerable<CommandResponse> DoForcedUpdate(string categoryKeyword, string channelName);
 
         IEnumerable<CommandResponse> BulkForcedUpdate(bool all, string channelName);
     }

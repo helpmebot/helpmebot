@@ -52,7 +52,7 @@ namespace Helpmebot.CategoryWatcher.Services
         }
 
         /// <remarks>Note that the "channel" argument name is referenced in an exception handler as a string.</remarks>
-        public CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel)
+        public CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel, bool defaultIfUnconfigured = false)
         {
             var watcher = this.watchedCategories.SingleOrDefault(x => x.Keyword == keyword);
             var channelEnabled = this.channelManagementService.IsEnabled(channel);
@@ -62,12 +62,23 @@ namespace Helpmebot.CategoryWatcher.Services
                 throw new ArgumentOutOfRangeException(nameof(keyword));
             }
 
-            if (!channelEnabled)
+            if (!channelEnabled && !defaultIfUnconfigured)
             {
                 throw new ArgumentOutOfRangeException(nameof(channel));
             }
 
-            return this.channels.SingleOrDefault(x => x.Watcher == keyword && x.Channel == channel);
+            var defaultConfig = new CategoryWatcherChannel
+            {
+                AlertForAdditions = false,
+                AlertForRemovals = false,
+                MinWaitTime = 0,
+                ShowLink = false,
+                ShowWaitTime = false,
+                SleepTime = 20 * 60,
+                Enabled = false
+            };
+
+            return this.channels.SingleOrDefault(x => x.Watcher == keyword && x.Channel == channel) ?? defaultConfig;
         }
         
         public CategoryWatcher CreateWatcher(string category, string keyword, string baseWiki)

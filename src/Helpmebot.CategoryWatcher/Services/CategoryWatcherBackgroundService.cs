@@ -100,7 +100,7 @@
                     {
                         var config = this.watcherConfig.GetWatcherConfiguration(watcher.Keyword, channelName);
                         
-                        if (!config.Enabled)
+                        if (config == null || !config.Enabled)
                         {
                             continue;
                         }

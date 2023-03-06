@@ -43,9 +43,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         
         protected override IEnumerable<CommandResponse> Execute()
         {
-            var suppressNonConfiguredWarning = this.Client.Nickname == this.CommandSource;
-            
-            return this.helperService.DoForcedUpdate(this.InvokedAs, this.CommandSource, suppressNonConfiguredWarning);
+            return this.helperService.DoForcedUpdate(this.InvokedAs, this.CommandSource);
         }
 
         public static string HelpSummary(string invokedAs)
