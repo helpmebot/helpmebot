@@ -13,5 +13,6 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         CategoryWatcherChannel GetWatcherConfiguration(string keyword, string channel, bool defaultIfUnconfigured = false);
         void DeleteWatcher(string keyword);
         void SaveWatcherConfiguration(CategoryWatcherChannel config);
+        void DeleteWatcherConfiguration(string flag);
     }
 }

@@ -31,7 +31,7 @@ namespace Helpmebot.CategoryWatcher.Services
         
         public IEnumerable<string> GetValidWatcherKeys()
         {
-             return this.watchedCategories.Select(x => x.Keyword); 
+            return this.watchedCategories.Select(x => x.Keyword); 
         }
 
         public IReadOnlyList<CategoryWatcher> GetWatchers()
@@ -177,6 +177,31 @@ namespace Helpmebot.CategoryWatcher.Services
                     }
                 }
             }
+        }
+
+        public void DeleteWatcherConfiguration(string flag)
+        {
+            lock (this.databaseSession)
+            {
+                foreach (var channel in this.channels.Where(x => x.Watcher == flag).ToList())
+                {
+                    this.channels.Remove(channel);
+                }
+                
+                using (var txn = this.databaseSession.BeginTransaction())
+                {
+                    var existing = this.databaseSession.CreateCriteria<CategoryWatcherChannel>()
+                        .Add(Restrictions.Eq(nameof(CategoryWatcherChannel.Watcher), flag))
+                        .List<CategoryWatcherChannel>();
+
+                    foreach (var channel in existing)
+                    {
+                        this.databaseSession.Delete(channel);
+                    }
+                    
+                    txn.Commit();
+                }
+            }    
         }
     }
 }

@@ -137,23 +137,20 @@ namespace Helpmebot.CategoryWatcher.Commands
                         this.CommandSource);
                 }
 
-                var channelsForWatcher = this.catWatcherConfig.GetChannelsForWatcher(flag).ToList();
-                var deconfigure = false;
-                if (channelsForWatcher.Contains(this.CommandSource))
-                {
-                    deconfigure = true;
-                    channelsForWatcher.Remove(this.CommandSource);
-                }
-
-                if (channelsForWatcher.Any())
+                var categoryWatcherChannels = this.catWatcherConfig
+                    .GetChannelsForWatcher(flag)
+                    .Select(x => this.catWatcherConfig.GetWatcherConfiguration(flag, x))
+                    .Where(x => x != null)
+                    .ToList();
+                
+                if (categoryWatcherChannels.Any(x => x.Enabled))
                 {
                     return this.responder.Respond("catwatcher.command.catwatcher.delete.in-use", this.CommandSource);
                 }
 
-                if (deconfigure)
+                if (categoryWatcherChannels.Any())
                 {
-                    // Deconfigure the current channel
-                    // FIXME: deconfigure the watcher from this channel
+                    this.catWatcherConfig.DeleteWatcherConfiguration(flag);
                 }
 
                 // Remove the watcher command
