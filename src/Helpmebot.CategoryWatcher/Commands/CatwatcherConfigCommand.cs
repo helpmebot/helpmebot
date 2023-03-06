@@ -90,7 +90,7 @@ namespace Helpmebot.CategoryWatcher.Commands
 
         [SubcommandInvocation("create")]
         [RequiredArguments(3)]
-        [Help("<flag> <wiki> <category>")]
+        [Help("<flag> <wiki> <category>", "Adds a category watcher with the specified flag, on the specified wiki shortcode, watching the specified category.")]
         [CommandFlag(Flags.Configuration, true)]
         protected IEnumerable<CommandResponse> CreateMode()
         {
@@ -121,7 +121,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         
         [SubcommandInvocation("delete")]
         [RequiredArguments(1)]
-        [Help("<flag>")]
+        [Help("<flag>", new[]{"Removes a category watcher entirely.","The category watcher must be disabled in every channel before it can be deleted."})]
         [CommandFlag(Flags.Configuration, true)]
         protected IEnumerable<CommandResponse> DeleteMode()
         {
@@ -173,7 +173,6 @@ namespace Helpmebot.CategoryWatcher.Commands
                 this.backgroundService.Resume();
             }
         }
-        
         
         [SubcommandInvocation("configure")]
         [SubcommandInvocation("config")]
