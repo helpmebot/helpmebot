@@ -1,5 +1,5 @@
 @using Markdig
-@model Tuple<Dictionary<string, Tuple<string, string>>, Dictionary<string, List<Helpmebot.WebApi.TransportModels.CommandInfo>>>
+@model Tuple<Dictionary<string, Tuple<string, string>>, Dictionary<string, List<FlagCommandSummary>>>
 @{
     ViewData["Title"] = "Flags";
     ViewData["Tab"] = "Index";
@@ -47,7 +47,7 @@
                                     <ul class="list-inline mb-0">
                                         @foreach (var data in Model.Item2[kvp.Key])
                                         {
-                                            <li class="list-inline-item" title="@data.HelpSummary"><code class="text-muted">@ViewBag.BotStatus.Trigger@data.CanonicalName</code></li>
+                                            <li class="list-inline-item" title="@data.HelpText"><a asp-controller="Commands" asp-fragment="command-@data.ParentCommand" class="text-reset"><code class="text-muted">@ViewBag.BotStatus.Trigger@(data.Subcommand ?? data.ParentCommand)</code></a></li>
                                         }
                                     </ul>
                                 </div>
