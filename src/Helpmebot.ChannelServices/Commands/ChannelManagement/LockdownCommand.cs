@@ -14,10 +14,9 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.ChanOp)]
+    [CommandFlag(Flags.Owner)]
     [CommandInvocation("ld")]
     [HelpSummary("Enables channel lockdown mode, quieting all unregistered users and exempting as configured in the welcomer.")]
-    [Undocumented]
     public class LockdownCommand : CommandBase
     {
         private readonly IModeMonitoringService modeMonitoringService;

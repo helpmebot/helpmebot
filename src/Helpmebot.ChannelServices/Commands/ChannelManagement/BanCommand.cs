@@ -16,10 +16,9 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.IrcClient.Messages;
     using Stwalkerster.IrcClient.Model.Interfaces;
 
-    [CommandFlag(Flags.ChanOp)]
+    [CommandFlag(Flags.Owner)]
     [CommandInvocation("kb")]
     [HelpSummary("Kickbans the specified user.")]
-    [Undocumented]
     public class BanCommand : CommandBase
     {
         private readonly IModeMonitoringService modeMonitoringService;

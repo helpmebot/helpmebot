@@ -270,7 +270,6 @@ namespace Helpmebot.CategoryWatcher.Commands
 
         [SubcommandInvocation("status")]
         [Help("", "Returns the current configuration of all the defined category watchers for this channel.")]
-        [CommandParameter("-a|--all", "Show status for all watchers", "all", typeof(bool))]
         protected IEnumerable<CommandResponse> StatusMode()
         {
             if (this.CommandSource == this.Client.Nickname)
