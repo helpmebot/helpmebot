@@ -46,9 +46,33 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             this.responder = responder;
         }
 
-        [Help("[nickname...]", "Produces a list of who will be removed from the channel by the remove command")]
+        [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
+        [CommandParameter("dry-run", "List who will be removed from the channel, but don't actually do it", "dryrun", typeof(bool))]
+        [Help("<nickname...>", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out.")]
+        protected override IEnumerable<CommandResponse> Execute()
+        {
+            var force = this.Parameters.GetParameter("force", false);
+            var dryRun = this.Parameters.GetParameter("dryrun", false);
+            
+            var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
+
+            if (dryRun)
+            {
+                var helpees = string.Join(", ", removableHelpees);
+                return this.responder.Respond(
+                    "channelservices.command.idlehelpees.remove",
+                    this.CommandSource,
+                    helpees);
+            }
+
+            this.DoRemoval(removableHelpees);
+            return null;
+        }
+
+        [Help("<nickname...>", "Produces a list of who will be removed from the channel by the remove command")]
         [SubcommandInvocation("dryrun")]
         [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
+        [Undocumented]
         protected IEnumerable<CommandResponse> DryRun()
         {
             var force = this.Parameters.GetParameter("force", false);
@@ -60,15 +84,23 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             return this.responder.Respond("channelservices.command.idlehelpees.remove", this.CommandSource, helpees);
         }
 
-        [Help("[nickname...]", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
-        [SubcommandInvocation("remove")]       
+        [Help("<nickname...>", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
+        [SubcommandInvocation("remove")]
         [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
+        [Undocumented]
         protected IEnumerable<CommandResponse> Remove()
         {
             var force = this.Parameters.GetParameter("force", false);
 
             var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
+            this.DoRemoval(removableHelpees);
+
+            return null;
+        }
+
+        private void DoRemoval(List<string> removableHelpees)
+        {
             var channel = "#wikipedia-en-help";
             var removeMessage = this.responder.GetMessagePart("channelservices.command.idlehelpees.kick", this.CommandSource);
 
@@ -101,8 +133,6 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                         this.CommandSource,
                         new object[] { helpees, this.User.Nickname }));
             }
-
-            return null;
         }
 
         private List<string> GetRemovableHelpees(IList<string> helpees, bool force)
