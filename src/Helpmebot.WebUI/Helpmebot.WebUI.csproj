@@ -11,9 +11,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Markdig" Version="0.30.4" />
+      <PackageReference Include="Markdig" Version="0.31.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-      <PackageReference Include="NetMQ" Version="4.0.1.10" />
+      <PackageReference Include="NetMQ" Version="4.0.1.11" />
     </ItemGroup>
 
     <ItemGroup>
