@@ -18,6 +18,8 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 
     [CommandInvocation("rights")]
     [CommandInvocation("userrights")]
+    [CommandInvocation("usergroups")]
+    [CommandInvocation("groups")]
     [CommandFlag(Flags.Info)]
     [HelpSummary("Returns the list of groups you or the specified user currently hold")]
     public class UserRightsCommand : CommandBase
