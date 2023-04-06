@@ -72,12 +72,14 @@ namespace Helpmebot.AccountCreations.Commands
 
             var args = this.Arguments;
 
+            var destination = this.Client.Nickname == this.CommandSource ? this.User.Nickname : this.CommandSource;
+
             // note: using client.sendmessage for immediacy
             foreach (var response in this.responder.Respond(
                 "accountcreations.command.deploy.inprogress",
                 this.CommandSource))
             {
-                this.Client.SendMessage(this.CommandSource, response.CompileMessage());
+                this.Client.SendMessage(destination, response.CompileMessage());
             }
             
             var revision = string.Join(" ", args);
@@ -98,7 +100,7 @@ namespace Helpmebot.AccountCreations.Commands
 
                 while (!r.EndOfStream)
                 {
-                    this.Client.SendMessage(this.CommandSource, r.ReadLine());
+                    this.Client.SendMessage(destination, r.ReadLine());
                 }
             }
 
