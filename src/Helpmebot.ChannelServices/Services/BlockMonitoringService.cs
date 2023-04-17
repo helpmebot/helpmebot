@@ -324,8 +324,8 @@ namespace Helpmebot.ChannelServices.Services
         {
             if (user.Hostname.Contains("/"))
             {
-                // cloaked. hmm...
-                // gateway, try username
+                // Cloaked. We can't use hostname-based lookups.
+                // possibly a web gateway? Try username. 
                 var validHexIp = new Regex("^[0-9A-Fa-f]{8}$");
 
                 if (validHexIp.IsMatch(user.Username))
@@ -337,17 +337,24 @@ namespace Helpmebot.ChannelServices.Services
                 return null;
             }
 
+            // hostname == IP
+            if (IPAddress.TryParse(user.Hostname, out var addr))
+            {
+                return addr;
+            }
+            
             // resolve hostname
             IPAddress[] addresses = new IPAddress[0];
             try
             {
                 addresses = Dns.GetHostAddresses(user.Hostname);
+                return addresses.FirstOrDefault();
             }
             catch (SocketException)
             {
             }
 
-            return addresses.FirstOrDefault();
+            return null;
         }
 
         /// <summary>
