@@ -341,7 +341,7 @@ namespace Helpmebot.ChannelServices.Services
             IPAddress[] addresses = new IPAddress[0];
             try
             {
-                addresses = Dns.GetHostEntry(user.Hostname).AddressList;
+                addresses = Dns.GetHostAddresses(user.Hostname);
             }
             catch (SocketException)
             {
