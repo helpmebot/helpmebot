@@ -16,8 +16,11 @@ dataset:
     - - Idle; if you still need assistance editing Wikipedia, please re-join the channel
   channelservices.command.idlehelpees.local-confirm:
     - - Removed {0}
+  channelservices.command.idlehelpees.no-eligible:
+    - - No helpees in the provided list are eligible for removal at this time.
   channelservices.command.idlehelpees.confirm:
     - - Removed {0} by request of {1}
+  
   channelservices.command.track.not-found:
     - - "{0} not found on tracked channel"
   channelservices.command.track:

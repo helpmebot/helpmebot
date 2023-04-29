@@ -56,6 +56,13 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
             
             var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
+            if (removableHelpees.Count == 0)
+            {
+                return this.responder.Respond(
+                    "channelservices.command.idlehelpees.no-eligible",
+                    this.CommandSource);
+            }
+
             if (dryRun)
             {
                 var helpees = string.Join(", ", removableHelpees);
@@ -79,12 +86,19 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
             var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
+            if (removableHelpees.Count == 0)
+            {
+                return this.responder.Respond(
+                    "channelservices.command.idlehelpees.no-eligible",
+                    this.CommandSource);
+            }
+
             var helpees = string.Join(", ", removableHelpees);
 
             return this.responder.Respond("channelservices.command.idlehelpees.remove", this.CommandSource, helpees);
         }
 
-        [Help("<nickname...>", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
+        [Help("<nickname...>", "Removes the helpees in the provided list who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out, but please use the dryrun subcommand to check prior to using this.")]
         [SubcommandInvocation("remove")]
         [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
         [Undocumented]
@@ -94,6 +108,16 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
             var removableHelpees = this.GetRemovableHelpees(this.Arguments, force);
 
+            if (removableHelpees.Count == 0)
+            {
+                this.Client.SendMessage(
+                    "#wikipedia-en-helpers",
+                    this.responder.GetMessagePart(
+                        "channelservices.command.idlehelpees.no-eligible",
+                        this.CommandSource));
+                return null;
+            }
+            
             this.DoRemoval(removableHelpees);
 
             return null;
