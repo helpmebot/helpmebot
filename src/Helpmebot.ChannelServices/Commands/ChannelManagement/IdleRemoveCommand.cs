@@ -47,7 +47,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
         }
 
         [CommandParameter("force", "Force the removal, bypassing safety protections", "force", typeof(bool), true)]
-        [CommandParameter("dry-run", "List who will be removed from the channel, but don't actually do it", "dryrun", typeof(bool))]
+        [CommandParameter("dry-run|dryrun", "List who will be removed from the channel, but don't actually do it", "dryrun", typeof(bool))]
         [Help("<nickname...>", "Removes the listed helpees who have been inactive for more than 15 minutes by the bot's reckoning. Nicknames not eligible are automatically filtered out.")]
         protected override IEnumerable<CommandResponse> Execute()
         {
