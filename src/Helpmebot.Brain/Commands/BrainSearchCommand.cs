@@ -19,7 +19,7 @@ namespace Helpmebot.Brain.Commands
     [CommandFlag(Flags.Protected)]
     [CommandInvocation("brainsearch")]
     [CommandInvocation("bs")]   
-    [HelpSummary("Searches for a brain entry by content")]
+    [HelpSummary("Searches for a brain entry by content, returning the keywords of any matching entries. If there are few enough results, the full content of those entries will also be returned.")]
     [HelpCategory("Brain")]
 
     public class BrainSearchCommand : CommandBase
@@ -50,7 +50,7 @@ namespace Helpmebot.Brain.Commands
         }
 
         [RequiredArguments(1)]
-        [Help("<search...>")]
+        [Help("<search...>", "The text to search for in all brain entries")]
         protected override IEnumerable<CommandResponse> Execute()
         {
             var search = string.Join(" ", this.Arguments).ToLowerInvariant();  
@@ -59,6 +59,14 @@ namespace Helpmebot.Brain.Commands
             var all = this.keywordService.GetAll();
             var results = all.Where(x => x.Response.ToLowerInvariant().Contains(search) || x.Name.ToLowerInvariant().Contains(search)).ToList();
 
+            if (results.Count == 0)
+            {
+                return this.responder.Respond(
+                    "brain.command.search.no-results",
+                    this.CommandSource,
+                    search);
+            }
+            
             if (results.Count > 5)
             {
                 return this.responder.Respond(
