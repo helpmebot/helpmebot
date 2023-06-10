@@ -9,3 +9,10 @@ dataset:
     - - "Proposed change to {0}:"
   brain.command.edit.completed:
     - - Edited {0}.
+  brain.command.search.too-many-results:
+    - - There are more than 5 results for your query. The full resultset can be found at https://helpmebot.org.uk/brain?q={0}
+  brain.command.search.result:
+    - - "{0}: {1}"
+  brain.command.search.result-list:
+    - - "{1} results were found: {0}"
+      - "The full results will be sent to you via PM"
