@@ -44,6 +44,7 @@ namespace Helpmebot.ChannelServices.Model.ModeMonitoring
         public bool ReducedModeration { get; set; }
         public bool Moderated { get; set; }
         public bool RegisteredOnly { get; set; }
+        public bool RegisteredOnlySpeak { get; set; }
         public List<string> Bans { get; private set; }
         public List<string> Quiets { get; private set; }
         public List<string> Exempts { get; private set; }

@@ -431,7 +431,7 @@
                     needsChanges = true;
                 }
 
-                if (status.Bans.Contains("$~a") || status.Quiets.Contains("$~a") || status.Quiets.Contains("*!*@*"))
+                if (status.Bans.Contains("$~a") || status.Quiets.Contains("$~a") || status.Quiets.Contains("*!*@*") || status.RegisteredOnlySpeak)
                 {
                     needsOps = true;
                 }
@@ -498,6 +498,11 @@
             if (modeChanges.RegisteredOnly.HasValue)
             {
                 status.RegisteredOnly = modeChanges.RegisteredOnly.Value;
+            }
+            
+            if (modeChanges.RegisteredOnlySpeak.HasValue)
+            {
+                status.RegisteredOnlySpeak = modeChanges.RegisteredOnlySpeak.Value;
             }
 
             modeChanges.Unbans.ForEach(x => status.Bans.Remove(x));

@@ -54,6 +54,8 @@ namespace Helpmebot.ChannelServices.Model.ModeMonitoring
         public bool? ReducedModeration { get; set; }
 
         public bool? RegisteredOnly { get; set; }
+        
+        public bool? RegisteredOnlySpeak { get; set; }
 
         public List<string> Unbans { get; private set; }
 
@@ -154,6 +156,9 @@ namespace Helpmebot.ChannelServices.Model.ModeMonitoring
                     case 'r':
                         changes.RegisteredOnly = adding;
                         break;
+                    case 'R':
+                        changes.RegisteredOnlySpeak = adding;
+                        break;
                     case 'f':
                     case 'j':
                     case 'l':
@@ -186,6 +191,7 @@ namespace Helpmebot.ChannelServices.Model.ModeMonitoring
             if (this.Moderated.HasValue) return false;
             if (this.ReducedModeration.HasValue) return false;
             if (this.RegisteredOnly.HasValue) return false;
+            if (this.RegisteredOnlySpeak.HasValue) return false;
 
             return true;
         }
