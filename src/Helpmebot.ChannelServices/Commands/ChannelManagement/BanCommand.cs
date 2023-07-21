@@ -11,6 +11,7 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Messages;
@@ -45,8 +46,11 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
 
         [RequiredArguments(1)]
         [Help("<nickname>")]
+        [CommandParameter("force", "Force the kickban to apply even if the user is cloaked", "force", typeof(bool))]
         protected override IEnumerable<CommandResponse> Execute()
         {
+            var force = this.Parameters.GetParameter("force", false);
+            
             try
             {
                 var channel = "#wikipedia-en-help";
@@ -54,6 +58,14 @@ namespace Helpmebot.ChannelServices.Commands.ChannelManagement
                 
                 var banTarget = this.Client.Channels[channel]
                     .Users.First(x => x.Value.User.Nickname == this.Arguments[0]);
+
+                if (banTarget.Value.User.Hostname.Contains("/") && !banTarget.Value.User.Hostname.StartsWith("user/") && !force)
+                {
+                    this.Client.SendMessage(
+                        this.User.Nickname,
+                        $"{banTarget} has a project cloak. Are you sure? Use --force to force this kickban through.");
+                    return null;
+                }
 
                 this.modeMonitoringService.PerformAsOperator(
                     channel,
