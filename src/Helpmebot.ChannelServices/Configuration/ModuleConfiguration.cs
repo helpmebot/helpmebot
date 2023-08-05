@@ -13,6 +13,8 @@ namespace Helpmebot.ChannelServices.Configuration
         public TrollManagementConfiguration TrollManagement { get; set; }
 
         public IDictionary<string, string> ModeMonitorChannelMap { get; set; }
+        
+        public IDictionary<string, string> AlertOnRanges { get; set; }
 
     }
 }

@@ -68,3 +68,6 @@ dataset:
 
   channelservices.welcomer.welcome:
     - - "Hi {0}! Welcome to the channel!"
+  
+  channelservices.rangelookup.hit:
+    - - "User {0} on range {1} marked with note: {2}"
