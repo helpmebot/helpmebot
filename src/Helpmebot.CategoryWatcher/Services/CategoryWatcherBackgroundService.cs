@@ -98,6 +98,12 @@
 
                     foreach (var channelName in watcherChannels)
                     {
+                        if (!this.channelManagementService.IsEnabled(channelName))
+                        {
+                            // Config for watcher is in-place, but the channel itself is disabled.
+                            continue;
+                        }
+                        
                         var config = this.watcherConfig.GetWatcherConfiguration(watcher.Keyword, channelName);
                         
                         if (config == null || !config.Enabled)
