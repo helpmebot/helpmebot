@@ -74,16 +74,23 @@
             return (added, removed);
         }
 
-        public (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncCategoryItems(string keyword)
+        public (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncCategoryItems(string keyword, bool doSync = true)
         {
             var watcher = this.watcherConfig.GetWatchers().FirstOrDefault(x => x.Keyword == keyword);
             if (watcher == null)
             {
                 throw new ArgumentOutOfRangeException(nameof(keyword));
             }
+
+            if (!doSync)
+            {
+                return (this.watcherItemPersistence.GetItems(keyword).ToList(), new List<CategoryWatcherItem>(),
+                    new List<CategoryWatcherItem>());
+            }
             
             var items = this.FetchCategoryItemsInternal(watcher);
-
+            this.watcherConfig.TouchWatcherLastSyncTime(watcher);
+            
             return SyncItemsToDatabase(items, watcher.Keyword);
         }
         
@@ -136,6 +143,18 @@
             return pagesInCategory;
         }
 
+        internal void TouchCategoryItemsMetric(string keyword, bool increment)
+        {
+            if (increment)
+            {
+                CategoryWatcherCount.WithLabels(keyword).Inc();
+            }
+            else
+            {
+                CategoryWatcherCount.WithLabels(keyword).Dec();
+            }
+        }
+        
         private string GetMessagePart(string watcherKey, string messageKey, string context, object[] arguments = null, Context contextType = null)
         {
             var fullMessageKey = $"catwatcher.item.{watcherKey}.{messageKey}";

@@ -30,6 +30,7 @@ namespace Helpmebot.Persistence.Mappings
             this.Map(x => x.Category, "category");
             this.Map(x => x.Keyword, "keyword");
             this.Map(x => x.BaseWikiId, "base_wiki_id");
+            this.Map(x => x.LastSyncTime, "last_sync_time");
         }
     }
 }

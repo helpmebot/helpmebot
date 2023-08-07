@@ -1,4 +1,6 @@
 ---
 enabled: false
-updateFrequency: 60
+minReportFrequency: 60
+syncFrequency: 60
 crossoverTimeout: 30
+useMq: false

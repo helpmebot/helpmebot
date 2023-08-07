@@ -7,5 +7,6 @@
     {
         void Suspend();
         void Resume();
+        void ResetChannelTimer(CategoryWatcherChannel config);
     }
 }

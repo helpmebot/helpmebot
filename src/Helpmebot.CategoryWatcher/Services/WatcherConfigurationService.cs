@@ -19,6 +19,8 @@ namespace Helpmebot.CategoryWatcher.Services
         private readonly IList<CategoryWatcher> watchedCategories;
         private readonly IList<CategoryWatcherChannel> channels;
 
+        public event EventHandler WatcherConfigurationChanged;
+        
         public WatcherConfigurationService(ISession databaseSession, ILogger logger, IChannelManagementService channelManagementService)
         {
             this.databaseSession = databaseSession;
@@ -109,9 +111,34 @@ namespace Helpmebot.CategoryWatcher.Services
 
             this.watchedCategories.Add(watcher);
 
+            this.WatcherConfigurationChanged?.Invoke(this, EventArgs.Empty);
+
             return watcher;
         }
 
+        public void TouchWatcherLastSyncTime(CategoryWatcher watcher)
+        {
+            var localWatcher = this.watchedCategories.First(x => x.Keyword == watcher.Keyword);
+            var syncTime = DateTime.UtcNow;
+            
+            lock (this.databaseSession)
+            {
+                using (var txn = this.databaseSession.BeginTransaction())
+                {
+                    var dbWatcher = this.databaseSession.CreateCriteria<CategoryWatcher>()
+                        .Add(Restrictions.Eq(nameof(CategoryWatcher.Keyword), watcher.Keyword))
+                        .UniqueResult<CategoryWatcher>();
+
+                    dbWatcher.LastSyncTime = syncTime;
+                    this.databaseSession.Update(dbWatcher);
+                    txn.Commit();
+                }
+            }
+            
+            localWatcher.LastSyncTime = syncTime;
+            watcher.LastSyncTime = syncTime;
+        }
+        
         public void DeleteWatcher(string keyword)
         {
             lock (this.databaseSession)
@@ -129,6 +156,8 @@ namespace Helpmebot.CategoryWatcher.Services
 
             var localWatcher = this.watchedCategories.First(x => x.Keyword == keyword);
             this.watchedCategories.Remove(localWatcher);
+            
+            this.WatcherConfigurationChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void SaveWatcherConfiguration(CategoryWatcherChannel config)

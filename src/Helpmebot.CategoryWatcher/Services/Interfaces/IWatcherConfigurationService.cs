@@ -1,5 +1,6 @@
 namespace Helpmebot.CategoryWatcher.Services.Interfaces
 {
+    using System;
     using System.Collections.Generic;
     using Helpmebot.Model;
 
@@ -14,5 +15,7 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         void DeleteWatcher(string keyword);
         void SaveWatcherConfiguration(CategoryWatcherChannel config);
         void DeleteWatcherConfiguration(string flag);
+        void TouchWatcherLastSyncTime(CategoryWatcher watcher);
+        event EventHandler WatcherConfigurationChanged;
     }
 }

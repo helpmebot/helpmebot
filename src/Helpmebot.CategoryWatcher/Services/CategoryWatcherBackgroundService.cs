@@ -20,11 +20,7 @@
     /// </summary>
     public class CategoryWatcherBackgroundService : TimerBackgroundServiceBase, ICategoryWatcherBackgroundService
     {
-        /// <summary>
-        /// Timeout between runs
-        /// </summary>
-        private readonly int crossoverTimeout;
-
+        private readonly CategoryWatcherConfiguration configuration;
         private readonly IIrcClient ircClient;
         private readonly ICategoryWatcherHelperService helperService;
         private readonly IWatcherConfigurationService watcherConfig;
@@ -35,6 +31,8 @@
         /// catchannel ID => next alert time 
         /// </summary>
         private readonly Dictionary<int, DateTime> alertTimeoutCache = new Dictionary<int, DateTime>();
+        
+        private DateTime syncTimeout = DateTime.MinValue;
 
         /// <remarks>
         /// This semaphore is used to prevent re-entrancy of the TimerOnElapsed method 
@@ -48,9 +46,9 @@
             ICategoryWatcherHelperService helperService,
             IWatcherConfigurationService watcherConfig,
             IChannelManagementService channelManagementService)
-            : base(logger, configuration.UpdateFrequency * 1000, configuration.Enabled)
+            : base(logger, Math.Min(configuration.MinReportFrequency, configuration.SyncFrequency) * 1000, configuration.Enabled)
         {
-            this.crossoverTimeout = configuration.CrossoverTimeout;
+            this.configuration = configuration;
             this.ircClient = ircClient;
             this.helperService = helperService;
             this.watcherConfig = watcherConfig;
@@ -82,17 +80,25 @@
             this.Logger.DebugFormat("CatWatcher timer elapsed");
             try
             {
-                if (!this.timerSemaphore.WaitOne(new TimeSpan(0, 0, 0, this.crossoverTimeout)))
+                if (!this.timerSemaphore.WaitOne(new TimeSpan(0, 0, 0, this.configuration.CrossoverTimeout)))
                 {
                     this.Logger.WarnFormat(
                         "Semaphore timeout ({0}s) reached on timer trigger. Perhaps we're trying to do too much?",
-                        this.crossoverTimeout);
+                        this.configuration.CrossoverTimeout);
                     return;
                 }
 
+                var doSync = false;
+                if (this.syncTimeout <= DateTime.UtcNow.AddSeconds(5) || !this.configuration.UseMq)
+                {
+                    doSync = true;
+                    this.syncTimeout = DateTime.UtcNow.AddSeconds(this.configuration.SyncFrequency);
+                    this.Logger.Debug("Doing full category items sync");
+                }
+                
                 foreach (var watcher in this.watcherConfig.GetWatchers())
                 {
-                    var (allItems, added, removed) = this.helperService.SyncCategoryItems(watcher.Keyword);
+                    var (allItems, added, removed) = this.helperService.SyncCategoryItems(watcher.Keyword, doSync);
 
                     var watcherChannels = this.watcherConfig.GetChannelsForWatcher(watcher.Keyword);
 
@@ -124,7 +130,7 @@
                         responses.AddRange(this.AlertRemovals(removed, watcher.Keyword, config));
                         
                         // check if it's time to report everything
-                        if (this.alertTimeoutCache[config.Id] <= DateTime.UtcNow)
+                        if (this.alertTimeoutCache[config.Id] <= DateTime.UtcNow.AddSeconds(5))
                         {
                             if (!this.ircClient.Channels.ContainsKey(channelName))
                             {
@@ -133,7 +139,7 @@
                             }
                             
                             this.Logger.DebugFormat("Timeout reached for {0}/{1}/{2}", config.Id, channelName, watcher.Keyword);
-                            this.alertTimeoutCache[config.Id] = DateTime.UtcNow.AddSeconds(config.SleepTime);
+                            this.ResetChannelTimer(config);
 
                             responses.AddRange(this.AlertAllItems(allItems, watcher.Keyword, config));
                         }
@@ -156,6 +162,11 @@
                 this.timerSemaphore.Release();
             }
             this.Logger.DebugFormat("CatWatcher timer done");
+        }
+
+        public void ResetChannelTimer(CategoryWatcherChannel config)
+        {
+            this.alertTimeoutCache[config.Id] = DateTime.UtcNow.AddSeconds(config.SleepTime);
         }
 
         private void InitialiseTimer(CategoryWatcherChannel categoryChannel)

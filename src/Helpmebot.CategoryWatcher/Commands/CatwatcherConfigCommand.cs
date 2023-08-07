@@ -215,7 +215,8 @@ namespace Helpmebot.CategoryWatcher.Commands
 
             var config = this.catWatcherConfig.GetWatcherConfiguration(watcher, this.CommandSource, true);
 
-            bool changed = false;
+            var changed = false;
+            var timerChanged = false;
             
             if (enabled.HasValue)
             {
@@ -226,6 +227,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             if (!string.IsNullOrWhiteSpace(interval) && int.TryParse(interval, out var intervalValue))
             {
                 config.SleepTime = intervalValue;
+                timerChanged = true;
                 changed = true;
             }
 
@@ -262,6 +264,12 @@ namespace Helpmebot.CategoryWatcher.Commands
             if (changed)
             {
                 this.catWatcherConfig.SaveWatcherConfiguration(config);
+
+                if (timerChanged)
+                {
+                    this.backgroundService.ResetChannelTimer(config);
+                }
+                
                 return this.responder.Respond("common.done", this.CommandSource);
             }
             

@@ -2,10 +2,11 @@
 {
     using System.Collections.Generic;
     using Helpmebot.Model;
+    using ItemList = System.Collections.Generic.IList<Model.CategoryWatcherItem>;
 
     public interface ICategoryWatcherHelperService
     {
-        (IList<CategoryWatcherItem> allItems, IList<CategoryWatcherItem> addedItems, IList<CategoryWatcherItem> removedItems) SyncCategoryItems(string keyword);
+        (ItemList allItems, ItemList addedItems, ItemList removedItems) SyncCategoryItems(string keyword, bool doSync = true);
 
         string ConstructResultMessage(
             IList<CategoryWatcherItem> items,

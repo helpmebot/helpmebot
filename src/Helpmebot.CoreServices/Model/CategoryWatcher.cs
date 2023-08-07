@@ -16,7 +16,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Helpmebot.Model
 {
-    using System.Collections.Generic;
+    using System;
     using Helpmebot.Persistence;
 
     public class CategoryWatcher : EntityBase
@@ -24,5 +24,7 @@ namespace Helpmebot.Model
         public virtual string Category { get; set; }
         public virtual string Keyword { get; set; }
         public virtual string BaseWikiId { get; set; }
+        
+        public virtual DateTime? LastSyncTime { get; set; }
     }
 }
