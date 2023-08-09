@@ -26,8 +26,8 @@
         <PackageReference Include="IPNetwork2" Version="2.6.556" />
         <PackageReference Include="Mono.Options" Version="6.12.0.148" />
         <PackageReference Include="NHibernate" Version="5.4.1" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.138" />
-        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.77" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.146" />
+        <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.85" />
     </ItemGroup>
 
     <ItemGroup>
