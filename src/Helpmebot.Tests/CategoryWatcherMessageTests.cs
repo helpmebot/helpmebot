@@ -132,10 +132,10 @@ public class CategoryWatcherMessageTests : TestBase
     {
         private IEnumerable<object?[]> GetDataset()
         {
-            var foo = new CategoryWatcherItem { Title = "foo", InsertTime = DateTime.Now };
-            var bar = new CategoryWatcherItem { Title = "bar", InsertTime = DateTime.Now };
-            var baz = new CategoryWatcherItem { Title = "baz", InsertTime = DateTime.Now.Subtract(new TimeSpan(0, 1, 1, 0)) };
-            var qux = new CategoryWatcherItem { Title = "qux", InsertTime = DateTime.Now.Subtract(new TimeSpan(2, 1, 1, 0)) };
+            var foo = new CategoryWatcherItem { Title = "foo", InsertTime = DateTime.UtcNow };
+            var bar = new CategoryWatcherItem { Title = "bar", InsertTime = DateTime.UtcNow };
+            var baz = new CategoryWatcherItem { Title = "baz", InsertTime = DateTime.UtcNow.Subtract(new TimeSpan(0, 1, 1, 0)) };
+            var qux = new CategoryWatcherItem { Title = "qux", InsertTime = DateTime.UtcNow.Subtract(new TimeSpan(2, 1, 1, 0)) };
             
             // items, describe new, describe empty, show links, show time, mintime (secs), result
             
