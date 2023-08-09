@@ -7,66 +7,64 @@ using CoreServices.Services.Interfaces;
 using CoreServices.Services.Messages;
 using CoreServices.Services.Messages.Interfaces;
 using Helpmebot.Model;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 
 public class CategoryWatcherMessageTests : TestBase
 {
-    private Mock<CategoryWatcher> catWatcher;
-    private Mock<IWatcherConfigurationService> watcherConfig;
-    private Mock<IResponder> responder;
-    private Mock<ILinkerService> linker;
-    private Mock<IUrlShorteningService> urlShorteningService;
-    private Mock<IResponseManager> responseManager;
+    private CategoryWatcher catWatcher;
+    private IWatcherConfigurationService watcherConfig;
+    private IResponder responder;
+    private ILinkerService linker;
+    private IUrlShorteningService urlShorteningService;
+    private IResponseManager responseManager;
 
     [SetUp]
     public void Setup()
     {
-        this.catWatcher = new Mock<CategoryWatcher>();
-        this.catWatcher.Setup(x => x.Id).Returns(1);
-        this.catWatcher.Setup(x => x.Category).Returns("potato");
-        this.catWatcher.Setup(x => x.Keyword).Returns("potato");
-        this.catWatcher.Setup(x => x.BaseWikiId).Returns("potato");
+        this.catWatcher = Substitute.For<CategoryWatcher>();
+        this.catWatcher.Id.Returns(1);
+        this.catWatcher.Category.Returns("potato");
+        this.catWatcher.Keyword.Returns("potato");
+        this.catWatcher.BaseWikiId.Returns("potato");
 
-        this.watcherConfig = new Mock<IWatcherConfigurationService>();
-        this.responder = new Mock<IResponder>();
-        this.linker = new Mock<ILinkerService>();
-        this.urlShorteningService = new Mock<IUrlShorteningService>();
-        this.responseManager = new Mock<IResponseManager>();
+        this.watcherConfig = Substitute.For<IWatcherConfigurationService>();
+        this.responder = Substitute.For<IResponder>();
+        this.linker = Substitute.For<ILinkerService>();
+        this.urlShorteningService = Substitute.For<IUrlShorteningService>();
+        this.responseManager = Substitute.For<IResponseManager>();
     }
 
     [Test]
     public void ShouldGetItemMessagePart()
     {
         // arrange
-        this.watcherConfig.Setup(x => x.GetWatchers()).Returns(new List<CategoryWatcher>());
+        this.watcherConfig.GetWatchers().Returns(new List<CategoryWatcher>());
         
-        this.responder.Setup(
-                x => x.GetMessagePart(
+        this.responder.GetMessagePart(
                     "catwatcher.item.potato.part",
-                    It.IsAny<string>(),
-                    It.IsAny<object[]>(),
-                    It.IsAny<Context>()))
+                    Arg.Any<string>(),
+                    Arg.Any<object[]>(),
+                    Arg.Any<Context>())
             .Returns("hallo!");        
-        this.responder.Setup(
-                x => x.GetMessagePart(
+        this.responder.GetMessagePart(
                     "catwatcher.item.default.part",
-                    It.IsAny<string>(),
-                    It.IsAny<object[]>(),
-                    It.IsAny<Context>()))
+                    Arg.Any<string>(),
+                    Arg.Any<object[]>(),
+                    Arg.Any<Context>())
             .Returns("nope!");
         
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            this.Logger.Object,
+            this.Logger,
             null,
             null,
-            this.responder.Object, 
-            this.watcherConfig.Object,
+            this.responder, 
+            this.watcherConfig,
             null,
             null,
-            this.responseManager.Object
+            this.responseManager
         );
 
         // act
@@ -81,10 +79,13 @@ public class CategoryWatcherMessageTests : TestBase
     public void ShouldConstructDefaultMessage(List<CategoryWatcherItem> items, bool newItems, bool empty, bool showLinks, bool showWaitTime, int delay, string expected)
     {
         // arrange
-        this.responder.Setup(x => x.GetMessagePart(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<Context>()))
+        this.responder.GetMessagePart(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<object[]>(), Arg.Any<Context>())
             .Returns(
-                (string key, string ctx, object[] args, Context ct) =>
+                ci =>
                 {
+                    var key = ci.ArgAt<string>(0);
+                    var ctx = ci.ArgAt<string>(1);
+
                     if (ctx != "dest")
                     {
                         throw new ArgumentOutOfRangeException(nameof(ctx));
@@ -100,25 +101,27 @@ public class CategoryWatcherMessageTests : TestBase
                         _ => throw new ArgumentOutOfRangeException(nameof(key), key, null)
                     };
 
-                    return string.Format(s, args ?? Array.Empty<object>());
+                    return string.Format(s, ci.ArgAt<object[]>(2) ?? Array.Empty<object>());
                 });
-        this.linker.Setup(x => x.ConvertWikilinkToUrl(It.IsAny<string>(), It.IsAny<string>()))
-            .Returns((string d, string title) => "https://enwp.org/" + title);
-        this.urlShorteningService.Setup(x => x.Shorten(It.IsAny<string>())).Returns((string x) => x);
         
-        this.watcherConfig.Setup(x => x.GetWatchers()).Returns(new List<CategoryWatcher>());
+        this.linker.ConvertWikilinkToUrl(Arg.Any<string>(), Arg.Any<string>())
+            .Returns(ci => "https://enwp.org/" + ci.ArgAt<string>(1));
+
+        this.urlShorteningService.Shorten(Arg.Any<string>()).Returns(ci => ci.Arg<string>());
+        
+        this.watcherConfig.GetWatchers().Returns(new List<CategoryWatcher>());
 
         var service = new CategoryWatcherHelperService(
-            this.linker.Object,
-            this.urlShorteningService.Object,
-            this.Logger.Object,
+            this.linker,
+            this.urlShorteningService,
+            this.Logger,
             null,
             null,
-            this.responder.Object,
-            this.watcherConfig.Object,
+            this.responder,
+            this.watcherConfig,
             null,
             null,
-            this.responseManager.Object
+            this.responseManager
         );
 
         // act

@@ -23,6 +23,7 @@ ProjectSection(SolutionItems) = preProject
 	..\README.md = ..\README.md
 	Settings.StyleCop = Settings.StyleCop
 	global.json = global.json
+	NuGet.Config = NuGet.Config
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.WebApi", "Helpmebot.WebApi\Helpmebot.WebApi.csproj", "{6B98C0E1-6BDF-4916-A577-A3B9023CFAEA}"

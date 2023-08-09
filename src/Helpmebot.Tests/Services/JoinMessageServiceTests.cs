@@ -27,8 +27,7 @@ namespace Helpmebot.Tests.Services
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Helpmebot.Model;
-    using Moq;
-
+    using NSubstitute;
     using NUnit.Framework;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
     using Stwalkerster.IrcClient.Events;
@@ -47,11 +46,11 @@ namespace Helpmebot.Tests.Services
         
         private JoinMessageService joinMessageService;
         
-        private Mock<IBlockMonitoringService> blockMonitoringService;
-        private Mock<IIrcClient> ircClient;
-        private Mock<IGeolocationService> geolocService;
-        private Mock<IResponder> responderMock;
-        private Mock<IJoinMessageConfigurationService> configService;
+        private IBlockMonitoringService blockMonitoringService;
+        private IIrcClient ircClient;
+        private IGeolocationService geolocService;
+        private IResponder responderMock;
+        private IJoinMessageConfigurationService configService;
         
         public override void LocalSetup()
         {
@@ -65,33 +64,33 @@ namespace Helpmebot.Tests.Services
         [SetUp]
         public void TestSetup()
         {
-            this.ircClient = new Mock<IIrcClient>();
-            this.geolocService = new Mock<IGeolocationService>();
-            this.responderMock = new Mock<IResponder>();
+            this.ircClient = Substitute.For<IIrcClient>();
+            this.geolocService = Substitute.For<IGeolocationService>();
+            this.responderMock = Substitute.For<IResponder>();
 
-            this.blockMonitoringService = new Mock<IBlockMonitoringService>();
+            this.blockMonitoringService = Substitute.For<IBlockMonitoringService>();
 
-            this.configService = new Mock<IJoinMessageConfigurationService>();
+            this.configService = Substitute.For<IJoinMessageConfigurationService>();
             
             this.joinMessageService = new JoinMessageService(
-                this.Logger.Object,
-                this.responderMock.Object,
+                this.Logger,
+                this.responderMock,
                 new ModuleConfiguration{JoinMessageRateLimits = new RateLimitConfiguration{RateLimitMax = 1, RateLimitDuration = 10}},
-                this.geolocService.Object,
-                this.ircClient.Object,
-                this.blockMonitoringService.Object,
-                new Mock<IChannelManagementService>().Object,
-                this.configService.Object,
-                new Mock<ICrossChannelService>().Object
+                this.geolocService,
+                this.ircClient,
+                this.blockMonitoringService,
+                Substitute.For<IChannelManagementService>(),
+                this.configService,
+                Substitute.For<ICrossChannelService>()
                 );
 
-            this.configService.Setup(x => x.GetUsers("ab"))
+            this.configService.GetUsers("ab")
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
-            this.configService.Setup(x => x.GetUsers("ef"))
+            this.configService.GetUsers("ef")
                 .Returns(new List<WelcomeUser> { this.welcomeUser });
-            this.configService.Setup(x => x.GetExceptions("ab"))
+            this.configService.GetExceptions("ab")
                 .Returns(new List<WelcomeUser> { this.ignoreUser });
-            this.configService.Setup(x => x.GetExceptions("ef"))
+            this.configService.GetExceptions("ef")
                 .Returns(new List<WelcomeUser> { this.ignoreUser });
         }
 
@@ -102,22 +101,21 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUnknownUser()
         {
             // arrange
-            var networkUser = new Mock<IUser>();
+            var networkUser = Substitute.For<IUser>();
 
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "cd/test";
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "cd/test";
 
             this.joinMessageService.ClearRateLimitCache();
 
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
             
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircClient.Received(0).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -127,21 +125,20 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeIgnoredUser()
         {
             // arrange
-            var networkUser = new Mock<IUser>();
+            var networkUser = Substitute.For<IUser>();
 
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ign";
-            networkUser.Object.Hostname = "ab/test";
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ign";
+            networkUser.Hostname = "ab/test";
 
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
             
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
             
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircClient.Received(0).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -151,35 +148,33 @@ namespace Helpmebot.Tests.Services
         public void ShouldWelcomeUser()
         {
             // arrange
-            var networkUser = new Mock<IUser>();
+            var networkUser = Substitute.For<IUser>();
             
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "ab/test";
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "ab/test";
 
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
             
-            this.configService.Setup(x => x.GetOverride(It.IsAny<string>(), It.IsAny<string>())).Returns(() => null);
+            this.configService.GetOverride(Arg.Any<string>(), Arg.Any<string>()).Returns((WelcomerOverride)null);
             
-            this.responderMock.Setup(
-                    x => x.Respond(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object[]>(),
+            this.responderMock.Respond(
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<object[]>(),
                         null,
                         CommandResponseDestination.Default,
                         CommandResponseType.Message,
                         false,
-                        null))
+                        null)
                 .Returns(new[] { new CommandResponse { Message = "ab" } });
             
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
+            this.ircClient.Received(1).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -189,27 +184,26 @@ namespace Helpmebot.Tests.Services
         public void ShouldNotWelcomeUserOnUnknownChannel()
         {
             // arrange
-            this.configService.Setup(x => x.GetUsers("cd"))
+            this.configService.GetUsers("cd")
                 .Returns(new List<WelcomeUser>());
-            this.configService.Setup(x => x.GetExceptions("cd"))
+            this.configService.GetExceptions("cd")
                 .Returns(new List<WelcomeUser>());
 
-            var networkUser = new Mock<IUser>();
+            var networkUser = Substitute.For<IUser>();
 
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "ab/test";
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "ab/test";
 
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "cd", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "cd", this.ircClient);
 
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("cd", It.IsAny<string>()), Times.Never());
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Never());
+            this.ircClient.Received(0).SendMessage("cd", Arg.Any<string>());
+            this.ircClient.Received(0).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -218,45 +212,42 @@ namespace Helpmebot.Tests.Services
         [Test]
         public void ShouldRateLimitByHostname()
         {
-            var networkUser = new Mock<IUser>();
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "ab/test";
+            var networkUser = Substitute.For<IUser>();
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "ab/test";
 
-            var networkUser2 = new Mock<IUser>();
-            networkUser2.SetupAllProperties();
-            networkUser2.Object.Nickname = "ab";
-            networkUser2.Object.Username = "ab2";
-            networkUser2.Object.Hostname = "ab/test2";
+            var networkUser2 = Substitute.For<IUser>();
+            networkUser2.Nickname = "ab";
+            networkUser2.Username = "ab2";
+            networkUser2.Hostname = "ab/test2";
 
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
-            var ea2 = new JoinEventArgs(null, networkUser2.Object, "ab", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
+            var ea2 = new JoinEventArgs(null, networkUser2, "ab", this.ircClient);
 
-            this.configService.Setup(x => x.GetOverride(It.IsAny<string>(), It.IsAny<string>())).Returns(() => null);
+            this.configService.GetOverride(Arg.Any<string>(), Arg.Any<string>()).Returns((WelcomerOverride)null);
             
-            this.responderMock.Setup(
-                    x => x.Respond(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object[]>(),
+            this.responderMock.Respond(
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<object[]>(),
                         null,
                         CommandResponseDestination.Default,
                         CommandResponseType.Message,
                         false,
-                        null))
+                        null)
                 .Returns(new[] { new CommandResponse { Message = "ab" } });
             
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea2);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea2);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Exactly(2));
+            this.ircClient.Received(2).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -265,37 +256,35 @@ namespace Helpmebot.Tests.Services
         [Test]
         public void ShouldRateLimit()
         {
-            var networkUser = new Mock<IUser>();
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "ab/test";
+            var networkUser = Substitute.For<IUser>();
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "ab/test";
 
-            this.responderMock.Setup(
-                    x => x.Respond(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object[]>(),
+            this.responderMock.Respond(
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<object[]>(),
                         null,
                         CommandResponseDestination.Default,
                         CommandResponseType.Message,
                         false,
-                        null))
+                        null)
                 .Returns(new[] { new CommandResponse { Message = "ab" } });
 
-            this.configService.Setup(x => x.GetOverride(It.IsAny<string>(), It.IsAny<string>())).Returns(() => null);
+            this.configService.GetOverride(Arg.Any<string>(), Arg.Any<string>()).Returns((WelcomerOverride) null);
             
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
 
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
+            this.ircClient.Received(1).SendMessage("ab", Arg.Any<string>());
         }
 
         /// <summary>
@@ -304,39 +293,37 @@ namespace Helpmebot.Tests.Services
         [Test]
         public void ShouldRateLimitByChannel()
         {
-            var networkUser = new Mock<IUser>();
-            networkUser.SetupAllProperties();
-            networkUser.Object.Nickname = "ab";
-            networkUser.Object.Username = "ab";
-            networkUser.Object.Hostname = "ab/test";
+            var networkUser = Substitute.For<IUser>();
+            networkUser.Nickname = "ab";
+            networkUser.Username = "ab";
+            networkUser.Hostname = "ab/test";
 
             this.joinMessageService.ClearRateLimitCache();
-            var ea = new JoinEventArgs(null, networkUser.Object, "ab", this.ircClient.Object);
-            var ea2 = new JoinEventArgs(null, networkUser.Object, "ef", this.ircClient.Object);
+            var ea = new JoinEventArgs(null, networkUser, "ab", this.ircClient);
+            var ea2 = new JoinEventArgs(null, networkUser, "ef", this.ircClient);
 
-            this.configService.Setup(x => x.GetOverride(It.IsAny<string>(), It.IsAny<string>())).Returns(() => null);
+            this.configService.GetOverride(Arg.Any<string>(), Arg.Any<string>()).Returns((WelcomerOverride) null);
 
-            this.responderMock.Setup(
-                    x => x.Respond(
-                        It.IsAny<string>(),
-                        It.IsAny<string>(),
-                        It.IsAny<object[]>(),
+            this.responderMock.Respond(
+                        Arg.Any<string>(),
+                        Arg.Any<string>(),
+                        Arg.Any<object[]>(),
                         null,
                         CommandResponseDestination.Default,
                         CommandResponseType.Message,
                         false,
-                        null))
+                        null)
                 .Returns(new[] { new CommandResponse { Message = "ab" } });
             
             // act
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea2);
-            this.joinMessageService.OnJoinEvent(this.ircClient.Object, ea2);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea2);
+            this.joinMessageService.OnJoinEvent(this.ircClient, ea2);
 
             // assert
-            this.ircClient.Verify(x => x.SendMessage("ab", It.IsAny<string>()), Times.Once());
-            this.ircClient.Verify(x => x.SendMessage("ef", It.IsAny<string>()), Times.Once());
+            this.ircClient.Received(1).SendMessage("ab", Arg.Any<string>());
+            this.ircClient.Received(1).SendMessage("ef", Arg.Any<string>());
         }
     }
 }

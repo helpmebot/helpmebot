@@ -24,7 +24,7 @@ namespace Helpmebot.Tests
     using System.Collections.Generic;
 
     using Castle.Core.Logging;
-    using Moq;
+    using NSubstitute;
 
     using NUnit.Framework;
 
@@ -36,7 +36,7 @@ namespace Helpmebot.Tests
         /// <summary>
         /// Gets or sets the logger.
         /// </summary>
-        protected Mock<ILogger> Logger { get; set; }
+        protected ILogger Logger { get; set; }
 
         /// <summary>
         /// The common setup.
@@ -44,18 +44,26 @@ namespace Helpmebot.Tests
         [OneTimeSetUp]
         public void CommonSetup()
         {
-            this.Logger = new Mock<ILogger>();
-            this.Logger.Setup(x => x.CreateChildLogger(It.IsAny<string>())).Returns(this.Logger.Object);
+            this.Logger = Substitute.For<ILogger>();
+            this.Logger.CreateChildLogger(Arg.Any<string>()).Returns(this.Logger);
 
-            this.Logger.Setup(x => x.Fatal(It.IsAny<string>())).Callback(() => Assert.Fail("Logger recorded fatal error."));
-            this.Logger.Setup(x => x.Fatal(It.IsAny<string>(), It.IsAny<Exception>())).Callback(() => Assert.Fail("Logger recorded fatal error."));
-            this.Logger.Setup(x => x.FatalFormat(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded fatal error."));
-            this.Logger.Setup(x => x.FatalFormat(It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded fatal error.")); 
+            this.Logger.When(x => x.Fatal(Arg.Any<string>()))
+                .Do(_ => Assert.Fail("Logger recorded fatal error."));
+            this.Logger.When(x => x.Fatal(Arg.Any<string>(), Arg.Any<Exception>()))
+                .Do(_ => Assert.Fail("Logger recorded fatal error."));
+            this.Logger.When(x => x.FatalFormat(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<IEnumerable<object>>()))
+                .Do(_ => Assert.Fail("Logger recorded fatal error."));
+            this.Logger.When(x => x.FatalFormat(Arg.Any<string>(), Arg.Any<IEnumerable<object>>()))
+                .Do(_ => Assert.Fail("Logger recorded fatal error.")); 
             
-            this.Logger.Setup(x => x.Error(It.IsAny<string>())).Callback(() => Assert.Fail("Logger recorded error."));
-            this.Logger.Setup(x => x.Error(It.IsAny<string>(), It.IsAny<Exception>())).Callback(() => Assert.Fail("Logger recorded error."));
-            this.Logger.Setup(x => x.ErrorFormat(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded error."));
-            this.Logger.Setup(x => x.ErrorFormat(It.IsAny<string>(), It.IsAny<IEnumerable<object>>())).Callback(() => Assert.Fail("Logger recorded error."));
+            this.Logger.When(x => x.Error(Arg.Any<string>()))
+                .Do(_ => Assert.Fail("Logger recorded error."));
+            this.Logger.When(x => x.Error(Arg.Any<string>(), Arg.Any<Exception>()))
+                .Do(_ => Assert.Fail("Logger recorded error."));
+            this.Logger.When(x => x.ErrorFormat(Arg.Any<Exception>(), Arg.Any<string>(), Arg.Any<IEnumerable<object>>()))
+                .Do(_ => Assert.Fail("Logger recorded error."));
+            this.Logger.When(x => x.ErrorFormat(Arg.Any<string>(), Arg.Any<IEnumerable<object>>()))
+                .Do(_ => Assert.Fail("Logger recorded error."));
 
             this.LocalSetup();
         }

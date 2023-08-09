@@ -6,7 +6,7 @@ namespace Helpmebot.Tests.Services
     using Helpmebot.Commands.Model;
     using Helpmebot.Commands.Services;
     using Helpmebot.Commands.Configuration;
-    using Moq;
+    using NSubstitute;
     using NUnit.Framework;
     using Stwalkerster.Bot.MediaWikiLib.Model;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
@@ -14,7 +14,7 @@ namespace Helpmebot.Tests.Services
     public class DraftStatusServiceTests : TestBase
     {
         private AfcCategoryConfiguration catConfig;
-        private Mock<IMediaWikiApi> mediaWikiApi;
+        private IMediaWikiApi mediaWikiApi;
 
         public override void LocalSetup()
         {
@@ -40,37 +40,37 @@ namespace Helpmebot.Tests.Services
                 SpeedyDeletionCategories = new Dictionary<string, string> {{"Category:Candidates for speedy deletion", null}}
             };
             
-            this.mediaWikiApi = new Mock<IMediaWikiApi>();
+            this.mediaWikiApi = Substitute.For<IMediaWikiApi>();
         }
 
-        [Test, TestCaseSource(typeof(DraftStatusServiceTests), "StatusTestCases")]
+        [Test, TestCaseSource(typeof(DraftStatusServiceTests), nameof(StatusTestCases))]
         public void ShouldReportStatusCorrectly(string[] categories, Tuple<DraftStatusCode, DateTime?> expectedResult)
         {
             // arrange
-            var service = new DraftStatusService(this.catConfig, this.Logger.Object);
+            var service = new DraftStatusService(this.catConfig, this.Logger);
             var enumerable = AdaptCategoriesForTest(categories);
-            this.mediaWikiApi.Setup(x => x.GetCategoriesOfPage(It.IsAny<string>())).Returns(enumerable);
+            this.mediaWikiApi.GetCategoriesOfPage(Arg.Any<string>()).Returns(enumerable);
 
             // act
-            var result = service.GetDraftStatus(this.mediaWikiApi.Object, "");
+            var result = service.GetDraftStatus(this.mediaWikiApi, "");
 
             // assert
-            Assert.AreEqual(expectedResult.Item1, result.StatusCode);
+            Assert.That(result.StatusCode, Is.EqualTo(expectedResult.Item1));
         }
         
-        [Test, TestCaseSource(typeof(DraftStatusServiceTests), "StatusTestCases")]
+        [Test, TestCaseSource(typeof(DraftStatusServiceTests), nameof(StatusTestCases))]
         public void ShouldReportSubmissionDateCorrectly(string[] categories, Tuple<DraftStatusCode, DateTime?> expectedResult)
         {
             // arrange
-            var service = new DraftStatusService(this.catConfig, this.Logger.Object);
+            var service = new DraftStatusService(this.catConfig, this.Logger);
             var enumerable = AdaptCategoriesForTest(categories);
-            this.mediaWikiApi.Setup(x => x.GetCategoriesOfPage(It.IsAny<string>())).Returns(enumerable);
+            this.mediaWikiApi.GetCategoriesOfPage(Arg.Any<string>()).Returns(enumerable);
 
             // act
-            var result = service.GetDraftStatus(this.mediaWikiApi.Object, "");
+            var result = service.GetDraftStatus(this.mediaWikiApi, "");
 
             // assert
-            Assert.AreEqual(expectedResult.Item2, result.SubmissionDate);
+            Assert.That(result.SubmissionDate, Is.EqualTo(expectedResult.Item2));
         }
 
         private static Dictionary<string, PageCategoryProperties> AdaptCategoriesForTest(IEnumerable<string> categories)

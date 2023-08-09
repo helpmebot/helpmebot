@@ -5,36 +5,36 @@ using CategoryWatcher.Services.Interfaces;
 using CoreServices.Services.Interfaces;
 using CoreServices.Services.Messages.Interfaces;
 using Helpmebot.Model;
-using Moq;
+using NSubstitute;
 using NUnit.Framework;
 using Stwalkerster.Bot.CommandLib.Services.Interfaces;
 using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
 
 public class CategoryWatcherTests : TestBase
 {
-    private Mock<CategoryWatcher> catWatcher;
-    private Mock<IItemPersistenceService> persistenceService;
-    private Mock<ICommandParser> commandParser;
-    private Mock<IWatcherConfigurationService> watcherConfig;
-    private Mock<IMediaWikiApi> api;
-    private Mock<IMediaWikiApiHelper> apiHelper;
-    private Mock<IResponseManager> responseManager;
+    private CategoryWatcher catWatcher;
+    private IItemPersistenceService persistenceService;
+    private ICommandParser commandParser;
+    private IWatcherConfigurationService watcherConfig;
+    private IMediaWikiApi api;
+    private IMediaWikiApiHelper apiHelper;
+    private IResponseManager responseManager;
 
     [SetUp]
     public void Setup()
     {
-        this.catWatcher = new Mock<CategoryWatcher>();
-        this.catWatcher.Setup(x => x.Id).Returns(1);
-        this.catWatcher.Setup(x => x.Category).Returns("potato");
-        this.catWatcher.Setup(x => x.Keyword).Returns("potato");
-        this.catWatcher.Setup(x => x.BaseWikiId).Returns("potato");
+        this.catWatcher = Substitute.For<CategoryWatcher>();
+        this.catWatcher.Id.Returns(1);
+        this.catWatcher.Category.Returns("potato");
+        this.catWatcher.Keyword.Returns("potato");
+        this.catWatcher.BaseWikiId.Returns("potato");
 
-        this.commandParser = new Mock<ICommandParser>();
-        this.persistenceService = new Mock<IItemPersistenceService>();
-        this.watcherConfig = new Mock<IWatcherConfigurationService>();
-        this.api = new Mock<IMediaWikiApi>();
-        this.apiHelper = new Mock<IMediaWikiApiHelper>();
-        this.responseManager = new Mock<IResponseManager>();
+        this.commandParser = Substitute.For<ICommandParser>();
+        this.persistenceService = Substitute.For<IItemPersistenceService>();
+        this.watcherConfig = Substitute.For<IWatcherConfigurationService>();
+        this.api = Substitute.For<IMediaWikiApi>();
+        this.apiHelper = Substitute.For<IMediaWikiApiHelper>();
+        this.responseManager = Substitute.For<IResponseManager>();
     }
 
     [Test]
@@ -140,79 +140,74 @@ public class CategoryWatcherTests : TestBase
     public void ShouldUpdateItemPersistence()
     {
         //arrange
-        this.persistenceService.Setup(x => x.GetItems(It.IsAny<string>()))
+        this.persistenceService.GetItems(Arg.Any<string>())
             .Returns(
                 new List<CategoryWatcherItem>
                 {
                     new() { Title = "foo" },
                     new() { Title = "bar" },
                     new() { Title = "quux" }
-                })
-            .Verifiable();
-        this.persistenceService.Setup(x => x.AddNewItems(It.IsAny<string>(), It.IsAny<List<string>>()))
-            .Returns(new List<CategoryWatcherItem> { new() { Title = "baz" } });
+                });
+        
+        this.persistenceService.AddNewItems(Arg.Any<string>(), Arg.Any<List<string>>()).Returns(new List<CategoryWatcherItem> { new() { Title = "baz" } });
 
-        this.watcherConfig.Setup(x => x.GetWatchers()).Returns(new List<CategoryWatcher>());
+        this.watcherConfig.GetWatchers().Returns(new List<CategoryWatcher>());
 
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            this.Logger.Object,
+            this.Logger,
             null,
             null,
             null,
-            this.watcherConfig.Object,
-            this.persistenceService.Object,
+            this.watcherConfig,
+            this.persistenceService,
             null,
-            this.responseManager.Object
+            this.responseManager
         );
 
         //act
         service.SyncItemsToDatabase(new List<string> { "foo", "bar", "baz" }, "foo");
 
         //assert
-        this.persistenceService.Verify(
-            x => x.AddNewItems("foo", It.Is<List<string>>(list => list.Count == 1 && list[0] == "baz")),
-            Times.Once());
-        this.persistenceService.Verify(
-            x => x.RemoveDeletedItems("foo", It.Is<List<string>>(list => list.Count == 1 && list[0] == "quux")),
-            Times.Once);
+        this.persistenceService.Received(1)
+            .AddNewItems("foo", Arg.Is<List<string>>(list => list.Count == 1 && list[0] == "baz"));
+        this.persistenceService.Received(1)
+            .RemoveDeletedItems("foo", Arg.Is<List<string>>(list => list.Count == 1 && list[0] == "quux"));
     }
 
     [Test]
     public void ShouldFetchItemsByWatcherName()
     {
         // arrange
-        this.persistenceService.Setup(x => x.GetIgnoredPages()).Returns(new List<string>());
+        this.persistenceService.GetIgnoredPages().Returns(new List<string>());
         
-        this.watcherConfig.Setup(x => x.GetWatchers())
-            .Returns(new List<CategoryWatcher> { this.catWatcher.Object });
+        this.watcherConfig.GetWatchers().Returns(new List<CategoryWatcher> { this.catWatcher });
 
-        this.api.Setup(x => x.GetPagesInCategory(It.IsAny<string>()))
-            .Returns(new List<string> { "foo", "bar" });
+        this.api.GetPagesInCategory(Arg.Any<string>()).Returns(new List<string> { "foo", "bar" });
 
-        this.apiHelper.Setup(x => x.GetApi(It.IsAny<string>(), It.IsAny<bool>())).Returns(this.api.Object);
+        this.apiHelper.GetApi(Arg.Any<string>(), Arg.Any<bool>()).Returns(this.api);
 
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            this.Logger.Object,
-            this.commandParser.Object,
-            this.apiHelper.Object,
+            this.Logger,
+            this.commandParser,
+            this.apiHelper,
             null,
-            this.watcherConfig.Object,
-            this.persistenceService.Object,
+            this.watcherConfig,
+            this.persistenceService,
             null,
-            this.responseManager.Object
+            this.responseManager
         );
 
         // act
         var items = service.FetchCategoryItems("potato");
 
         // assert
-        this.api.Verify(x => x.GetPagesInCategory("potato"), Times.Once);
-        this.apiHelper.Verify(x => x.GetApi("potato", true), Times.Once);
-        this.apiHelper.Verify(x => x.Release(this.api.Object), Times.Once);
+        this.api.Received(1).GetPagesInCategory("potato");
+        this.apiHelper.Received(1).GetApi("potato", true);
+        this.apiHelper.Received(1).Release(this.api);
 
         Assert.That(items, Has.Count.EqualTo(2));
     }    
@@ -220,36 +215,35 @@ public class CategoryWatcherTests : TestBase
     public void ShouldFetchNonIgnoredItems()
     {
         // arrange
-        this.persistenceService.Setup(x => x.GetIgnoredPages()).Returns(new List<string>{"foo"});
+        this.persistenceService.GetIgnoredPages().Returns(new List<string>{"foo"});
         
-        this.watcherConfig.Setup(x => x.GetWatchers())
-            .Returns(new List<CategoryWatcher> { this.catWatcher.Object });
+        this.watcherConfig.GetWatchers().Returns(new List<CategoryWatcher> { this.catWatcher });
 
-        this.api.Setup(x => x.GetPagesInCategory(It.IsAny<string>()))
-            .Returns(new List<string> { "foo", "bar" });
+        this.api.GetPagesInCategory(Arg.Any<string>()).Returns(new List<string> { "foo", "bar" });
 
-        this.apiHelper.Setup(x => x.GetApi(It.IsAny<string>(), It.IsAny<bool>())).Returns(this.api.Object);
+        this.apiHelper.GetApi(Arg.Any<string>(), Arg.Any<bool>()).Returns(this.api);
 
         var service = new CategoryWatcherHelperService(
             null,
             null,
-            this.Logger.Object,
-            this.commandParser.Object,
-            this.apiHelper.Object,
+            this.Logger,
+            this.commandParser,
+            this.apiHelper,
             null,
-            this.watcherConfig.Object,
-            this.persistenceService.Object,
+            this.watcherConfig,
+            this.persistenceService,
             null,
-            this.responseManager.Object
+            this.responseManager
         );
 
         // act
         var items = service.FetchCategoryItems("potato");
 
         // assert
-        this.api.Verify(x => x.GetPagesInCategory("potato"), Times.Once);
-        this.apiHelper.Verify(x => x.GetApi("potato", true), Times.Once);
-        this.apiHelper.Verify(x => x.Release(this.api.Object), Times.Once);
+        
+        this.api.Received(1).GetPagesInCategory("potato");
+        this.apiHelper.Received(1).GetApi("potato", true);
+        this.apiHelper.Received(1).Release(this.api);
 
         Assert.That(items, Has.Count.EqualTo(1));
         Assert.That(items[0], Is.EqualTo("bar"));
