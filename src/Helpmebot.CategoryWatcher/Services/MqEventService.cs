@@ -14,6 +14,7 @@ namespace Helpmebot.CategoryWatcher.Services
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.Model;
     using Newtonsoft.Json;
+    using Prometheus;
     using RabbitMQ.Client;
     using RabbitMQ.Client.Events;
     using Stwalkerster.IrcClient.Interfaces;
@@ -37,6 +38,21 @@ namespace Helpmebot.CategoryWatcher.Services
         private readonly Regex commentRegex;
         private List<string> categoryFilter;
 
+        private static readonly Counter EventsReceived = Metrics.CreateCounter(
+            "helpmebot_catwatcher_es_events_received_total",
+            "Total number of catwatcher events received via MQ",
+            new CounterConfiguration());        
+        
+        private static readonly Counter EventsAccepted = Metrics.CreateCounter(
+            "helpmebot_catwatcher_es_events_accepted_total",
+            "Total number of catwatcher events received and accepted via MQ",
+            new CounterConfiguration());
+
+        private static readonly Gauge EventsWaiting = Metrics.CreateGauge(
+            "helpmebot_catwatcher_es_events_waiting",
+            "Number of events waiting to be processed.",
+            new GaugeConfiguration());
+        
         public bool Active { get; private set; }
 
         public MqEventService(
@@ -106,9 +122,13 @@ namespace Helpmebot.CategoryWatcher.Services
 
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
+            EventsWaiting.Set(this.channel.MessageCount(this.queue));
+            
             var content = Encoding.UTF8.GetString(e.Body.ToArray());
             var recentChange = JsonConvert.DeserializeObject<RecentChange>(content);
 
+            EventsReceived.Inc();
+            
             if (!this.categoryFilter.Contains(recentChange.Title))
             {
                 // not an event we care about
@@ -137,6 +157,8 @@ namespace Helpmebot.CategoryWatcher.Services
                 added);
             
             this.channel.BasicAck(e.DeliveryTag, false);
+            EventsAccepted.Inc();
+            
             this.SyncEvent(categoryWatcher.Keyword, pageTitle, added);
         }
 
