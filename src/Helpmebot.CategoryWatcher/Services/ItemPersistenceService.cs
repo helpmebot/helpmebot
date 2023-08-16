@@ -149,5 +149,15 @@ namespace Helpmebot.CategoryWatcher.Services
                 }
             }
         }
+
+        public IList<CategoryWatcherItem> PageIsTracked(string page)
+        {
+            lock (this.databaseSession)
+            {
+                return this.databaseSession.CreateCriteria<CategoryWatcherItem>()
+                    .Add(Restrictions.Eq(nameof(CategoryWatcherItem.Title), page))
+                    .List<CategoryWatcherItem>();
+            }
+        }
     }
 }

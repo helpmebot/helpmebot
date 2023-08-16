@@ -47,11 +47,16 @@ namespace Helpmebot.CategoryWatcher.Services
             "helpmebot_catwatcher_es_events_accepted_total",
             "Total number of catwatcher events received and accepted via MQ",
             new CounterConfiguration());
-
+        
         private static readonly Gauge EventsWaiting = Metrics.CreateGauge(
             "helpmebot_catwatcher_es_events_waiting",
             "Number of events waiting to be processed.",
             new GaugeConfiguration());
+
+        private static readonly Counter LogEventsProcessed = Metrics.CreateCounter(
+            "helpmebot_catwatcher_es_log_events_total",
+            "Number of log events processed as far as doing a database lookup",
+            new CounterConfiguration());
         
         public bool Active { get; private set; }
 
@@ -104,11 +109,11 @@ namespace Helpmebot.CategoryWatcher.Services
             
             var exchangeConfig = new Dictionary<string, object> { { "internal", true } };
             var queueConfig = new Dictionary<string, object> { { "x-message-ttl", 900000 }, { "x-max-length", 1000 } };
-            
-            this.channel.ExchangeDeclare(this.exchange, "headers", true, false, exchangeConfig);
+
+            this.channel.ExchangeDeclare(this.exchange, "fanout", true, false, exchangeConfig);
             this.channel.QueueDeclare(this.queue, true, false, false, queueConfig);
 
-            var queueBindingConfig = new Dictionary<string, object> { { "x-match", "all" }, { "type", "categorize" } };
+            var queueBindingConfig = new Dictionary<string, object>() ;
             this.channel.QueueBind(this.queue, this.exchange, string.Empty, queueBindingConfig);
             
             this.consumer = new EventingBasicConsumer(this.channel);
@@ -126,9 +131,70 @@ namespace Helpmebot.CategoryWatcher.Services
             
             var content = Encoding.UTF8.GetString(e.Body.ToArray());
             var recentChange = JsonConvert.DeserializeObject<RecentChange>(content);
-
+            
             EventsReceived.Inc();
             
+            if (recentChange.Type != "categorize" && recentChange.Type != "log")
+            {
+                // not an event we care about
+                this.channel.BasicAck(e.DeliveryTag, false);
+                return;
+            }
+            
+            switch (recentChange.Type)
+            {
+                case "categorize":
+                    this.HandleCategorizeEvent(e, recentChange);
+                    break;
+                case "log":
+                    this.HandleLogEvent(e, recentChange);
+                    break;
+                default:
+                    // Not an event we care about
+                    this.channel.BasicAck(e.DeliveryTag, false);
+                    break;
+            }
+        }
+
+        private void HandleLogEvent(BasicDeliverEventArgs e, RecentChange recentChange)
+        {
+            if (recentChange.LogType != "delete")
+            {
+                // not an event we care about
+                this.channel.BasicAck(e.DeliveryTag, false);
+                return;
+            }
+
+            var allowableDeleteActions = new[] { "delete", "delete_redir" };
+            
+            if (!allowableDeleteActions.Contains(recentChange.LogAction))
+            {
+                // not an event we care about
+                this.channel.BasicAck(e.DeliveryTag, false);
+                return;
+            }
+
+            LogEventsProcessed.Inc();
+            
+            var watchers = this.itemPersistenceService.PageIsTracked(recentChange.Title)
+                .Select(x => x.Watcher)
+                .ToList();
+
+            this.logger.DebugFormat(
+                "Found EventStreams log delete event for page {0}; affected {1} watchers",
+                recentChange.Title,
+                watchers.Count);
+            
+            foreach (var w in watchers)
+            {
+                this.SyncEvent(w, recentChange.Title, false);
+            }
+            
+            this.channel.BasicAck(e.DeliveryTag, false);
+        }
+
+        private void HandleCategorizeEvent(BasicDeliverEventArgs e, RecentChange recentChange)
+        {
             if (!this.categoryFilter.Contains(recentChange.Title))
             {
                 // not an event we care about
@@ -145,20 +211,20 @@ namespace Helpmebot.CategoryWatcher.Services
                 this.channel.BasicAck(e.DeliveryTag, false);
                 return;
             }
-            
+
             var match = this.commentRegex.Match(recentChange.Comment);
             var pageTitle = match.Groups[1].Value;
             var added = match.Groups[2].Value == "added";
 
             this.logger.DebugFormat(
-                "Found EventStreams event for category {0}, page {1}; added={2}",
+                "Found EventStreams categorize event for category {0}, page {1}; added={2}",
                 recentChange.Title,
                 pageTitle,
                 added);
-            
+
             this.channel.BasicAck(e.DeliveryTag, false);
             EventsAccepted.Inc();
-            
+
             this.SyncEvent(categoryWatcher.Keyword, pageTitle, added);
         }
 

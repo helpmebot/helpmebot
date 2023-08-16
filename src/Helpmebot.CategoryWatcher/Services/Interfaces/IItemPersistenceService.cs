@@ -12,5 +12,6 @@ namespace Helpmebot.CategoryWatcher.Services.Interfaces
         IList<string> GetIgnoredPages();
         void AddIgnoredPage(string page);
         void RemoveIgnoredPage(string page);
+        IList<CategoryWatcherItem> PageIsTracked(string page);
     }
 }
