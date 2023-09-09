@@ -48,6 +48,8 @@ namespace Helpmebot.ChannelServices.Services
         private readonly object lockToken = new object();
 
         private bool mismatchReported = false;
+        private readonly IEnumerable<IrcUserMask> ignoredHostmaskList;
+
         public HelpeeManagementService(IIrcClient client, ILogger logger, ModuleConfiguration configuration)
         {
             this.client = client;
@@ -56,6 +58,9 @@ namespace Helpmebot.ChannelServices.Services
             this.TargetChannel = configuration.HelpeeManagement.TargetChannel;
             this.monitoringChannel = configuration.HelpeeManagement.MonitorChannel;
             this.ignoreList = configuration.HelpeeManagement.IgnoredNicknames;
+            this.ignoredHostmaskList = configuration.HelpeeManagement.IgnoredHostmasks?
+                .Select(x => new IrcUserMask(x, client))
+                ?? new List<IrcUserMask>();
         }
 
         public IDictionary<IrcUser, DateTime> Helpees
@@ -113,14 +118,20 @@ namespace Helpmebot.ChannelServices.Services
             this.logger.InfoFormat("Seen join of {0} to {1}", e.User, e.Channel);
             lock (this.lockToken)
             {
-                if (this.ignoreList.Contains(e.User.Nickname) || e.User.Nickname == this.client.Nickname)
+                var matchesIgnoreList = this.ignoreList.Contains(e.User.Nickname); 
+                matchesIgnoreList |= e.User.Nickname == this.client.Nickname;
+                matchesIgnoreList |= this.ignoredHostmaskList.Any(x => x.Matches(e.User).GetValueOrDefault(false));
+                
+                if (matchesIgnoreList)
                 {
                     this.logger.DebugFormat("{0} is ignorable.", e.User);
-                    this.ignoredInChannel.Add((IrcUser) e.User);
+                    this.ignoredInChannel.Add((IrcUser)e.User);
                 }
                 else
                 {
-                    this.helpeeIdleCache.Add((IrcUser) e.User, DateTime.UtcNow);
+                    // don't care about helpers; modes are set separately to join.
+                    this.logger.DebugFormat("{0} is helpee.", e.User);
+                    this.helpeeIdleCache.Add((IrcUser)e.User, DateTime.UtcNow);
                 }
                 
                 this.SyncCounts();
@@ -175,7 +186,11 @@ namespace Helpmebot.ChannelServices.Services
             {
                 var affectedUser = (IrcUser) e.AffectedUser;
 
-                if (this.ignoreList.Contains(affectedUser.Nickname) || affectedUser.Nickname == this.client.Nickname)
+                var matchesIgnoreList = this.ignoreList.Contains(affectedUser.Nickname); 
+                matchesIgnoreList |= affectedUser.Nickname == this.client.Nickname;
+                matchesIgnoreList |= this.ignoredHostmaskList.Any(x => x.Matches(affectedUser).GetValueOrDefault(false));
+                
+                if (matchesIgnoreList)
                 {
                     this.logger.Debug("Channel mode ignored");
                     return;
@@ -323,8 +338,13 @@ namespace Helpmebot.ChannelServices.Services
             {
                 foreach (var entry in e.Client.Channels[this.TargetChannel].Users)
                 {
-                    if (this.ignoreList.Contains(entry.Value.User.Nickname) || entry.Value.User.Nickname == this.client.Nickname)
+                    var matchesIgnoreList = this.ignoreList.Contains(entry.Value.User.Nickname); 
+                    matchesIgnoreList |= entry.Value.User.Nickname == this.client.Nickname;
+                    matchesIgnoreList |= this.ignoredHostmaskList.Any(x => x.Matches(entry.Value.User).GetValueOrDefault(false));
+                    
+                    if (matchesIgnoreList)
                     {
+                        this.logger.DebugFormat($"Ignoring {entry.Value}");
                         this.ignoredInChannel.Add(entry.Value.User);
                         continue;
                     }
@@ -335,6 +355,7 @@ namespace Helpmebot.ChannelServices.Services
                     }
                     else
                     {
+                        this.logger.DebugFormat($"Helpee {entry.Value}");
                         this.helpeeIdleCache.Add(entry.Value.User, DateTime.MinValue);
                     }
                 }

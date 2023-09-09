@@ -8,5 +8,6 @@ namespace Helpmebot.ChannelServices.Configuration
         public string TargetChannel { get; set; }
         public string MonitorChannel { get; set; }
         public List<string> IgnoredNicknames { get; set; }
+        public List<string> IgnoredHostmasks { get; set; }
     }
 }
