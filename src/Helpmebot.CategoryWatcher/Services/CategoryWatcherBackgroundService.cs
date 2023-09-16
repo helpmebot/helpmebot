@@ -148,7 +148,13 @@
                             responses.AddRange(this.AlertAdditions(added, watcher.Keyword, config));
                         }
 
-                        responses.ForEach(x => this.ircClient.SendMessage(channelName, x));
+                        var destination = channelName;
+                        if (!string.IsNullOrWhiteSpace(config.StatusMsg) && config.StatusMsg.Length == 1)
+                        {
+                            destination = config.StatusMsg + destination;
+                        }
+
+                        responses.ForEach(x => this.ircClient.SendMessage(destination, x));
                     }
                 }
             }

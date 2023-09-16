@@ -34,7 +34,7 @@
       <PackageReference Include="MySql.Data" Version="8.0.31" />
       <PackageReference Include="NetMQ" Version="4.0.1.11" />
       <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
-      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.146" />
+      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.147" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.85" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.1" />
       <PackageReference Include="System.Text.Json" Version="5.0.2" />

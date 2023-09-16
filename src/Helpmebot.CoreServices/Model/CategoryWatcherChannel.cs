@@ -13,5 +13,6 @@
         public virtual bool AlertForRemovals { get; set; }
         public virtual int MinWaitTime { get; set; }
         public virtual bool Enabled { get; set; }
+        public virtual string StatusMsg { get; set; }
     }
 }

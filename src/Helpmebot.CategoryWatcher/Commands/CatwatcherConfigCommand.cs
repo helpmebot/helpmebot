@@ -189,6 +189,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         [CommandParameter("A|hide-additions", "Don't report additions", "showAdditions", typeof(bool), booleanInverse: true)]
         [CommandParameter("r|show-removals", "Report removals from the category as soon as they are detected", "showRemovals", typeof(bool))]
         [CommandParameter("R|hide-removals", "Don't report removals", "showRemovals", typeof(bool), booleanInverse: true)]
+        [CommandParameter("s|statusmsg=", "Configure message target within channel. Use `@` to only send to channel operators, or `+` to only send to voiced users. Use `all` to send to everyone.", "statusmsg", typeof(string))]
         protected IEnumerable<CommandResponse> ConfigureMode()
         {
             if (this.CommandSource == this.Client.Nickname)
@@ -212,6 +213,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             var showLink = this.Parameters.GetParameter("showLink", (bool?)null);
             var showAdditions = this.Parameters.GetParameter("showAdditions", (bool?)null);
             var showRemovals = this.Parameters.GetParameter("showRemovals", (bool?)null);
+            var statusMsg = this.Parameters.GetParameter("statusmsg", (string)null);
 
             var config = this.catWatcherConfig.GetWatcherConfiguration(watcher, this.CommandSource, true);
 
@@ -261,6 +263,30 @@ namespace Helpmebot.CategoryWatcher.Commands
                 changed = true;
             }
 
+            if (!string.IsNullOrWhiteSpace(statusMsg))
+            {
+                if (statusMsg.ToLower() == "all")
+                {
+                    config.StatusMsg = null;
+                    changed = true;
+                }
+                else
+                {
+                    if (this.Client.StatusMsgDestinationFlags.Contains(statusMsg))
+                    {
+                        config.StatusMsg = statusMsg;
+                        changed = true;
+                    }
+                    else
+                    {
+                        return this.responder.Respond(
+                            "catwatcher.command.catwatcher.configure.unknown-statusmsg",
+                            this.CommandSource,
+                            new object[] { statusMsg, string.Join("", this.Client.StatusMsgDestinationFlags) });
+                    }
+                }
+            }
+
             if (changed)
             {
                 this.catWatcherConfig.SaveWatcherConfiguration(config);
@@ -292,7 +318,9 @@ namespace Helpmebot.CategoryWatcher.Commands
 
             var enabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.enabled", this.CommandSource);
             var disabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.disabled", this.CommandSource);
+            var nullStatusmsg = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.target-all", this.CommandSource);
 
+            
             var responses = new List<CommandResponse>(watchers.Keys.Count);
             
             foreach (var key in watchers.Keys)
@@ -311,7 +339,8 @@ namespace Helpmebot.CategoryWatcher.Commands
                             watcherConfig[key].AlertForRemovals ? enabled : disabled,
                             watcherConfig[key].ShowLink ? enabled : disabled,
                             watcherConfig[key].ShowWaitTime ? enabled : disabled,
-                            watcherConfig[key].MinWaitTime
+                            watcherConfig[key].MinWaitTime,
+                            string.IsNullOrWhiteSpace(watcherConfig[key].StatusMsg) ? nullStatusmsg : watcherConfig[key].StatusMsg
                         })
                 );
             }

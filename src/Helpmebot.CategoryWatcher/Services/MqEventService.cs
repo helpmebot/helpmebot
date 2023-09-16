@@ -299,7 +299,13 @@ namespace Helpmebot.CategoryWatcher.Services
 
                 if (message != null)
                 {
-                    this.client.SendMessage(config.Channel, message);
+                    var destination = channelName;
+                    if (!string.IsNullOrWhiteSpace(config.StatusMsg) && config.StatusMsg.Length == 1)
+                    {
+                        destination = config.StatusMsg + destination;
+                    }
+                    
+                    this.client.SendMessage(destination, message);
                 }
             }
         }
