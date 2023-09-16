@@ -37,7 +37,17 @@ dataset:
   catwatcher.command.catwatcher.status.target-all:
     - - "everyone"
   
-  
+  catwatcher.command.catwatcherignored.list.start:
+    - - "The following pages are ignored by the category watchers:"
+  catwatcher.command.catwatcherignored.list.item:
+    - - "- [[{0}]]"
+  catwatcher.command.catwatcherignored.added:
+    - - "Added [[{0}]] to the category watcher ignore list"
+  catwatcher.command.catwatcherignored.removed:
+    - - "Removed [[{0}]] from the category watcher ignore list"
+  catwatcher.command.catwatcherignored.notfound:
+    - - "[[{0}]] does not appear to be on the category watcher ignore list"
+
   catwatcher.item.default.singular:
     - - page
   catwatcher.item.default.plural:

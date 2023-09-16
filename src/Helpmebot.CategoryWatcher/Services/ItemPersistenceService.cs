@@ -129,7 +129,7 @@ namespace Helpmebot.CategoryWatcher.Services
             }
         }
 
-        public void RemoveIgnoredPage(string page)
+        public bool RemoveIgnoredPage(string page)
         {
             lock (this.databaseSession)
             {
@@ -141,11 +141,12 @@ namespace Helpmebot.CategoryWatcher.Services
 
                     if (obj == null)
                     {
-                        return;
+                        return false;
                     }
 
                     this.databaseSession.Delete(obj);
                     txn.Commit();
+                    return true;
                 }
             }
         }
