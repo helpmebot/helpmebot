@@ -16,7 +16,7 @@ namespace Helpmebot.CategoryWatcher.Commands
     using Stwalkerster.IrcClient.Model.Interfaces;
 
     [CommandInvocation("catwatcherignored")]
-    [CommandInvocation(Flags.Protected)]
+    [CommandFlag(Flags.Protected)]
     [HelpCategory("CatWatcher")]
     [HelpSummary("Manages pages ignored by the category watcher")]
     public class CatwatcherIgnoredConfigCommand : CommandBase
