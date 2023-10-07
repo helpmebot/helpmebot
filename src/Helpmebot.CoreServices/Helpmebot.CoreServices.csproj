@@ -24,7 +24,7 @@
         <PackageReference Include="MySql.Data" Version="8.0.31" />
         <PackageReference Include="NHibernate" Version="5.4.1" />
         <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="17.0.147" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="18.0.149" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.85" />
         <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
     </ItemGroup>

@@ -23,5 +23,6 @@ namespace Helpmebot.CoreServices.Services
         }
 
         public bool AllowQuotedStrings { get; } = false;
+        public bool IncludeBuiltins => true;
     }
 }

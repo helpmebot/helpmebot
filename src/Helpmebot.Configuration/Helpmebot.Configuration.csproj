@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="18.0.149" />
         <PackageReference Include="YamlDotNet" Version="13.0.2" />
     </ItemGroup>
 
