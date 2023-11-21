@@ -262,6 +262,7 @@ namespace Helpmebot.ChannelServices.Services
                     this.targetChannel,
                     ircClient =>
                     {
+                        ircClient.PrioritySend(new Message("KICK", new[] {this.targetChannel, e.User.Nickname}));
                         ircClient.PrioritySend(
                             new Message(
                                 "MODE",
@@ -283,7 +284,7 @@ namespace Helpmebot.ChannelServices.Services
 
                 banSet = true;
                 
-                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was banned.");
+                this.SendIrcPrivateAlert($"Tracked user {e.User} in {e.Target} SENT INSTAQUIET WORD, and was kickbanned.");
 
                 this.trackedUsers[e.User].Score += 1000;
                 this.logger.DebugFormat($"Tracked user {e.User} now has score {this.trackedUsers[e.User].Score}");
