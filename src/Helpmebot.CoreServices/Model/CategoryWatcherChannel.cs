@@ -14,5 +14,6 @@
         public virtual int MinWaitTime { get; set; }
         public virtual bool Enabled { get; set; }
         public virtual string StatusMsg { get; set; }
+        public virtual string Anchor { get; set; }
     }
 }

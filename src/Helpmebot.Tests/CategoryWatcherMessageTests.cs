@@ -125,7 +125,7 @@ public class CategoryWatcherMessageTests : TestBase
         );
 
         // act
-        var message = service.ConstructResultMessage(items, "test", "dest", newItems, empty, showLinks, showWaitTime, delay);
+        var message = service.ConstructResultMessage(items, "test", "dest", newItems, empty, showLinks, showWaitTime, delay, null);
 
         // assert
         Assert.That(message, Is.EqualTo(expected));

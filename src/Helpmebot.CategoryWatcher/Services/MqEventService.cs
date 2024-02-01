@@ -285,7 +285,8 @@ namespace Helpmebot.CategoryWatcher.Services
                         false,
                         config.ShowLink,
                         config.ShowWaitTime,
-                        config.MinWaitTime
+                        config.MinWaitTime,
+                        config.Anchor
                     );
                 }
 

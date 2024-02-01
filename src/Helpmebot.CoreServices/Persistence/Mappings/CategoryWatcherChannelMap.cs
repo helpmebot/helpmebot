@@ -20,6 +20,7 @@
             this.Map(x => x.AlertForRemovals, "alertremovals");
             this.Map(x => x.Enabled, "enabled");
             this.Map(x => x.StatusMsg, "statusmsg");
+            this.Map(x => x.Anchor, "anchor");
         }
     }
 }

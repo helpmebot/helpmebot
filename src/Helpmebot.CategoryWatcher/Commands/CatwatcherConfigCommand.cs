@@ -190,6 +190,7 @@ namespace Helpmebot.CategoryWatcher.Commands
         [CommandParameter("r|show-removals", "Report removals from the category as soon as they are detected", "showRemovals", typeof(bool))]
         [CommandParameter("R|hide-removals", "Don't report removals", "showRemovals", typeof(bool), booleanInverse: true)]
         [CommandParameter("s|statusmsg=", "Configure message target within channel. Use `@` to only send to channel operators, or `+` to only send to voiced users. Use `all` to send to everyone.", "statusmsg", typeof(string))]
+        [CommandParameter("t|anchor=", "Configure a specific anchor on the page to link to. For example, set to `potato` for link to `https://enwp.org/User_talk:Example#potato`. To clear, use an empty parameter (eg, `--anchor=`", "anchor", typeof(string))]
         protected IEnumerable<CommandResponse> ConfigureMode()
         {
             if (this.CommandSource == this.Client.Nickname)
@@ -214,6 +215,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             var showAdditions = this.Parameters.GetParameter("showAdditions", (bool?)null);
             var showRemovals = this.Parameters.GetParameter("showRemovals", (bool?)null);
             var statusMsg = this.Parameters.GetParameter("statusmsg", (string)null);
+            var anchor = this.Parameters.GetParameter("anchor", (string)null);
 
             var config = this.catWatcherConfig.GetWatcherConfiguration(watcher, this.CommandSource, true);
 
@@ -287,6 +289,20 @@ namespace Helpmebot.CategoryWatcher.Commands
                 }
             }
 
+            if (anchor != null)
+            {
+                if (string.IsNullOrEmpty(anchor))
+                {
+                    config.Anchor = null;
+                    changed = true;
+                }
+                else
+                {
+                    config.Anchor = anchor;
+                    changed = true;
+                }
+            }
+
             if (changed)
             {
                 this.catWatcherConfig.SaveWatcherConfiguration(config);
@@ -319,6 +335,7 @@ namespace Helpmebot.CategoryWatcher.Commands
             var enabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.enabled", this.CommandSource);
             var disabled = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.disabled", this.CommandSource);
             var nullStatusmsg = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.target-all", this.CommandSource);
+            var nullAnchor = this.responder.GetMessagePart("catwatcher.command.catwatcher.status.anchor-none", this.CommandSource);
 
             
             var responses = new List<CommandResponse>(watchers.Keys.Count);
@@ -340,7 +357,8 @@ namespace Helpmebot.CategoryWatcher.Commands
                             watcherConfig[key].ShowLink ? enabled : disabled,
                             watcherConfig[key].ShowWaitTime ? enabled : disabled,
                             watcherConfig[key].MinWaitTime,
-                            string.IsNullOrWhiteSpace(watcherConfig[key].StatusMsg) ? nullStatusmsg : watcherConfig[key].StatusMsg
+                            string.IsNullOrWhiteSpace(watcherConfig[key].StatusMsg) ? nullStatusmsg : watcherConfig[key].StatusMsg,
+                            string.IsNullOrWhiteSpace(watcherConfig[key].Anchor) ? nullAnchor : watcherConfig[key].Anchor
                         })
                 );
             }

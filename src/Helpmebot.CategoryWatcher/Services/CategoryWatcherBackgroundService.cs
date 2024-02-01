@@ -197,7 +197,8 @@
                 false,
                 categoryChannel.ShowLink,
                 categoryChannel.ShowWaitTime,
-                categoryChannel.MinWaitTime
+                categoryChannel.MinWaitTime,
+                categoryChannel.Anchor
             );
 
             if (message != null)
@@ -221,7 +222,8 @@
                     false,
                     categoryChannel.ShowLink,
                     categoryChannel.ShowWaitTime,
-                    categoryChannel.MinWaitTime
+                    categoryChannel.MinWaitTime,
+                    categoryChannel.Anchor
                 );
 
                 if (message != null)

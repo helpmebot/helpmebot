@@ -46,7 +46,8 @@ namespace Helpmebot.CategoryWatcher.Services
                 true,
                 config.ShowLink,
                 config.ShowWaitTime,
-                config.MinWaitTime
+                config.MinWaitTime,
+                config.Anchor
             );
 
             yield return new CommandResponse { Message = message };

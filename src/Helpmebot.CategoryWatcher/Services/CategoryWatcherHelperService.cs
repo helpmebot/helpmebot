@@ -174,7 +174,8 @@
             bool describeEmptySet,
             bool showItemLinks,
             bool showWaitTime,
-            int categoryChannelMinWaitTime)
+            int categoryChannelMinWaitTime,
+            string anchor)
         {
             var pluralString = this.GetMessagePart(categoryKeyword, "plural", destination);
 
@@ -188,7 +189,14 @@
                     var urlData = string.Empty;
                     if (showItemLinks)
                     {
-                        var pageUrl = this.linkerService.ConvertWikilinkToUrl(destination, item.Title);
+                        var title = item.Title;
+
+                        if (!string.IsNullOrWhiteSpace(anchor))
+                        {
+                            title += "#" + anchor;
+                        }
+                        
+                        var pageUrl = this.linkerService.ConvertWikilinkToUrl(destination, title);
                         urlData = " " + this.urlShorteningService.Shorten(pageUrl);
                     }
 

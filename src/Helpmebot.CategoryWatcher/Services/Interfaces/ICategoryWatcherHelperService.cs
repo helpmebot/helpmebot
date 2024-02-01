@@ -16,7 +16,8 @@
             bool describeEmptySet,
             bool showItemLinks,
             bool showWaitTime,
-            int categoryChannelMinWaitTime);
+            int categoryChannelMinWaitTime,
+            string anchor);
 
         string ConstructRemovalMessage(
             IList<CategoryWatcherItem> removed,

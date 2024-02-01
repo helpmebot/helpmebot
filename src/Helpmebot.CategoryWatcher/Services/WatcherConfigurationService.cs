@@ -80,7 +80,8 @@ namespace Helpmebot.CategoryWatcher.Services
                 ShowLink = false,
                 ShowWaitTime = false,
                 SleepTime = 20 * 60,
-                Enabled = false
+                Enabled = false,
+                Anchor = null
             };
 
             return this.channels.SingleOrDefault(x => x.Watcher == keyword && x.Channel == channel) ?? defaultConfig;
@@ -198,6 +199,7 @@ namespace Helpmebot.CategoryWatcher.Services
                         existingDb.ShowLink = config.ShowLink;
                         existingDb.AlertForAdditions = config.AlertForAdditions;
                         existingDb.AlertForRemovals = config.AlertForRemovals;
+                        existingDb.Anchor = config.Anchor;
                         
                         this.databaseSession.Update(existingDb);
                         txn.Commit();
