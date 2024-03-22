@@ -16,6 +16,7 @@ namespace Helpmebot.Brain.Commands
 
     [CommandFlag(Flags.Brain)]
     [CommandInvocation("forget")]
+    [CommandInvocation("unlearn")]
     [HelpCategory("Brain")]
     [HelpSummary("Removes the provided keywords from the learnt command list.")]
     public class ForgetCommand : CommandBase
