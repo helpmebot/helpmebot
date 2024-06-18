@@ -17,7 +17,7 @@ namespace Helpmebot.CoreServices.Startup
 
     public class Entrypoint
     {
-        public static void MainEntrypoint(string[] args, Type frameworkAbstraction)
+        public static void MainEntrypoint(string[] args)
         {
             // get the path to the configuration file
             string configurationFile = "Configuration/configuration.yml";
@@ -41,7 +41,6 @@ namespace Helpmebot.CoreServices.Startup
             var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile);
             container.AddFacility<LoggingFacility>(f => f.LogUsing<Log4netFactory>().WithConfig(globalConfiguration.General.Log4NetConfiguration));
             container.Register(Component.For<ModuleLoader>());
-            container.Register(Component.For<IFrameworkAbstraction>().ImplementedBy(frameworkAbstraction));
             
             // Load other module assemblies, and add them to the relevant installation queues            
             var moduleLoader = container.Resolve<ModuleLoader>(new {moduleList = globalConfiguration.Modules});

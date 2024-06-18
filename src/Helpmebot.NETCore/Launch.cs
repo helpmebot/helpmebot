@@ -6,7 +6,7 @@
     {
         static void Main(string[] args)
         {
-            Entrypoint.MainEntrypoint(args, typeof(FrameworkAbstraction));
+            Entrypoint.MainEntrypoint(args);
         }
     }
 }
