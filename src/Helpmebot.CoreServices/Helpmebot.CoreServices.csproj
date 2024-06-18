@@ -19,7 +19,6 @@
         <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
         <PackageReference Include="Castle.Windsor" Version="6.0.0" />
         <PackageReference Include="FluentNHibernate" Version="3.3.0" />
-        <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="MaxMind.Db" Version="4.1.0" />
         <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />

@@ -11,7 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="IPNetwork2" Version="3.0.667" />
       <PackageReference Include="Markdig" Version="0.37.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
       <PackageReference Include="NetMQ" Version="4.0.1.13" />
