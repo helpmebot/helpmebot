@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="4.4.1" />
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
         <PackageReference Include="DnsClient" Version="1.7.0" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="Mono.Options" Version="6.12.0.148" />

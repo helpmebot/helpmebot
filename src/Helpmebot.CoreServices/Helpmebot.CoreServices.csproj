@@ -14,9 +14,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
-        <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+        <PackageReference Include="Castle.Core-log4net" Version="5.1.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
+        <PackageReference Include="Castle.Windsor" Version="6.0.0" />
         <PackageReference Include="FluentNHibernate" Version="3.3.0" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="MaxMind.Db" Version="4.1.0" />

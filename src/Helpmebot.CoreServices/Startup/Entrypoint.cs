@@ -3,6 +3,7 @@ namespace Helpmebot.CoreServices.Startup
     using System;
     using System.IO;
     using Castle.Facilities.Logging;
+    using Castle.MicroKernel;
     using Castle.Services.Logging.Log4netIntegration;
     using Castle.Windsor;
     using Helpmebot.Configuration;
@@ -20,7 +21,7 @@ namespace Helpmebot.CoreServices.Startup
         public static void MainEntrypoint(string[] args)
         {
             // get the path to the configuration file
-            string configurationFile = "Configuration/configuration.yml";
+            var configurationFile = "Configuration/configuration.yml";
 
             if (args.Length >= 1)
             {
@@ -35,7 +36,7 @@ namespace Helpmebot.CoreServices.Startup
                 return;
             }
             
-            // setup the container
+            // set up the container
             var container = new WindsorContainer();
 
             var globalConfiguration = ConfigurationReader.ReadConfiguration<GlobalConfiguration>(configurationFile);
@@ -43,7 +44,9 @@ namespace Helpmebot.CoreServices.Startup
             container.Register(Component.For<ModuleLoader>());
             
             // Load other module assemblies, and add them to the relevant installation queues            
-            var moduleLoader = container.Resolve<ModuleLoader>(new {moduleList = globalConfiguration.Modules});
+            var arguments = new Arguments();
+            arguments.AddNamed("moduleList", globalConfiguration.Modules);
+            var moduleLoader = container.Resolve<ModuleLoader>(arguments);
             moduleLoader.LoadModuleAssemblies();
 
             new CommandOverrideMapEntryInflater().Inflate(globalConfiguration.CommandOverrides);

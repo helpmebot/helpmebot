@@ -21,8 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="4.4.1" />
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="NetMQ" Version="4.0.1.13" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />

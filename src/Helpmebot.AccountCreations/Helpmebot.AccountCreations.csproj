@@ -19,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="4.4.1" />
-        <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
+        <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="NHibernate" Version="5.5.1" />
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
