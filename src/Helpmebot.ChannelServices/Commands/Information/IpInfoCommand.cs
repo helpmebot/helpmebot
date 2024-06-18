@@ -2,7 +2,7 @@ namespace Helpmebot.ChannelServices.Commands.Information
 {
     using System.Collections.Generic;
     using System.Net;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.ChannelServices.ExtensionMethods;
     using Helpmebot.ChannelServices.Services.Interfaces;

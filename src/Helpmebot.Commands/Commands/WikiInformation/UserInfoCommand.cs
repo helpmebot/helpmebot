@@ -5,7 +5,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
     using System.Linq;
     using System.Net;
     using System.Web;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
@@ -146,7 +146,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             }
             catch (MediawikiApiException ex)
             {
-                this.Logger.WarnFormat(ex, "Error retrieving user info from API for user {0}", username);
+                this.Logger.LogWarning(ex, "Error retrieving user info from API for user {Username}", username);
                 return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally

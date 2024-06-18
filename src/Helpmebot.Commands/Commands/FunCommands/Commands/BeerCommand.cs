@@ -1,7 +1,7 @@
 namespace Helpmebot.Commands.Commands.FunCommands.Commands
 {
     using System.Collections.Generic;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Commands.Commands.FunCommands;
     using Helpmebot.CoreServices.Model;

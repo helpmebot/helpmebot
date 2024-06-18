@@ -1,15 +1,12 @@
 namespace Helpmebot.ChannelServices.Commands.CrossChannel
 {
     using System.Collections.Generic;
-    using System.Data;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Helpmebot.ChannelServices.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
-    using Stwalkerster.Bot.CommandLib.Model;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;
     using Stwalkerster.IrcClient.Model.Interfaces;

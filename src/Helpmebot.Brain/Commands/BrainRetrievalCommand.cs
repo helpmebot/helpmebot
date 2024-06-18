@@ -3,7 +3,7 @@ namespace Helpmebot.Brain.Commands
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Helpmebot.Brain.Services.Interfaces;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;

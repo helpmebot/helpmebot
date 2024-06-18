@@ -2,7 +2,7 @@ namespace Helpmebot.ChannelServices.Commands.CrossChannel
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Services.Interfaces;
     using Helpmebot.ChannelServices.Services.Interfaces;
     using Helpmebot.CoreServices.Model;

@@ -22,7 +22,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="19.0.152" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
     </ItemGroup>
 
     <ItemGroup>

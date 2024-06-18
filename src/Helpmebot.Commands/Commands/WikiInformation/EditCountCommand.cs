@@ -2,7 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using System.Web;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -75,7 +75,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             }
             catch (MediawikiApiException e)
             {
-                this.Logger.WarnFormat(e, "Encountered error retrieving edit count from API for {0}", username);
+                this.Logger.LogWarning(e, "Encountered error retrieving edit count from API for {Username}", username);
                 return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally

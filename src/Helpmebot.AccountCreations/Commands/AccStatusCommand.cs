@@ -5,7 +5,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.IO;
     using System.Net;
     using System.Xml.XPath;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;
@@ -14,6 +14,7 @@ namespace Helpmebot.AccountCreations.Commands
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;
+    using Stwalkerster.Bot.CommandLib.ExtensionMethods;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;
     using Stwalkerster.Bot.MediaWikiLib.Services.Interfaces;
     using Stwalkerster.IrcClient.Interfaces;

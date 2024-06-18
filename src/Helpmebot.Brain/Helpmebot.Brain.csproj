@@ -23,7 +23,7 @@
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="NHibernate" Version="5.5.1" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="19.0.152" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
     </ItemGroup>
 
     <ItemGroup>

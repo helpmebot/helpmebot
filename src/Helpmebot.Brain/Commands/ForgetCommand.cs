@@ -1,7 +1,7 @@
 namespace Helpmebot.Brain.Commands
 {
     using System.Collections.Generic;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Brain.Services.Interfaces;

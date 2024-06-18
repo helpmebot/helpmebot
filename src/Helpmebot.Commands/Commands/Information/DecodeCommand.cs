@@ -4,7 +4,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Net;
     using System.Net.Sockets;
     using System.Text.RegularExpressions;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;

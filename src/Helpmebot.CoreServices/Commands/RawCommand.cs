@@ -2,9 +2,9 @@ namespace Helpmebot.CoreServices.Commands
 {
     using System.Collections.Generic;
     using Attributes;
-    using Castle.Core.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
+    using Microsoft.Extensions.Logging;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities.Response;

@@ -2,10 +2,9 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
     using System.Text.RegularExpressions;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
@@ -259,14 +258,14 @@ namespace Helpmebot.ChannelServices.Commands.Configuration
                 var welcomeUsers = this.joinMessageConfigurationService.GetUsers(target).Where(searchPredicate);
                 var exceptions = this.joinMessageConfigurationService.GetExceptions(target).Where(searchPredicate);
 
-                this.Logger.Trace("Got list of WelcomeUsers, proceeding to Delete...");
+                this.Logger.LogTrace("Got list of WelcomeUsers, proceeding to Delete...");
 
                 foreach (var welcomeUser in welcomeUsers.Union(exceptions))
                 {
                     this.joinMessageConfigurationService.RemoveWelcomeEntry(welcomeUser);
                 }
 
-                this.Logger.Trace("All done, cleaning up and sending message to IRC");
+                this.Logger.LogTrace("All done, cleaning up and sending message to IRC");
 
                 return this.responder.Respond("common.done", this.CommandSource);
             }

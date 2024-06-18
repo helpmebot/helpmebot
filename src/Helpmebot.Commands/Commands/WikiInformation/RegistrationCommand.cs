@@ -2,7 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System;
     using System.Collections.Generic;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Commands.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
@@ -70,7 +70,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
             }
             catch (MediawikiApiException e)
             {
-                this.Logger.WarnFormat(e, "Encountered error retrieving registration date from API for {0}", username);
+                this.Logger.LogWarning(e, "Encountered error retrieving registration date from API for {Username}", username);
                 return this.responder.Respond("common.mw-api-error", this.CommandSource);
             }
             finally

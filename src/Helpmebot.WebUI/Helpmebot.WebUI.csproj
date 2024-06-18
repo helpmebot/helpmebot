@@ -15,7 +15,7 @@
       <PackageReference Include="Markdig" Version="0.37.0" />
       <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
       <PackageReference Include="NetMQ" Version="4.0.1.13" />
-      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="19.0.152" />
+      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
     </ItemGroup>
 
     <ItemGroup>

@@ -2,11 +2,9 @@ namespace Helpmebot.ChannelServices.Commands.Standard
 {
     using System.Collections.Generic;
     using System.Linq;
-    using NHibernate;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.CoreServices.Services.Interfaces;
-    using Helpmebot.CoreServices.ExtensionMethods;
     using Helpmebot.CoreServices.Model;
     using Stwalkerster.Bot.CommandLib.Attributes;
     using Stwalkerster.Bot.CommandLib.Commands.CommandUtilities;

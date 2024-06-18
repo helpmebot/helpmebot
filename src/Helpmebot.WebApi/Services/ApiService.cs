@@ -5,7 +5,6 @@ namespace Helpmebot.WebApi.Services
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using Castle.Core.Internal;
     using Castle.Core.Logging;
     using CategoryWatcher.Services.Interfaces;
     using CoreServices.Services.Interfaces;

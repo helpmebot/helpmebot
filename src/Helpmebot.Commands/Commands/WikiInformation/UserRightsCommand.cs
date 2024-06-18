@@ -2,7 +2,7 @@ namespace Helpmebot.Commands.Commands.WikiInformation
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Services.Interfaces;
@@ -73,12 +73,12 @@ namespace Helpmebot.Commands.Commands.WikiInformation
                 }
                 catch (MissingObjectException e)
                 {
-                    this.Logger.InfoFormat(e, "API reports that user {0} doesn't exist?", username);
+                    this.Logger.LogInformation(e, "API reports that user {Username} doesn't exist?", username);
                     return this.responder.Respond("commands.common.missing-user", this.CommandSource, username);
                 }
                 catch (MediawikiApiException e)
                 {
-                    this.Logger.WarnFormat(e, "Encountered error retrieving rights from API for {0}", username);
+                    this.Logger.LogInformation(e, "Encountered error retrieving rights from API for {Username}", username);
                     return this.responder.Respond("common.mw-api-error", this.CommandSource);
                 }
 

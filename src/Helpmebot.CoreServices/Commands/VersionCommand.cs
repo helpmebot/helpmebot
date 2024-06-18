@@ -8,7 +8,7 @@ namespace Helpmebot.CoreServices.Commands
     using System.Reflection;
     using System.Runtime.InteropServices;
     using Attributes;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Helpmebot.Attributes;
     using Helpmebot.CoreServices.Model;
     using Helpmebot.CoreServices.Startup;

@@ -3,7 +3,7 @@ namespace Helpmebot.Commands.Commands.Information
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using DnsClient;
     using DnsClient.Protocol;

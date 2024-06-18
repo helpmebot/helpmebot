@@ -4,7 +4,7 @@ namespace Helpmebot.AccountCreations.Commands
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.IO;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using Helpmebot.Attributes;
     using Helpmebot.Configuration;

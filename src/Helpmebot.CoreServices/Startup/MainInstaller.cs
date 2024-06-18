@@ -36,6 +36,7 @@
             container.Register(
                 // CommandParser
                 Component.For<ILogger<CommandParser>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandParser>),
+                Component.For<ILogger<CommandHandler>>().UsingFactoryMethod(loggerFactory.CreateLogger<CommandHandler>),
                 Classes.FromAssemblyContaining<CommandBase>().BasedOn<ICommand>().LifestyleTransient(),
                 Component.For<ICommandTypedFactory>().AsFactory(),
                 Classes.FromAssemblyContaining<CommandParser>().InSameNamespaceAs<CommandParser>().WithServiceAllInterfaces(),

@@ -1,7 +1,7 @@
 ﻿namespace Helpmebot.Commands.Commands.FunCommands
 {
     using System.Collections.Generic;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using Helpmebot.CoreServices.Services.Interfaces;
     using Helpmebot.CoreServices.Services.Messages.Interfaces;
     using Stwalkerster.Bot.CommandLib.Services.Interfaces;

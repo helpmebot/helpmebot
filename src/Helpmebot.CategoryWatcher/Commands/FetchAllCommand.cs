@@ -2,7 +2,7 @@ namespace Helpmebot.CategoryWatcher.Commands
 {
     using System.Collections.Generic;
     using Attributes;
-    using Castle.Core.Logging;
+    using Microsoft.Extensions.Logging;
     using CoreServices.Attributes;
     using CoreServices.Services.Interfaces;
     using Helpmebot.CategoryWatcher.Services.Interfaces;
