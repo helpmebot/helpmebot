@@ -21,9 +21,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Castle.Core-log4net" Version="5.1.1" />
-      <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
-      <PackageReference Include="Castle.Windsor" Version="6.0.0" />
+      <PackageReference Include="Castle.Core" Version="5.1.1" />
       <PackageReference Include="DnsClient" Version="1.7.0" />
       <PackageReference Include="FluentNHibernate" Version="3.3.0" />
       <PackageReference Include="IPNetwork2" Version="3.0.667" />
@@ -34,7 +32,7 @@
       <PackageReference Include="MySql.Data" Version="8.4.0" />
       <PackageReference Include="NetMQ" Version="4.0.1.13" />
       <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
+      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.157" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
       <PackageReference Include="System.Text.Json" Version="8.0.3" />

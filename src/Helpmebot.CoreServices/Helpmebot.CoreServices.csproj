@@ -14,6 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Castle.Core" Version="5.1.1" />
         <PackageReference Include="Castle.Core-log4net" Version="5.1.1" />
         <PackageReference Include="Castle.LoggingFacility" Version="6.0.0" />
         <PackageReference Include="Castle.Windsor" Version="6.0.0" />
@@ -25,7 +26,7 @@
         <PackageReference Include="MySql.Data" Version="8.4.0" />
         <PackageReference Include="NHibernate" Version="5.5.1" />
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.157" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
         <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
         <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
