@@ -17,16 +17,17 @@
         <PackageReference Include="Castle.Core-log4net" Version="4.4.1" />
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
         <PackageReference Include="Castle.Windsor" Version="4.1.1" />
-        <PackageReference Include="FluentNHibernate" Version="3.1.0" />
-        <PackageReference Include="MaxMind.Db" Version="3.0.0" />
-        <PackageReference Include="MaxMind.GeoIP2" Version="4.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
-        <PackageReference Include="MySql.Data" Version="8.0.31" />
-        <PackageReference Include="NHibernate" Version="5.4.1" />
-        <PackageReference Include="RabbitMQ.Client" Version="6.4.0" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="18.0.149" />
+        <PackageReference Include="FluentNHibernate" Version="3.3.0" />
+        <PackageReference Include="IPNetwork2" Version="3.0.667" />
+        <PackageReference Include="MaxMind.Db" Version="4.1.0" />
+        <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="8.0.0" />
+        <PackageReference Include="MySql.Data" Version="8.4.0" />
+        <PackageReference Include="NHibernate" Version="5.5.1" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="19.0.152" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
-        <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" />
+        <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

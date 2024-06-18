@@ -22,10 +22,11 @@
     <ItemGroup>
         <PackageReference Include="Castle.Core" Version="4.4.1" />
         <PackageReference Include="Castle.LoggingFacility" Version="4.1.1" />
+        <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="Mono.Options" Version="6.12.0.148" />
-        <PackageReference Include="NHibernate" Version="5.4.1" />
-        <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="18.0.149" />
+        <PackageReference Include="NHibernate" Version="5.5.1" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="19.0.152" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
     </ItemGroup>
 

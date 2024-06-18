@@ -11,18 +11,18 @@ namespace Helpmebot.Tests.Model
         {
             var fromChangeList = ModeChanges.FromChangeList(new []{"+g-icfnt"});
 
-            Assert.IsEmpty(fromChangeList.Bans);
-            Assert.IsEmpty(fromChangeList.Quiets);
-            Assert.IsEmpty(fromChangeList.Unbans);
-            Assert.IsEmpty(fromChangeList.Unquiets);
-            Assert.IsEmpty(fromChangeList.Exempts);
-            Assert.IsEmpty(fromChangeList.Unexempts);
-            Assert.IsEmpty(fromChangeList.Ops);
-            Assert.IsEmpty(fromChangeList.Deops);
+            Assert.That(fromChangeList.Bans, Is.Empty);
+            Assert.That(fromChangeList.Quiets, Is.Empty);
+            Assert.That(fromChangeList.Unbans, Is.Empty);
+            Assert.That(fromChangeList.Unquiets, Is.Empty);
+            Assert.That(fromChangeList.Exempts, Is.Empty);
+            Assert.That(fromChangeList.Unexempts, Is.Empty);
+            Assert.That(fromChangeList.Ops, Is.Empty);
+            Assert.That(fromChangeList.Deops, Is.Empty);
 
-            Assert.IsNull(fromChangeList.Moderated);
-            Assert.IsNull(fromChangeList.ReducedModeration);
-            Assert.IsNull(fromChangeList.RegisteredOnly);
+            Assert.That(fromChangeList.Moderated, Is.Null);
+            Assert.That(fromChangeList.ReducedModeration, Is.Null);
+            Assert.That(fromChangeList.RegisteredOnly, Is.Null);
         }
     }
 }

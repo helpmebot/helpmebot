@@ -31,7 +31,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly ICommandParser commandParser;
         private readonly ModuleConfiguration moduleConfiguration;
         private readonly BotConfiguration config;
-        private List<IPNetwork> networks;
+        private List<IPNetwork2> networks;
 
         private Dictionary<IUser, TrackedUser> trackedUsers = new Dictionary<IUser, TrackedUser>();
         private Regex emojiRegex;
@@ -76,7 +76,7 @@ namespace Helpmebot.ChannelServices.Services
             this.antiSpamBot = moduleConfiguration.TrollManagement.AntiSpamBot;
             this.opTargetAccount = moduleConfiguration.TrollManagement.OpTargetAccount;
             
-            this.networks = new List<IPNetwork>
+            this.networks = new List<IPNetwork2>
             {
                 // IPNetwork.Parse("103.139.56.0/23"), // Avjr
                 // IPNetwork.Parse("110.235.224.0/20"), // Excitel

@@ -23,7 +23,7 @@ namespace Helpmebot.ChannelServices.Services
         private readonly LookupClient dnsClient;
         
 
-        private readonly Dictionary<IPNetwork, string> knownRanges;
+        private readonly Dictionary<IPNetwork2, string> knownRanges;
 
         public RangeLookupService(ILogger logger, IIrcClient client, ModuleConfiguration configuration, IResponder responder)
         {
@@ -36,7 +36,7 @@ namespace Helpmebot.ChannelServices.Services
             this.dnsClient = new LookupClient(options);
 
             this.knownRanges =
-                this.configuration.AlertOnRanges.ToDictionary(pair => IPNetwork.Parse(pair.Key), pair => pair.Value);
+                this.configuration.AlertOnRanges.ToDictionary(pair => IPNetwork2.Parse(pair.Key), pair => pair.Value);
         }
         
         private void OnJoinEvent(object sender, JoinEventArgs e)
