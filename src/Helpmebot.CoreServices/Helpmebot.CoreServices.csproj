@@ -27,6 +27,10 @@
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
+        <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
         <PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
     </ItemGroup>
 

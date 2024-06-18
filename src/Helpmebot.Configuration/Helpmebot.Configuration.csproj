@@ -17,6 +17,12 @@
         <PackageReference Include="Castle.Windsor" Version="6.0.0" />
         <PackageReference Include="IPNetwork2" Version="3.0.667" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.156" />
+        <PackageReference Include="System.Collections" Version="4.3.0" />
+        <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+        <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
+        <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
         <PackageReference Include="YamlDotNet" Version="15.3.0" />
     </ItemGroup>
 
