@@ -23,7 +23,7 @@
     <ItemGroup>
         <PackageReference Include="NetMQ" Version="4.0.1.13" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.157" />
-        <PackageReference Include="System.Text.Json" Version="8.0.3" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4" />
     </ItemGroup>
 
     <ItemGroup>

@@ -20,11 +20,11 @@
 
     <ItemGroup>
         <PackageReference Include="Castle.Core" Version="5.1.1" />
-        <PackageReference Include="NHibernate" Version="5.5.1" />
+        <PackageReference Include="NHibernate" Version="5.5.2" />
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
         <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.157" />
         <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
-        <PackageReference Include="System.Text.Json" Version="8.0.3" />
+        <PackageReference Include="System.Text.Json" Version="8.0.4" />
     </ItemGroup>
 
     <ItemGroup>

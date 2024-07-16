@@ -22,8 +22,8 @@
 
     <ItemGroup>
       <PackageReference Include="Castle.Core" Version="5.1.1" />
-      <PackageReference Include="DnsClient" Version="1.7.0" />
-      <PackageReference Include="FluentNHibernate" Version="3.3.0" />
+      <PackageReference Include="DnsClient" Version="1.8.0" />
+      <PackageReference Include="FluentNHibernate" Version="3.4.0" />
       <PackageReference Include="IPNetwork2" Version="3.0.667" />
       <PackageReference Include="MaxMind.Db" Version="4.1.0" />
       <PackageReference Include="MaxMind.GeoIP2" Version="5.2.0" />
@@ -35,7 +35,7 @@
       <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.157" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
-      <PackageReference Include="System.Text.Json" Version="8.0.3" />
+      <PackageReference Include="System.Text.Json" Version="8.0.4" />
       <PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.1" />
     </ItemGroup>
 
