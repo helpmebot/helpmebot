@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <PackageReference Include="NHibernate" Version="5.5.2" />
-        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.158" />
+        <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.159" />
     </ItemGroup>
 
     <ItemGroup>

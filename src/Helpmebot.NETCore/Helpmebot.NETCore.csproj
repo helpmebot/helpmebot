@@ -32,10 +32,10 @@
       <PackageReference Include="MySql.Data" Version="8.4.0" />
       <PackageReference Include="NetMQ" Version="4.0.1.13" />
       <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
-      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.158" />
+      <PackageReference Include="Stwalkerster.Bot.CommandLib" Version="20.0.159" />
       <PackageReference Include="Stwalkerster.Bot.MediaWikiLib" Version="5.0.86" />
       <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
-      <PackageReference Include="System.Text.Json" Version="8.0.4" />
+      <PackageReference Include="System.Text.Json" Version="8.0.5" />
       <PackageReference Include="System.Reflection.DispatchProxy" Version="4.7.1" />
     </ItemGroup>
 
