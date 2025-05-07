@@ -16,11 +16,13 @@ namespace Helpmebot.WebUI.Services.Api
         private readonly string connectPath;
         private readonly string systemToken;       
         private readonly string apiVersion = "0.1-alpha";
+        private readonly int apiTimeoutSeconds;
 
         public ApiFrontendTransportService(SiteConfiguration configuration)
         {
             this.systemToken = configuration.SystemApiToken;
             this.connectPath = configuration.ApiPath;
+            this.apiTimeoutSeconds = configuration.ApiTimeoutSeconds;
         }
         
         public TResponse RemoteProcedureCall<TParam, TResponse>(MethodBase method, TParam parameter)
@@ -49,7 +51,7 @@ namespace Helpmebot.WebUI.Services.Api
 
             var frames = new List<string>();
 
-            if (socket.TryReceiveMultipartStrings(new TimeSpan(0,0,3), Encoding.UTF8, ref frames))
+            if (socket.TryReceiveMultipartStrings(new TimeSpan(0,0,this.apiTimeoutSeconds), Encoding.UTF8, ref frames))
             {
 
                 if (frames[0] != RpcStatus.OK)
