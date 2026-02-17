@@ -15,6 +15,8 @@ namespace Helpmebot.ChannelServices.Configuration
         public IDictionary<string, string> ModeMonitorChannelMap { get; set; }
         
         public IDictionary<string, string> AlertOnRanges { get; set; }
+        
+        public IList<JoinMonitorConfiguration> JoinMonitors { get; set; }
 
     }
 }

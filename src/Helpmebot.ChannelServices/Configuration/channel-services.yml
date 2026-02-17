@@ -45,4 +45,5 @@ trollManagement:
   pasteRegex: "^Uploaded file: (?<url>https://uploads\\.kiwiirc\\.com/files/[a-z0-9]{32}/pasted\\.txt)"
   
 alertOnRanges: {}
-  
+
+joinMonitors: {}
