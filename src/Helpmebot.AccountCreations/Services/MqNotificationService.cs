@@ -121,23 +121,7 @@ namespace Helpmebot.AccountCreations.Services
         
         private void ConsumerOnReceived(object sender, BasicDeliverEventArgs e)
         {
-            if (!e.BasicProperties.IsAppIdPresent())
-            {
-                this.logger.WarnFormat("Refusing to deliver message missing appid");
-                return;
-            }
-            
-            if (!e.BasicProperties.IsUserIdPresent())
-            {
-                this.logger.WarnFormat("Refusing to deliver message missing userid");
-                return;
-            }
-            
-            this.logger.InfoFormat(
-                "Handling message for {0} from user <{1}> app <{2}>",
-                e.RoutingKey,
-                e.BasicProperties.UserId,
-                e.BasicProperties.AppId);
+            this.logger.InfoFormat("Handling message for {0}", e.RoutingKey);
             
             var destinations = new List<string> { e.RoutingKey };
             if (this.notificationConfig.NotificationTargets.ContainsKey(e.RoutingKey))
