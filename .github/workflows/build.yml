@@ -45,7 +45,7 @@ jobs:
           npm ci
           npx sass src/Helpmebot.WebUI/wwwroot/scss/base.scss src/Helpmebot.WebUI/wwwroot/scss/base.css
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: src/global.json
 
