@@ -20,6 +20,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Helpmebot.Commands", "Helpm
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F636A06D-13E3-485E-AE01-648028E44113}"
 ProjectSection(SolutionItems) = preProject
+	..\.github\workflows\build.yml = ..\.github\workflows\build.yml
+	..\docker\docker-entrypoint.sh = ..\docker\docker-entrypoint.sh
+	..\Dockerfile = ..\Dockerfile
 	..\README.md = ..\README.md
 	Settings.StyleCop = Settings.StyleCop
 	global.json = global.json

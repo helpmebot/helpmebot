@@ -1,0 +1,8 @@
+{
+  "name": "helpmebot-build-tools",
+  "private": true,
+  "description": "Build-time tooling only (SCSS compilation for Helpmebot.WebUI)",
+  "devDependencies": {
+    "sass": "^1.80.0"
+  }
+}

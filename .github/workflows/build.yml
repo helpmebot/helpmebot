@@ -1,0 +1,118 @@
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - legacy
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  VERSION_TAG: alpha
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PUBLISH_IMAGE: ${{ github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history required for contributor credits
+
+      - name: Compute version
+        run: echo "VERSION=$(tr -d '[:space:]' < VERSION).${{ github.run_number }}-${VERSION_TAG}" >> "$GITHUB_ENV"
+
+      - name: Populate generated data
+        run: .github/scripts/populate-credits.sh
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: SCSS compile
+        run: |
+          npm ci
+          npx sass src/Helpmebot.WebUI/wwwroot/scss/base.scss src/Helpmebot.WebUI/wwwroot/scss/base.css
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: src/global.json
+
+      - name: Publish
+        run: >
+          dotnet publish src/Helpmebot.Core.sln
+          --configuration Release
+          --runtime linux-x64
+          --self-contained
+          --version-suffix "${VERSION_TAG}"
+          -p:PackageVersion="${VERSION}"
+          -p:Version="${VERSION}"
+
+      - name: Tests
+        run: >
+          dotnet test src/Helpmebot.Tests/Helpmebot.Tests.csproj
+          --configuration Release
+          --runtime linux-x64
+          --logger "trx;LogFileName=results.trx"
+
+      - name: Post-build tests
+        run: .github/scripts/postbuild-checks.sh src/Helpmebot/bin/Release/linux-x64/publish
+
+      - name: Combine archives
+        run: |
+          mkdir helpmebot
+          cp -a src/Helpmebot/bin/Release/linux-x64/publish/. helpmebot/
+          cp -a src/Helpmebot.WebUI/bin/Release/linux-x64/publish/. helpmebot/
+          cp docker/docker-entrypoint.sh helpmebot/docker-entrypoint.sh
+          tar czf helpmebot.tar.gz helpmebot/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: helpmebot
+          path: helpmebot.tar.gz
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: env.PUBLISH_IMAGE == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ env.VERSION }}
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.version=${{ env.VERSION }}
+
+      - name: Docker build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ env.PUBLISH_IMAGE == 'true' }}
+          pull: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
