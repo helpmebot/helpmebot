@@ -23,7 +23,8 @@ namespace Helpmebot.CoreServices.Startup
                 config.RestartOnHeavyLag.GetValueOrDefault(true),
                 config.ReclaimNickFromServices.GetValueOrDefault(true),
                 config.PingInterval.GetValueOrDefault(15),
-                config.MissedPingLimit.GetValueOrDefault(3));
+                config.MissedPingLimit.GetValueOrDefault(3),
+                config.ConnectModes ?? "+Q");
         }
     }
 }

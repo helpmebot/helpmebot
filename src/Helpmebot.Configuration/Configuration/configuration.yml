@@ -37,6 +37,7 @@ irc:
   # reclaimNickFromServices: true
   # pingInterval: 15
   # missedPingLimit: 3
+  # connectModes: "+Q"
 
 ########################################################################################################
 # Database configuration
