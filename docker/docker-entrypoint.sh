@@ -7,7 +7,7 @@ case "$1" in
         ;;
     bot)
         cd /opt/helpmebot
-        exec ./Helpmebot
+        exec ./Helpmebot "$@"
         ;;
     *)
         exec "$@"
